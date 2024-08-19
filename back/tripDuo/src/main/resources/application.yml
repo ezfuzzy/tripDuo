@@ -1,0 +1,23 @@
+server:
+  port: 8888
+  servlet:
+    context-path: /
+    session:
+      tracking-modes: cookie
+          
+spring:
+  datasource:
+    driver-class-name: oracle.jdbc.driver.OracleDriver
+    url: jdbc:oracle:thin:@localhost:1521:xe
+    username: scott
+    password: tiger
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 100MB
+  application:
+    name: test
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
