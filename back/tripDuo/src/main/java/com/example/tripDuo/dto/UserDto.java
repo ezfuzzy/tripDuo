@@ -44,6 +44,34 @@ public class UserDto {
 	private String deleted_at; //  [note:"soft delete 지원?"]
 	
 	public static UserDto toDto(User entity) {
-		return UserDto.builder().build();
+		
+//	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd E a hh:mm:ss", Locale.KOREA);
+//	    String enCreated_at =  dateFormat.format(entity.getCreated_at());
+//	    String enUpdated_at =  dateFormat.format(entity.getUpdated_at());
+//	    String enDeleted_at =  dateFormat.format(entity.getDeleted_at());
+	    
+	    return UserDto.builder()
+	            .id(entity.getId())
+	            .username(entity.getUsername())
+	            .password(entity.getPassword())
+	            .nickname(entity.getNickname())
+	            .age(entity.getAge())
+	            .name(entity.getName())
+	            .gender(entity.getGender())
+	            .phone_num(entity.getPhone_num())
+	            .email(entity.getEmail())
+	            .profile_pics(entity.getProfile_pics())
+	            .profile_msg(entity.getProfile_msg())
+	            .cur_location(entity.getCur_location())
+	            .verification_status(entity.getVerification_status())
+	            .account_status(entity.getAccount_status())
+	            .social_links(entity.getSocial_links())
+	            .role(entity.getRole())
+	            .ratings(entity.getRatings())
+	            .last_login(entity.getLast_login())
+	            .created_at(entity.getCreated_at() != null ? entity.getCreated_at().toString() : null)
+	            .updated_at(entity.getUpdated_at() != null ? entity.getUpdated_at().toString() : null)
+	            .deleted_at(entity.getDeleted_at() != null ? entity.getDeleted_at().toString() : null)
+	            .build();
 	}
 }

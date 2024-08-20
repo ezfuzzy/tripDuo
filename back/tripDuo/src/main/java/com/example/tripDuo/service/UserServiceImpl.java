@@ -13,11 +13,41 @@ public class UserServiceImpl implements UserService {
 	UserRepository repo;
 
 	@Override
-	public UserDto getDataByUsername(String username) {
+	public UserDto getUserById(int id) {
 		// TODO Auto-generated method stub
-		//return UserDto.toDto(repo.findByUsername(username).get());
 		return null;
 	}
+
+	@Override
+	public UserDto getUserByUsername(String username) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public UserDto getUserByPhonenum(String phone_num) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public UserDto getUserByEmail(String email) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean updateUser(UserDto dto) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean deleteUser(int id) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 	
 	
 }

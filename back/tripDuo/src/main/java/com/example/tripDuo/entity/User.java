@@ -1,5 +1,7 @@
 package com.example.tripDuo.entity;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.example.tripDuo.dto.UserDto;
@@ -61,6 +63,49 @@ public class User {
 
 	
 	public static User toEntity(UserDto dto) {
-		return User.builder().build();
-	}
+		 
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		 
+		Date createdAt = null;
+	    Date updatedAt = null;
+	    Date deletedAt = null;
+
+	    try {
+	        if (dto.getCreated_at() != null) {
+	            createdAt = formatter.parse(dto.getCreated_at());
+	        }
+	        if (dto.getUpdated_at() != null) {
+	            updatedAt = formatter.parse(dto.getUpdated_at());
+	        }
+	        if (dto.getDeleted_at() != null) {
+	            deletedAt = formatter.parse(dto.getDeleted_at());
+	        }
+	    } catch (ParseException e) {
+	        e.printStackTrace();
+	    }
+	    
+		 return User.builder()
+		            .id(dto.getId())
+		            .username(dto.getUsername())
+		            .password(dto.getPassword())
+		            .nickname(dto.getNickname())
+		            .age(dto.getAge())
+		            .name(dto.getName())
+		            .gender(dto.getGender())
+		            .phone_num(dto.getPhone_num())
+		            .email(dto.getEmail())
+		            .profile_pics(dto.getProfile_pics())
+		            .profile_msg(dto.getProfile_msg())
+		            .cur_location(dto.getCur_location())
+		            .verification_status(dto.getVerification_status())
+		            .account_status(dto.getAccount_status())
+		            .social_links(dto.getSocial_links())
+		            .role(dto.getRole())
+		            .ratings(dto.getRatings())
+		            .last_login(dto.getLast_login())
+		            .created_at(createdAt)
+		            .updated_at(updatedAt)
+		            .deleted_at(deletedAt)
+		            .build();	
+	 }
 }
