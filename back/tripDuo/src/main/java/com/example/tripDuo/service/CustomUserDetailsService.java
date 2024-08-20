@@ -21,7 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		UserDto dto = service.getDataByUsername(username);
+		UserDto dto = service.getUserByUsername(username);
 		
 		if(dto == null) {
 			throw new UsernameNotFoundException("wrong username or password");
