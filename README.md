@@ -46,10 +46,10 @@
 
 ## 💻 기술 스택
 
-- Frontend: React Native
+- Frontend: React
 - Backend: Spring boot
-- Database: MariaDB
-- APIs: Google Maps, YouTube
+- Database: PostgreSQL
+- APIs: Google Maps, Kakao(oauth), Google(oauth)
 
 ## 📞 연락처
 
