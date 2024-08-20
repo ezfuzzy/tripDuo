@@ -58,15 +58,15 @@ public class JwtFilter extends OncePerRequestFilter {
 		}
 
 		// 2. get userName from token
-		String userName = null;
+		String username = null;
 		if (jwtToken.startsWith("Bearer+")) {
 			jwtToken = jwtToken.substring(7);
-			userName = jwtUtil.extractUsername(jwtToken);
+			username = jwtUtil.extractUsername(jwtToken);
 		}
 
 		// 3. get UserDetails object from DB
-		if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-			UserDetails userDetails = service.loadUserByUsername(userName);
+		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+			UserDetails userDetails = service.loadUserByUsername(username);
 
 			// 4. validate token
 			boolean isValid = jwtUtil.validateToken(jwtToken, userDetails);

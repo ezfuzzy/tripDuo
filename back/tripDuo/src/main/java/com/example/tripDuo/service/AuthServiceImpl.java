@@ -29,9 +29,16 @@ public class AuthServiceImpl implements AuthService {
 	
 	@Override
 	public String login(UserDto dto) throws Exception {
+		
+		System.out.println(dto.getUsername() + " " + dto.getPassword());
+		System.out.println("1 :" + encoder.encode(dto.getPassword()));
+		System.out.println("2 :" + encoder.encode(dto.getPassword()));
+		System.out.println("3 :" + encoder.encode(dto.getPassword()));
+		System.out.println("4 :" + encoder.encode(dto.getPassword()));
 		try {
-			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(dto.getUsername(),
-					dto.getPassword());
+			UsernamePasswordAuthenticationToken authToken = 
+					new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword());
+			
 			authManager.authenticate(authToken);
 		} catch (Exception e) {
 			e.printStackTrace();
