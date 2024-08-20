@@ -5,12 +5,16 @@ import Home from "../pages/Home"
 import Sample from "../pages/Sample"
 import HomeInternational from "../pages/HomeInternational"
 import HomeMate from "../pages/HomeMate"
+import MyProfile from "../pages/MyProfile"
+import MyProfileForm from "../pages/MyProfileForm"
 
 const routes = [
     {path:"/", element: <Home/>},
     {path:"/home-inter", element: <HomeInternational/>},
     {path:"/home-mate", element: <HomeMate/>},
     {path:"/mypage", element: <Mypage/>},
+    {path:"/myProfile", element: <MyProfile/>},
+    {path:"/myProfileForm", element: <MyProfileForm/>},
     {path:"/sample", element: <Sample/>}
 ]
 
