@@ -21,32 +21,26 @@ import com.example.tripDuo.filter.JwtFilter;
 @EnableWebSecurity
 public class SecurityConfig {
 
+	@Value("${jwt.name}")
+	private String jwtName;
+
 	@Autowired
 	private JwtFilter jwtFilter;
 
 	@Bean
 	public SecurityFilterChain securityFilerChain(HttpSecurity httpSecurity) throws Exception {
 
-		String[] whiteList = { 
-			"/", "/home",
-
-		};
+		String[] whiteList = { "/", "/home", "/api/**", };
 
 		httpSecurity.headers((header) -> {
 			header.frameOptions(option -> option.sameOrigin());
-		})
-		.csrf(csrf -> csrf.disable())
-		.authorizeHttpRequests((config) -> {
-	    	config
-    		.requestMatchers(whiteList).permitAll() // whiteList
-    		.requestMatchers("/admin/**").hasRole("ADMIN")
-    		.requestMatchers("/staff/**").hasAnyRole("ADMIN", "STAFF")
-    		.anyRequest().authenticated();
-		})
-		.sessionManagement((config) -> {
+		}).csrf(csrf -> csrf.disable()).authorizeHttpRequests((config) -> {
+			config.requestMatchers(whiteList).permitAll() // whiteList
+					.requestMatchers("/admin/**").hasRole("ADMIN").requestMatchers("/staff/**")
+					.hasAnyRole("ADMIN", "STAFF").anyRequest().authenticated();
+		}).sessionManagement((config) -> {
 			config.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		})
-		.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+		}).addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return httpSecurity.build();
 	}
@@ -60,10 +54,7 @@ public class SecurityConfig {
 	AuthenticationManager authenticationManager(HttpSecurity http, BCryptPasswordEncoder bCryptPasswordEncoder,
 			UserDetailsService userDetailService) throws Exception {
 
-		return http.getSharedObject(AuthenticationManagerBuilder.class)
-				.userDetailsService(userDetailService)
-				.passwordEncoder(bCryptPasswordEncoder)
-				.and()
-				.build();
+		return http.getSharedObject(AuthenticationManagerBuilder.class).userDetailsService(userDetailService)
+				.passwordEncoder(bCryptPasswordEncoder).and().build();
 	}
 }
