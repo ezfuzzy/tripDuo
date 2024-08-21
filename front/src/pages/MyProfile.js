@@ -10,8 +10,9 @@ function MyProfile(props) {
     const navigate = useNavigate()
     const [profile, setProfile] = useState({
         id: 0,
-        signin_id: "MY",
+        signin_id: "MY ID",
         userNickname: "userNick-000789",
+        name:"MY NAME",
         age: 20,
         gender: "attack helicopter",
         phone_num: "01048854885",
@@ -30,8 +31,7 @@ function MyProfile(props) {
     return (
         <>
             <h3>My Profile</h3>
-            <div className="container">
-                <h5>프로필 탭</h5>
+            <div className="container h-screen">
                 <div>
                     <div class="flex items-center gap-x-6">
                         {
@@ -78,10 +78,11 @@ function MyProfile(props) {
                     <p> 전화번호 : {profile.phone_num}</p>
                     <p> 이메일 : {profile.email}</p>
                     <div className="mb-3">
-                        <label htmlFor="intro" className="form-label">자기 소개</label>
-                        <textarea name="intro" id="intro" className="form-control" rows="5" value={profile.profile_msg} />
+                        <label htmlFor="profile_msg" className="form-label">자기 소개</label>
+                        <textarea name="profile_msg" className="form-control" rows="5" value={profile.profile_msg} />
                     </div>
                 </div>
+
                 <div>
                     <h5>보안 탭</h5>
                     <p>회원 탈퇴</p>
@@ -89,15 +90,7 @@ function MyProfile(props) {
                     <p>내 활동 기록</p>
                 </div>
             </div>
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
+
         </>
     );
 }
