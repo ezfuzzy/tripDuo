@@ -11,21 +11,28 @@ function Agreement() {
     const [text, textarea] = useState("약관내용...")
 
     const handleAgreementChange = (e) => {
-        setAgreements({
-            ...agreements,
-            [e.target.name] : e.target.checked
+        const {name, checked} = e.target
+        setAgreements(prevAgreements => {
+            const updatedAgreements = {
+                ...prevAgreements,
+                [name]: checked
+            }
+            const allChecked = Object.values(updatedAgreements).every((value)=>value === true)
+            setAllAgreed(allChecked)
+            return updatedAgreements
         })
-        const allChecked = Object.values(agreements).every((value)=>value === true)
-        setAllAgreed(allChecked)
     }
 
-    const handleAllAgreementChange = (e) => {
-        setAgreements((prevAgreements) =>
-            Object.fromEntries(
-              Object.keys(prevAgreements).map((key) => [key, e.target.checked])
-            )
-        );
-        setAllAgreed(e.target.checked)
+    const handleAllAgreementsChange = (e) => {
+        setAgreements(prevAgreements => {
+            const allChecked = !allAgreed
+            const updatedAgreements = Object.keys(prevAgreements).reduce((acc, key) =>{
+                acc[key] = allChecked
+                return acc
+            }, {})
+            setAllAgreed(allChecked)
+            return updatedAgreements
+        })
     }
 
     return (
@@ -33,7 +40,7 @@ function Agreement() {
             <form action="">
                 <div>
                     <label htmlFor="" />
-                    <input onChange={handleAllAgreementChange} type="checkbox" name='checkAll' checked={allAgreed} className='checkAll' />
+                    <input onChange={handleAllAgreementsChange} type="checkbox" name='checkAll' checked={allAgreed} className='checkAll' />
                     <span>전체 동의하기</span>
                 </div>
                 <div>이용약관, 개인정보 수집 및 이용, xxx(필수), xxx(선택)에 모두 동의합니다.</div>
