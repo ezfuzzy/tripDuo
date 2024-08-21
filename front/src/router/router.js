@@ -8,6 +8,7 @@ import HomeMate from "../pages/HomeMate"
 import MyProfile from "../pages/MyProfile"
 import MyProfileForm from "../pages/MyProfileForm"
 import Signup from "../pages/Signup"
+import Agreement from "../pages/Agreement"
 
 const routes = [
     {path:"/", element: <Home/>},
@@ -17,6 +18,7 @@ const routes = [
     {path:"/myProfile", element: <MyProfile/>},
     {path:"/myProfileForm", element: <MyProfileForm/>},
     {path:"/sample", element: <Sample/>},
+    {path:"/agreement", element: <Agreement/>},
     {path:"/signup", element: <Signup/>}
 ]
 
