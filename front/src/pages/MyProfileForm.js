@@ -45,7 +45,7 @@ function MyProfileForm(props) {
 
                 <div className='m-3 flex justify-center'>
 
-                    <input className="hidden" type="file" ref={inputImage} name="profile_pics" accept="image/" multiple />
+                    <input onChange={handleInputImage} className="hidden" type="file" ref={inputImage} name="profile_pics" accept="image/" multiple />
 
                     {
                         profile.profile_pics != null
