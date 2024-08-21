@@ -7,6 +7,7 @@ import HomeInternational from "../pages/HomeInternational"
 import HomeMate from "../pages/HomeMate"
 import MyProfile from "../pages/MyProfile"
 import MyProfileForm from "../pages/MyProfileForm"
+import Signup from "../pages/Signup"
 
 const routes = [
     {path:"/", element: <Home/>},
@@ -15,7 +16,8 @@ const routes = [
     {path:"/mypage", element: <Mypage/>},
     {path:"/myProfile", element: <MyProfile/>},
     {path:"/myProfileForm", element: <MyProfileForm/>},
-    {path:"/sample", element: <Sample/>}
+    {path:"/sample", element: <Sample/>},
+    {path:"/signup", element: <Signup/>}
 ]
 
 const router = createBrowserRouter([{
