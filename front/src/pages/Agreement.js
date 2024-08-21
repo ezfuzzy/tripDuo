@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 
 function Agreement() {
     const [allAgreed, setAllAgreed] = useState(false)
@@ -9,6 +10,7 @@ function Agreement() {
         selective : false
     })
     const [text, textarea] = useState("약관내용...")
+    const navigate = useNavigate()
 
     const handleAgreementChange = (e) => {
         const {name, checked} = e.target
@@ -86,10 +88,9 @@ function Agreement() {
                         <textarea value={text} readOnly />
                     </li>
                 </ul>
-                <ul>
-                    <li><button>비동의</button></li>
-                    <li><button>동의</button></li>
-                </ul>
+                <div>
+                    <button onClick={()=>{navigate("/signup")}}>제출</button>
+                </div>
             </form>
         </div>
         
