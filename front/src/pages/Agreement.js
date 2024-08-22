@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 
 function Agreement() {
     const [allAgreed, setAllAgreed] = useState(false)
@@ -8,24 +9,39 @@ function Agreement() {
         essential : false,
         selective : false
     })
+    const {selective, ...rest} = agreements
     const [text, textarea] = useState("약관내용...")
+    const navigate = useNavigate()
+    const [isDisabled, setIsDisabled] = useState(true);
+    const essentialChecked = Object.values(rest).every((value)=>value === true)
+
+    useEffect(()=>{
+        setIsDisabled(!essentialChecked)
+    }, [essentialChecked])
 
     const handleAgreementChange = (e) => {
-        setAgreements({
-            ...agreements,
-            [e.target.name] : e.target.checked
+        const {name, checked} = e.target
+        setAgreements(prevAgreements => {
+            const updatedAgreements = {
+                ...prevAgreements,
+                [name]: checked
+            }
+            const allChecked = Object.values(updatedAgreements).every((value)=>value === true)
+            setAllAgreed(allChecked)
+            return updatedAgreements
         })
-        const allChecked = Object.values(agreements).every((value)=>value === true)
-        setAllAgreed(allChecked)
     }
 
-    const handleAllAgreementChange = (e) => {
-        setAgreements((prevAgreements) =>
-            Object.fromEntries(
-              Object.keys(prevAgreements).map((key) => [key, e.target.checked])
-            )
-        );
-        setAllAgreed(e.target.checked)
+    const handleAllAgreementsChange = (e) => {
+        setAgreements(prevAgreements => {
+            const allChecked = !allAgreed
+            const updatedAgreements = Object.keys(prevAgreements).reduce((acc, key) =>{
+                acc[key] = allChecked
+                return acc
+            }, {})
+            setAllAgreed(allChecked)
+            return updatedAgreements
+        })
     }
 
     return (
@@ -33,7 +49,7 @@ function Agreement() {
             <form action="">
                 <div>
                     <label htmlFor="" />
-                    <input onChange={handleAllAgreementChange} type="checkbox" name='checkAll' checked={allAgreed} className='checkAll' />
+                    <input onChange={handleAllAgreementsChange} type="checkbox" name='checkAll' checked={allAgreed} className='checkAll' />
                     <span>전체 동의하기</span>
                 </div>
                 <div>이용약관, 개인정보 수집 및 이용, xxx(필수), xxx(선택)에 모두 동의합니다.</div>
@@ -79,10 +95,9 @@ function Agreement() {
                         <textarea value={text} readOnly />
                     </li>
                 </ul>
-                <ul>
-                    <li><button>비동의</button></li>
-                    <li><button>동의</button></li>
-                </ul>
+                <div>
+                    <button onClick={()=>{navigate("/signup")}} disabled={isDisabled}>제출</button>
+                </div>
             </form>
         </div>
         

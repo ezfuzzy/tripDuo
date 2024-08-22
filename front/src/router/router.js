@@ -7,6 +7,13 @@ import HomeInternational from "../pages/HomeInternational"
 import HomeMate from "../pages/HomeMate"
 import MyProfile from "../pages/MyProfile"
 import MyProfileForm from "../pages/MyProfileForm"
+<<<<<<< HEAD
+import Signup from "../pages/Signup"
+import Agreement from "../pages/Agreement"
+=======
+import LoginPage from "../pages/LoginPage"
+import LogoutPage from "../pages/LogoutPage"
+>>>>>>> 7abbf0d4f9525452131da6f5d7956b2346507a43
 
 const routes = [
     {path:"/", element: <Home/>},
@@ -15,7 +22,14 @@ const routes = [
     {path:"/mypage", element: <Mypage/>},
     {path:"/myProfile", element: <MyProfile/>},
     {path:"/myProfileForm", element: <MyProfileForm/>},
-    {path:"/sample", element: <Sample/>}
+    {path:"/sample", element: <Sample/>},
+<<<<<<< HEAD
+    {path:"/agreement", element: <Agreement/>},
+    {path:"/signup", element: <Signup/>}
+=======
+    {path:"/login", element: <LoginPage/>},
+    { path: 'logout', element: <LogoutPage /> }
+>>>>>>> 7abbf0d4f9525452131da6f5d7956b2346507a43
 ]
 
 const router = createBrowserRouter([{
