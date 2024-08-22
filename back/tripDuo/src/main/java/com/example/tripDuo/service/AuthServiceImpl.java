@@ -25,16 +25,15 @@ public class AuthServiceImpl implements AuthService {
 
 	@Autowired
 	private UserRepository repo;
+
 	
+
 	
 	@Override
 	public String login(UserDto dto) throws Exception {
 		
 		System.out.println(dto.getUsername() + " " + dto.getPassword());
-		System.out.println("1 :" + encoder.encode(dto.getPassword()));
-		System.out.println("2 :" + encoder.encode(dto.getPassword()));
-		System.out.println("3 :" + encoder.encode(dto.getPassword()));
-		System.out.println("4 :" + encoder.encode(dto.getPassword()));
+
 		try {
 			UsernamePasswordAuthenticationToken authToken = 
 					new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword());
@@ -58,7 +57,37 @@ public class AuthServiceImpl implements AuthService {
 	    
 	    repo.save(User.toEntity(dto));
 	    
-		return null;
+		return "회원가입 완료";
 	}
 
+	
+	// ### 휴대폰 인증 ###
+	
+    private final PhoneNumberVerificationService phoneNumberVerificationService;
+
+    public AuthServiceImpl(PhoneNumberVerificationService phoneNumberVerificationService) {
+        this.phoneNumberVerificationService = phoneNumberVerificationService;
+    }
+    
+    @Override
+	public void sendVerificationCode(String phoneNumber) {
+        // 1. 인증번호 생성
+        String verificationCode = phoneNumberVerificationService.generateVerificationCode();
+
+        // 2. 인증번호와 휴대폰 번호를 저장
+        phoneNumberVerificationService.storeVerificationCode(phoneNumber, verificationCode);
+        
+        
+        System.out.println("phoneNumber : " + phoneNumber);
+        System.out.println("verificationCode : " + verificationCode);
+        
+        // 3. SMS 또는 다른 채널을 통해 인증번호를 사용자에게 전송
+        // 예시: smsService.sendSMS(phoneNumber, verificationCode);
+    }
+
+    @Override
+    public boolean verifyPhoneNumber(String phoneNumber, String verificationCode) {
+        // 4. 사용자가 제출한 인증번호 검증
+        return phoneNumberVerificationService.verifyCode(phoneNumber, verificationCode);
+    }
 }

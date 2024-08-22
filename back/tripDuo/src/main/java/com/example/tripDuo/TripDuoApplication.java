@@ -29,11 +29,11 @@ public class TripDuoApplication {
 	@PostConstruct
 	public void init() {
 		System.out.println("\n### init ###");
-		User u1 = User.builder().username("ezfz").password(encoder.encode("hysz")).username("fuzzy").gender("남자").role("admin").build(); 
-		User u2 = User.builder().username("aaaa").password(encoder.encode("aaaa")).username("userA").gender("남자").role("user").build();
-		User u3 = User.builder().username("bbbb").password(encoder.encode("bbbb")).username("userB").gender("여자").role("user").build();
-		User u4 = User.builder().username("cccc").password(encoder.encode("cccc")).username("userC").gender("여자").role("user").build();
-		User u5 = User.builder().username("dddd").password(encoder.encode("dddd")).username("userD").gender("남자").role("user").build();
+		User u1 = User.builder().username("ezfz").password(encoder.encode("hysz")).gender("남자").role("admin").build(); 
+		User u2 = User.builder().username("aaaa").password(encoder.encode("aaaa")).gender("남자").role("user").build();
+		User u3 = User.builder().username("bbbb").password(encoder.encode("bbbb")).gender("여자").role("user").build();
+		User u4 = User.builder().username("cccc").password(encoder.encode("cccc")).gender("여자").role("user").build();
+		User u5 = User.builder().username("dddd").password(encoder.encode("dddd")).gender("남자").role("user").build();
 		
 		userRepo.save(u1);
 		userRepo.save(u2);
