@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 function Agreement() {
@@ -9,8 +9,15 @@ function Agreement() {
         essential : false,
         selective : false
     })
+    const {selective, ...rest} = agreements
     const [text, textarea] = useState("약관내용...")
     const navigate = useNavigate()
+    const [isDisabled, setIsDisabled] = useState(true);
+    const essentialChecked = Object.values(rest).every((value)=>value === true)
+
+    useEffect(()=>{
+        setIsDisabled(!essentialChecked)
+    }, [essentialChecked])
 
     const handleAgreementChange = (e) => {
         const {name, checked} = e.target
@@ -89,7 +96,7 @@ function Agreement() {
                     </li>
                 </ul>
                 <div>
-                    <button onClick={()=>{navigate("/signup")}}>제출</button>
+                    <button onClick={()=>{navigate("/signup")}} disabled={isDisabled}>제출</button>
                 </div>
             </form>
         </div>
