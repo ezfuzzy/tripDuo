@@ -23,7 +23,7 @@ const routes = [
     {path:"/agreement", element: <Agreement/>},
     {path:"/signup", element: <Signup/>},
     {path:"/login", element: <LoginPage/>},
-    {path: 'logout', element: <LogoutPage />}
+    {path: '/logout', element: <LogoutPage />}
 ]
 
 const router = createBrowserRouter([{
