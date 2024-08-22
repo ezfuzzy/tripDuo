@@ -2,7 +2,10 @@ import React, { useRef, useState } from 'react';
 import { Button, Col, Form } from 'react-bootstrap';
 
 function MyProfileForm(props) {
+
+    const profileImage = useRef();
     const inputImage = useRef();
+
     const [profile, setProfile] = useState({
         id: 0,
         signin_id: "MY ID",
@@ -28,14 +31,30 @@ function MyProfileForm(props) {
         })
     }
 
-    const handleInputImage = ()=>{
-        alert("gd")
+    const handleInputImage = (e)=>{
+        const file = e.target.files[0]
+
+        const reg=/image/
+
+        if(!reg.test(file.type)){ 
+            console.log("이미지 파일이 아닙니다")
+            return
+        }
+        
+        const reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onload=(e)=>{
+            const data = e.target.result
+            profileImage.current.src = data           
+        }
+
+        
     }
 
     const handleSave = () => {
 
     }
-
+    // form 에서 전송되는 데이터 : profile_pics, profile_msg ,(email),(phone_num)
     return (
         <>
             <h3>Profile Update Form</h3>
@@ -45,12 +64,12 @@ function MyProfileForm(props) {
 
                 <div className='m-3 flex justify-center'>
 
-                    <input onChange={handleInputImage} className="hidden" type="file" ref={inputImage} name="profile_pics" accept="image/" multiple />
+                    <input onChange={handleInputImage} ref={inputImage} className="hidden" type="file" name="profile_pics" accept="image/" multiple />
 
                     {
                         profile.profile_pics != null
                             ?
-                            <img onClick={()=>inputImage.current.click()} src={profile.profile_pics[0]} className='w-[150px] h-[150px] rounded-full mb-4' />
+                            <img ref={profileImage} onClick={()=>inputImage.current.click()} src={profile.profile_pics[0]} className='w-[150px] h-[150px] rounded-full mb-4' />
                             :   
                             <svg  xmlns="http://www.w3.org/2000/svg" width="150" height="150" fill="currentColor" className="bi bi-person-circle mb-4" viewBox="0 0 16 16">
                                 <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
@@ -63,26 +82,26 @@ function MyProfileForm(props) {
                     <div className="flex space-x-4 bg-gray-200 rounded">
                         <div className="mb-3 flex-1">
                             <label htmlFor="signin_id" className="block text-sm font-medium mb-1">ID</label>
-                            <input type="text" name="signin_id" value={profile.signin_id} className="block w-full p-2 border border-gray-300 rounded-md" />
-                        </div>
+                            <input type="text" name="signin_id" value={profile.signin_id} className="block w-full p-2 border border-gray-300 rounded-md" readOnly/>
+                        </div> 
                         <div className="mb-3 flex-1">
                             <label htmlFor="password" className="block text-sm font-medium mb-1">Password</label>
-                            <input type="button" name="password" className="block w-full p-2 border border-gray-300 rounded-md" value="To Update Password" />
+                            <input type="button" name="password" className="block w-full p-2 border border-gray-300 rounded-md" value="To Update Password" readOnly/>
                         </div>
                     </div>
 
                     <div className="flex space-x-4 bg-gray-200 rounded">
                         <div className="mb-3 flex-1">
                             <label htmlFor="name" className="block text-sm font-medium mb-1">Name</label>
-                            <input type="text" name="name" value={profile.name} className="block w-full p-2 border border-gray-300 rounded-md" />
+                            <input type="text" name="name" value={profile.name} className="block w-full p-2 border border-gray-300 rounded-md" readOnly/>
                         </div>
                         <div className="mb-3 flex-1">
                             <label htmlFor="age" className="block text-sm font-medium mb-1">age</label>
-                            <input type="text" name="age" value={profile.age} className="block w-full p-2 border border-gray-300 rounded-md" />
+                            <input type="text" name="age" value={profile.age} className="block w-full p-2 border border-gray-300 rounded-md" readOnly/>
                         </div>
                         <div className="mb-3 flex-1">
                             <label htmlFor="gender" className="block text-sm font-medium mb-1">gender</label>
-                            <input type="text" name="gender" className="block w-full p-2 border border-gray-300 rounded-md" value={profile.gender} />
+                            <input type="text" name="gender" className="block w-full p-2 border border-gray-300 rounded-md" value={profile.gender} readOnly/>
                         </div>
                     </div>
 
