@@ -1,11 +1,18 @@
 import { Container, Nav, Navbar, NavbarBrand } from 'react-bootstrap';
-import { NavLink } from 'react-router-dom';
 import '../css/BsNavBar.css';
-import { useState } from 'react';
+import { useState, useCallback } from "react";
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
+import { NavLink, useNavigate } from "react-router-dom";
+import AlertModal from "./AlertModal";
 
 function BsNavBar() {
+    //로그인된 아이디가 로그아웃 버튼 옆에 나오도록함
+    const userName = useSelector(state => state.userName?.userName, shallowEqual);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const [alertShow, setAlertShow] = useState(false);
 
     const [openSections, setOpenSections] = useState({});
 
@@ -15,6 +22,23 @@ function BsNavBar() {
             [section]: !prevState[section],
         }));
     };
+
+    // 토큰 관련해서는 현재는 주석처리
+    // const handleLogout = () => {
+    //     localStorage.removeItem('token');
+    //     dispatch({ type: "UPDATE_USER", payload: null });
+    //     navigate("/");
+    //     setAlertShow(true);
+    //     setTimeout(() => setAlertShow(false), 3000); 
+    // };
+
+    const handleYes = () => {
+        setAlertShow(false);
+    };
+
+    const handleLogin = useCallback(() => {
+        navigate('/login'); // 로그인 페이지로 이동
+    }, [navigate]);
 
 
     const myPageIcon = <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" className="bi bi-person-square" viewBox="0 0 16 16">
@@ -32,6 +56,7 @@ function BsNavBar() {
 
     return (
         <>
+         <AlertModal show={alertShow} message={"로그아웃 되었습니다"} yes={handleYes} />
             <Navbar className="custom-navbar">
                 <Container>
                     <button type="button" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop">
@@ -42,8 +67,13 @@ function BsNavBar() {
                     </NavbarBrand>
 
                     <Nav className="justify-content-end">
-                        <Nav.Link as={NavLink} to="/sample">{notification}</Nav.Link>
-                        <Nav.Link as={NavLink} to="/mypage">{myPageIcon}</Nav.Link>
+                        {userName && <Nav.Link as={NavLink} to="/sample">{notification}</Nav.Link>}
+                        {userName && <Nav.Link as={NavLink} to="/mypage">{myPageIcon}</Nav.Link>}
+                        {userName ? (
+                            <Nav.Link as={NavLink} to="/logout">로그아웃</Nav.Link>
+                        ) : (
+                            <Nav.Link as={NavLink} to="/login">로그인</Nav.Link>
+                        )}
                     </Nav>
 
                 </Container>
@@ -61,10 +91,10 @@ function BsNavBar() {
             </Nav>
 
 
-            <div className="offcanvas offcanvas-start" data-bs-backdrop="static" tabIndex="-1" id="staticBackdrop" aria-labelledby="staticBackdropLabel">
-                <div className="offcanvas-header">
-                    <h5 className="offcanvas-title" id="staticBackdropLabel"><strong>로그인/회원가입</strong></h5>
-                    <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <div class="offcanvas offcanvas-start" data-bs-backdrop="static" tabindex="-1" id="staticBackdrop" aria-labelledby="staticBackdropLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="staticBackdropLabel"><strong>로그인/<a href='/agreement'>회원가입</a> </strong></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
 
                 <div className="offcanvas-body custom-canvas">
