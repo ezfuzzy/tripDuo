@@ -7,6 +7,8 @@ import HomeInternational from "../pages/HomeInternational"
 import HomeMate from "../pages/HomeMate"
 import MyProfile from "../pages/MyProfile"
 import MyProfileForm from "../pages/MyProfileForm"
+import LoginPage from "../pages/LoginPage"
+import LogoutPage from "../pages/LogoutPage"
 
 const routes = [
     {path:"/", element: <Home/>},
@@ -15,7 +17,9 @@ const routes = [
     {path:"/mypage", element: <Mypage/>},
     {path:"/myProfile", element: <MyProfile/>},
     {path:"/myProfileForm", element: <MyProfileForm/>},
-    {path:"/sample", element: <Sample/>}
+    {path:"/sample", element: <Sample/>},
+    {path:"/login", element: <LoginPage/>},
+    { path: 'logout', element: <LogoutPage /> }
 ]
 
 const router = createBrowserRouter([{
