@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Service;
@@ -25,11 +26,22 @@ public class PhoneNumberVerificationService {
 
 	public void storeVerificationCode(String phoneNumber, String code) {
 		String hashedCode = hashCode(code);
+		
 		verificationMap.put(phoneNumber, new VerificationData(hashedCode, LocalDateTime.now()));
 	}
 
 	public boolean verifyCode(String phoneNumber, String code) {
 		VerificationData data = verificationMap.get(phoneNumber);
+//		### test code
+//		System.out.println("[PhoneNumberVerificationService] verifyCode : " + phoneNumber + " ::: " + code);
+//		System.out.println(data); // data가 현재 null임 
+//		
+//		for (Map.Entry<String, VerificationData> entry : verificationMap.entrySet()) {
+//            System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue().getHashedCode());
+//        }
+//		
+//		System.out.println(verificationMap.toString());
+		
 		if (data != null && isCodeValid(data.getTimestamp())) {
 			return data.getHashedCode().equals(hashCode(code));
 		}

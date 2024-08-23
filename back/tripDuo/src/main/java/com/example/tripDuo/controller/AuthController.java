@@ -30,19 +30,17 @@ public class AuthController {
 
 	@PostMapping("/send")
 	public ResponseEntity<String> sendVerificationCode(@RequestBody String phoneNumber) {
-		System.out.println(phoneNumber);
-		service.sendVerificationCode(phoneNumber);
+		String p_number = phoneNumber.substring(0, phoneNumber.length()-1);
+		System.out.println(p_number);
+		service.sendVerificationCode(p_number);
 		return ResponseEntity.ok("Verification code sent");
 	}
 
-	@PostMapping("/verify")
+	@PostMapping("/verify") // dto로 처리 ? 
 	public ResponseEntity<String> verifyPhoneNumber(@RequestBody String str) {
 		String phoneNumber = str.substring(0, 11);
 		String verificationCode = str.substring(11, str.length() - 1);
-		
-		System.out.println(phoneNumber);
-		System.out.println(verificationCode);
-		
+				
 		boolean isVerified = service.verifyPhoneNumber(phoneNumber, verificationCode);
 		if (isVerified) {
 			return ResponseEntity.ok("Phone number verified successfully");
