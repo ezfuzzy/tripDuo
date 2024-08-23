@@ -77,9 +77,7 @@ public class AuthServiceImpl implements AuthService {
         // 2. 인증번호와 휴대폰 번호를 저장
         phoneNumberVerificationService.storeVerificationCode(phoneNumber, verificationCode);
         
-        
-        System.out.println("phoneNumber : " + phoneNumber);
-        System.out.println("verificationCode : " + verificationCode);
+        System.out.println("[AuthServiceImpl - sendVerificationCode] verificationCode : " + verificationCode);
         
         // 3. SMS 또는 다른 채널을 통해 인증번호를 사용자에게 전송
         // 예시: smsService.sendSMS(phoneNumber, verificationCode);
