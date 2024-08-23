@@ -6,15 +6,23 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import AlertModal from "./AlertModal";
+import bootstrapBundleMin from 'bootstrap/dist/js/bootstrap.bundle.min.js';
+
 
 function BsNavBar() {
     //로그인된 아이디가 로그아웃 버튼 옆에 나오도록함
     const userName = useSelector(state => state.userName?.userName, shallowEqual);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    
     const [alertShow, setAlertShow] = useState(false);
 
     const [openSections, setOpenSections] = useState({});
+
+    const [profile, setProfile] = useState({
+        profile_pics: ["https://picsum.photos/id/237/200/300"],
+        userNickname: "userNick-000789"
+    })
 
     const toggleSection = (section) => {
         setOpenSections(prevState => ({
@@ -24,13 +32,13 @@ function BsNavBar() {
     };
 
     // 토큰 관련해서는 현재는 주석처리
-    // const handleLogout = () => {
-    //     localStorage.removeItem('token');
-    //     dispatch({ type: "UPDATE_USER", payload: null });
-    //     navigate("/");
-    //     setAlertShow(true);
-    //     setTimeout(() => setAlertShow(false), 3000); 
-    // };
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        dispatch({ type: "UPDATE_USER", payload: null });
+        navigate("/");
+        setAlertShow(true);
+        setTimeout(() => setAlertShow(false), 3000); 
+    };
 
     const handleYes = () => {
         setAlertShow(false);
@@ -39,6 +47,25 @@ function BsNavBar() {
     const handleLogin = useCallback(() => {
         navigate('/login'); // 로그인 페이지로 이동
     }, [navigate]);
+
+
+    const handleLoginLogoutClick = () => {
+        if (userName) {
+            // 로그아웃 처리
+            handleLogout();
+        } else {
+            // 로그인 페이지로 이동
+            handleLogin();
+        }
+    
+        
+        const offcanvasElement = document.getElementById('staticBackdrop');
+        const offcanvasInstance = bootstrapBundleMin.Offcanvas.getInstance(offcanvasElement);
+        if (offcanvasInstance) {
+            offcanvasInstance.hide();
+        
+        }
+    }
 
 
     const myPageIcon = <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" className="bi bi-person-square" viewBox="0 0 16 16">
@@ -51,7 +78,7 @@ function BsNavBar() {
     </svg>;
 
     const toggleBtn = <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" className="bi bi-list" viewBox="0 0 16 16">
-        <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
+        <path fillRule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
     </svg>
 
     return (
@@ -59,20 +86,33 @@ function BsNavBar() {
          <AlertModal show={alertShow} message={"로그아웃 되었습니다"} yes={handleYes} />
             <Navbar className="custom-navbar">
                 <Container>
+
                     <button type="button" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop">
                         {toggleBtn}
                     </button>
+
                     <NavbarBrand href="/" className='appName'>
                         <img alt="IconImage" src="img/logo.png" />Route Share
                     </NavbarBrand>
 
                     <Nav className="justify-content-end">
                         {userName && <Nav.Link as={NavLink} to="/sample">{notification}</Nav.Link>}
-                        {userName && <Nav.Link as={NavLink} to="/mypage">{myPageIcon}</Nav.Link>}
+                        {userName && <Nav.Link as={NavLink} to="/mypage">
+                        {
+                            profile.profile_pics != null
+                                ?
+                                <img src={profile.profile_pics[0]} className='w-[30px] h-[30px] rounded-full' />
+                                :
+                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-person-circle" viewBox="0 0 16 16">
+                                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+                                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z" />
+                                </svg>
+                        }
+                        </Nav.Link>}
                         {userName ? (
-                            <Nav.Link as={NavLink} to="/logout">로그아웃</Nav.Link>
+                            <Nav.Link as={NavLink} to="/logout"><strong>로그아웃</strong></Nav.Link>
                         ) : (
-                            <Nav.Link as={NavLink} to="/login">로그인</Nav.Link>
+                            <Nav.Link as={NavLink} to="/login"><strong>로그인</strong></Nav.Link>
                         )}
                     </Nav>
 
@@ -91,12 +131,19 @@ function BsNavBar() {
             </Nav>
 
 
-            <div class="offcanvas offcanvas-start" data-bs-backdrop="static" tabindex="-1" id="staticBackdrop" aria-labelledby="staticBackdropLabel">
-                <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="staticBackdropLabel"><strong>로그인/<a href='/agreement'>회원가입</a> </strong></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <div className="offcanvas offcanvas-start" data-bs-backdrop="static" tabIndex="-1" id="staticBackdrop" aria-labelledby="staticBackdropLabel">
+                <div className="offcanvas-header">
+                    <h5 className="offcanvas-title" id="staticBackdropLabel">
+                        <button 
+                            className="btn btn-link" 
+                            onClick={handleLoginLogoutClick} 
+                            style={{ textDecoration: 'none', color: 'inherit' }}
+                        >
+                            <strong>{userName ? '로그아웃' : '로그인/회원가입'}</strong>
+                        </button>
+                    </h5>
+                    <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
-
                 <div className="offcanvas-body custom-canvas">
                     <ul className="list-group">
                         <li className="list-group-item">
@@ -104,19 +151,6 @@ function BsNavBar() {
                                 국내 여행
                             </dt>
                             <dl className={`content ${openSections.domestic ? 'open' : ''}`}>
-                                <div className="ps-3">여행 기록</div>
-                                <div className="ps-3">여행 계획</div>
-                                <div className="ps-3">여행 메이트</div>
-                                <div className="ps-3">여행 정보</div>
-                                <div className="ps-3">커뮤니티</div>
-                            </dl>
-                        </li>
-
-                        <li className="list-group-item">
-                            <dt onClick={() => toggleSection('international')} className="toggle">
-                                해외 여행
-                            </dt>
-                            <dl className={`content ${openSections.international ? 'open' : ''}`}>
                                 <div className="ps-3">여행 기록</div>
                                 <div className="ps-3">여행 계획</div>
                                 <div className="ps-3">여행 메이트</div>
@@ -147,6 +181,7 @@ function BsNavBar() {
                                 <div className="ps-3">예산 관리</div>
                             </dl>
                         </li>
+                        
                     </ul>
                 </div>
 
