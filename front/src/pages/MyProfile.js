@@ -33,29 +33,29 @@ function MyProfile(props) {
             <h3>My Profile</h3>
             <div className="container h-screen">
                 <div>
-                    <div class="flex items-center gap-x-6">
+                    <div className="flex items-center gap-x-6">
                         {
                             profile.profile_pics != null
                                 ?
                                 <img src={profile.profile_pics[0]} className='w-20 h-20 rounded-full' />
                                 :
-                                <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="currentColor" className="bi bi-person-circle" viewBox="0 0 16 16">
                                     <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
                                     <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z" />
                                 </svg>
                         }
                         <div>
-                            <h3 class="text-base font-semibold leading-7 tracking-tight text-gray-900">{profile.userNickname}</h3>
-                            <p class="text-sm font-semibold leading-6 text-indigo-600">{profile.gender} / {profile.age}</p>
+                            <h3 className="text-base font-semibold leading-7 tracking-tight text-gray-900">{profile.userNickname}</h3>
+                            <p className="text-sm font-semibold leading-6 text-indigo-600">{profile.gender} / {profile.age}</p>
                         </div>
                         <div>
                             <button className='btn btn-secondary btn-sm' onClick={handleClick}>to updataform</button>
                         </div>
                     </div>
                     <div className="mt-3">
-                        <a class="h-8 w-8 rounded-full outline-none focus:outline-none" type="button"
+                        <a className="h-8 w-8 rounded-full outline-none focus:outline-none" type="button"
                             href={profile.social_links.instagram}>
-                            <svg class="fill-current transition duration-700 ease-in-out text-gray-700 dark:text-gray-400 hover:text-pink-600 dark:hover:text-pink-600"
+                            <svg className="fill-current transition duration-700 ease-in-out text-gray-700 dark:text-gray-400 hover:text-pink-600 dark:hover:text-pink-600"
                                 role="img" width="24" height="24" viewBox="0 0 24 24"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <title>Instagram</title>
@@ -64,9 +64,9 @@ function MyProfile(props) {
                             </svg>
                         </a>
 
-                        <a class="h-8 w-8 rounded-full outline-none focus:outline-none" type="button"
+                        <a className="h-8 w-8 rounded-full outline-none focus:outline-none" type="button"
                             href={profile.social_links.gitHub}>
-                            <svg class="fill-current transition duration-700 ease-in-out text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-black"
+                            <svg className="fill-current transition duration-700 ease-in-out text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-black"
                                 role="img" width="24" height="24" viewBox="0 0 24 24"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <title>Github</title>
@@ -79,7 +79,7 @@ function MyProfile(props) {
                     <p> 이메일 : {profile.email}</p>
                     <div className="mb-3">
                         <label htmlFor="profile_msg" className="form-label">자기 소개</label>
-                        <textarea name="profile_msg" className="form-control" rows="5" value={profile.profile_msg} />
+                        <textarea name="profile_msg" className="form-control" rows="5" value={profile.profile_msg} readOnly/>
                     </div>
                 </div>
 
