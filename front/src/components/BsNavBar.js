@@ -92,7 +92,8 @@ function BsNavBar() {
                     </button>
 
                     <NavbarBrand href="/" className='appName'>
-                        <img alt="IconImage" src="img/logo.png" />Route Share
+                        {/* <img alt="IconImage" src="img/logo.png" /> */}
+                        TripDuo
                     </NavbarBrand>
 
                     <Nav className="justify-content-end">
