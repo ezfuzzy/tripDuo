@@ -122,13 +122,13 @@ function BsNavBar() {
             </Navbar>
             <Nav fill variant="tabs" defaultActiveKey="/">
                 <Nav.Item>
-                    <Nav.Link as={NavLink} to="/home">국내 여행</Nav.Link>
+                    <Nav.Link as={NavLink} to="/">국내 여행</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
                     <Nav.Link as={NavLink} to="/home-inter">해외 여행</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Nav.Link as={NavLink} to="/">여행 메이트</Nav.Link>
+                    <Nav.Link as={NavLink} to="/home-mate">여행 메이트</Nav.Link>
                 </Nav.Item>
             </Nav>
 
