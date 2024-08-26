@@ -24,7 +24,7 @@ function LoginPage() {
             <br />
             <GoogleAuthLogin show={true} />
             <br />
-            <p>회원가입 하지 않으셨다면 <Nav.Link as={NavLink} to="/signup" >클릭</Nav.Link></p>
+            <p>회원가입 하지 않으셨다면 <Nav.Link as={NavLink} to="/agreement" >클릭</Nav.Link></p>
         </div>
     );
 }
