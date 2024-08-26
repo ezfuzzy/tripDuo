@@ -81,10 +81,11 @@ function BsNavBar() {
         <path fillRule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
     </svg>
 
+    
     return (
         <>
          <AlertModal show={alertShow} message={"로그아웃 되었습니다"} yes={handleYes} />
-            <Navbar className="custom-navbar">
+            <Navbar className="custom-navbar" >
                 <Container>
 
                     <button type="button" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop">

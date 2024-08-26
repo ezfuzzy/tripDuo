@@ -11,11 +11,10 @@ function App() {
   const loginModal = useSelector(state => state.loginModal);
   //현재 route 된 정보를 출력해주는 hook
   const currentOutlet = useOutlet()
-
   return (
     <>
     <div className="container">
-      <BsNavBar />
+      <BsNavBar/>
       <div>{currentOutlet}</div>
       
       <Footer />
