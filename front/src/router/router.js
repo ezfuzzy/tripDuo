@@ -13,7 +13,7 @@ import LoginPage from "../pages/LoginPage"
 import LogoutPage from "../pages/LogoutPage"
 
 const routes = [
-    {path:"/home", element: <Home/>},
+    {path:"/", element: <Home/>},
     {path:"/home-inter", element: <HomeInternational/>},
     {path:"/home-mate", element: <HomeMate/>},
     {path:"/mypage", element: <Mypage/>},
