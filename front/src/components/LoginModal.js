@@ -20,7 +20,33 @@ function LoginModal({ show, message, onClose }) {
             [name]: value
         }));
     };
+    //실제 로그인 방식이니 지우지 마세요
+    // const handleLogin = () => {
+    //     if (!state.userName || !state.password) {
+    //         setError("아이디와 비밀번호를 모두 입력해주세요.");
+    //         return;  // 여기서 함수가 종료되므로 아래 코드가 실행되지 않음
+    //     }
 
+    //     axios.post("/api/v1/auth/login", state)
+    //         .then(res => {
+    //             const token = res.data;
+    //             localStorage.setItem('token', token);
+    //             setError(false);
+
+    //             const result = decodeToken(token.substring(7));
+    //             const userName = result.payload.sub;
+    //             dispatch({ type: "UPDATE_USER", payload: userName });
+    //             dispatch({ type: "LOGIN_MODAL", payload: { show: false } });
+    //             axios.defaults.headers.common["Authorization"] = token;
+
+    //             navigate('/'); // 로그인 성공 시 리다이렉트
+    //         })
+    //         .catch(() => {
+    //             setError("로그인에 실패했습니다.");  // 에러 메시지 설정
+    //         });
+    // };
+    
+    //해당 방식은 임시 로그인
     const handleLogin = () => {
         if (!state.userName || !state.password) {
             setError("아이디와 비밀번호를 모두 입력해주세요.");
