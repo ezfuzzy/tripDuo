@@ -37,7 +37,7 @@ function MyProfileForm(props) {
         const reg=/image/
 
         if(!reg.test(file.type)){ 
-            console.log("이미지 파일이 아닙니다")
+            alert("이미지 파일이 아닙니다")
             return
         }
         
