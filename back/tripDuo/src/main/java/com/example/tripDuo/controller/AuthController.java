@@ -1,6 +1,5 @@
 package com.example.tripDuo.controller;
 
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.service.AuthService;
+
+import kong.unirest.json.JSONObject;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -40,7 +41,7 @@ public class AuthController {
 
 	@PostMapping("/verify")
 	public ResponseEntity<String> verifyPhoneNumber(@RequestBody String phone_number_with_code) {
-        JSONObject jsonObject = new JSONObject(phone_number_with_code);
+        JSONObject jsonObject = new kong.unirest.json.JSONObject(phone_number_with_code);
 
         String phone_number = jsonObject.getString("phone_number");
         String verification_code = jsonObject.getString("code");
