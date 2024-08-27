@@ -11,6 +11,7 @@ import Signup from "../pages/Signup"
 import Agreement from "../pages/Agreement"
 import LoginPage from "../pages/LoginPage"
 import LogoutPage from "../pages/LogoutPage"
+import LoginListPage from "../pages/LoginListPage"
 
 const routes = [
     {path:"/", element: <Home/>},
@@ -23,7 +24,8 @@ const routes = [
     {path:"/agreement", element: <Agreement/>},
     {path:"/signup", element: <Signup/>},
     {path:"/login", element: <LoginPage/>},
-    {path:"/logout", element: <LogoutPage /> }
+    {path:"/logout", element: <LogoutPage /> },
+    {path:"/loginlist", element:<LoginListPage/>}
 ]
 
 const router = createBrowserRouter([{
