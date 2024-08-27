@@ -14,8 +14,7 @@ import { legacy_createStore as createStore } from 'redux';
 import { Provider } from 'react-redux';
 
 // token 이 존재 한다면 token 에서 값을 읽어와서 저장할 변수 만들기
-let userName=null
-let id=null
+let username=null
 
 //만일 토큰이 존재한다면
 if(localStorage.token){
@@ -29,22 +28,16 @@ if(localStorage.token){
   const now = new Date().getTime() 
   //만일 유효기간이 만료 되지 않았다면 
   if(expTime > now){
-    //토큰에 저장되어 있는 subject (userName) 을 변수에 담는다. 
-    userName=result.payload.sub
+    //토큰에 저장되어 있는 subject (username) 을 변수에 담는다. 
+    username=result.payload.sub
+    console.log(username)
+    console.log(typeof(username))
     //axios 의 header 에 인증정보를 기본으로 가지고 갈수 있도록 설정 
     axios.defaults.headers.common["Authorization"]=localStorage.token
   }else{
     //만료된 토큰은 삭제한다 
     delete localStorage.token
   }
-}
-
-if(userName){
-  axios.get(`/api/v1/users/${userName}`)
-  .then(res=>{
-    id = res.data.id
-  })
-  .catch(error=>console.log(error))
 }
 
 //로그인 모달 관리하기 위한 object
@@ -54,7 +47,7 @@ const loginModal={
 }
 
 // store 에서 관리될 state 의 초기값
-const initialState={ id, userName, loginModal}
+const initialState={ username, loginModal }
 
 //reducer 함수 (action 을 발행하면 호출되는 함수)
 const reducer = (state=initialState, action)=>{
@@ -62,7 +55,7 @@ const reducer = (state=initialState, action)=>{
   if(action.type === "UPDATE_USER"){
     newState={
       ...state,
-      userName:action.payload
+      username:action.payload
     }
   }else if(action.type === "LOGIN_MODAL"){
     newState={
@@ -81,11 +74,10 @@ const store=createStore(reducer)
 //id 가 root 인 곳에 UI 출력하기 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
     <Provider store={store}>
       <RouterProvider router={router}/>
     </Provider>
-  </React.StrictMode>
+
 );
 
 

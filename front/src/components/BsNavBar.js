@@ -1,28 +1,24 @@
 import { Container, Nav, Navbar, NavbarBrand } from 'react-bootstrap';
 import '../css/BsNavBar.css';
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import AlertModal from "./AlertModal";
 import bootstrapBundleMin from 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import axios from 'axios';
 
 function BsNavBar() {
-    // Redux 상태에서 userName을 가져옵니다.
-    const userName = useSelector(state => state.userName, shallowEqual);
-    const id = useSelector(state=>state.id, shallowEqual);
+    // Redux 상태에서 username을 가져옵니다.
+    const username = useSelector(state => state.username, shallowEqual);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     
     const [alertShow, setAlertShow] = useState(false);
     const [openSections, setOpenSections] = useState({});
 
-    const [profile, setProfile] = useState({
-        
-        profile_pics: ["https://picsum.photos/id/237/200/300"],
-        userNickname: "userNick-000789"
-    });
+    const [profile, setProfile] = useState({});
 
     const toggleSection = (section) => {
         setOpenSections(prevState => ({
@@ -49,7 +45,7 @@ function BsNavBar() {
     }, [navigate]);
 
     const handleLoginLogoutClick = () => {
-        if (userName) {
+        if (username) {
             handleLogout(); // 로그아웃 처리
         } else {
             handleLogin(); // 로그인 페이지로 이동
@@ -61,6 +57,17 @@ function BsNavBar() {
             offcanvasInstance.hide();
         }
     };
+
+    useEffect(()=>{      
+        if(username){
+        axios.get(`/api/v1/users/username/${username}`)
+        .then(res=>{
+            console.log(res)
+            setProfile(res.data)
+        })
+        .catch(error=>console.log(error))
+        }    
+    }, [])
 
     const myPageIcon = (
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" className="bi bi-person-square" viewBox="0 0 16 16">
@@ -97,15 +104,15 @@ function BsNavBar() {
 
                     <Nav className="justify-content-end">
 
-                        {userName && <Nav.Link as={NavLink} to="/sample">{notification}</Nav.Link>}
+                        {username && <Nav.Link as={NavLink} to="/sample">{notification}</Nav.Link>}
 
-                        {userName && 
-                        <Nav.Link as={NavLink} to={`/user/${id}`}>
+                        {username && 
+                        <Nav.Link as={NavLink} to={`/users/${profile.id}`}>
                             {profile.profile_pics != null
                                 ? <img src={profile.profile_pics[0]} className='w-[30px] h-[30px] rounded-full' alt="Profile" />
                                 : myPageIcon}
                         </Nav.Link>}
-                        {userName ? (
+                        {username ? (
                             <Nav.Link as={NavLink} to="/logout"><strong>로그아웃</strong></Nav.Link>
                         ) : (
                             <Nav.Link as={NavLink} to="/loginlist"><strong>로그인</strong></Nav.Link>
@@ -134,7 +141,7 @@ function BsNavBar() {
                             onClick={handleLoginLogoutClick} 
                             style={{ textDecoration: 'none', color: 'inherit' }}
                         >
-                            <strong>{userName ? '로그아웃' : '로그인/회원가입'}</strong>
+                            <strong>{username ? '로그아웃' : '로그인/회원가입'}</strong>
                         </button>
                     </h5>
                     <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
