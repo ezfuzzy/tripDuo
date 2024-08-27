@@ -2,11 +2,12 @@ import { Link } from 'react-router-dom';
 
 function Mypage() {
 
+const id = null;
 
   return (
     <>
       <h1>My Page</h1>
-      <Link to="/api/v1/users/">My Profile</Link>
+      <Link to={`/users/`+id}>My Profile</Link>
       <div className="borderbox">
         <ul className="myPage">
           <li className="myPageList">
