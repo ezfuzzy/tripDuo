@@ -7,7 +7,6 @@ const id = null;
   return (
     <>
       <h1>My Page</h1>
-      <Link to={`/users/`+id}>My Profile</Link>
       <div className="borderbox">
         <ul className="myPage">
           <li className="myPageList">

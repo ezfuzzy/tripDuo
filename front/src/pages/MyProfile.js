@@ -3,6 +3,7 @@ import 'holderjs'
 import 'bootstrap/dist/css/bootstrap.css'
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import Mypage from './Mypage';
 
 function MyProfile(props) {
     /*
@@ -85,7 +86,8 @@ function MyProfile(props) {
                         <textarea name="profile_msg" className="form-control" rows="5" value={profile.profile_msg} readOnly/>
                     </div>
                 </div>
-
+                
+                <Mypage/>
 
                 
                 {/* 페이지의 정보를 가진 username 과 로그인된 username 이 같으면 ... */}

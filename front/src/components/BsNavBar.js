@@ -13,6 +13,7 @@ function BsNavBar() {
     const userName = useSelector(state => state.userName, shallowEqual);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const id = null
     
     const [alertShow, setAlertShow] = useState(false);
     const [openSections, setOpenSections] = useState({});
@@ -98,7 +99,7 @@ function BsNavBar() {
                         {userName && <Nav.Link as={NavLink} to="/sample">{notification}</Nav.Link>}
 
                         {userName && 
-                        <Nav.Link as={NavLink} to="/mypage">
+                        <Nav.Link as={NavLink} to={`/user/${id}/setting`}>
                             {profile.profile_pics != null
                                 ? <img src={profile.profile_pics[0]} className='w-[30px] h-[30px] rounded-full' alt="Profile" />
                                 : myPageIcon}
