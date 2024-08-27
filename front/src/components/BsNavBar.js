@@ -89,7 +89,7 @@ function BsNavBar() {
                         {toggleBtn}
                     </button>
 
-                    <NavbarBrand href="/home" className='appName'>
+                    <NavbarBrand href="/" className='appName'>
                         TripDuo
                     </NavbarBrand>
 
