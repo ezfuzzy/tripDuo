@@ -102,7 +102,7 @@ function BsNavBar() {
                         {userName ? (
                             <Nav.Link as={NavLink} to="/logout"><strong>로그아웃</strong></Nav.Link>
                         ) : (
-                            <Nav.Link as={NavLink} to="/login"><strong>로그인</strong></Nav.Link>
+                            <Nav.Link as={NavLink} to="/loginlist"><strong>로그인</strong></Nav.Link>
                         )}
                     </Nav>
                 </Container>
