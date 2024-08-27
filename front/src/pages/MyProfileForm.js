@@ -78,6 +78,10 @@ function MyProfileForm(props) {
                     }
 
                 </div>
+                <div>
+                    <label htmlFor="nickname" className="block text-sm font-medium mb-1">Nickname</label>
+                    <input onChange={handleChange} type="text" name="nickname" value={profile.nickname} className="block w-full p-2 border border-gray-300 rounded-md"/>
+                </div>
 
                     <div className="flex space-x-4 bg-gray-200 rounded">
                         <div className="mb-3 flex-1">
@@ -92,8 +96,8 @@ function MyProfileForm(props) {
 
                     <div className="flex space-x-4 bg-gray-200 rounded">
                         <div className="mb-3 flex-1">
-                            <label htmlFor="name" className="block text-sm font-medium mb-1">Nickname</label>
-                            <input type="text" name="name" value={profile.nickname} className="block w-full p-2 border border-gray-300 rounded-md" readOnly/>
+                            <label htmlFor="name" className="block text-sm font-medium mb-1">name</label>
+                            <input type="text" name="name" value={profile.name} className="block w-full p-2 border border-gray-300 rounded-md" readOnly/>
                         </div>
                         <div className="mb-3 flex-1">
                             <label htmlFor="age" className="block text-sm font-medium mb-1">age</label>
@@ -117,7 +121,7 @@ function MyProfileForm(props) {
                     </div>
 
                     <div className="mb-3">
-                        <label htmlFor="profile_msg" className="block text-sm font-medium mb-1">Prifile Message</label>
+                        <label htmlFor="profile_msg" className="block text-sm font-medium mb-1">Profile Message</label>
                         <textarea onChange={handleChange} name="profile_msg" className="form-control w-full h-auto resize-none overflow-y-auto" rows="5" value={profile.profile_msg} />
                     </div>
                     <div>

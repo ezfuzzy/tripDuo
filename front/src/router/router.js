@@ -21,7 +21,6 @@ const routes = [
     {path:"/", element: <Home/>},
     {path:"/home-inter", element: <HomeInternational/>},
     {path:"/home-mate", element: <HomeMate/>},
-    {path:"/mypage", element: <Mypage/>},
     {path:"/users/:id", element: <MyProfile/>},
     {path:"/users/:id/setting", element: <MyProfileForm/>},
     {path:"/sample", element: <Sample/>},
