@@ -7,7 +7,7 @@ import '../css/LoginPage.css';
 
 function LoginModal({ show, message, onClose }) {
     const [state, setState] = useState({
-        userName: '',
+        username: '',
         password: ''
     });
     const dispatch = useDispatch();
@@ -23,20 +23,20 @@ function LoginModal({ show, message, onClose }) {
     };
 
     const handleLogin = () => {
-        if (!state.userName || !state.password) {
+        if (!state.username || !state.password) {
             setError("아이디와 비밀번호를 모두 입력해주세요.");
             return;  
         }
 
-        axios.post("/auth", state)
+        axios.post("/api/v1/auth/login", state)
             .then(res => {
                 const token = res.data;
                 localStorage.setItem('token', token);
                 setError(false);
 
                 const result = decodeToken(token.substring(7)); // 'Bearer+' 제거
-                const userName = result.payload.sub;
-                dispatch({ type: "UPDATE_USER", payload: userName });
+                const username = result.payload.sub;
+                dispatch({ type: "UPDATE_USER", payload: username });
                 dispatch({ type: "LOGIN_MODAL", payload: { show: false } });
                 axios.defaults.headers.common["Authorization"] = token;
 
@@ -61,12 +61,12 @@ function LoginModal({ show, message, onClose }) {
                     <button className="close-button" onClick={handleClose}>×</button>
                 </div>
                 <div className="modal-body">
-                    <label htmlFor="userName">User Name</label>
+                    <label htmlFor="username">User Name</label>
                     <input 
                         type="text" 
-                        name="userName" 
-                        id="userName"
-                        value={state.userName} 
+                        name="username" 
+                        id="username"
+                        value={state.username} 
                         placeholder="User Name..." 
                         onChange={handleChange} 
                     />
