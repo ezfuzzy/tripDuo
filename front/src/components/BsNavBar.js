@@ -11,14 +11,15 @@ import bootstrapBundleMin from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 function BsNavBar() {
     // Redux 상태에서 userName을 가져옵니다.
     const userName = useSelector(state => state.userName, shallowEqual);
+    const id = useSelector(state=>state.id, shallowEqual);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const id = null
     
     const [alertShow, setAlertShow] = useState(false);
     const [openSections, setOpenSections] = useState({});
 
     const [profile, setProfile] = useState({
+        
         profile_pics: ["https://picsum.photos/id/237/200/300"],
         userNickname: "userNick-000789"
     });
@@ -99,7 +100,7 @@ function BsNavBar() {
                         {userName && <Nav.Link as={NavLink} to="/sample">{notification}</Nav.Link>}
 
                         {userName && 
-                        <Nav.Link as={NavLink} to={`/user/${id}/setting`}>
+                        <Nav.Link as={NavLink} to={`/user/${id}`}>
                             {profile.profile_pics != null
                                 ? <img src={profile.profile_pics[0]} className='w-[30px] h-[30px] rounded-full' alt="Profile" />
                                 : myPageIcon}

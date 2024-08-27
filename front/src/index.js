@@ -15,6 +15,7 @@ import { Provider } from 'react-redux';
 
 // token 이 존재 한다면 token 에서 값을 읽어와서 저장할 변수 만들기
 let userName=null
+let id=null
 
 //만일 토큰이 존재한다면
 if(localStorage.token){
@@ -38,6 +39,14 @@ if(localStorage.token){
   }
 }
 
+if(userName){
+  axios.get(`/api/v1/users/${userName}`)
+  .then(res=>{
+    id = res.data.id
+  })
+  .catch(error=>console.log(error))
+}
+
 //로그인 모달 관리하기 위한 object
 const loginModal={
   show:false,
@@ -45,7 +54,7 @@ const loginModal={
 }
 
 // store 에서 관리될 state 의 초기값
-const initialState={userName, loginModal}
+const initialState={ id, userName, loginModal}
 
 //reducer 함수 (action 을 발행하면 호출되는 함수)
 const reducer = (state=initialState, action)=>{
