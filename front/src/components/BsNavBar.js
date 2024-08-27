@@ -82,6 +82,7 @@ function BsNavBar() {
     return (
         <>
             <AlertModal show={alertShow} message={"로그아웃 되었습니다"} yes={handleYes} />
+
             <Navbar className="custom-navbar">
                 <Container>
                     <button type="button" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop">
@@ -93,8 +94,11 @@ function BsNavBar() {
                     </NavbarBrand>
 
                     <Nav className="justify-content-end">
+
                         {userName && <Nav.Link as={NavLink} to="/sample">{notification}</Nav.Link>}
-                        {userName && <Nav.Link as={NavLink} to="/mypage">
+
+                        {userName && 
+                        <Nav.Link as={NavLink} to="/mypage">
                             {profile.profile_pics != null
                                 ? <img src={profile.profile_pics[0]} className='w-[30px] h-[30px] rounded-full' alt="Profile" />
                                 : myPageIcon}
@@ -107,6 +111,7 @@ function BsNavBar() {
                     </Nav>
                 </Container>
             </Navbar>
+
             <Nav fill variant="tabs" defaultActiveKey="/">
                 <Nav.Item>
                     <Nav.Link as={NavLink} to="/">국내 여행</Nav.Link>

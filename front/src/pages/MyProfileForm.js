@@ -1,29 +1,29 @@
-import React, { useRef, useState } from 'react';
+import axios from 'axios';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button, Col, Form } from 'react-bootstrap';
+import { useParams } from 'react-router';
 
 function MyProfileForm(props) {
 
     const profileImage = useRef();
     const inputImage = useRef();
 
-    const [profile, setProfile] = useState({
-        id: 0,
-        signin_id: "MY ID",
-        userNickname: "userNick-000789",
-        name: "MY NAME",
-        age: 20,
-        gender: "attack helicopter",
-        phone_num: "01048854885",
-        email: "prfile-sample@google.com",
-        profile_pics: ["https://picsum.photos/id/237/200/300"],
-        profile_msg: "this is profile massage",
-        social_links: {
-            instagram: "https://www.instagram.com/katarinabluu/",
-            gitHub: "https://github.com/ezfuzzy/tripDuo/"
-        }
+    const [profile, setProfile] = useState({})
 
-    })
+    const {id} = useParams()
+    
 
+    useEffect(()=>{
+        axios.get(`/api/v1/users/${id}`)
+        .then(res=>{
+            console.log(res)
+            setProfile(res.data)
+        })
+        .catch(error=>console.log(error))
+
+    }, [id])
+
+    // 이벤트 관리부
     const handleChange = (e) => {
         setProfile({
             ...profile,
@@ -82,7 +82,7 @@ function MyProfileForm(props) {
                     <div className="flex space-x-4 bg-gray-200 rounded">
                         <div className="mb-3 flex-1">
                             <label htmlFor="signin_id" className="block text-sm font-medium mb-1">ID</label>
-                            <input type="text" name="signin_id" value={profile.signin_id} className="block w-full p-2 border border-gray-300 rounded-md" readOnly/>
+                            <input type="text" name="signin_id" value={profile.username} className="block w-full p-2 border border-gray-300 rounded-md" readOnly/>
                         </div> 
                         <div className="mb-3 flex-1">
                             <label htmlFor="password" className="block text-sm font-medium mb-1">Password</label>
@@ -92,8 +92,8 @@ function MyProfileForm(props) {
 
                     <div className="flex space-x-4 bg-gray-200 rounded">
                         <div className="mb-3 flex-1">
-                            <label htmlFor="name" className="block text-sm font-medium mb-1">Name</label>
-                            <input type="text" name="name" value={profile.name} className="block w-full p-2 border border-gray-300 rounded-md" readOnly/>
+                            <label htmlFor="name" className="block text-sm font-medium mb-1">Nickname</label>
+                            <input type="text" name="name" value={profile.nickname} className="block w-full p-2 border border-gray-300 rounded-md" readOnly/>
                         </div>
                         <div className="mb-3 flex-1">
                             <label htmlFor="age" className="block text-sm font-medium mb-1">age</label>
@@ -101,7 +101,7 @@ function MyProfileForm(props) {
                         </div>
                         <div className="mb-3 flex-1">
                             <label htmlFor="gender" className="block text-sm font-medium mb-1">gender</label>
-                            <input type="text" name="gender" className="block w-full p-2 border border-gray-300 rounded-md" value={profile.gender} readOnly/>
+                            <input type="text" name="gender" value={profile.gender} className="block w-full p-2 border border-gray-300 rounded-md"  readOnly/>
                         </div>
                     </div>
 
