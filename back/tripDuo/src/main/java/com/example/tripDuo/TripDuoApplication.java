@@ -10,7 +10,6 @@ import com.example.tripDuo.entity.User;
 import com.example.tripDuo.repository.UserRepository;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.persistence.EntityManagerFactory;
 
 @PropertySource(value = "classpath:custom.properties")
 @SpringBootApplication
