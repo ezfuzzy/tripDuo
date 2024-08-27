@@ -34,7 +34,17 @@ public class UserController {
         } else {
             return ResponseEntity.notFound().build();
         }
-        
+    }
+
+    @GetMapping("/{username}")
+    public ResponseEntity<UserDto> getUserByUsername(@PathVariable String username) {
+    	// 사용자 정보 조회
+    	UserDto user = service.getUserByUsername(username);
+    	if (user != null) {
+    		return ResponseEntity.ok(user);
+    	} else {
+    		return ResponseEntity.notFound().build();
+    	}
     }
 
     @PutMapping("/{id}")
