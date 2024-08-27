@@ -1,33 +1,48 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'holderjs'
 import 'bootstrap/dist/css/bootstrap.css'
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
 
 function MyProfile(props) {
     /*
         cur_location, rating, last_login
     */
+
     const navigate = useNavigate()
     const [profile, setProfile] = useState({
-        id: 0,
-        signin_id: "MY ID",
-        userNickname: "userNick-000789",
-        name:"MY NAME",
-        age: 20,
-        gender: "attack helicopter",
-        phone_num: "01048854885",
-        email: "prfile-sample@google.com",
-        profile_pics: ["https://picsum.photos/id/237/200/300"],
-        profile_msg: "this is profile massage",
+        id: null,
+        signin_id: "",
+        userNickname: "",
+        name:"",
+        age: null,
+        gender: "",
+        phone_num: "",
+        email: "",
+        profile_pics: null,
+        profile_msg: "",
         social_links: {
-            instagram: "https://www.instagram.com/katarinabluu/",
-            gitHub: "https://github.com/ezfuzzy/tripDuo/"
+            instagram: "",
+            gitHub: ""
         }
-
     })
+    const {id} = useParams()
+    
+
+    useEffect(()=>{
+        axios.get(`/api/v1/users/${id}`)
+        .then(res=>{
+            console.log(res)
+        })
+        .catch(error=>console.log(error))
+
+    }, [id])
+
+    //이벤트 관리 부
     const handleClick = () => {
         navigate("/myProfileForm")
-    }
+    }    
+
     return (
         <>
             <h3>My Profile</h3>

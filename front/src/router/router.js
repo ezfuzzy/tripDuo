@@ -14,11 +14,16 @@ import LogoutPage from "../pages/LogoutPage"
 import LoginListPage from "../pages/LoginListPage"
 
 const routes = [
+    // /users/:id
+    // /users/:id/setting
+    // /posts/:mate, course, photo, review }/:id
+    // 
     {path:"/", element: <Home/>},
     {path:"/home-inter", element: <HomeInternational/>},
     {path:"/home-mate", element: <HomeMate/>},
     {path:"/mypage", element: <Mypage/>},
     {path:"/myProfile", element: <MyProfile/>},
+    {path:"/users/:id", element: <MyProfile/>},
     {path:"/myProfileForm", element: <MyProfileForm/>},
     {path:"/sample", element: <Sample/>},
     {path:"/agreement", element: <Agreement/>},
