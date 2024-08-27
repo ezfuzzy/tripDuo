@@ -40,13 +40,14 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateUser(@PathVariable int id, @RequestBody UserDto userDto) {
         // 사용자 정보 업데이트
-    	return null;
+    	service.updateUser(userDto);
+    	return ResponseEntity.ok(userDto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable int id) {
-        // 사용자 삭제 (soft delete 등)
-    	return null;
+    public ResponseEntity<String> deleteUser(@PathVariable int id) {
+        service.deleteUser(id);
+    	return ResponseEntity.ok(id + " user is deleted");
     }
 	
 }
