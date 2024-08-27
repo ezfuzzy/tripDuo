@@ -1,66 +1,74 @@
-.App {
-  text-align: center;
+/* 전체 레이아웃 관리 */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.app-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  min-height: 100vh;
 }
 
-.App-link {
-  color: #61dafb;
+.main-content {
+  flex: 1; /* 남은 공간을 모두 차지하게 만듦 */
+  padding: 20px; /* 메인 콘텐츠에 여백 추가 */
+  background-color: #f9f9f9; /* 배경색 설정 */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.Footer {
+  font-size: x-small;
+  height: 100px;
+  background-color: #d5d5d5;
+  text-align: center;
+  padding: 5px 0;
+  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* MyPage css */
-.myPage {
-  display: flex;
-  justify-content:space-between;
-  flex-wrap: wrap;
-  list-style-type: none;
-  margin-block-start: 1em;
-  margin-block-end: 1em;
-  margin-inline-start: 0px;
-  margin-inline-end: 0px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  padding-left: 0px;
-  width: 75%;
+.Footer img {
+  padding-bottom: 0;
+  margin: 0;
 }
 
-.myPageList {
-width: 50%;
-height: 200px;
-padding-top: 40px;
-text-align: center;
+.Footer p {
+  line-height: 1.2;
+  margin: 0;
 }
 
-.borderbox {
-  display: flex;
-  justify-content: center;
+.logo {
+  width: 50px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Navbar 스타일은 기존 BsNavBar.css에서 가져옵니다 */
+.custom-navbar {
+  background-color: #007bff;
+  padding: 10px 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.custom-navbar .navbar-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fff;
+}
+
+.custom-navbar .nav-link {
+  color: #fff;
+  margin-right: 15px;
+  font-size: 1rem;
+}
+
+.custom-navbar .nav-link:hover {
+  color: #ddd;
+}
+
+/* 기타 스타일 최적화 */
+button, input, select {
+  font-size: 1rem;
+  padding: 10px;
 }
