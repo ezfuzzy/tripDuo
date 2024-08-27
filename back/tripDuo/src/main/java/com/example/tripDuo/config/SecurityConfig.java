@@ -30,14 +30,17 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilerChain(HttpSecurity httpSecurity) throws Exception {
 
-		String[] whiteList = { "/", "/home", "/api/**", };
+		String[] whiteList = { 
+				"/", "/home", "/api/**", 
+				};
 
 		httpSecurity.headers((header) -> {
 			header.frameOptions(option -> option.sameOrigin());
 		}).csrf(csrf -> csrf.disable()).authorizeHttpRequests((config) -> {
 			config.requestMatchers(whiteList).permitAll() // whiteList
-					.requestMatchers("/admin/**").hasRole("ADMIN").requestMatchers("/staff/**")
-					.hasAnyRole("ADMIN", "STAFF").anyRequest().authenticated();
+					.requestMatchers("/admin/**").hasRole("ADMIN")
+					.requestMatchers("/manager/**").hasAnyRole("ADMIN", "MANAGER")
+					.anyRequest().authenticated();
 		}).sessionManagement((config) -> {
 			config.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		}).addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

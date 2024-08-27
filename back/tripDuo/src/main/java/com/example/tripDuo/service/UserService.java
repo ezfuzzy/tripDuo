@@ -12,10 +12,10 @@ public interface UserService {
 	public UserDto getUserByEmail(String email);
 	
 	// ### updateUser ###
-	public boolean updateUser(UserDto dto);
+	public void updateUser(UserDto dto);
 	
 	// ### deleteUser ###
-	public boolean deleteUser(int id);
+	public void deleteUser(int id);
 	
 		
 }
