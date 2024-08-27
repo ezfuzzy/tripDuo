@@ -36,15 +36,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean updateUser(UserDto dto) {
-		// TODO Auto-generated method stub
-		return false;
+	public void updateUser(UserDto dto) {
+		repo.save(User.toEntity(dto));
 	}
 
 	@Override
-	public boolean deleteUser(int id) {
-		// TODO Auto-generated method stub
-		return false;
+	public void deleteUser(int id) {
+		repo.deleteById(id);
 	}
 
 	

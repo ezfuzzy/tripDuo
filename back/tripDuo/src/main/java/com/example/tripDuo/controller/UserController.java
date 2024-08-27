@@ -34,19 +34,30 @@ public class UserController {
         } else {
             return ResponseEntity.notFound().build();
         }
-        
+    }
+
+    @GetMapping("/{username}")
+    public ResponseEntity<UserDto> getUserByUsername(@PathVariable String username) {
+    	// 사용자 정보 조회
+    	UserDto user = service.getUserByUsername(username);
+    	if (user != null) {
+    		return ResponseEntity.ok(user);
+    	} else {
+    		return ResponseEntity.notFound().build();
+    	}
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateUser(@PathVariable int id, @RequestBody UserDto userDto) {
         // 사용자 정보 업데이트
-    	return null;
+    	service.updateUser(userDto);
+    	return ResponseEntity.ok(userDto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable int id) {
-        // 사용자 삭제 (soft delete 등)
-    	return null;
+    public ResponseEntity<String> deleteUser(@PathVariable int id) {
+        service.deleteUser(id);
+    	return ResponseEntity.ok(id + " user is deleted");
     }
 	
 }

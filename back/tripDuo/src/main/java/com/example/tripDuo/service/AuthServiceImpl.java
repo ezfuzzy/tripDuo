@@ -1,6 +1,7 @@
 package com.example.tripDuo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,6 +12,15 @@ import com.example.tripDuo.entity.User;
 import com.example.tripDuo.repository.UserRepository;
 import com.example.tripDuo.util.JwtUtil;
 
+import kong.unirest.HttpResponse;
+import kong.unirest.JsonNode;
+import kong.unirest.Unirest;
+import kong.unirest.UnirestException;
+import net.nurigo.sdk.NurigoApp;
+import net.nurigo.sdk.message.exception.NurigoMessageNotReceivedException;
+import net.nurigo.sdk.message.model.Message;
+import net.nurigo.sdk.message.service.DefaultMessageService;
+
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -19,25 +29,34 @@ public class AuthServiceImpl implements AuthService {
 
 	@Autowired
 	private AuthenticationManager authManager;
-	
+
 	@Autowired
 	private PasswordEncoder encoder;
 
 	@Autowired
 	private UserRepository repo;
 
-	
+	@Value("${mailgun.key}")
+	private String MAIL_API_KEY;
 
+	@Value("${coolsms.send_number}")
+	private String send_number;
+	
+	@Value("${coolsms.key}")
+	private String COOLSMS_KEY;
+	
+	@Value("${coolsms.secret}")
+	private String COOLSMS_SECRET;
 	
 	@Override
 	public String login(UserDto dto) throws Exception {
-		
+
 		System.out.println(dto.getUsername() + " " + dto.getPassword());
 
 		try {
-			UsernamePasswordAuthenticationToken authToken = 
-					new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword());
-			
+			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(dto.getUsername(),
+					dto.getPassword());
+
 			authManager.authenticate(authToken);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -49,43 +68,79 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	public String signup(UserDto dto) {
-	    
+
 		// 회원가입 페이지에서 user, manager, admin 설정 or admin dashboard page에서 관리
-		dto.setRole("USER"); 
+		dto.setRole("USER");
 		String encodedPwd = encoder.encode(dto.getPassword());
-	    dto.setPassword(encodedPwd);
-	    
-	    repo.save(User.toEntity(dto));
-	    
+		dto.setPassword(encodedPwd);
+
+		repo.save(User.toEntity(dto));
+
 		return "회원가입 완료";
 	}
 
-	
 	// ### 휴대폰 인증 ###
-	
-    private final PhoneNumberVerificationService phoneNumberVerificationService;
 
-    public AuthServiceImpl(PhoneNumberVerificationService phoneNumberVerificationService) {
-        this.phoneNumberVerificationService = phoneNumberVerificationService;
-    }
-    
-    @Override
-	public void sendVerificationCode(String phoneNumber) {
-        // 1. 인증번호 생성
-        String verificationCode = phoneNumberVerificationService.generateVerificationCode();
+	private final PhoneNumberVerificationService phoneNumberVerificationService;
 
-        // 2. 인증번호와 휴대폰 번호를 저장
-        phoneNumberVerificationService.storeVerificationCode(phoneNumber, verificationCode);
-        
-        System.out.println("[AuthServiceImpl - sendVerificationCode] verificationCode : " + verificationCode);
-        
-        // 3. SMS 또는 다른 채널을 통해 인증번호를 사용자에게 전송
-        // 예시: smsService.sendSMS(phoneNumber, verificationCode);
-    }
+	public AuthServiceImpl(PhoneNumberVerificationService phoneNumberVerificationService) {
+		this.phoneNumberVerificationService = phoneNumberVerificationService;
+	}
 
-    @Override
-    public boolean verifyPhoneNumber(String phoneNumber, String verificationCode) {
-        // 4. 사용자가 제출한 인증번호 검증
-        return phoneNumberVerificationService.verifyCode(phoneNumber, verificationCode);
-    }
+	@Override
+	public void sendVerificationCode(String phone_number) {
+		// 1. 인증번호 생성
+		String verificationCode = phoneNumberVerificationService.generateVerificationCode();
+
+		// 2. 인증번호와 휴대폰 번호를 저장
+		phoneNumberVerificationService.storeVerificationCode(phone_number, verificationCode);
+
+		System.out.println("[AuthServiceImpl - sendVerificationCode] verificationCode : " + verificationCode);
+
+		DefaultMessageService messageService = NurigoApp.INSTANCE.initialize(COOLSMS_KEY, COOLSMS_SECRET, "https://api.coolsms.co.kr");
+		
+		
+		Message message = new Message();
+		message.setFrom(send_number);
+		message.setTo(phone_number);
+		message.setText("[tripDuo] 인증코드 : " + verificationCode);
+
+		try {
+		  messageService.send(message);
+		} catch (NurigoMessageNotReceivedException exception) {
+		  System.out.println(exception.getFailedMessageList());
+		  System.out.println(exception.getMessage());
+		} catch (Exception exception) {
+		  System.out.println(exception.getMessage());
+		}
+
+		
+//		try {
+//			sendVerificationCodeToEmail(verificationCode);
+//		} catch (UnirestException e) {
+//			e.printStackTrace();
+//		}
+	}
+
+	@Override
+	public boolean verifyPhoneNumber(String phoneNumber, String verificationCode) {
+		// 4. 사용자가 제출한 인증번호 검증
+		return phoneNumberVerificationService.verifyCode(phoneNumber, verificationCode);
+	}
+
+	public JsonNode sendVerificationCodeToEmail(String code) throws UnirestException {
+		
+		// 일단 무료계정에선 "to" 부분을 email api site에서 인증받은 계정에만 전송할 수 있는 것 같음 -> 나중에 plan 업그레이드 예정 
+		
+		HttpResponse<JsonNode> response = Unirest
+				.post("https://api.mailgun.net/v3/sandboxe612253c42634473b260f15ed6e389ad.mailgun.org/messages")
+				.basicAuth("api", MAIL_API_KEY)
+				.queryString("from", "Excited User <USER@sandboxe612253c42634473b260f15ed6e389ad.mailgun.org>")
+				.queryString("to", "ezfuzzy062@gmail.com") // email 값을 변경해야함
+				.queryString("subject", "tripDuo에 가입하신걸 환영합니다 or tripDuo 메일 인증코드 도착했습니다")
+				.queryString("text", "이런 저런 양식 ... \n 메일 인증코드는 : " + code + " 입니다.")
+				.asJson();
+		
+		return response.getBody();
+	}
 }
