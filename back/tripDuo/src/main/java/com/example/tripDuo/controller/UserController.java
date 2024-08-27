@@ -36,8 +36,10 @@ public class UserController {
         }
     }
 
-    @GetMapping("/{username}")
-    public ResponseEntity<UserDto> getUserByUsername(@PathVariable String username) {
+    @GetMapping("/username/{username}")
+    public ResponseEntity<UserDto> getUserByUsername(@PathVariable("username") String username) {
+    	System.out.println("####");
+    	System.out.println(username);
     	// 사용자 정보 조회
     	UserDto user = service.getUserByUsername(username);
     	if (user != null) {
