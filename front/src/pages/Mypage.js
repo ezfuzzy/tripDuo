@@ -6,7 +6,7 @@ function Mypage() {
   return (
     <>
       <h1>My Page</h1>
-      <Link to="/myProfile">My Profile</Link>
+      <Link to="/api/v1/users/">My Profile</Link>
       <div className="borderbox">
         <ul className="myPage">
           <li className="myPageList">
