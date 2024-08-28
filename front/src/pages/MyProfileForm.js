@@ -72,7 +72,7 @@ function MyProfileForm(props) {
         axios.put(`/api/v1/users/${id}`, profile)
         .then(res=>{
             alert("저장되었습니다.")
-            navigate(`/users/${profile.id}`)
+            navigate(`/users/${profile.id}/profile`)
         })
         .catch(error=>console.log(error))
     }
