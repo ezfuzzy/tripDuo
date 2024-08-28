@@ -22,90 +22,88 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity(name = "USERS")
 public class User {
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private int id;
-	
-	private String username;
-	private String password;
-	
-	private String nickname;
-			  
-	private int age;
-	private String name;
-	private String gender;
-	private String phone_num;
-	private String email; // [note: "인증 받으면 email 로그인 사용 가능"]
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+    
+    private String username;
+    private String password;
+    
+    private String nickname;
+              
+    private int age;
+    private String name;
+    private String gender;
+    private String phoneNumber;
+    private String email; // [note: "인증 받으면 email 로그인 사용 가능"]
 
-	private String profile_pics;
-	private String profile_msg;
-	
-	private String cur_location;
-	private String verification_status; // [note: "인증 상태"]
-	private String account_status; // [note: "관리자의 조치"]
-	private String social_links;
-			  
-	private String role; // [note: "user / manager / admin"]
+    private String profilePictures;
+    private String profileMessage;
+    
+    private String curLocation;
+    private String verificationStatus; // [note: "인증 상태"]
+    private String accountStatus; // [note: "관리자의 조치"]
+    private String socialLinks;
+              
+    private String role; // [note: "user / manager / admin"]
 
-	private float ratings; // 지표 설정 
+    private float ratings; // 지표 설정 
 
-	private String last_login; // 몇분전 접속  
-	
-	private Date created_at; 
-	private Date updated_at; 
-	private Date deleted_at; //  [note:"soft delete 지원?"]
-	
-	@PrePersist
-	public void onPrepersist() {
-		created_at = new Date();
-	}
+    private String lastLogin; // 몇분전 접속  
+    
+    private Date createdAt; 
+    private Date updatedAt; 
+    private Date deletedAt; //  [note:"soft delete 지원?"]
+    
+    @PrePersist
+    public void onPrePersist() {
+        createdAt = new Date();
+    }
 
-	
-	public static User toEntity(UserDto dto) {
-		 
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		 
-		Date createdAt = null;
-	    Date updatedAt = null;
-	    Date deletedAt = null;
+    public static User toEntity(UserDto dto) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+         
+        Date createdAt = null;
+        Date updatedAt = null;
+        Date deletedAt = null;
 
-	    try {
-	        if (dto.getCreated_at() != null) {
-	            createdAt = formatter.parse(dto.getCreated_at());
-	        }
-	        if (dto.getUpdated_at() != null) {
-	            updatedAt = formatter.parse(dto.getUpdated_at());
-	        }
-	        if (dto.getDeleted_at() != null) {
-	            deletedAt = formatter.parse(dto.getDeleted_at());
-	        }
-	    } catch (ParseException e) {
-	        e.printStackTrace();
-	    }
-	    
-		 return User.builder()
-		            .id(dto.getId())
-		            .username(dto.getUsername())
-		            .password(dto.getPassword())
-		            .nickname(dto.getNickname())
-		            .age(dto.getAge())
-		            .name(dto.getName())
-		            .gender(dto.getGender())
-		            .phone_num(dto.getPhone_num())
-		            .email(dto.getEmail())
-		            .profile_pics(dto.getProfile_pics())
-		            .profile_msg(dto.getProfile_msg())
-		            .cur_location(dto.getCur_location())
-		            .verification_status(dto.getVerification_status())
-		            .account_status(dto.getAccount_status())
-		            .social_links(dto.getSocial_links())
-		            .role(dto.getRole())
-		            .ratings(dto.getRatings())
-		            .last_login(dto.getLast_login())
-		            .created_at(createdAt)
-		            .updated_at(updatedAt)
-		            .deleted_at(deletedAt)
-		            .build();	
-	 }
+        try {
+            if (dto.getCreatedAt() != null) {
+                createdAt = formatter.parse(dto.getCreatedAt());
+            }
+            if (dto.getUpdatedAt() != null) {
+                updatedAt = formatter.parse(dto.getUpdatedAt());
+            }
+            if (dto.getDeletedAt() != null) {
+                deletedAt = formatter.parse(dto.getDeletedAt());
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        
+        return User.builder()
+                .id(dto.getId())
+                .username(dto.getUsername())
+                .password(dto.getPassword())
+                .nickname(dto.getNickname())
+                .age(dto.getAge())
+                .name(dto.getName())
+                .gender(dto.getGender())
+                .phoneNumber(dto.getPhoneNumber())
+                .email(dto.getEmail())
+                .profilePictures(dto.getProfilePictures())
+                .profileMessage(dto.getProfileMessage())
+                .curLocation(dto.getCurLocation())
+                .verificationStatus(dto.getVerificationStatus())
+                .accountStatus(dto.getAccountStatus())
+                .socialLinks(dto.getSocialLinks())
+                .role(dto.getRole())
+                .ratings(dto.getRatings())
+                .lastLogin(dto.getLastLogin())
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .deletedAt(deletedAt)
+                .build();    
+    }
 }
