@@ -27,7 +27,7 @@ function MyProfile(props) {
 
     //이벤트 관리 부
     const handleClick = () => {
-        navigate(`/users/${profile.id}/setting`);
+        navigate(`/users/${id}/setting`);
     }    
 
     return (
@@ -86,10 +86,6 @@ function MyProfile(props) {
                         <textarea name="profile_msg" className="form-control" rows="5" value={profile.profile_msg} readOnly/>
                     </div>
                 </div>
-
-                <Mypage/>
-
-                
                 {/* 페이지의 정보를 가진 username 과 로그인된 username 이 같으면 ... */}
                 <div>
                     <h5>보안 탭</h5>
