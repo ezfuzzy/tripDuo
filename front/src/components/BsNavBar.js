@@ -67,7 +67,7 @@ function BsNavBar() {
         })
         .catch(error=>console.log(error))
         }    
-    }, [])
+    }, [username])
 
     const myPageIcon = (
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" className="bi bi-person-square" viewBox="0 0 16 16">
