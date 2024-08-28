@@ -1,6 +1,6 @@
 /* 네비게이션 바 기본 스타일 */
 .custom-navbar {
-  background-color: #33632b; /* 네비게이션 바 배경색 */
+  background-color: #fff; /* 네비게이션 바 배경색 흰색 */
   padding: 10px 0;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   display: flex;
@@ -11,14 +11,14 @@
 .custom-navbar .navbar-brand {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #fff;
+  color: #000; /* 텍스트 색상 검정 */
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .custom-navbar .nav-link {
-  color: #fff;
+  color: #000; /* 텍스트 색상 검정 */
   margin-right: 15px;
   font-size: 1rem;
   display: flex;
@@ -32,7 +32,7 @@
 }
 
 .custom-navbar .nav-link:hover {
-  color: #ddd;
+  color: #555; /* hover 시 약간 어두운 색상 */
 }
 
 .custom-navbar .toggle-button {
@@ -52,33 +52,34 @@
 /* appName 스타일 */
 .appName {
   display: flex;
-  font-family: 'Orbitron', sans-serif; /* 구글 폰트 */
-  align-items: center; 
+  font-family: 'Orbitron', sans-serif;
+  align-items: center;
   justify-content: center;
   flex-grow: 1;
   text-align: center;
+  color: #000; /* 텍스트 색상 검정 */
 }
 
 .appName img {
   width: 60px;
-  height: auto; 
-  display: block; 
+  height: auto;
+  display: block;
   margin: 0;
 }
 
 /* 오프캔버스 스타일 */
 .custom-canvas {
-  background-color: #33632b; /* 오프캔버스 배경색 */
+  background-color: #fff; /* 오프캔버스 배경색 흰색 */
 }
 
 /* 리스트 아이템 스타일 */
 .custom-canvas .list-group-item {
-  background-color: #5e8a55; /* 리스트 아이템 배경색 */
-  border: #5e8a55; /* 리스트 아이템 테두리 색 */
+  background-color: #f9f9f9; /* 리스트 아이템 배경색 밝은 회색 */
+  border: #f9f9f9; /* 리스트 아이템 테두리 색 밝은 회색 */
 }
 
 .custom-canvas .list-group-item:hover {
-  background-color: #4d7445; /* 리스트 아이템 hover 배경색 */
+  background-color: #f0f0f0; /* 리스트 아이템 hover 배경색 조금 더 어두운 회색 */
 }
 
 /* 토글 가능한 컨텐츠 스타일 */
@@ -86,7 +87,7 @@
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.5s ease;
-  padding-left: 20px; /* 들여쓰기 */
+  padding-left: 20px;
 }
 
 .content.open {
@@ -96,4 +97,5 @@
 
 .toggle {
   font-weight: bold;
+  color: #000; /* 텍스트 색상 검정 */
 }

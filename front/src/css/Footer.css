@@ -2,40 +2,38 @@
 html, body {
     height: 100%;
     margin: 0;
-    display: flex;
-    flex-direction: column;
+    padding: 0;
 }
 
-/* React의 root element를 flex container로 설정 */
 #root {
+    min-height: 100%;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
 }
 
-/* 메인 콘텐츠가 푸터 위에 위치하도록 설정 */
 .main-content {
     flex: 1;
+    padding: 20px;
+    /* 페이지 내용이 부족할 경우 최소 높이를 계산하여 푸터가 아래에 오도록 함 */
+    min-height: calc(100vh - 150px); /* 150px은 푸터의 높이로 설정 */
 }
 
 /* 푸터 스타일링 */
 .Footer {
+    height: 150px;  /* 푸터 높이를 150px로 설정 */
+    background-color: #ffffff; /* 푸터 배경색 흰색 */
+    text-align: center;
+    color: #000000; /* 텍스트 색상 검정 */
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: small;  /* 폰트 크기를 조정하여 잘리지 않도록 설정 */
-    height: auto;  /* 높이를 자동으로 설정하여 콘텐츠에 맞게 조절 */
-    padding: 20px 0;  /* 상하 패딩을 추가하여 충분한 공간 확보 */
-    background-color: #d5d5d5;
-    text-align: center;
     box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+    margin-top: auto;
     width: 100%; /* 푸터가 전체 너비를 차지하도록 설정 */
-    margin-top: auto; /* 푸터를 페이지 하단으로 밀어냄 */
 }
 
-.Footer img {
-    width: 50px;
+.Footer img.logo {
+    width: 40px;  /* 이미지 크기를 줄임 */
     height: auto;
     margin-bottom: 10px; /* 이미지와 텍스트 사이의 간격 추가 */
     display: block;
@@ -44,9 +42,8 @@ html, body {
 }
 
 .Footer p {
-    line-height: 1.5;
-    margin: 0;
-    padding: 0 10px; /* 텍스트가 잘리지 않도록 패딩 추가 */
-    color: #333;
+    padding: 0 15px; /* 텍스트가 잘리지 않도록 패딩 추가 */
     word-wrap: break-word; /* 텍스트 줄바꿈을 강제하여 글자 잘림 방지 */
+    line-height: 1.4; /* 텍스트 줄 간격을 조금 더 넓게 설정 */
+    margin: 5px 0; /* 텍스트 간 간격을 추가하여 가독성 향상 */
 }

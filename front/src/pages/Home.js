@@ -140,15 +140,6 @@ function Home() {
                     </Form>
                 </Col>
             </Row>
-
-            {/* 회원가입 및 로그인 섹션 */}
-            <Row className="my-4">
-                <Col>
-                    <h3>회원가입하지 않으셨다면?</h3>
-                    <Button variant="success" onClick={() => navigate('/signup')}>회원가입</Button>
-                    <Button variant="secondary" className="ml-2" onClick={() => navigate('/loginlist')}>로그인</Button>
-                </Col>
-            </Row>
         </Container>
     );
 }
