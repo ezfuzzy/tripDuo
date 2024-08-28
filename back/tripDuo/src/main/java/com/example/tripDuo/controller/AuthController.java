@@ -1,17 +1,21 @@
 package com.example.tripDuo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.tripDuo.dto.OAuthToken;
 import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.service.AuthService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import kong.unirest.json.JSONObject;
 
 @RestController
@@ -58,4 +62,38 @@ public class AuthController {
 	public String testUsername() {
 		return SecurityContextHolder.getContext().getAuthentication().getName();
 	}
+	
+	// 토큰 발급 
+	@GetMapping("/accesstokencallback")
+	public ResponseEntity<String> kakaoAccessToken(String code, HttpServletRequest request, OAuthToken oAuthToken) throws Exception {
+		String kakaoToken = service.KakaogetAccessToken(request.getParameter("code"));
+		return ResponseEntity.status(HttpStatus.OK).body(kakaoToken);
+		
+	}
+	
+	// 유저 정보 가져오기
+	@GetMapping("/kakaologin")
+	public ResponseEntity<String> kakaoInfo(@RequestHeader("Authorization") String token) {
+		String accessToken = token.replace("Bearer ", "");
+	    System.out.println("Extracted Access Token: " + accessToken); // 로그로 확인
+
+		OAuthToken oAuthToken = new OAuthToken();
+	    oAuthToken.setAccess_token(accessToken);
+	    
+	    String kakaoInfo = service.KakaoSignUp(oAuthToken);
+	 
+	    return ResponseEntity.status(HttpStatus.OK).body(kakaoInfo);
+	}
+	
+	@PostMapping("/kakaologout")
+	public ResponseEntity<String> kakaoLogout(@RequestHeader("Authorization") String authHeader, Long  kakaoId) {
+		String accessToken = authHeader.replace("Bearer ", "");
+		OAuthToken oAuthToken = new OAuthToken();
+	    oAuthToken.setAccess_token(accessToken);
+
+		String kakaoLogout=service.kakaoLogout(oAuthToken, kakaoId);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(kakaoLogout);
+	}
+	
 }
