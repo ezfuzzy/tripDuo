@@ -6,4 +6,7 @@ import com.example.tripDuo.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 	public User findByUsername(String username);
+	
+	public User findById(Long kakaoId);
+	public void save(Long kakaoId);
 }

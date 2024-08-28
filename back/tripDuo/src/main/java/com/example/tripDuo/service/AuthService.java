@@ -1,6 +1,8 @@
 package com.example.tripDuo.service;
 
+import com.example.tripDuo.dto.OAuthToken;
 import com.example.tripDuo.dto.UserDto;
+import com.example.tripDuo.entity.User;
 
 public interface AuthService {
 	
@@ -9,4 +11,8 @@ public interface AuthService {
 	
     void sendVerificationCode(String phoneNumber);
     boolean verifyPhoneNumber(String phoneNumber, String verificationCode);
+    public User KakaoFindId(String username);
+    public String KakaoSignUp(OAuthToken kakaoToken)  ;
+    public String KakaogetAccessToken(String code);
+    public String kakaoLogout(OAuthToken oAuthToken, Long kakaoId);
 }
