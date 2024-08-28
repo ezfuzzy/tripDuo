@@ -9,8 +9,9 @@ public interface AuthService {
 	public String login(UserDto dto) throws Exception;
 	public String signup(UserDto dto);
 	
-    void sendVerificationCode(String phoneNumber);
-    boolean verifyPhoneNumber(String phoneNumber, String verificationCode);
+    public boolean sendVerificationCode(String phoneNumber);
+    public boolean verifyPhoneNumber(String phoneNumber, String verificationCode);
+    
     public User KakaoFindId(String username);
     public String KakaoSignUp(OAuthToken kakaoToken)  ;
     public String KakaogetAccessToken(String code);
