@@ -34,10 +34,6 @@ import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
-import net.nurigo.sdk.NurigoApp;
-import net.nurigo.sdk.message.exception.NurigoMessageNotReceivedException;
-import net.nurigo.sdk.message.model.Message;
-import net.nurigo.sdk.message.service.DefaultMessageService;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -115,7 +111,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public void sendVerificationCode(String phone_number) {
+	public boolean sendVerificationCode(String phone_number) {
 		// 1. 인증번호 생성
 		String verificationCode = phoneNumberVerificationService.generateVerificationCode();
 
@@ -124,24 +120,25 @@ public class AuthServiceImpl implements AuthService {
 
 		System.out.println("[AuthServiceImpl - sendVerificationCode] verificationCode : " + verificationCode);
 
-		DefaultMessageService messageService = NurigoApp.INSTANCE.initialize(COOLSMS_KEY, COOLSMS_SECRET, "https://api.coolsms.co.kr");
-		
-		
-		Message message = new Message();
-		message.setFrom(send_number);
-		message.setTo(phone_number);
-		message.setText("[tripDuo] 인증코드 : " + verificationCode);
+//		// ### 문자 전송 api ### 
+//		DefaultMessageService messageService = NurigoApp.INSTANCE.initialize(COOLSMS_KEY, COOLSMS_SECRET, "https://api.coolsms.co.kr");
+//		
+//		
+//		Message message = new Message();
+//		message.setFrom(send_number);
+//		message.setTo(phone_number);
+//		message.setText("[tripDuo] 인증코드 : " + verificationCode);
+//
+//		try {
+//		  messageService.send(message);
+//		} catch (NurigoMessageNotReceivedException exception) {
+//		  System.out.println(exception.getFailedMessageList());
+//		  System.out.println(exception.getMessage());
+//		} catch (Exception exception) {
+//		  System.out.println(exception.getMessage());
+//		}
 
-		try {
-		  messageService.send(message);
-		} catch (NurigoMessageNotReceivedException exception) {
-		  System.out.println(exception.getFailedMessageList());
-		  System.out.println(exception.getMessage());
-		} catch (Exception exception) {
-		  System.out.println(exception.getMessage());
-		}
-
-		
+		return true;
 //		try {
 //			sendVerificationCodeToEmail(verificationCode);
 //		} catch (UnirestException e) {

@@ -84,7 +84,8 @@ function Signup() {
   }
   const verifyPhoneNumber = () => {
     const str = phoneNumber + verificationCode
-    axios.post('/api/v1/auth/verify', str)
+    const code = verificationCode
+    axios.post('/api/v1/auth/verify', {phoneNumber, code })
       .then((res) => {
         setIsVerified(true)
         alert('휴대폰 번호가 성공적으로 인증되었습니다.')

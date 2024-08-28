@@ -3,7 +3,6 @@ package com.example.tripDuo.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,9 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.tripDuo.dto.OAuthToken;
 import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.service.AuthService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kong.unirest.json.JSONObject;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -36,35 +36,45 @@ public class AuthController {
 	}
 
 	@PostMapping("/send")
-	public ResponseEntity<String> sendVerificationCode(@RequestBody String phoneNumber) {
-		String p_number = phoneNumber.substring(0, phoneNumber.length()-1);
-		System.out.println(p_number);
-		service.sendVerificationCode(p_number);
-		return ResponseEntity.ok("Verification code sent");
+	public ResponseEntity<String> sendVerificationCode(@RequestBody String inputPhoneNumber) {
+		String phoneNumber = inputPhoneNumber.substring(0, inputPhoneNumber.length()-1);
+		
+		if(service.sendVerificationCode(phoneNumber)) {
+			return ResponseEntity.ok("Verification code is sent");
+		} else {
+			return ResponseEntity.badRequest().body("Invalid phone number");
+		}
+		
 	}
 
 	@PostMapping("/verify")
-	public ResponseEntity<String> verifyPhoneNumber(@RequestBody String phone_number_with_code) {
-        JSONObject jsonObject = new kong.unirest.json.JSONObject(phone_number_with_code);
+	public ResponseEntity<String> verifyPhoneNumber(@RequestBody String phoneNumberWithCode) {
+		
+		try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(phoneNumberWithCode);
 
-        String phone_number = jsonObject.getString("phone_number");
-        String verification_code = jsonObject.getString("code");
-				
-		boolean isVerified = service.verifyPhoneNumber(phone_number, verification_code);
-		if (isVerified) {
-			return ResponseEntity.ok("Phone number verified successfully");
-		} else {
-			return ResponseEntity.badRequest().body("Invalid verification code");
-		}
-	}
-	
-	@GetMapping("/test")
-	public String testUsername() {
-		return SecurityContextHolder.getContext().getAuthentication().getName();
+            String phoneNumber = jsonNode.get("phoneNumber").asText();
+            String verificationCode = jsonNode.get("code").asText();
+
+            System.out.println("Phone Number: " + phoneNumber);
+            System.out.println("Code: " + verificationCode);
+
+    		boolean isVerified = service.verifyPhoneNumber(phoneNumber, verificationCode);
+    		
+    		if (isVerified) {
+    			return ResponseEntity.ok("Phone number verified successfully");
+    		} else {
+    			return ResponseEntity.badRequest().body("Invalid verification code");
+    		}
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Invalid JSON format.");
+        }
 	}
 	
 	// 토큰 발급 
-	@GetMapping("/accesstokencallback")
+	@GetMapping("/accessTokenCallback")
 	public ResponseEntity<String> kakaoAccessToken(String code, HttpServletRequest request, OAuthToken oAuthToken) throws Exception {
 		String kakaoToken = service.KakaogetAccessToken(request.getParameter("code"));
 		return ResponseEntity.status(HttpStatus.OK).body(kakaoToken);
@@ -72,7 +82,7 @@ public class AuthController {
 	}
 	
 	// 유저 정보 가져오기
-	@GetMapping("/kakaologin")
+	@GetMapping("/kakaoLogin")
 	public ResponseEntity<String> kakaoInfo(@RequestHeader("Authorization") String token) {
 		String accessToken = token.replace("Bearer ", "");
 	    System.out.println("Extracted Access Token: " + accessToken); // 로그로 확인
@@ -85,7 +95,7 @@ public class AuthController {
 	    return ResponseEntity.status(HttpStatus.OK).body(kakaoInfo);
 	}
 	
-	@PostMapping("/kakaologout")
+	@PostMapping("/kakaoLogout")
 	public ResponseEntity<String> kakaoLogout(@RequestHeader("Authorization") String authHeader, Long  kakaoId) {
 		String accessToken = authHeader.replace("Bearer ", "");
 		OAuthToken oAuthToken = new OAuthToken();
