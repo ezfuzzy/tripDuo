@@ -1,17 +1,18 @@
 import { createBrowserRouter } from "react-router-dom"
 import App from "../App"
-import Mypage from "../pages/Mypage"
+
 import Home from "../pages/Home"
 import Sample from "../pages/Sample"
 import HomeInternational from "../pages/HomeInternational"
 import HomeMate from "../pages/HomeMate"
-import MyProfile from "../pages/MyProfile"
-import MyProfileForm from "../pages/MyProfileForm"
 import Signup from "../pages/Signup"
 import Agreement from "../pages/Agreement"
 import LoginPage from "../pages/LoginPage"
 import LogoutPage from "../pages/LogoutPage"
 import LoginListPage from "../pages/LoginListPage"
+import Mypage from "../pages/myPage/Mypage"
+import MyProfile from "../pages/myPage/MyProfile"
+import MyProfileForm from "../pages/myPage/MyProfileForm"
 
 const routes = [
     // /users/:id
