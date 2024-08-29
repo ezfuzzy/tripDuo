@@ -63,7 +63,11 @@ function MyProfileForm(props) {
         reader.readAsDataURL(file)
         reader.onload=(e)=>{
             const data = e.target.result // 읽은 파일의 데이터
-            
+
+            setProfile({
+                ...profile,
+                profilePictures:[file]
+            })
             // profileImage.current.src = data           
         }
         
