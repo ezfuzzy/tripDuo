@@ -114,11 +114,18 @@ function Agreement() {
                     </li>
                 </ul>
                 <div>
-                    <button onClick={() => { navigate("/signup") }} disabled={isDisabled}>제출</button>
+                    <button onClick={() => {
+                        navigate("/signup", {
+                            state: {
+                                termsService: agreements.termsService,
+                                termsPrivacy: agreements.termsPrivacy,
+                                essential: agreements.essential
+                            }
+                        })
+                    }} disabled={isDisabled}>제출</button>
                 </div>
             </form>
         </div>
-
     );
 }
 
