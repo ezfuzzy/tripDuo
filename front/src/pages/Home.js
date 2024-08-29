@@ -1,10 +1,20 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Button, Card, Form, ListGroup } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect  } from 'react';
+import { Container, Row, Col, Button, Card, Form, ListGroup, Dropdown } from 'react-bootstrap';
+import { useNavigate, useLocation  } from 'react-router-dom';
 import '../css/Home.css';
 
 function Home() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const [selectedOption, setSelectedOption] = useState('국내');
+
+    useEffect(() => {
+        if (location.pathname === '/home-inter') {
+            setSelectedOption('해외');
+        } else {
+            setSelectedOption('국내');
+        }
+    }, [location.pathname]);
 
     // 상태 관리
     const [searchParams, setSearchParams] = useState({
@@ -12,6 +22,15 @@ function Home() {
         dateRange: '',
         travelStyle: '',
     });
+
+    const handleSelect = (eventKey) => {
+        setSelectedOption(eventKey === 'Home' ? '국내' : '해외');
+        if (eventKey === 'Home') {
+            navigate('/');
+        } else if (eventKey === 'international') {
+            navigate('/home-inter');
+        }
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -26,6 +45,26 @@ function Home() {
 
     return (
         <Container>
+            {/* 상단에 국내/해외 선택 드롭다운 */}
+            <Row className="justify-content-end" style={{ paddingTop: '10px' }}>
+                <Col xs="auto">
+                    <Dropdown onSelect={handleSelect}>
+                        <Dropdown.Toggle 
+                            variant="secondary" 
+                            id="dropdown-basic" 
+                            size="sm" 
+                            style={{ width: '60px', padding: '5px 5px' }}
+                        >
+                            {selectedOption}
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                            <Dropdown.Item eventKey="Home">국내</Dropdown.Item>
+                            <Dropdown.Item eventKey="international">해외</Dropdown.Item>
+                        </Dropdown.Menu>
+                    </Dropdown>
+                </Col>
+            </Row>
             {/* 메인 검색 바 */}
             <Row className="my-4">
                 <Col md={8} className="mx-auto">
