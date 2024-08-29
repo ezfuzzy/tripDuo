@@ -13,6 +13,7 @@ import LoginListPage from "../pages/LoginListPage"
 import Mypage from "../pages/myPage/Mypage"
 import MyProfile from "../pages/myPage/MyProfile"
 import MyProfileForm from "../pages/myPage/MyProfileForm"
+import CompletedSignup from "../pages/CompletedSignup"
 
 const routes = [
     // /users/:id
@@ -30,7 +31,8 @@ const routes = [
     {path:"/signup", element: <Signup/>},
     {path:"/login", element: <LoginPage/>},
     {path:"/logout", element: <LogoutPage /> },
-    {path:"/loginlist", element:<LoginListPage/>}
+    {path:"/loginlist", element:<LoginListPage/>},
+    {path:"/completedSignup", element:<CompletedSignup/>}
 ]
 
 const router = createBrowserRouter([{
