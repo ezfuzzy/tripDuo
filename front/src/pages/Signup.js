@@ -8,6 +8,7 @@ function Signup() {
   const [isValidUsername, setIsValidUsername] = useState(true)
   const [isValidPassword, setIsValidPassword] = useState(true)
   const [isValidNickname, setIsValidNickname] = useState(true)
+  const [isValidEmail, setisValidEmail] = useState(true)
 
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -18,6 +19,8 @@ function Signup() {
   const [hasSpecialChar, setHasSpecialChar] = useState(false)
   const [isValidLength, setIsValidLength] = useState(false)
   const [showValidationMessage, setShowValidationMessage] = useState(false)
+
+  const [email, setEmail] = useState('')
 
   const [phoneNumber, setPhoneNumber] = useState('')
   const [verificationCode, setVerificationCode] = useState('')
@@ -45,6 +48,10 @@ function Signup() {
     const regex = /^[가-힣a-zA-Z0-9]{2,16}$/
     return regex.test(value)
   }
+  const validateEmail = (value) => {
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    return regex.test(value)
+  }
 
   const usernameHandleChange = (e) => {
     const value = e.target.value
@@ -69,30 +76,58 @@ function Signup() {
   const phoneNumberHandleChange = (e) => {
     setPhoneNumber(e.target.value)
   }
+  const emailHandleChange = (e) => {
+    const value = e.target.value
+    setEmail(value)
+    setisValidEmail(validateEmail(value))
+  }
   const verificationCodeHandleChange = (e) => {
     setVerificationCode(e.target.value)
   }
+
   const sendVerificationCode = () => {
+    //인증요청 전송 api
     axios.post('/api/v1/auth/send', phoneNumber)
-      .then((res) => {
+      .then((response) => {
         setIsCodeSent(true)
         alert('인증 코드가 전송되었습니다.')
       })
-      .catch((err) => {
+      .catch((error) => {
         alert('인증 코드 전송에 실패했습니다.')
       })
   }
   const verifyPhoneNumber = () => {
-    const str = phoneNumber + verificationCode
     const code = verificationCode
-    axios.post('/api/v1/auth/verify', {phoneNumber, code })
-      .then((res) => {
+    //인증 확인 api
+    axios.post('/api/v1/auth/verify', {phoneNumber, code})
+      .then((response) => {
         setIsVerified(true)
         alert('휴대폰 번호가 성공적으로 인증되었습니다.')
       })
-      .catch((err) => {
+      .catch((error) => {
         alert('인증 코드가 잘못되었습니다.')
       })
+  }
+
+  const handleSignUp = async (e) => {
+    e.preventDefault()
+    try {
+      //회원가입 api
+      axios.post(`/api/v1/auth/signup`, { username, password, nickname, phoneNumber, email })
+        .then((response) => {
+          // 회원가입 성공시 토큰 발급으로 로그인 처리
+          const token = response.data
+          localStorage.setItem('token', token)
+          axios.defaults.headers.common["Authorization"] = token
+
+          navigate("/completedSignup")
+        })
+        .catch((error) => {
+          console.error('회원가입에 실패하였습니다')
+        })
+    } catch (error) {
+      console.error('회원가입에 실패하였습니다')
+    }
   }
 
   useEffect(() => {
@@ -109,12 +144,12 @@ function Signup() {
   }, [password, confirmPassword])
 
   useEffect(() => {
-    if (isValidUsername && isValidPassword && isValidNickname && isVerified) {
+    if (isValidUsername && isValidPassword && isValidNickname && isValidEmail && isVerified) {
       setIsAllChecked(true)
     } else {
       setIsAllChecked(false)
     }
-  }, [isValidUsername, isValidPassword, isValidNickname, isVerified])
+  }, [isValidUsername, isValidPassword, isValidNickname, isValidEmail, isVerified])
 
   return (
     <div className="isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
@@ -134,8 +169,8 @@ function Signup() {
                 type="text"
                 value={username}
                 onChange={usernameHandleChange}
-                autoComplete="given-name"
                 className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                required
               />
               {!isValidUsername && (
                 <p className="mt-2 text-sm text-red-600">
@@ -156,8 +191,8 @@ function Signup() {
                 type="password"
                 value={password}
                 onChange={passwordHandleChange}
-                autoComplete="family-name"
                 className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                required
               />
               {showValidationMessage && !isValidPassword && (
                 <div className="mt-2 text-sm">
@@ -184,8 +219,8 @@ function Signup() {
                 type="password"
                 value={confirmPassword}
                 onChange={confirmPasswordHandleChange}
-                autoComplete="family-name"
                 className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                required
               />
               {!isPasswordMatched && (
                 <div className="mt-2 text-sm">
@@ -208,8 +243,8 @@ function Signup() {
                 type="text"
                 value={nickname}
                 onChange={nicknameHandleChange}
-                autoComplete="organization"
                 className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                required
               />
               {!isValidNickname && (
                 <p className="mt-2 text-sm text-red-600">
@@ -227,8 +262,10 @@ function Signup() {
                 id="email"
                 name="email"
                 type="email"
-                autoComplete="email"
+                value={email}
+                onChange={emailHandleChange}
                 className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                required
               />
             </div>
           </div>
@@ -244,8 +281,8 @@ function Signup() {
                 type="tel"
                 value={phoneNumber}
                 onChange={phoneNumberHandleChange}
-                autoComplete="tel"
                 className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                required
               />
               <button
                 type="button"
@@ -289,9 +326,7 @@ function Signup() {
             type="submit"
             className="block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             disabled={!isAllChecked}  // 인증 성공 후에만 버튼 활성화
-            onClick={()=>{
-              navigate("/completedSignup")
-            }}
+            onClick={handleSignUp}
           >
             회원가입
           </button>
