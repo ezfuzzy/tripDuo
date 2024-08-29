@@ -5,7 +5,8 @@ import axios from 'axios'; // axios import
 import { decodeToken } from 'jsontokens'; // decodeToken import
 import '../css/LoginPage.css';
 import GoogleAuthLogin from "../components/GoogleAuthLogin";
-import { Nav, NavLink } from "react-bootstrap";
+import { Nav } from "react-bootstrap";
+import { NavLink } from "react-router-dom";
 
 function LoginPage() {
     const [state, setState] = useState({
