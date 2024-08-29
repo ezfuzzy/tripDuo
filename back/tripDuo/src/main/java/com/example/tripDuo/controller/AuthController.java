@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.tripDuo.dto.OAuthToken;
 import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.service.AuthService;
+import com.example.tripDuo.util.JwtUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -23,16 +24,23 @@ import jakarta.servlet.http.HttpServletRequest;
 public class AuthController {
 
 	@Autowired
+	private JwtUtil jwtUtil;
+	
+	@Autowired
 	private AuthService service;
 
 	@PostMapping("/login")
-	public String login(@RequestBody UserDto dto) throws Exception {
-		return service.login(dto);
+	public ResponseEntity<String> login(@RequestBody UserDto dto) throws Exception {
+		return ResponseEntity.ok(service.login(dto));
 	}
 
 	@PostMapping("/signup")
-	public String signup(@RequestBody UserDto dto) {
-		return service.signup(dto);
+	public ResponseEntity<String> signup(@RequestBody UserDto dto) throws Exception {
+		service.signup(dto);
+		
+		String token = jwtUtil.generateToken(dto.getUsername());
+		return ResponseEntity.ok("Bearer+" + token);
+	      
 	}
 
 	@PostMapping("/send")
