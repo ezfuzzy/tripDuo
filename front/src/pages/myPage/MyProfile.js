@@ -57,7 +57,7 @@ function MyProfile(props) {
                     {/* sns 아이콘 */}
                     {/* <div className="mt-3">
                         <a className="h-8 w-8 rounded-full outline-none focus:outline-none" type="button"
-                            href={profile.social_links.instagram}>
+                            href={profile.socialLinks.instagram}>
                             <svg className="fill-current transition duration-700 ease-in-out text-gray-700 dark:text-gray-400 hover:text-pink-600 dark:hover:text-pink-600"
                                 role="img" width="24" height="24" viewBox="0 0 24 24"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -68,7 +68,7 @@ function MyProfile(props) {
                         </a>
 
                         <a className="h-8 w-8 rounded-full outline-none focus:outline-none" type="button"
-                            href={profile.social_links.gitHub}>
+                            href={profile.socialLinks.gitHub}>
                             <svg className="fill-current transition duration-700 ease-in-out text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-black"
                                 role="img" width="24" height="24" viewBox="0 0 24 24"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -78,7 +78,7 @@ function MyProfile(props) {
                             </svg>
                         </a>
                     </div> */}
-                    <p> SNS Link : {profile.social_links} </p>
+                    <p> SNS Link : {profile.socialLinks} </p>
                     <p> 전화번호 : {profile.phoneNumber}</p>
                     <p> 이메일 : {profile.email}</p>
                     <div className="mb-3">
