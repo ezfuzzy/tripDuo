@@ -108,8 +108,8 @@ function BsNavBar() {
 
                         {username && 
                         <Nav.Link as={NavLink} to={`/users/${profile.id}`}>
-                            {profile.profile_pics != null
-                                ? <img src={profile.profile_pics[0]} className='w-[30px] h-[30px] rounded-full' alt="Profile" />
+                            {profile.profilePictures != null
+                                ? <img src={profile.profilePictures[0]} className='w-[30px] h-[30px] rounded-full' alt="Profile" />
                                 : myPageIcon}
                         </Nav.Link>}
                         {username ? (

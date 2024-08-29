@@ -17,9 +17,9 @@ function MyProfileForm(props) {
         age:"",
         name:"",
         gender:"",
-        phone_num:"",
+        phoneNumber:"",
         email:"",
-        profile_pics:[],
+        profilePictures:[],
         profile_msg:"",
         social_links:{
             github:"",
@@ -105,7 +105,7 @@ const gitHubIcon = (
   </svg>
 );
 
-    // form 에서 전송되는 데이터 : profile_pics, profile_msg ,(email),(phone_num)
+    // form 에서 전송되는 데이터 : profilePictures, profile_msg ,(email),(phoneNumber)
     return (
         <>
             <h3>Profile Update Form</h3>
@@ -115,12 +115,12 @@ const gitHubIcon = (
                 {/* 프로필 이미지 */}
                 <div className='m-3 flex justify-center'>
 
-                    <input onChange={handleInputImage} ref={inputImage} className="hidden" type="file" name="profile_pics" accept="image/" multiple />
+                    <input onChange={handleInputImage} ref={inputImage} className="hidden" type="file" name="profilePictures" accept="image/" multiple />
 
                     {
-                        profile.profile_pics
+                        profile.profilePictures
                             ?
-                            <img ref={profileImage} onClick={()=>inputImage.current.click()} src={profile.profile_pics[0]} className='w-[150px] h-[150px] rounded-full mb-4' />
+                            <img ref={profileImage} onClick={()=>inputImage.current.click()} src={profile.profilePictures[0]} className='w-[150px] h-[150px] rounded-full mb-4' />
                             :   
                             <svg onClick={()=>inputImage.current.click()} xmlns="http://www.w3.org/2000/svg" width="150" height="150" fill="currentColor" className="bi bi-person-circle mb-4" viewBox="0 0 16 16">
                                 <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
@@ -163,8 +163,8 @@ const gitHubIcon = (
                     {/* 전화번호, 이메일 */}
                     <div className="flex space-x-4">
                         <div className="mb-3 flex-1">
-                            <label htmlFor="phone_num" className="block text-sm font-medium mb-1">Mobile Number</label>
-                            <input onChange={handleChange} type="text" name="phone_num" value={profile.phone_num} className="block w-full p-2 border border-gray-300 rounded-md" />
+                            <label htmlFor="phoneNumber" className="block text-sm font-medium mb-1">Mobile Number</label>
+                            <input onChange={handleChange} type="text" name="phoneNumber" value={profile.phoneNumber} className="block w-full p-2 border border-gray-300 rounded-md" />
                         </div>
                         <div className="mb-3 flex-1">
                             <label htmlFor="email" className="block text-sm font-medium mb-1">Email</label>
