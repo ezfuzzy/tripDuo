@@ -28,9 +28,9 @@ function Mypage() {
       <div className='container'>
         <div className="flex items-center gap-x-6">
           {
-            profile.profile_pics != null
+            profile.profilePictures != null
               ?
-              <img src={profile.profile_pics[0]} className='w-20 h-20 rounded-full' />
+              <img src={profile.profilePictures[0]} className='w-20 h-20 rounded-full' />
               :
               <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="currentColor" className="bi bi-person-circle" viewBox="0 0 16 16">
                 <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
