@@ -5,6 +5,7 @@ import axios from 'axios'; // axios import
 import { decodeToken } from 'jsontokens'; // decodeToken import
 import '../css/LoginPage.css';
 import GoogleAuthLogin from "../components/GoogleAuthLogin";
+import { Nav, NavLink } from "react-bootstrap";
 
 function LoginPage() {
     const [state, setState] = useState({
@@ -74,6 +75,7 @@ function LoginPage() {
                     <button onClick={handleLogin} className="login-button">로그인</button>
                 </div>
                 <GoogleAuthLogin show={true} className="google-auth-login" />
+                <p>회원가입 하지 않으셨다면 <Nav.Link as={NavLink} to="/agreement">클릭</Nav.Link></p>
             </div>
         </div>
     );
