@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import AlertModal from "./AlertModal";
 import bootstrapBundleMin from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import axios from 'axios';
@@ -14,9 +14,11 @@ function BsNavBar() {
     const username = useSelector(state => state.username, shallowEqual);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
     
     const [alertShow, setAlertShow] = useState(false);
     const [openSections, setOpenSections] = useState({});
+    const [lastVisited, setLastVisited] = useState('/');
 
     const [profile, setProfile] = useState({});
 
@@ -58,6 +60,10 @@ function BsNavBar() {
         }
     };
 
+    const handleTripDuoClick = () => {
+        navigate(lastVisited); // 마지막 방문 페이지로 이동
+    };
+
     useEffect(()=>{      
         if(username){
         axios.get(`/api/v1/users/username/${username}`)
@@ -68,6 +74,13 @@ function BsNavBar() {
         .catch(error=>console.log(error))
         }    
     }, [username])
+    
+    useEffect(() => {
+        // 페이지가 변경될 때마다 lastVisited 값을 업데이트
+        if (location.pathname === '/home-inter' || location.pathname === '/') {
+            setLastVisited(location.pathname);
+        }
+    }, [location.pathname]);
 
     const myPageIcon = (
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" className="bi bi-person-square" viewBox="0 0 16 16">
@@ -98,7 +111,7 @@ function BsNavBar() {
                         {toggleBtn}
                     </button>
 
-                    <NavbarBrand href="/" className='appName'>
+                    <NavbarBrand href="#" className='appName' onClick={handleTripDuoClick}>
                         TripDuo
                     </NavbarBrand>
 
@@ -121,17 +134,17 @@ function BsNavBar() {
                 </Container>
             </Navbar>
 
-            <Nav fill variant="tabs" defaultActiveKey="/">
-                <Nav.Item>
-                    <Nav.Link as={NavLink} to="/">국내 여행</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                    <Nav.Link as={NavLink} to="/home-inter">해외 여행</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                    <Nav.Link as={NavLink} to="/home-mate">여행 메이트</Nav.Link>
-                </Nav.Item>
-            </Nav>
+                <Nav fill variant="tabs" defaultActiveKey="/">
+                    <Nav.Item>
+                        <Nav.Link as={NavLink} to="/" onClick={() => setLastVisited('/')}>국내 여행</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link as={NavLink} to="/home-inter" onClick={() => setLastVisited('/home-inter')}>해외 여행</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link as={NavLink} to="/home-mate">여행 메이트</Nav.Link>
+                    </Nav.Item>
+                </Nav>
 
             <div className="offcanvas offcanvas-start" data-bs-backdrop="static" tabIndex="-1" id="staticBackdrop" aria-labelledby="staticBackdropLabel">
                 <div className="offcanvas-header">
