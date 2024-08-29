@@ -1,5 +1,7 @@
 package com.example.tripDuo.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.tripDuo.entity.User;
 
 import lombok.AllArgsConstructor;
@@ -25,7 +27,7 @@ public class UserDto {
     private String phoneNumber;
     private String email; // [note: "인증 받으면 email 로그인 사용 가능"]
 
-    private String profilePictures;
+    private String profilePicture;
     private String profileMessage;
     
     private String curLocation;
@@ -43,6 +45,8 @@ public class UserDto {
     private String updatedAt; 
     private String deletedAt; //  [note:"soft delete 지원?"]
     
+    private MultipartFile profileImgForUpload;
+    
     public static UserDto toDto(User entity) {
         return UserDto.builder()
                 .id(entity.getId())
@@ -54,7 +58,7 @@ public class UserDto {
                 .gender(entity.getGender())
                 .phoneNumber(entity.getPhoneNumber())
                 .email(entity.getEmail())
-                .profilePictures(entity.getProfilePictures())
+                .profilePicture(entity.getProfilePicture())
                 .profileMessage(entity.getProfileMessage())
                 .curLocation(entity.getCurLocation())
                 .verificationStatus(entity.getVerificationStatus())

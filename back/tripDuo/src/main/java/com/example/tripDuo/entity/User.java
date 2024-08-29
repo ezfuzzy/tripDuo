@@ -38,7 +38,7 @@ public class User {
     private String phoneNumber;
     private String email; // [note: "인증 받으면 email 로그인 사용 가능"]
 
-    private String profilePictures;
+    private String profilePicture;
     private String profileMessage;
     
     private String curLocation;
@@ -92,7 +92,7 @@ public class User {
                 .gender(dto.getGender())
                 .phoneNumber(dto.getPhoneNumber())
                 .email(dto.getEmail())
-                .profilePictures(dto.getProfilePictures())
+                .profilePicture(dto.getProfilePicture())
                 .profileMessage(dto.getProfileMessage())
                 .curLocation(dto.getCurLocation())
                 .verificationStatus(dto.getVerificationStatus())
