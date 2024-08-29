@@ -21,7 +21,7 @@ function MyProfileForm(props) {
         email:"",
         profilePictures:[],
         profile_msg:"",
-        social_links:{
+        socialLinks:{
             github:"",
             instagram:""
         }
@@ -29,7 +29,7 @@ function MyProfileForm(props) {
 
     const {id} = useParams()
     
-
+    // useEffect
     useEffect(()=>{
         axios.get(`/api/v1/users/${id}`)
         .then(res=>{
@@ -48,23 +48,24 @@ function MyProfileForm(props) {
         })
     }
 
-    const handleInputImage = (e)=>{
-        const file = e.target.files[0]
+    const handleInputImage = ()=>{
 
+        const file = inputImage.current.files[0]
+        
         const reg=/image/
 
         if(!reg.test(file.type)){ 
             alert("이미지 파일이 아닙니다")
             return
         }
-        
+
         const reader = new FileReader()
         reader.readAsDataURL(file)
         reader.onload=(e)=>{
-            const data = e.target.result
-            profileImage.current.src = data           
+            const data = e.target.result // 읽은 파일의 데이터
+            
+            // profileImage.current.src = data           
         }
-
         
     }
 
@@ -134,6 +135,7 @@ const gitHubIcon = (
                     <label htmlFor="nickname" className="block text-sm font-medium mb-1">Nickname</label>
                     <input onChange={handleChange} type="text" name="nickname" value={profile.nickname} className="block w-full p-2 border border-gray-300 rounded-md"/>
                 </div>
+
                     {/* 로그인 정보 */}
                     <div className="flex space-x-4 bg-gray-200 rounded">
                         <div className="mb-3 flex-1">
@@ -145,6 +147,7 @@ const gitHubIcon = (
                             <input type="button" name="password" className="block w-full p-2 border border-gray-300 rounded-md" value="To Update Password" readOnly/>
                         </div>
                     </div>
+
                     {/* 개인 정보 */}
                     <div className="flex space-x-4 bg-gray-200 rounded">
                         <div className="mb-3 flex-1">
@@ -160,6 +163,7 @@ const gitHubIcon = (
                             <input type="text" name="gender" value={profile.gender} className="block w-full p-2 border border-gray-300 rounded-md"  readOnly/>
                         </div>
                     </div>
+
                     {/* 전화번호, 이메일 */}
                     <div className="flex space-x-4">
                         <div className="mb-3 flex-1">
@@ -171,15 +175,16 @@ const gitHubIcon = (
                             <input onChange={handleChange} type="text" name="email" value={profile.email} className="block w-full p-2 border border-gray-300 rounded-md" />
                         </div>
                     </div>
+
                     {/* 소셜 링크 */}
                     <div className="flex space-x-4">
                         <div className="mb-3 flex-1">
                             <label htmlFor="github" className="block text-sm font-medium mb-1">{gitHubIcon}</label>
-                            <input onChange={handleChange} type="text" name="github" value={profile.social_links} className="block w-full p-2 border border-gray-300 rounded-md" />
+                            <input onChange={handleChange} type="text" name="github" value={profile.socialLinks} className="block w-full p-2 border border-gray-300 rounded-md" />
                         </div>
                         <div className="mb-3 flex-1">
                             <label htmlFor="instagram" className="block text-sm font-medium mb-1">{instagramIcon}</label>
-                            <input onChange={handleChange} type="text" name="instagram" value={profile.social_links} className="block w-full p-2 border border-gray-300 rounded-md" />
+                            <input onChange={handleChange} type="text" name="instagram" value={profile.socialLinks} className="block w-full p-2 border border-gray-300 rounded-md" />
                         </div>
                     </div>
                     
