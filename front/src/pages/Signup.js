@@ -1,8 +1,11 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 
 function Signup() {
+  const location = useLocation()
+  const { termsService, termsPrivacy, essential } = location.state || {}
+
   const [username, setUsername] = useState('')
   const [nickname, setNickName] = useState('')
   const [isValidUsername, setIsValidUsername] = useState(true)
@@ -130,6 +133,14 @@ function Signup() {
     }
   }
 
+  useEffect(()=>{
+    if(termsService===true && termsPrivacy===true && essential===true){
+    } else{
+      alert("회원가입을 위해선 약관동의가 필요합니다.")
+      navigate("/agreement")
+    }
+  }, [])
+
   useEffect(() => {
     if (hasLowerCase && hasUpperCase && hasNumber && hasSpecialChar && isValidLength) {
       setIsValidPassword(true)
@@ -143,6 +154,7 @@ function Signup() {
     setIsPasswordMatched(password === confirmPassword);
   }, [password, confirmPassword])
 
+  //모든 유효성 검사와 인증절차를 거쳐야 회원가입 버튼 활성화
   useEffect(() => {
     if (isValidUsername && isValidPassword && isValidNickname && isValidEmail && isVerified) {
       setIsAllChecked(true)
