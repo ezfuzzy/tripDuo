@@ -19,7 +19,7 @@ function MyProfileForm(props) {
         gender:"",
         phoneNumber:"",
         email:"",
-        profilePictures:"",
+        profilePicture:"",
         profile_msg:"",
         socialLinks:{
             github:"",
@@ -68,7 +68,7 @@ function MyProfileForm(props) {
             
             setProfile({
                 ...profile,
-                profilePictures:[file]
+                profilePicture:[file]
             })
             // profileImage.current.src = data           
         }
@@ -112,7 +112,7 @@ const gitHubIcon = (
   </svg>
 );
 
-    // form 에서 전송되는 데이터 : profilePictures, profile_msg ,(email),(phoneNumber)
+    // form 에서 전송되는 데이터 : profilePicture, profile_msg ,(email),(phoneNumber)
     return (
         <>
             <h3>Profile Update Form</h3>
@@ -122,10 +122,10 @@ const gitHubIcon = (
                 {/* 프로필 이미지 */}
                 <div className='m-3 flex justify-center'>
 
-                    <input onChange={handleInputImage} ref={inputImage} className="hidden" type="file" name="profilePictures" accept="image/" multiple />
+                    <input onChange={handleInputImage} ref={inputImage} className="hidden" type="file" name="profilePicture" accept="image/" multiple />
 
                     {
-                        profile.profilePictures
+                        profile.profilePicture
                             ?
                             <img ref={profileImage} onClick={()=>inputImage.current.click()} src={`upload/images/${profile.profilePicture}`} className='w-[150px] h-[150px] rounded-full mb-4' alt='profilePicture' />
                             :   
