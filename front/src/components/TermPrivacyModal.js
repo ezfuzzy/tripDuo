@@ -4,13 +4,16 @@ import '../css/TermPrivacyModal.css'
 function TermPrivacyModal({ isOpen, onClose }) {
     if (!isOpen) return null
 
-    const handleConfirmClick = () => {
+    const handleOutClick = () => {
         onClose()
     }
 
     return (
         <div className="modal-overlay">
             <div className="modal-content privacy">
+                <div className="modal-header flex justify-end items-center">
+                    <button className="close-button w-20" onClick={handleOutClick}>X</button>
+                </div>
                 <div className="privacy_content">
                     <div className="inner">
                         <h1 className="main_title">개인정보 수집 이용 동의</h1>
@@ -84,7 +87,7 @@ function TermPrivacyModal({ isOpen, onClose }) {
                             </pre>
                         </div>
                         <div className="button_wrap">
-                            <button type="button" className="btn_confirm" onClick={handleConfirmClick}>
+                            <button type="button" className="btn_confirm" onClick={handleOutClick}>
                                 확인
                             </button>
                         </div>
