@@ -102,7 +102,7 @@ function Signup() {
   const verifyPhoneNumber = () => {
     const code = verificationCode
     //인증 확인 api
-    axios.post('/api/v1/auth/verify', {phoneNumber, code})
+    axios.post('/api/v1/auth/verify', { phoneNumber, code })
       .then((response) => {
         setIsVerified(true)
         alert('휴대폰 번호가 성공적으로 인증되었습니다.')
@@ -123,7 +123,11 @@ function Signup() {
           localStorage.setItem('token', token)
           axios.defaults.headers.common["Authorization"] = token
 
-          navigate("/completedSignup")
+          navigate("/completedSignup", {
+            state: {
+              isAllChecked: isAllChecked
+            }
+          })
         })
         .catch((error) => {
           console.error('회원가입에 실패하였습니다')
@@ -133,11 +137,10 @@ function Signup() {
     }
   }
 
-  useEffect(()=>{
-    if(termsService===true && termsPrivacy===true && essential===true){
-    } else{
-      alert("회원가입을 위해선 약관동의가 필요합니다.")
-      navigate("/agreement")
+  useEffect(() => {
+    if (!(termsService && termsPrivacy && essential)) {
+      alert("회원가입을 위해선 약관동의가 필요합니다.");
+      navigate("/agreement");
     }
   }, [])
 

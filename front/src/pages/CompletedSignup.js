@@ -1,13 +1,21 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 
 function CompletedSignup(props) {
+    const location = useLocation()
+    const { isAllChecked } = location.state || {}
+    const navigate = useNavigate()
 
     const [profile, setProfile] = useState({})
     const username = useSelector(state => state.username, shallowEqual)
+    
+    useEffect(()=>{
+        if(!isAllChecked){alert("잘못된 경로입니다")}
+        navigate("/")
+    }, [])
 
     useEffect(()=>{      
         if(username){
