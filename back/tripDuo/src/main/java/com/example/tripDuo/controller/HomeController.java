@@ -12,10 +12,8 @@ public class HomeController {
 	
 	/**
 	 * 여기 test 용도 컨트롤러 입니다
-	 *  !!! 절대 참고 금지 !!!
-	 *    
+	 *  !!! 절대 참고 금지 !!!  
 	 */
-
 	
 	@ResponseBody
 	@GetMapping("/")
