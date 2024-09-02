@@ -347,8 +347,8 @@ public class AuthServiceImpl implements AuthService {
 				}
 				
 				UserDto existingUser = UserDto.toDto(repo.findByUsername(dto.getUsername()));
-				
-		        if (!encoder.matches(existingUser.getPassword(), dto.getNewPassword())) {
+				// 입력된 비밀번호(dto.getPassword())와 기존 비밀번호(existingUser.getPassword()) 비교 
+		        if (!encoder.matches(existingUser.getPassword(), dto.getPassword())) {  
 		            return false;
 		        	//throw new Exception("기존 비밀번호가 일치하지 않습니다.");
 		        }
