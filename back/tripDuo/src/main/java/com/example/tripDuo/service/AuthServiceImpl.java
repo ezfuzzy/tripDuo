@@ -338,4 +338,24 @@ public class AuthServiceImpl implements AuthService {
 			        return "카카오 로그아웃 실패";
 			    }
 			  }
+			
+			@Override
+			public Boolean updateUserPassword(UserDto dto) {
+				
+				if(dto.getNewPassword() != dto.getNewConfirmPassword()) {
+					return false;
+				}
+				
+				UserDto existingUser = UserDto.toDto(repo.findByUsername(dto.getUsername()));
+				
+		        if (!encoder.matches(existingUser.getPassword(), dto.getNewPassword())) {
+		            return false;
+		        	//throw new Exception("기존 비밀번호가 일치하지 않습니다.");
+		        }
+		        String encodedNewPassword = encoder.encode(dto.getNewPassword());
+		        dto.setPassword(encodedNewPassword);
+				repo.save(User.toEntity(dto));
+
+		        return true;
+			}
 }
