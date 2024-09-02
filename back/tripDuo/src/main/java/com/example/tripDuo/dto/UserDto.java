@@ -3,6 +3,7 @@ package com.example.tripDuo.dto;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.tripDuo.entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +19,8 @@ public class UserDto {
     
     private String username;
     private String password;
+    private String newPassword;
+    private String newConfirmPassword;
     
     private String nickname;
               
@@ -45,6 +48,7 @@ public class UserDto {
     private String updatedAt; 
     private String deletedAt; //  [note:"soft delete 지원?"]
     
+    @JsonIgnore
     private MultipartFile profileImgForUpload;
     
     public static UserDto toDto(User entity) {
