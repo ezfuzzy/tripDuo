@@ -3,13 +3,13 @@ package com.example.tripDuo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.tripDuo.entity.User;
 import com.example.tripDuo.repository.UserRepository;
-
-import jakarta.annotation.PostConstruct;
 
 @PropertySource(value = "classpath:custom.properties")
 @SpringBootApplication
@@ -25,7 +25,7 @@ public class TripDuoApplication {
 	@Autowired
 	private PasswordEncoder encoder;
 	
-	@PostConstruct
+	@EventListener(ApplicationReadyEvent.class)
 	public void init() {
 		System.out.println("\n### init ###");
 		User u1 = User.builder().username("ezfz").password(encoder.encode("hysz")).gender("남자").role("admin").build(); 
@@ -51,6 +51,7 @@ public class TripDuoApplication {
 		userRepo.save(t3);
 		userRepo.save(t4);
 		userRepo.save(t5);
+		System.out.println("\n\n 서버가 성공적으로 실행되었습니다.");
 	}
 
 }
