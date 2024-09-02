@@ -14,6 +14,10 @@ import MyProfile from "../pages/myPage/MyProfile"
 import MyProfileForm from "../pages/myPage/MyProfileForm"
 import CompletedSignup from "../pages/CompletedSignup"
 import KakaoRedirect from "../components/KakaoRedirect"
+import ChangePassword from "../pages/myPage/ChangePassword"
+import MateBoard from "../pages/boards/MateBoard"
+import MateBoardForm from "../pages/boards/MateBoardForm"
+import MateBoardEditForm from "../pages/boards/MateBoardEditForm"
 
 const routes = [
     // /users/:id
@@ -31,9 +35,12 @@ const routes = [
     {path:"/signup", element: <Signup/>},
     {path:"/login", element: <LoginPage/>},
     {path:"/logout", element: <LogoutPage /> },
-
     {path:"/completedSignup", element:<CompletedSignup/>},
-    {path:"/api/v1/auth/kakao/accessTokenCallback", element:<KakaoRedirect/>}
+    {path:"/api/v1/auth/kakao/accessTokenCallback", element:<KakaoRedirect/>},
+    {path:"/changePassword", element:<ChangePassword/>},
+    {path:"/mateBoard", element:<MateBoard/>},
+    {path:"/mateBoard/new", element:<MateBoardForm/>},
+    {path:"/mateBoard/:num/edit", element:<MateBoardEditForm/>}
 ]
 
 const router = createBrowserRouter([{
