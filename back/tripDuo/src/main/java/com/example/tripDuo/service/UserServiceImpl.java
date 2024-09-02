@@ -1,6 +1,7 @@
 package com.example.tripDuo.service;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	UserRepository repo;
-
+	
 	@Override
 	public UserDto getUserById(int id) {
 		return UserDto.toDto(repo.findById(id).get());
@@ -44,26 +45,39 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void updateUser(UserDto dto) {
+	public Boolean updateUser(UserDto dto, MultipartFile profileImgForUpload) {
 
-		MultipartFile image = dto.getProfileImgForUpload();
+	    // 프로필 이미지가 존재하고, 파일 크기가 0이 아닌 경우 처리
+	    if (profileImgForUpload != null && !profileImgForUpload.isEmpty()) {
+	        String saveFileName = UUID.randomUUID().toString();
+	        String filePath = fileLocation + File.separator + saveFileName;
+	        System.out.println(filePath);
 
-		if (image.getSize() != 0) {
-			String saveFileName = UUID.randomUUID().toString();
-			String filePath = fileLocation + File.separator + saveFileName;
+	        // 파일을 지정된 경로로 저장
+	        try {
+	            File file = new File(filePath);
+	            profileImgForUpload.transferTo(file);
+	            dto.setProfilePicture(saveFileName);
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	            // throw new CustomFileUploadException("File upload failed", e);
+	        }
+	    }
 
-			try {
-				File f = new File(filePath);
-				dto.getProfileImgForUpload().transferTo(f);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			dto.setProfilePicture(filePath);
-		}
+	    // 기존 유저 정보 가져오기
+		UserDto existingUser = UserDto.toDto(repo.findById(dto.getId()).get());
 
-		repo.save(User.toEntity(dto));
+	    // 비밀번호는 기존 것을 유지
+	    dto.setPassword(existingUser.getPassword());
+
+	    // 변경된 정보를 저장
+	    repo.save(User.toEntity(dto));
+	    
+	    return true;
 	}
+	
 
+	
 	@Override
 	public void deleteUser(int id) {
 		repo.deleteById(id);
