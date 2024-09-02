@@ -14,6 +14,9 @@ import MyProfile from "../pages/myPage/MyProfile"
 import MyProfileForm from "../pages/myPage/MyProfileForm"
 import CompletedSignup from "../pages/CompletedSignup"
 import ChangePassword from "../pages/myPage/ChangePassword"
+import MateBoard from "../pages/boards/MateBoard"
+import MateBoardForm from "../pages/boards/MateBoardForm"
+import MateBoardEditForm from "../pages/boards/MateBoardEditForm"
 
 const routes = [
     // /users/:id
@@ -32,7 +35,10 @@ const routes = [
     {path:"/login", element: <LoginPage/>},
     {path:"/logout", element: <LogoutPage /> },
     {path:"/completedSignup", element:<CompletedSignup/>},
-    {path:"/changePassword", element:<ChangePassword/>}
+    {path:"/changePassword", element:<ChangePassword/>},
+    {path:"/mateBoard", element:<MateBoard/>},
+    {path:"/mateBoard/new", element:<MateBoardForm/>},
+    {path:"/mateBoard/:num/edit", element:<MateBoardEditForm/>}
 ]
 
 const router = createBrowserRouter([{
