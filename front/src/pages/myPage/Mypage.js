@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
-function Mypage() {
+function MyPage() {
 
   const [profile, setProfile] = useState({})
   const { id } = useParams()
@@ -76,4 +76,4 @@ function Mypage() {
   );
 }
 
-export default Mypage;
+export default MyPage;
