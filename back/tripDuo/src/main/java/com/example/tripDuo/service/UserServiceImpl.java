@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
 	UserRepository repo;
 	
 	@Override
-	public UserDto getUserById(int id) {
+	public UserDto getUserById(Long id) {
 		return UserDto.toDto(repo.findById(id).get());
 	}
 
@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	@Override
 	public Boolean updateUser(UserDto dto, MultipartFile profileImgForUpload) {
 
@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
 
 	
 	@Override
-	public void deleteUser(int id) {
+	public void deleteUser(Long id) {
 		repo.deleteById(id);
 	}
 
