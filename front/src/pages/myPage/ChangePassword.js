@@ -4,12 +4,8 @@ import { useNavigate } from "react-router";
 
 function PasswordUpdate(props) {
   const [currentPassword, setCurrentPassword] = useState("");
-
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const [isValidNewPassword, setIsValidNewPassword] = useState(true);
   const [isPasswordMatched, setIsPasswordMatched] = useState(true);
@@ -34,7 +30,10 @@ function PasswordUpdate(props) {
     setHasSpecialChar(/[!@#$%^&*]/.test(value));
     setIsValidLength(value.length >= 8 && value.length <= 15);
   };
-
+  //기존 비밀번호 핸들러
+  const handleCurrentPassword = (e)=>{
+    setCurrentPassword(e.target.value)
+  }
   //새 비밀번호 핸들러
   const handleNewPasswordChange = (e) => {
     const value = e.target.value;
@@ -45,8 +44,7 @@ function PasswordUpdate(props) {
 
   //새 비밀번호 확인 핸들러
   const handleConfirmPasswordChange = (e) => {
-    const value = e.target.value;
-    setConfirmPassword(value);
+    setConfirmPassword(e.target.value);
     // setIsPasswordMatch(value === newPassword);
   };
 
@@ -94,6 +92,7 @@ function PasswordUpdate(props) {
             </label>
             <input
               type="password"
+              onChange={handleCurrentPassword}
               className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             />
           </div>
