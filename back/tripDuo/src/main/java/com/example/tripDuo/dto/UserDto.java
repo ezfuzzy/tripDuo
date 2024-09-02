@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 public class UserDto {
-    private int id;
+    private Long id;
     
     private String username;
     private String password;
@@ -24,7 +24,7 @@ public class UserDto {
     
     private String nickname;
               
-    private int age;
+    private Long age;
     private String name;
     private String gender;
     private String phoneNumber;
@@ -40,7 +40,7 @@ public class UserDto {
               
     private String role; // [note: "user / manager / admin"]
 
-    private float ratings; // 지표 설정 
+    private Float ratings; // 지표 설정 
 
     private String lastLogin; // 몇분전 접속  
     

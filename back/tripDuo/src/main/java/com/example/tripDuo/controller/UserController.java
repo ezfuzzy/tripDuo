@@ -27,7 +27,7 @@ public class UserController {
 	}
 	
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUser(@PathVariable int id) {
+    public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
         // 사용자 정보 조회
         UserDto user = service.getUserById(id);
         if (user != null) {
@@ -49,7 +49,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable int id,@RequestParam(required = false) MultipartFile profileImgForUpload, UserDto userDto) {
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long id,@RequestParam(required = false) MultipartFile profileImgForUpload, UserDto userDto) {
         // 사용자 정보 업데이트
        service.updateUser(userDto, profileImgForUpload);
        

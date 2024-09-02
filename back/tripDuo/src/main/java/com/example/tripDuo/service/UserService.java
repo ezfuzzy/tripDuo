@@ -8,7 +8,7 @@ public interface UserService {
 
 	
 	// ### getUser ### 
-	public UserDto getUserById(int id);
+	public UserDto getUserById(Long id);
 	public UserDto getUserByUsername(String username);
 	public UserDto getUserByPhonenum(String phone_num);
 	public UserDto getUserByEmail(String email);
@@ -17,7 +17,7 @@ public interface UserService {
 	public Boolean updateUser(UserDto dto, MultipartFile profileImgForUpload);
 	
 	// ### deleteUser ###
-	public void deleteUser(int id);
+	public void deleteUser(Long id);
 	
 		
 }
