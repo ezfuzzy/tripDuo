@@ -13,13 +13,17 @@ function MyProfile(props) {
     const navigate = useNavigate()
     const [profile, setProfile] = useState({})
     const {id} = useParams()
+    const [imageData, setImageData] = useState(null)
     
 
     useEffect(()=>{
         axios.get(`/api/v1/users/${id}`)
         .then(res=>{
-            console.log(res)
+            console.log(res.data)
             setProfile(res.data)
+            if(res.data.profilePicture){
+                setImageData("/upload/images/"+res.data.profilePicture)
+            }
         })
         .catch(error=>console.log(error))
 
@@ -32,14 +36,13 @@ function MyProfile(props) {
 
     return (
         <>
-            <h3>My Profile</h3>
             <div className="container h-screen">
                 <div>
                     <div className="flex items-center gap-x-6">
                         {
-                            profile.profilePicture != null
+                            imageData
                                 ?
-                                 <img src={profile.profilePicture[0]} className='w-20 h-20 rounded-full' />
+                                 <img src={imageData} className='w-20 h-20 rounded-full' />
                                 :
                                 <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="currentColor" className="bi bi-person-circle" viewBox="0 0 16 16">
                                     <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
@@ -51,7 +54,7 @@ function MyProfile(props) {
                             <p className="text-sm font-semibold leading-6 text-indigo-600">{profile.gender} / {profile.age}</p>
                         </div>
                         <div>
-                            <button className='btn btn-secondary btn-sm' onClick={handleClick}>to updataform</button>
+                            <button className='btn btn-secondary btn-sm' onClick={handleClick}>프로필 수정하기</button>
                         </div>
                     </div>
                     {/* sns 아이콘 */}
@@ -82,8 +85,8 @@ function MyProfile(props) {
                     <p> 전화번호 : {profile.phoneNumber}</p>
                     <p> 이메일 : {profile.email}</p>
                     <div className="mb-3">
-                        <label htmlFor="profile_msg" className="form-label">자기 소개</label>
-                        <textarea name="profile_msg" className="form-control" rows="5" value={profile.profile_msg} readOnly/>
+                        <label htmlFor="profileMessage" className="form-label">자기 소개</label>
+                        <textarea name="profileMessage" className="form-control" rows="5" value={profile.profileMessage} readOnly/>
                     </div>
                 </div>
                 {/* 페이지의 정보를 가진 username 과 로그인된 username 이 같으면 ... */}

@@ -14,6 +14,7 @@ import Mypage from "../pages/myPage/Mypage"
 import MyProfile from "../pages/myPage/MyProfile"
 import MyProfileForm from "../pages/myPage/MyProfileForm"
 import CompletedSignup from "../pages/CompletedSignup"
+import ChangePassword from "../pages/myPage/ChangePassword"
 
 const routes = [
     // /users/:id
@@ -32,7 +33,8 @@ const routes = [
     {path:"/login", element: <LoginPage/>},
     {path:"/logout", element: <LogoutPage /> },
     {path:"/loginlist", element:<LoginListPage/>},
-    {path:"/completedSignup", element:<CompletedSignup/>}
+    {path:"/completedSignup", element:<CompletedSignup/>},
+    {path:"/changePassword", element:<ChangePassword/>}
 ]
 
 const router = createBrowserRouter([{
