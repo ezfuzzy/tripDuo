@@ -37,7 +37,7 @@ const routes = [
     {path:"/logout", element: <LogoutPage /> },
     {path:"/completedSignup", element:<CompletedSignup/>},
     {path:"/api/v1/auth/kakao/accessTokenCallback", element:<KakaoRedirect/>},
-    {path:"/changePassword", element:<ChangePassword/>},
+    {path:"/:id/changePassword", element:<ChangePassword/>},
     {path:"/mateBoard", element:<MateBoard/>},
     {path:"/mateBoard/new", element:<MateBoardForm/>},
     {path:"/mateBoard/:num/edit", element:<MateBoardEditForm/>}
