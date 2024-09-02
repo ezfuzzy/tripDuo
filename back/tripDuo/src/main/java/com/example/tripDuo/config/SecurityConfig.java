@@ -31,7 +31,7 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilerChain(HttpSecurity httpSecurity) throws Exception {
 
 		String[] whiteList = { 
-				"/", "/home", "/api/**", 
+				"/", "/home", "/api/**", "/upload/images/**", "/test/**"
 				};
 
 		httpSecurity.headers((header) -> {
