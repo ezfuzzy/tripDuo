@@ -7,8 +7,10 @@ function MyProfileForm(props) {
 
     const profileImage = useRef();
     const inputImage = useRef();
+    const inputNickname = useRef();
     
     const navigate = useNavigate()
+    const [imageData, setImageData] = useState(null)
 
     const [profile, setProfile] = useState({
         id:"",
@@ -20,7 +22,7 @@ function MyProfileForm(props) {
         phoneNumber:"",
         email:"",
         profilePicture:"",
-        profile_msg:"",
+        profileMessage:"",
         socialLinks:{
             github:"",
             instagram:""
@@ -28,17 +30,28 @@ function MyProfileForm(props) {
     })
 
     const {id} = useParams()
+
+    const [isDuplicate, setIsDuplicate] = useState(null)
+    const [isNicknameChanged, setIsNicknameChanged] = useState(false)
     
     // useEffect
     useEffect(()=>{
         axios.get(`/api/v1/users/${id}`)
         .then(res=>{
-            console.log(res)
+            console.log(res.data)
             setProfile(res.data)
+            if(res.data.profilePicture){
+                setImageData("/upload/images/"+res.data.profilePicture)
+            }
         })
         .catch(error=>console.log(error))
 
     }, [id])
+
+    //비밀번호 변경 페이지로 이동
+    const toChangePassword = ()=>{
+        navigate("/changePassword")
+    }
 
     // 이벤트 관리부
     const handleChange = (e) => {
@@ -46,6 +59,16 @@ function MyProfileForm(props) {
             ...profile,
             [e.target.name]: e.target.value
         })
+
+        if( e.target.name === "nickname"){
+            setIsNicknameChanged(true)
+        }
+    }
+
+    //중복 검사 핸들러
+    const handleCheckDuplicate = ()=>{
+    // isDuplicate 상태값 필요
+
     }
 
     const handleInputImage = ()=>{
@@ -62,24 +85,64 @@ function MyProfileForm(props) {
         const reader = new FileReader()
         reader.readAsDataURL(file)
         reader.onload=(e)=>{
-            const data = e.target.result // 읽은 파일의 데이터
-            file.dataUrl = data
-            console.log("DATA:"+data);
+            const data = e.target.result
+            // file.dataUrl = data
             
-            setProfile({
-                ...profile,
-                profilePicture:[file]
-            })
-            // profileImage.current.src = data           
+            setImageData(data)          
         }
         
     }
 
     const handleSave = () => {
-        axios.put(`/api/v1/users/${id}`, profile)
+        // 닉네임이 수정되고 중복체크가 성공하지 않았다면
+        if (isNicknameChanged && !isDuplicate) {
+            alert('사용 가능한 닉네임인지 확인해주세요');
+            //포커스 이동 !! 좀 더 위로 올라가게 수정하기
+            inputNickname.current.scrollIntoView({ behavior: 'smooth' })
+            return;
+        }
+
+        const formData = new FormData()
+        formData.append("id", profile.id)
+        formData.append("username", profile.username)
+        formData.append("age", profile.age)
+        formData.append("name", profile.name)
+        formData.append("gender", profile.gender)
+        formData.append("nickname", profile.nickname)
+        formData.append("phoneNumber", profile.phoneNumber)
+        formData.append("email", profile.email)
+        formData.append("socialLinks", profile.socialLinks)
+        formData.append("profileMessage", profile.profileMessage)
+
+        formData.append("password", profile.password)
+
+        formData.append("curLocation", profile.curLocation)
+        formData.append("verificationStatus", profile.verificationStatus)
+        formData.append("accountStatus", profile.accountStatus)
+        formData.append("role", profile.role)
+        formData.append("ratings", profile.ratings)
+        formData.append("lastLogin", profile.lastLogin)
+
+        //current.files[0] 의 값이 null 로 전달되어 에러가 발생 
+        //input type="file" 에 파일이 존재하면 multipart type의 데이터 append
+        if(inputImage.current.files && inputImage.current.files.length > 0){
+            formData.append("profileImgForUpload", inputImage.current.files[0])
+        }
+        
+        for (const [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+          }
+        
+        axios.put(`/api/v1/users/${id}`, formData, {
+            headers:{
+                "Content-Type": "multipart/form-data"
+            }
+        })
         .then(res=>{
+            console.log(res.data);
+            
             alert("저장되었습니다.")
-            navigate(`/users/${profile.id}/profile`)
+            navigate(`/users/${id}/profile`)
         })
         .catch(error=>console.log(error))
     }
@@ -112,7 +175,7 @@ const gitHubIcon = (
   </svg>
 );
 
-    // form 에서 전송되는 데이터 : profilePicture, profile_msg ,(email),(phoneNumber)
+    // form 에서 전송되는 데이터 : profilePicture, profileMessage ,(email),(phoneNumber)
     return (
         <>
             <h3>Profile Update Form</h3>
@@ -125,9 +188,9 @@ const gitHubIcon = (
                     <input onChange={handleInputImage} ref={inputImage} className="hidden" type="file" name="profilePicture" accept="image/" multiple />
 
                     {
-                        profile.profilePicture
+                        imageData 
                             ?
-                            <img ref={profileImage} onClick={()=>inputImage.current.click()} src={`upload/images/${profile.profilePicture}`} className='w-[150px] h-[150px] rounded-full mb-4' alt='profilePicture' />
+                            <img ref={profileImage} onClick={()=>inputImage.current.click()} src={imageData} className='w-[150px] h-[150px] rounded-full mb-4' alt='profilePicture' />
                             :   
                             <svg onClick={()=>inputImage.current.click()} xmlns="http://www.w3.org/2000/svg" width="150" height="150" fill="currentColor" className="bi bi-person-circle mb-4" viewBox="0 0 16 16">
                                 <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
@@ -139,7 +202,18 @@ const gitHubIcon = (
                 {/* 닉네임 */}
                 <div>
                     <label htmlFor="nickname" className="block text-sm font-medium mb-1">Nickname</label>
-                    <input onChange={handleChange} type="text" name="nickname" value={profile.nickname} className="block w-full p-2 border border-gray-300 rounded-md"/>
+                    <div className='flex space-x-4'>
+                        <input ref={inputNickname} onChange={handleChange} type="text" name="nickname" value={profile.nickname} 
+                        className="flex-1 block w-full p-2 border border-gray-300 rounded-md"/>
+                        <button type="button" 
+                        onClick={handleCheckDuplicate}
+                        disabled={isNicknameChanged} //수정되면 활성화
+                        className="flex-1 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded">
+                        중복 검사</button>
+                        {isDuplicate === null && null}
+                        {isDuplicate === true && <div className="text-red-500">이미 사용중인 닉네임입니다.</div>}
+                        {isDuplicate === false && <div className="text-green-500">사용 가능한 닉네임입니다.</div>}
+                    </div>
                 </div>
 
                     {/* 로그인 정보 */}
@@ -150,7 +224,7 @@ const gitHubIcon = (
                         </div> 
                         <div className="mb-3 flex-1">
                             <label htmlFor="password" className="block text-sm font-medium mb-1">Password</label>
-                            <input type="button" name="password" className="block w-full p-2 border border-gray-300 rounded-md" value="To Update Password" readOnly/>
+                            <button onClick={toChangePassword} className="block w-full p-2 border border-gray-300 rounded-md bg-blue-500 text-white font-semibold hover:bg-blue-600">비밀번호 변경</button>
                         </div>
                     </div>
 
@@ -196,20 +270,24 @@ const gitHubIcon = (
                     
                     {/* 프로필 메세지 */}
                     <div className="mb-3">
-                        <label htmlFor="profile_msg" className="block text-sm font-medium mb-1">Profile Message</label>
-                        <textarea onChange={handleChange} name="profile_msg" className="form-control w-full h-auto resize-none overflow-y-auto" rows="5" value={profile.profile_msg} />
+                        <label htmlFor="profileMessage" className="block text-sm font-medium mb-1">Profile Message</label>
+                        <textarea onChange={handleChange} name="profileMessage" className="form-control w-full h-auto resize-none overflow-y-auto" rows="5" value={profile.profileMessage} />
                     </div>
+                    
+                    {/* save 버튼 */}
                     <div>
                         <button
                             type="button"
                             onClick={handleSave}
-                            className="w-20 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
-                        >
+                            className="w-20 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600">
                             Save
                         </button>
                     </div>
+
                 </form>
+
             </div>
+
             <br />
             <br />
             <br />

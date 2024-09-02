@@ -7,12 +7,16 @@ function Mypage() {
   const [profile, setProfile] = useState({})
   const { id } = useParams()
   const navigate = useNavigate()
+  const [imageData, setImageData] = useState(null)
 
   useEffect(() => {
     axios.get(`/api/v1/users/${id}`)
       .then(res => {
         console.log(res)
         setProfile(res.data)
+        if(res.data.profilePicture){
+          setImageData("/upload/images/"+res.data.profilePicture)
+      }
       })
       .catch(error => console.log(error))
 
@@ -28,9 +32,9 @@ function Mypage() {
       <div className='container'>
         <div className="flex items-center gap-x-6">
           {
-            profile.profilePicture != null
+            imageData
               ?
-              <img src={profile.profilePicture[0]} className='w-20 h-20 rounded-full' />
+              <img src={imageData} className='w-20 h-20 rounded-full' />
               :
               <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="currentColor" className="bi bi-person-circle" viewBox="0 0 16 16">
                 <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
@@ -42,7 +46,7 @@ function Mypage() {
             <p className="text-sm font-semibold leading-6 text-indigo-600">{profile.gender} / {profile.age}</p>
           </div>
           <div>
-            <button className='btn btn-secondary btn-sm' onClick={handleClick}>to updataform</button>
+            <button className='btn btn-secondary btn-sm' onClick={handleClick}>프로필 보기</button>
           </div>
         </div>
       </div>
