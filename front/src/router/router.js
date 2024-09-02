@@ -9,7 +9,6 @@ import Signup from "../pages/Signup"
 import Agreement from "../pages/Agreement"
 import LoginPage from "../pages/LoginPage"
 import LogoutPage from "../pages/LogoutPage"
-import LoginListPage from "../pages/LoginListPage"
 import Mypage from "../pages/myPage/Mypage"
 import MyProfile from "../pages/myPage/MyProfile"
 import MyProfileForm from "../pages/myPage/MyProfileForm"
@@ -32,7 +31,6 @@ const routes = [
     {path:"/signup", element: <Signup/>},
     {path:"/login", element: <LoginPage/>},
     {path:"/logout", element: <LogoutPage /> },
-    {path:"/loginlist", element:<LoginListPage/>},
     {path:"/completedSignup", element:<CompletedSignup/>},
     {path:"/changePassword", element:<ChangePassword/>}
 ]
