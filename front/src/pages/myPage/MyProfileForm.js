@@ -50,7 +50,7 @@ function MyProfileForm(props) {
 
     //비밀번호 변경 페이지로 이동
     const toChangePassword = ()=>{
-        navigate("/changePassword")
+        navigate(`/${id}/changePassword`)
     }
 
     // 이벤트 관리부
