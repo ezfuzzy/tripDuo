@@ -6,9 +6,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.service.UserService;
@@ -42,20 +43,22 @@ public class UserController {
     	System.out.println(username);
     	// 사용자 정보 조회
     	UserDto user = service.getUserByUsername(username);
-    	if (user != null) {
-    		return ResponseEntity.ok(user);
-    	} else {
-    		return ResponseEntity.notFound().build();
-    	}
+    	user.setPassword("응 비번 없어");
+    	
+    	return ResponseEntity.ok(user);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable int id, @RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> updateUser(@PathVariable int id,@RequestParam(required = false) MultipartFile profileImgForUpload, UserDto userDto) {
         // 사용자 정보 업데이트
-    	service.updateUser(userDto);
-    	return ResponseEntity.ok(userDto);
+       service.updateUser(userDto, profileImgForUpload);
+       
+       return ResponseEntity.ok(userDto);
     }
 
+    
+
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable int id) {
         service.deleteUser(id);

@@ -1,5 +1,7 @@
 package com.example.tripDuo.service;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.tripDuo.dto.UserDto;
 
 public interface UserService {
@@ -12,7 +14,7 @@ public interface UserService {
 	public UserDto getUserByEmail(String email);
 	
 	// ### updateUser ###
-	public void updateUser(UserDto dto);
+	public Boolean updateUser(UserDto dto, MultipartFile profileImgForUpload);
 	
 	// ### deleteUser ###
 	public void deleteUser(int id);
