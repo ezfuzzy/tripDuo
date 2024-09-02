@@ -9,14 +9,12 @@ import Signup from "../pages/Signup"
 import Agreement from "../pages/Agreement"
 import LoginPage from "../pages/LoginPage"
 import LogoutPage from "../pages/LogoutPage"
+import LoginListPage from "../pages/LoginListPage"
 import Mypage from "../pages/myPage/Mypage"
 import MyProfile from "../pages/myPage/MyProfile"
 import MyProfileForm from "../pages/myPage/MyProfileForm"
 import CompletedSignup from "../pages/CompletedSignup"
-import ChangePassword from "../pages/myPage/ChangePassword"
-import MateBoard from "../pages/boards/MateBoard"
-import MateBoardForm from "../pages/boards/MateBoardForm"
-import MateBoardEditForm from "../pages/boards/MateBoardEditForm"
+import KakaoRedirect from "../components/KakaoRedirect"
 
 const routes = [
     // /users/:id
@@ -34,11 +32,9 @@ const routes = [
     {path:"/signup", element: <Signup/>},
     {path:"/login", element: <LoginPage/>},
     {path:"/logout", element: <LogoutPage /> },
+    {path:"/loginlist", element:<LoginListPage/>},
     {path:"/completedSignup", element:<CompletedSignup/>},
-    {path:"/changePassword", element:<ChangePassword/>},
-    {path:"/mateBoard", element:<MateBoard/>},
-    {path:"/mateBoard/new", element:<MateBoardForm/>},
-    {path:"/mateBoard/:num/edit", element:<MateBoardEditForm/>}
+    {path:"/api/v1/auth/kakao/accessTokenCallback", element:<KakaoRedirect/>}
 ]
 
 const router = createBrowserRouter([{
