@@ -42,6 +42,8 @@ function KakaoRedirect(props) {
                     .then(res=>{
                         console.log(res.data)
                         window.localStorage.setItem("kakaoId", JSON.stringify(res.data.id))
+                        navigate('/');  // 홈 페이지로 리디렉트
+                        window.location.reload();  // 페이지 새로고침
                     })
                     .catch(error=>{
                         console.log("kakao 정보 가져오기 실패")
