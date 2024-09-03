@@ -48,7 +48,7 @@ function PasswordUpdate(props) {
     const value = e.target.value;
     setProfile({
       ...profile,
-      "newPassword" : value
+      newPassword : value
     })
 
     validatePassword(value);
@@ -59,7 +59,7 @@ function PasswordUpdate(props) {
   const handleConfirmPasswordChange = (e) => {
     setProfile({
       ...profile,
-      "newConfirmPassword" : e.target.value
+      newConfirmPassword : e.target.value
     })  
 
   };
