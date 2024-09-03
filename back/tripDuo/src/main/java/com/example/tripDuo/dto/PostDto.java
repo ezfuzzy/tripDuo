@@ -15,17 +15,19 @@ import lombok.NoArgsConstructor;
 public class PostDto {
   private Long id;
   private String title;
-  private PostData data;  // JSON 데이터를 객체로 처리
-
+  private PostData data;  // JSON 데이터를 객체로 처리 -- 여행 코스랑 리뷰 게시글에만 저장됨 ( 나머진 null )
+  private String content; // 메이트, 커뮤니티 게시글
+  
   private Long user_id;
-  private String type;
-  private String locationCountry;
-  private String locationCity;
-  private String tags;
-  private Long views;
-  private Long likes;
-  private Float rating;
-  private String status;
+  private String type; // mate / course / 여행기 / 커뮤니티
+  private String country;
+  private String city;
+  
+  private String tags; // # 태그
+  private Long views; // 조회수
+  private Long likes; // 좋아요 수 - 코스, 여행기, 커뮤니티
+  private Float rating; // 코스 
+  private String status; // mate 모집(구인)중, 모집완료, 삭제됨 등 
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 
