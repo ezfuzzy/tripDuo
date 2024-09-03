@@ -31,6 +31,7 @@ public class Post {
 
 	private String type;
 	private String title;
+	private String content;
 	
 	private String locationCountry;
 	private String locationCity;
@@ -58,8 +59,8 @@ public class Post {
 					.userId(dto.getUser_id())
 					.type(dto.getType())
 					.title(dto.getTitle())
-					.locationCountry(dto.getLocationCountry())
-					.locationCity(dto.getLocationCity())
+					.locationCountry(dto.getCountry())
+					.locationCity(dto.getCity())
 					.tags(dto.getTags())
 					.views(dto.getViews())
 					.likes(dto.getLikes())
