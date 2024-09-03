@@ -18,6 +18,7 @@ import ChangePassword from "../pages/myPage/ChangePassword"
 import MateBoard from "../pages/boards/MateBoard"
 import MateBoardForm from "../pages/boards/MateBoardForm"
 import MateBoardEditForm from "../pages/boards/MateBoardEditForm"
+import MateBoardDetail from "../pages/boards/MateBoardDetail"
 
 const routes = [
     // /users/:id
@@ -40,7 +41,8 @@ const routes = [
     {path:"/:id/changePassword", element:<ChangePassword/>},
     {path:"/mateBoard", element:<MateBoard/>},
     {path:"/mateBoard/new", element:<MateBoardForm/>},
-    {path:"/mateBoard/:num/edit", element:<MateBoardEditForm/>}
+    {path:"/mateBoard/:num/edit", element:<MateBoardEditForm/>},
+    {path:"/mateBoard/:num/detail", element:<MateBoardDetail/>}
 ]
 
 const router = createBrowserRouter([{
