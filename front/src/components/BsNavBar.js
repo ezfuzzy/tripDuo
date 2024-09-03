@@ -10,7 +10,6 @@ import bootstrapBundleMin from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import axios from 'axios';
 
 function BsNavBar() {
-    // Redux 상태에서 username을 가져옵니다.
     const username = useSelector(state => state.username, shallowEqual);
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -19,8 +18,23 @@ function BsNavBar() {
     const [alertShow, setAlertShow] = useState(false);
     const [openSections, setOpenSections] = useState({});
     const [lastVisited, setLastVisited] = useState('/');
-
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [profile, setProfile] = useState({});
+    const [kakaoId, setKakaoId] = useState(null);  // 카카오 ID 상태 추가
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        const kakaoToken = localStorage.getItem('KakaoToken');
+        const KakaoId = localStorage.getItem('kakaoId');
+        if (token || kakaoToken || username) {
+            setIsLoggedIn(true);
+            if(KakaoId){
+                setKakaoId(JSON.parse(KakaoId))
+            }
+        } else {
+            setIsLoggedIn(false);
+        }
+    }, [username]);
 
     const toggleSection = (section) => {
         setOpenSections(prevState => ({
@@ -29,13 +43,38 @@ function BsNavBar() {
         }));
     };
 
-    // 로그아웃 처리 함수
     const handleLogout = () => {
-        localStorage.removeItem('token');
+        const kakaoToken = localStorage.getItem("KakaoToken");
+        const kakaoId = localStorage.getItem("kakaoId");
+    
+        if (kakaoToken && kakaoId) {
+            axios.post("/api/v1/auth/kakaoLogout", { kakaoId }, {
+                headers: {
+                    "Authorization": `Bearer ${kakaoToken.substring(7)}`,
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            })
+            .then(res => {
+                console.log("카카오 로그아웃 성공:", res.data);
+                localStorage.removeItem("KakaoToken");
+                localStorage.removeItem("kakaoId");
+                completeLogout();
+            })
+            .catch(error => {
+                console.error("카카오 로그아웃 실패:", error);
+                alert("로그아웃에 실패했습니다.");
+            });
+        } else {
+            completeLogout();
+        }
+    };
+
+    const completeLogout = () => {
+        localStorage.clear();
         dispatch({ type: "UPDATE_USER", payload: null });
-        navigate("/");
-        setAlertShow(true);
-        setTimeout(() => setAlertShow(false), 3000); 
+        setIsLoggedIn(false);
+        navigate('/');
+        window.location.reload();
     };
 
     const handleYes = () => {
@@ -43,14 +82,14 @@ function BsNavBar() {
     };
 
     const handleLogin = useCallback(() => {
-        navigate('/login'); // 로그인 페이지로 이동
+        navigate('/login');
     }, [navigate]);
 
     const handleLoginLogoutClick = () => {
-        if (username) {
-            handleLogout(); // 로그아웃 처리
+        if (isLoggedIn) {
+            handleLogout();
         } else {
-            handleLogin(); // 로그인 페이지로 이동
+            handleLogin('/login');
         }
     
         const offcanvasElement = document.getElementById('staticBackdrop');
@@ -61,22 +100,21 @@ function BsNavBar() {
     };
 
     const handleTripDuoClick = () => {
-        navigate(lastVisited); // 마지막 방문 페이지로 이동
+        navigate(lastVisited);
     };
 
     useEffect(()=>{      
         if(username){
-        axios.get(`/api/v1/users/username/${username}`)
-        .then(res=>{
-            console.log(res)
-            setProfile(res.data)
-        })
-        .catch(error=>console.log(error))
+            axios.get(`/api/v1/users/username/${username}`)
+            .then(res=>{
+                console.log(res);
+                setProfile(res.data);
+            })
+            .catch(error => console.log(error));
         }    
-    }, [username])
+    }, [username]);
     
     useEffect(() => {
-        // 페이지가 변경될 때마다 lastVisited 값을 업데이트
         if (location.pathname === '/home-inter' || location.pathname === '/') {
             setLastVisited(location.pathname);
         }
@@ -116,17 +154,15 @@ function BsNavBar() {
                     </NavbarBrand>
 
                     <Nav className="justify-content-end">
-
-                        {username && <Nav.Link as={NavLink} to="/sample">{notification}</Nav.Link>}
-
-                        {username && 
+                        {isLoggedIn && <Nav.Link as={NavLink} to="/sample">{notification}</Nav.Link>}
+                        {isLoggedIn && 
                         <Nav.Link as={NavLink} to={`/users/${profile.id}`}>
                             {profile.profilePicture != null
                                 ? <img src={profile.profilePicture[0]} className='w-[30px] h-[30px] rounded-full' alt="Profile" />
                                 : myPageIcon}
                         </Nav.Link>}
-                        {username ? (
-                            <Nav.Link as={NavLink} to="/logout"><strong>로그아웃</strong></Nav.Link>
+                        {isLoggedIn ? (
+                            <Nav.Link as="button" onClick={handleLoginLogoutClick}><strong>로그아웃</strong></Nav.Link>
                         ) : (
                             <Nav.Link as={NavLink} to="/login"><strong>로그인/회원가입</strong></Nav.Link>
                         )}
@@ -134,17 +170,17 @@ function BsNavBar() {
                 </Container>
             </Navbar>
 
-                <Nav fill variant="tabs" defaultActiveKey="/">
-                    <Nav.Item>
-                        <Nav.Link as={NavLink} to="/" onClick={() => setLastVisited('/')}>국내 여행</Nav.Link>
-                    </Nav.Item>
-                    <Nav.Item>
-                        <Nav.Link as={NavLink} to="/home-inter" onClick={() => setLastVisited('/home-inter')}>해외 여행</Nav.Link>
-                    </Nav.Item>
-                    <Nav.Item>
-                        <Nav.Link as={NavLink} to="/home-mate">여행 메이트</Nav.Link>
-                    </Nav.Item>
-                </Nav>
+            <Nav fill variant="tabs" defaultActiveKey="/">
+                <Nav.Item>
+                    <Nav.Link as={NavLink} to="/" onClick={() => setLastVisited('/')}>국내 여행</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Nav.Link as={NavLink} to="/home-inter" onClick={() => setLastVisited('/home-inter')}>해외 여행</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Nav.Link as={NavLink} to="/home-mate">여행 메이트</Nav.Link>
+                </Nav.Item>
+            </Nav>
 
             <div className="offcanvas offcanvas-start" data-bs-backdrop="static" tabIndex="-1" id="staticBackdrop" aria-labelledby="staticBackdropLabel">
                 <div className="offcanvas-header">
@@ -154,7 +190,7 @@ function BsNavBar() {
                             onClick={handleLoginLogoutClick} 
                             style={{ textDecoration: 'none', color: 'inherit' }}
                         >
-                            <strong>{username ? '로그아웃' : '로그인/회원가입'}</strong>
+                            <strong>{isLoggedIn ? '로그아웃' : '로그인/회원가입'}</strong>
                         </button>
                     </h5>
                     <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>

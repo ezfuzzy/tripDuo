@@ -7,18 +7,15 @@ function LogoutPage() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // 로컬 스토리지에서 토큰 삭제
-        localStorage.removeItem('token');
-        
-        // Redux 상태에서 사용자 정보 제거
+        localStorage.clear();
         dispatch({ type: "UPDATE_USER", payload: null });
-        
         navigate('/');  // 홈 페이지 또는 로그인 페이지로 리다이렉트
-    })
+        window.location.reload();  // 페이지 새로고침
+    }, [dispatch, navigate]);
 
     return (
         <div>
-            
+            {/* 로그아웃 페이지 내용 */}
         </div>
     );
 }
