@@ -1,5 +1,7 @@
 package com.example.tripDuo.dto;
 
+import java.time.LocalDateTime;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.tripDuo.entity.User;
@@ -44,9 +46,9 @@ public class UserDto {
 
     private String lastLogin; // 몇분전 접속  
     
-    private String createdAt; 
-    private String updatedAt; 
-    private String deletedAt; //  [note:"soft delete 지원?"]
+    private LocalDateTime createdAt; 
+    private LocalDateTime updatedAt; 
+    private LocalDateTime deletedAt; //  [note:"soft delete 지원?"]
     
     @JsonIgnore
     private MultipartFile profileImgForUpload;
@@ -71,9 +73,9 @@ public class UserDto {
                 .role(entity.getRole())
                 .ratings(entity.getRatings())
                 .lastLogin(entity.getLastLogin())
-                .createdAt(entity.getCreatedAt() != null ? entity.getCreatedAt().toString() : null)
-                .updatedAt(entity.getUpdatedAt() != null ? entity.getUpdatedAt().toString() : null)
-                .deletedAt(entity.getDeletedAt() != null ? entity.getDeletedAt().toString() : null)
+                .createdAt(entity.getCreatedAt() != null ? entity.getCreatedAt() : null)
+                .updatedAt(entity.getUpdatedAt() != null ? entity.getUpdatedAt() : null)
+                .deletedAt(entity.getDeletedAt() != null ? entity.getDeletedAt() : null)
                 .build();
     }
 }
