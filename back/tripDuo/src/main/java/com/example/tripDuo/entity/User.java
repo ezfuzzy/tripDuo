@@ -1,8 +1,6 @@
 package com.example.tripDuo.entity;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import com.example.tripDuo.dto.UserDto;
 
@@ -52,36 +50,17 @@ public class User {
 
     private String lastLogin; // 몇분전 접속  
     
-    private Date createdAt; 
-    private Date updatedAt; 
-    private Date deletedAt; //  [note:"soft delete 지원?"]
+    private LocalDateTime createdAt; 
+    private LocalDateTime updatedAt; 
+    private LocalDateTime deletedAt; //  [note:"soft delete 지원?"]
     
     @PrePersist
     public void onPrePersist() {
-        createdAt = new Date();
+        createdAt = LocalDateTime.now();
     }
 
     public static User toEntity(UserDto dto) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-         
-        Date createdAt = null;
-        Date updatedAt = null;
-        Date deletedAt = null;
-
-        try {
-            if (dto.getCreatedAt() != null) {
-                createdAt = formatter.parse(dto.getCreatedAt());
-            }
-            if (dto.getUpdatedAt() != null) {
-                updatedAt = formatter.parse(dto.getUpdatedAt());
-            }
-            if (dto.getDeletedAt() != null) {
-                deletedAt = formatter.parse(dto.getDeletedAt());
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        
+                
         return User.builder()
                 .id(dto.getId())
                 .username(dto.getUsername())
@@ -101,9 +80,9 @@ public class User {
                 .role(dto.getRole())
                 .ratings(dto.getRatings())
                 .lastLogin(dto.getLastLogin())
-                .createdAt(createdAt)
-                .updatedAt(updatedAt)
-                .deletedAt(deletedAt)
+                .createdAt(dto.getCreatedAt())
+                .updatedAt(dto.getUpdatedAt() != null ? dto.getUpdatedAt() : null)
+                .deletedAt(dto.getDeletedAt() != null ? dto.getDeletedAt() : null)
                 .build();    
     }
 }
