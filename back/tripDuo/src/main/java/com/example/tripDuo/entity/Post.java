@@ -1,19 +1,23 @@
 package com.example.tripDuo.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-import com.example.tripDuo.dto.PostDto;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,77 +28,82 @@ import lombok.NoArgsConstructor;
 @Entity(name = "POSTS")
 public class Post {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	private Long userId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	private String type;
-	private String title;
-	private String content;
-	
-	private String locationCountry;
-	private String locationCity;
-	
-	private String tags;
-	private Long views; // 조회수  
-	private Long likes; // 좋아요 개수
-	
-	private Float rating;
-	private String status;
-	private LocalDateTime createdAt;
-	private LocalDateTime updatedAt;
+    private Long userId;
 
-	@Column(name = "data", columnDefinition = "TEXT")
-	private String data; // JSON 데이터를 문자열로 저장
+    private String type; // mate / course / 여행기 / 커뮤니티
 
-	private static final ObjectMapper objectMapper = new ObjectMapper();
+    private String title;
+    private String content; // 메이트, 커뮤니티 게시글
+    private String country;
+    private String city;
 
-	// DTO를 엔티티로 변환
-	public static Post toEntity(PostDto dto) {
-		String jsonData = convertPostDataToJson(dto.getData());
+    @ElementCollection
+    @CollectionTable(name = "post_tags", joinColumns = @JoinColumn(name = "post_id"))
+    @Column(name = "tag")
+    private List<String> tags;
 
-		return Post.builder()
-					.id(dto.getId())
-					.userId(dto.getUser_id())
-					.type(dto.getType())
-					.title(dto.getTitle())
-					.locationCountry(dto.getCountry())
-					.locationCity(dto.getCity())
-					.tags(dto.getTags())
-					.views(dto.getViews())
-					.likes(dto.getLikes())
-					.rating(dto.getRating())
-					.status(dto.getStatus())
-					.createdAt(dto.getCreatedAt())
-					.updatedAt(dto.getUpdatedAt())
-					.data(jsonData)
-					.build();
-	}
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "post_id")
+    private List<Day> days;
 
-	// JSON 문자열을 PostData 객체로 변환
-	private PostDto.PostData convertJsonToPostData(String jsonData) {
-		try {
-			return objectMapper.readValue(jsonData, PostDto.PostData.class);
-		} catch (JsonMappingException e) {
-			// JSON 매핑 에러 처리
-			e.printStackTrace();
-			return null;
-		} catch (JsonProcessingException e) {
-			// JSON 처리 에러 처리
-			e.printStackTrace();
-			return null;
-		}
-	}
+    private Long viewCount;
+    private Long likeCount;
+    private Float rating;
 
-	// PostData 객체를 JSON 문자열로 변환
-	private static String convertPostDataToJson(PostDto.PostData postData) {
-		try {
-			return objectMapper.writeValueAsString(postData);
-		} catch (JsonProcessingException e) {
-			// JSON 처리 에러 처리
-			e.printStackTrace();
-			return null;
-		}
-	}
+    private String status; // mate 모집(구인)중, 모집완료, 삭제됨 등
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    @Entity(name = "DAYS")
+    @Data
+    public static class Day {
+
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
+
+        @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+        @JoinColumn(name = "day_id")
+        private List<Place> places;
+
+        private String dayMemo;
+    }
+
+    @Entity(name = "PLACES")
+    @Data
+    public static class Place {
+
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
+
+        private String addressName;
+        private String categoryGroupCode;
+        private String categoryGroupName;
+        private String categoryName;
+        private String placeId; // 'id'를 'placeId'로 변경하여 충돌 방지
+        private String phone;
+        private String placeName;
+        private String placeUrl;
+        private String roadAddressName;
+
+        @Embedded
+        private Position position;
+
+        private int dayIndex;
+        private int placeIndex;
+        private String placeMemo;
+    }
+
+    @Embeddable
+    @Data
+    public static class Position {
+        private double latitude;
+        private double longitude;
+    }
 }
