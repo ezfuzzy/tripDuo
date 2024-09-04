@@ -5,13 +5,20 @@ import { useLocation, useNavigate } from 'react-router'
 function Signup() {
   const location = useLocation()
   const { termsService, termsPrivacy, essential } = location.state || {}
+  //약관동의 필수항목 체크 안하고 접근시 리다이렉트
+  useEffect(() => {
+    if (!(termsService && termsPrivacy && essential)) {
+      alert("회원가입을 위해선 약관동의가 필요합니다.");
+      navigate("/agreement");
+    }
+  }, [])
 
   const [username, setUsername] = useState('')
-  const [nickname, setNickName] = useState('')
+  const [nickname, setNickname] = useState('')
   const [isValidUsername, setIsValidUsername] = useState(true)
   const [isValidPassword, setIsValidPassword] = useState(true)
   const [isValidNickname, setIsValidNickname] = useState(true)
-  const [isValidEmail, setisValidEmail] = useState(true)
+  const [isValidEmail, setIsValidEmail] = useState(true)
 
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -36,44 +43,76 @@ function Signup() {
   const validateUsername = (value) => {
     // 아이디 : 영어 소문자와 숫자로 이루어진 6~16자리
     const regex = /^[a-z0-9]{6,16}$/
+    if (value === "") return true
     return regex.test(value)
   }
-  const validatePassword = (value) => {
-    // 비밀번호 : 영어 대소문자, 숫자, 특수문자를 포함한 8~15자리
-    setHasLowerCase(/[a-z]/.test(value))
-    setHasUpperCase(/[A-Z]/.test(value))
-    setHasNumber(/\d/.test(value))
-    setHasSpecialChar(/[!@#$%^&*]/.test(value))
-    setIsValidLength(value.length >= 8 && value.length <= 15)
+  //비밀번호 일치 여부 검사
+  const validateConfirmPassword = (value) => {
+    if (value === "") return true
+    else if (password === value) return true
+    else return false
   }
   const validateNickname = (value) => {
     // 닉네임 : 한글, 영어 대소문자, 숫자로 이루어진 2~16자리
     const regex = /^[가-힣a-zA-Z0-9]{2,16}$/
+    if (value === "") return true
     return regex.test(value)
   }
   const validateEmail = (value) => {
+    // 이메일 : 이메일 형식
     const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    if (value === "") return true
     return regex.test(value)
+  }
+  const updateIsAllChecked = (validUsername, validPassword, passwordMatched, validNickname, validEmail, isVerified) => {
+    setIsAllChecked(validUsername && validPassword && passwordMatched && validNickname && validEmail && isVerified)
   }
 
   const usernameHandleChange = (e) => {
     const value = e.target.value
+    const validUsername = validateUsername(value)
     setUsername(value)
-    setIsValidUsername(validateUsername(value))
+    setIsValidUsername(validUsername)
+    updateIsAllChecked(validUsername, isValidPassword, isPasswordMatched, isValidNickname, isValidEmail, isVerified)
   }
   const passwordHandleChange = (e) => {
     const value = e.target.value
     setPassword(value)
-    validatePassword(value)
-    setShowValidationMessage(true)
+
+    // 비밀번호 : 영어 대소문자, 숫자, 특수문자를 포함한 8~15자리
+    const lowerCase = /[a-z]/.test(value)
+    const upperCase = /[A-Z]/.test(value)
+    const number = /\d/.test(value)
+    const specialChar = /[!@#$%^&*]/.test(value)
+    const validLength = value.length >= 8 && value.length <= 15
+    setHasLowerCase(lowerCase)
+    setHasUpperCase(upperCase)
+    setHasNumber(number)
+    setHasSpecialChar(specialChar)
+    setIsValidLength(validLength)
+
+    // 비밀번호 유효성 체크 및 메시지 표시 여부 결정
+    const validPassword = lowerCase && upperCase && number && specialChar && validLength
+    setIsValidPassword(validPassword)
+    setShowValidationMessage(!validPassword)
+
+    updateIsAllChecked(isValidUsername, validPassword, isValidNickname, isValidEmail, isVerified)
   }
+  //비밀번호 확인
   const confirmPasswordHandleChange = (e) => {
-    setConfirmPassword(e.target.value);
+    const value = e.target.value
+    const passwordMatched = validateConfirmPassword(value)
+    setConfirmPassword(value)
+    setIsPasswordMatched(passwordMatched)
+    updateIsAllChecked(isValidUsername, isValidPassword, passwordMatched, isValidNickname, isValidEmail, isVerified)
   }
+
   const nicknameHandleChange = (e) => {
     const value = e.target.value
-    setNickName(value)
-    setIsValidNickname(validateNickname(value))
+    const validNickname = validateNickname(value)
+    setNickname(value)
+    setIsValidNickname(validNickname)
+    updateIsAllChecked(isValidUsername, isValidPassword, isPasswordMatched, validNickname, isValidEmail, isVerified)
   }
 
   const phoneNumberHandleChange = (e) => {
@@ -81,8 +120,10 @@ function Signup() {
   }
   const emailHandleChange = (e) => {
     const value = e.target.value
+    const validEmail = validateEmail(value)
     setEmail(value)
-    setisValidEmail(validateEmail(value))
+    setIsValidEmail(validEmail)
+    updateIsAllChecked(isValidUsername, isValidPassword, isPasswordMatched, isValidNickname, validEmail, isVerified)
   }
   const verificationCodeHandleChange = (e) => {
     setVerificationCode(e.target.value)
@@ -105,6 +146,7 @@ function Signup() {
     axios.post('/api/v1/auth/verify', { phoneNumber, code })
       .then((response) => {
         setIsVerified(true)
+        updateIsAllChecked(isValidUsername, isValidPassword, isPasswordMatched, isValidNickname, isValidEmail, true)
         alert('휴대폰 번호가 성공적으로 인증되었습니다.')
       })
       .catch((error) => {
@@ -122,12 +164,7 @@ function Signup() {
           const token = response.data
           localStorage.setItem('token', token)
           axios.defaults.headers.common["Authorization"] = token
-
-          navigate("/completedSignup", {
-            state: {
-              isAllChecked: isAllChecked
-            }
-          })
+          navigate("/completedSignup", { state: { isAllChecked } })
         })
         .catch((error) => {
           console.error('회원가입에 실패하였습니다')
@@ -136,35 +173,6 @@ function Signup() {
       console.error('회원가입에 실패하였습니다')
     }
   }
-
-  useEffect(() => {
-    if (!(termsService && termsPrivacy && essential)) {
-      alert("회원가입을 위해선 약관동의가 필요합니다.");
-      navigate("/agreement");
-    }
-  }, [])
-
-  useEffect(() => {
-    if (hasLowerCase && hasUpperCase && hasNumber && hasSpecialChar && isValidLength) {
-      setIsValidPassword(true)
-      setShowValidationMessage(false)
-    } else {
-      setIsValidPassword(false)
-    }
-  }, [hasLowerCase, hasUpperCase, hasNumber, hasSpecialChar, isValidLength])
-
-  useEffect(() => {
-    setIsPasswordMatched(password === confirmPassword);
-  }, [password, confirmPassword])
-
-  //모든 유효성 검사와 인증절차를 거쳐야 회원가입 버튼 활성화
-  useEffect(() => {
-    if (isValidUsername && isValidPassword && isValidNickname && isValidEmail && isVerified) {
-      setIsAllChecked(true)
-    } else {
-      setIsAllChecked(false)
-    }
-  }, [isValidUsername, isValidPassword, isValidNickname, isValidEmail, isVerified])
 
   return (
     <div className="isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
@@ -209,7 +217,7 @@ function Signup() {
                 className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 required
               />
-              {showValidationMessage && !isValidPassword && (
+              {showValidationMessage && (
                 <div className="mt-2 text-sm">
                   <p>비밀번호는 영어
                     <span className={hasLowerCase ? 'text-blue-600' : 'text-red-600'}> 소문자</span>,
@@ -282,17 +290,22 @@ function Signup() {
                 className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 required
               />
+              {!isValidEmail && (
+                <p className="mt-2 text-sm text-red-600">
+                  이메일 형식에 맞게 작성해야 합니다.
+                </p>
+              )}
             </div>
           </div>
 
           <div className="sm:col-span-6">
-            <label htmlFor="phonenumber" className="block text-sm font-semibold leading-6 text-gray-900">
+            <label htmlFor="phoneNumber" className="block text-sm font-semibold leading-6 text-gray-900">
               휴대전화번호
             </label>
             <div className="mt-2.5 flex">
               <input
-                id="phonenumber"
-                name="phonenumber"
+                id="phoneNumber"
+                name="phoneNumber"
                 type="tel"
                 value={phoneNumber}
                 onChange={phoneNumberHandleChange}
@@ -312,13 +325,13 @@ function Signup() {
           {/* 인증 코드 입력 */}
           {isCodeSent && (
             <div className="sm:col-span-6">
-              <label htmlFor="verification-code" className="block text-sm font-semibold leading-6 text-gray-900">
+              <label htmlFor="verificationCode" className="block text-sm font-semibold leading-6 text-gray-900">
                 인증 코드
               </label>
               <div className="mt-2.5 flex">
                 <input
-                  id="verification-code"
-                  name="verification-code"
+                  id="verificationCode"
+                  name="verificationCode"
                   type="text"
                   value={verificationCode}
                   onChange={verificationCodeHandleChange}
