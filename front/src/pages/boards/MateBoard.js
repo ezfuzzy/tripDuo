@@ -68,6 +68,7 @@ function MateBoard() {
       <h3>{whereAreYou}</h3>
       {/* 메이트 게시판 테이블 */}
       <table className="table-auto w-full border divide-y divide-x divide-gray-200">
+
         <thead className="text-center">
           <tr>
             <th>번호</th>
@@ -78,6 +79,7 @@ function MateBoard() {
             <th>좋아요</th>
           </tr>
         </thead>
+
         <tbody className="text-center divide-y">
           {pageData.map((item) => (
             <tr key={item.id}>
@@ -92,20 +94,21 @@ function MateBoard() {
                   <span className="border border-white bg-sky-200 text-gray-800 rounded px-1">{`#${item.locationCity}`}</span>
                 )}
                 <Link to={`/mateBoard/${item.id}/detail`}>{item.title}</Link>
-              </td>
-              {/* 글 제목 */}
+              </td>{/* 글 제목 */}
               <td>{item.userId}</td> {/* 작성자 */}
-              <td>{item.updatedAt ? item.updatedAt : item.createdAt}</td>{" "}
-              {/* 작성일/ 수정일 */}
+              <td>{item.updatedAt ? item.updatedAt : item.createdAt}</td>{/* 작성일/ 수정일 */}
               <td>{item.views}</td> {/* 조회수 */}
+              <td>{item.likes}</td>
             </tr>
           ))}
         </tbody>
+
       </table>
 
       <button className="mt-30" onClick={handleButtonClick}>
         to {domesticInternational}
       </button>
+
     </>
   );
 }
