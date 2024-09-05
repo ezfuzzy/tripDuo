@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import E from "react-script";
+
+// Require Editor CSS files.
+import 'froala-editor/css/froala_style.min.css';
+import 'froala-editor/css/froala_editor.pkgd.min.css';
+            
+import FroalaEditorComponent from 'react-froala-wysiwyg';
 
 function MateBoardForm(props) {
   const [selectedBorder, setSelectedBorder] = useState("domestic");
@@ -51,7 +56,7 @@ function MateBoardForm(props) {
             <option value="domestic">국내</option>
             <option value="international">해외</option>
           </select>
-
+            {/* 해외 */}
           {selectedBorder === "international" && (
             <select
               value={selectedContinent}
@@ -78,6 +83,24 @@ function MateBoardForm(props) {
               ))}
             </select>
           )}
+          {/* 국내 */}
+          {selectedBorder === "domestic" &&(
+            <select
+              value={selectedCountry}
+              onChange={(e) => {
+                setSelectedCountry(e.target.value);
+              }}
+            >
+                <option value="">국가</option>
+              {countries[selectedContinent].map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          )}
+
+          
         </div>
 
         <div>
@@ -93,14 +116,9 @@ function MateBoardForm(props) {
 
         <div>
           <label htmlFor="content">내용</label>
-          <textarea
-            name="content"
-            id="content"
-            placeholder="메이트 구하는 내용 작성"
-          ></textarea>
+        <FroalaEditorComponent></FroalaEditorComponent>
         </div>
 
-        <div></div>
       </form>
     </>
   );
