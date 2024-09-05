@@ -1,54 +1,48 @@
 package com.example.tripDuo.entity;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
+import com.example.tripDuo.dto.PostDto;
+import com.fasterxml.jackson.databind.JsonNode;
+
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
 @NoArgsConstructor
-@Getter
+@AllArgsConstructor
 @Builder
-@Entity(name = "POSTS")
+@Getter
+@Entity
+@Table(name = "posts")
 public class Post {
-
+    
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private Long userId;
-
     private String type; // mate / course / 여행기 / 커뮤니티
 
-    private String title;
-    private String content; // 메이트, 커뮤니티 게시글
+    private String title;    
+    private String content; // 메이트, 커뮤니티 게시글에만 있음
+    
+//    @Convert(converter = JsonNodeConverter.class)  // converter
+    @Column(length = 10000)
+    private JsonNode postData; // 코스, 여행기 게시글에만 있음
+    
     private String country;
     private String city;
 
-    @ElementCollection
-    @CollectionTable(name = "post_tags", joinColumns = @JoinColumn(name = "post_id"))
-    @Column(name = "tag")
-    private List<String> tags;
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "post_id")
-    private List<Day> days;
+    private String tags;
 
     private Long viewCount;
     private Long likeCount;
@@ -58,52 +52,32 @@ public class Post {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
 
-    @Entity(name = "DAYS")
-    @Data
-    public static class Day {
-
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
-
-        @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-        @JoinColumn(name = "day_id")
-        private List<Place> places;
-
-        private String dayMemo;
+    @PrePersist
+    public void onPrePersist() {
+        createdAt = LocalDateTime.now();
     }
-
-    @Entity(name = "PLACES")
-    @Data
-    public static class Place {
-
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
-
-        private String addressName;
-        private String categoryGroupCode;
-        private String categoryGroupName;
-        private String categoryName;
-        private String placeId; // 'id'를 'placeId'로 변경하여 충돌 방지
-        private String phone;
-        private String placeName;
-        private String placeUrl;
-        private String roadAddressName;
-
-        @Embedded
-        private Position position;
-
-        private int dayIndex;
-        private int placeIndex;
-        private String placeMemo;
-    }
-
-    @Embeddable
-    @Data
-    public static class Position {
-        private double latitude;
-        private double longitude;
+    
+    public static Post toEntity(PostDto dto) {
+    	
+        return Post.builder()
+                .id(dto.getId())
+                .userId(dto.getUserId())
+                .type(dto.getType())
+                .title(dto.getTitle())
+                .content(dto.getContent())
+                .postData(dto.getPostData())
+                .country(dto.getCountry())
+                .city(dto.getCity())
+                .tags(dto.getTags())
+                .viewCount(dto.getViewCount())
+                .likeCount(dto.getLikeCount())
+                .rating(dto.getRating())
+                .status(dto.getStatus())
+                .createdAt(dto.getCreatedAt() != null ? dto.getCreatedAt() : LocalDateTime.now()) // createdAt은 null일 경우 현재 시간으로 설정
+                .updatedAt(dto.getUpdatedAt())
+                .deletedAt(dto.getDeletedAt())
+                .build();
     }
 }
