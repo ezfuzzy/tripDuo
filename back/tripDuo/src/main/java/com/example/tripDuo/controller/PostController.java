@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,21 +23,29 @@ public class PostController {
 	@Autowired
 	private PostService service;
 	
-	
-	//
 	@GetMapping("/{type}")
-	public ResponseEntity<List<PostDto>> getList(@PathVariable String type) {
+	public ResponseEntity<List<PostDto>> getPostList(@PathVariable String type) {
 		
 		return ResponseEntity.ok(service.getPostList(type));
 	}
 	
 	@PostMapping("/{type}")
-	public ResponseEntity<String> writePost(@PathVariable String type, @RequestBody PostDto dto){
+	public ResponseEntity<String> writePost(@PathVariable("type") String type, @RequestBody PostDto dto){
 		System.out.println(dto.toString());
 		dto.setType(type);
 		service.writePost(dto);
 		return ResponseEntity.ok(dto.toString());
 	}
 	
+	@PutMapping("/{id}")
+	public ResponseEntity<PostDto> editPost(@PathVariable("id") Long id, @RequestBody PostDto dto){
+		return ResponseEntity.ok(service.updatePost(dto));
+	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deletePost(@PathVariable("num") Long id){
+		service.deletePost(id);
+		return ResponseEntity.ok("deleted");
+	}
 	
 }
