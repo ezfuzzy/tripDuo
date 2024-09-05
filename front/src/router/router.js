@@ -19,6 +19,7 @@ import MateBoard from "../pages/boards/MateBoard"
 import MateBoardForm from "../pages/boards/MateBoardForm"
 import MateBoardEditForm from "../pages/boards/MateBoardEditForm"
 import MateBoardDetail from "../pages/boards/MateBoardDetail"
+import TravelChecklist from "../pages/myTripTmp/TravelChecklist"
 
 const routes = [
     // /users/:id
@@ -42,7 +43,8 @@ const routes = [
     {path:"/mateBoard", element:<MateBoard/>},
     {path:"/mateBoard/new", element:<MateBoardForm/>},
     {path:"/mateBoard/:num/edit", element:<MateBoardEditForm/>},
-    {path:"/mateBoard/:num/detail", element:<MateBoardDetail/>}
+    {path:"/mateBoard/:num/detail", element:<MateBoardDetail/>},
+    {path:"/checklist", element:<TravelChecklist/>}
 ]
 
 const router = createBrowserRouter([{
