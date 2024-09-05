@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 // Require Editor CSS files.
@@ -6,6 +6,7 @@ import 'froala-editor/css/froala_style.min.css';
 import 'froala-editor/css/froala_editor.pkgd.min.css';
             
 import FroalaEditorComponent from 'react-froala-wysiwyg';
+import axios from "axios";
 
 function MateBoardForm(props) {
   const [selectedBorder, setSelectedBorder] = useState("domestic");
@@ -69,22 +70,6 @@ function MateBoardForm(props) {
           )}
 
           {selectedBorder === "international" && selectedContinent && (
-            <select
-              value={selectedCountry}
-              onChange={(e) => {
-                setSelectedCountry(e.target.value);
-              }}
-            >
-                <option value="">국가</option>
-              {countries[selectedContinent].map((item) => (
-                <option key={item} value={item}>
-                  {item}
-                </option>
-              ))}
-            </select>
-          )}
-          {/* 국내 */}
-          {selectedBorder === "domestic" &&(
             <select
               value={selectedCountry}
               onChange={(e) => {
