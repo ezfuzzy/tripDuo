@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { Link, NavLink } from "react-router-dom";
@@ -66,6 +67,19 @@ function MateBoard() {
       setPageTurn("to Domestic");
     }
   }, [domesticInternational]);
+
+  
+  const [post, setPost] = useState({})
+
+  useEffect(()=>{
+    axios.get("/api/v1/posts/mate")
+    .then(res=>{
+        console.log(res.data);
+        setPost(res.data)
+    })
+    .catch(error=>console.log(error)
+    )
+  },[])
 
   return (
     <>
