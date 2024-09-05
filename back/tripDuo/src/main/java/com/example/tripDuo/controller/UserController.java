@@ -1,5 +1,7 @@
 package com.example.tripDuo.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,8 +24,8 @@ public class UserController {
 	private UserService service;
 	
 	@GetMapping
-	public String users_List() {
-		return "users list";
+	public ResponseEntity<List<UserDto>>users_List() {
+		return ResponseEntity.ok(service.getUserList());
 	}
 	
     @GetMapping("/{id}")

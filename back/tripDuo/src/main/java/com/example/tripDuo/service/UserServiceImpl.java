@@ -2,6 +2,7 @@ package com.example.tripDuo.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,11 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserRepository repo;
+	
+	@Override
+	public List<UserDto> getUserList() {
+		return repo.findAll().stream().map(UserDto::toDto).toList();
+	}
 	
 	@Override
 	public UserDto getUserById(Long id) {
@@ -82,5 +88,6 @@ public class UserServiceImpl implements UserService {
 	public void deleteUser(Long id) {
 		repo.deleteById(id);
 	}
+
 
 }
