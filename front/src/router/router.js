@@ -19,7 +19,15 @@ import MateBoard from "../pages/boards/MateBoard"
 import MateBoardForm from "../pages/boards/MateBoardForm"
 import MateBoardEditForm from "../pages/boards/MateBoardEditForm"
 import MateBoardDetail from "../pages/boards/MateBoardDetail"
-import TravelChecklist from "../pages/myTripTmp/TravelChecklist"
+import TravelChecklist from "../pages/Utilities/TravelChecklist"
+import TravelSafetyInfo from "../pages/Utilities/TravelSafetyInfo"
+import TravelCostCalculator from "../pages/Utilities/TravelCostCalculator"
+import TravelPlanner from "../pages/Utilities/TravelPlaner"
+import LocationRecommendations from "../pages/Utilities/LocationRecommendations"
+import ExchangeInfo from "../pages/Utilities/ExchangeInfo"
+import TravelDiary from "../pages/Utilities/TravelDiary"
+import LanguageCultureTips from "../pages/Utilities/LanguageCultureTips"
+import ExtraPage from "../pages/Utilities/ExtraPage"
 
 const routes = [
     // /users/:id
@@ -44,7 +52,15 @@ const routes = [
     {path:"/mateBoard/new", element:<MateBoardForm/>},
     {path:"/mateBoard/:num/edit", element:<MateBoardEditForm/>},
     {path:"/mateBoard/:num/detail", element:<MateBoardDetail/>},
-    {path:"/checklist", element:<TravelChecklist/>}
+    {path:"/checklist", element:<TravelChecklist/>},
+    {path:"/exchangeInfo", element: <ExchangeInfo/>},
+    {path:"/safetyInfo", element: <TravelSafetyInfo/>},
+    {path:"/calculator", element: <TravelCostCalculator/>},
+    {path:"/planner", element: <TravelPlanner/>},
+    {path:"/recommendations", element: <LocationRecommendations/>},
+    {path:"/diary", element: <TravelDiary/>},
+    {path:"/languageTip", element: <LanguageCultureTips/>},
+    {path:"/extra", element: <ExtraPage/>}
 ]
 
 const router = createBrowserRouter([{
