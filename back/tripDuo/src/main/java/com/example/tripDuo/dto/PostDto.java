@@ -39,7 +39,7 @@ public class PostDto {
     private LocalDateTime deletedAt;
     
     
-    public static PostDto toEntity(Post entity) {
+    public static PostDto toDto(Post entity) {
         return PostDto.builder()
                 .id(entity.getId())
                 .userId(entity.getUserId())
