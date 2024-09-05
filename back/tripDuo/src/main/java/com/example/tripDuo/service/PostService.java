@@ -7,6 +7,7 @@ import com.example.tripDuo.dto.PostDto;
 public interface PostService {
 	
 		// ### getPost ### 
+		
 		public List<PostDto> getPostList(String type); // 기본 getList
 		// getPostList - 페이징 + 검색
 		public PostDto getPostById(Long id); // 간단한 
