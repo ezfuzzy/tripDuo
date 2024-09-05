@@ -9,6 +9,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.tripDuo.entity.User;
+import com.example.tripDuo.repository.PostRepository;
 import com.example.tripDuo.repository.UserRepository;
 
 @PropertySource(value = "classpath:custom.properties")
@@ -21,6 +22,9 @@ public class TripDuoApplication {
 	
 	@Autowired
 	private UserRepository userRepo;
+	
+	@Autowired
+	private PostRepository postRepo;
 	
 	@Autowired
 	private PasswordEncoder encoder;
@@ -51,7 +55,12 @@ public class TripDuoApplication {
 		userRepo.save(t3);
 		userRepo.save(t4);
 		userRepo.save(t5);
-		System.out.println("\n\n 서버가 성공적으로 실행되었습니다.");
+		
+        System.out.println("\n\n### ### ### ### ### ### ### ###");
+        System.out.println("#                             #");
+		System.out.println("#   서버가 성공적으로 실행되었습니다.   #");
+		System.out.println("#                             #");
+		System.out.println("### ### ### ### ### ### ### ###");
 	}
 
 }
