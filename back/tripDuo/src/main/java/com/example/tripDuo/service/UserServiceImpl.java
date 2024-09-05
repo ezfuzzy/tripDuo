@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService {
 	private String fileLocation;
 
 	@Autowired
-	UserRepository repo;
+	private UserRepository repo;
 	
 	@Override
 	public UserDto getUserById(Long id) {
