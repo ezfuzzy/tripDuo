@@ -30,6 +30,7 @@ public class Post {
     private Long id;
 
     private Long userId;
+    private String writer;
     private String type; // mate / course / 여행기 / 커뮤니티
 
     private String title;    

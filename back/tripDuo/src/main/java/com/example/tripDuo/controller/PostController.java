@@ -25,8 +25,12 @@ public class PostController {
 	
 	@GetMapping("/{type}")
 	public ResponseEntity<List<PostDto>> getPostList(@PathVariable String type) {
-		
 		return ResponseEntity.ok(service.getPostList(type));
+	}
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<PostDto> getPost(@PathVariable("id") Long id) {
+		return ResponseEntity.ok(service.getPostById(id));
 	}
 	
 	@PostMapping("/{type}")
@@ -43,7 +47,7 @@ public class PostController {
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deletePost(@PathVariable("num") Long id){
+	public ResponseEntity<String> deletePost(@PathVariable("id") Long id){
 		service.deletePost(id);
 		return ResponseEntity.ok("deleted");
 	}
