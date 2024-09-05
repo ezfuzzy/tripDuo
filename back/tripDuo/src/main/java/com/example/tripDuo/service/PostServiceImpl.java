@@ -16,9 +16,10 @@ public class PostServiceImpl implements PostService{
 	private PostRepository postRepo;
 	
 	@Override
-	public List<PostDto> getPostList() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<PostDto> getPostList(String type) {
+		
+		// type 별로 처리 
+		return postRepo.findByType(type).stream().map(PostDto::toDto).toList();
 	}
 
 	@Override
