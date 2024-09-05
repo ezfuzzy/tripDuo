@@ -32,7 +32,9 @@ public class UserController {
     public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
         // 사용자 정보 조회
         UserDto user = service.getUserById(id);
-        if (user != null) {
+        user.setPassword("응 비번 없어");
+        
+        if (user.getId() != null) {
             return ResponseEntity.ok(user);
         } else {
             return ResponseEntity.notFound().build();
@@ -41,8 +43,6 @@ public class UserController {
 
     @GetMapping("/username/{username}")
     public ResponseEntity<UserDto> getUserByUsername(@PathVariable("username") String username) {
-    	System.out.println("####");
-    	System.out.println(username);
     	// 사용자 정보 조회
     	UserDto user = service.getUserByUsername(username);
     	user.setPassword("응 비번 없어");
