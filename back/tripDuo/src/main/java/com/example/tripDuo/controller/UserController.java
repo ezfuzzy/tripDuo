@@ -41,7 +41,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/{username:[a-z0-9]+}")
+    @GetMapping("/username/{username:[a-z0-9]+}")
     public ResponseEntity<UserDto> getUserByUsername(@PathVariable("username") String username) {
     	// 사용자 정보 조회
     	UserDto user = service.getUserByUsername(username);
@@ -58,9 +58,6 @@ public class UserController {
        return ResponseEntity.ok(userDto);
     }
 
-    
-
-    
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
         service.deleteUser(id);
