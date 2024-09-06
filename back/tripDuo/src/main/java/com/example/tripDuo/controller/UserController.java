@@ -28,7 +28,7 @@ public class UserController {
 		return ResponseEntity.ok(service.getUserList());
 	}
 	
-    @GetMapping("/{id}")
+	@GetMapping("/{id:[0-9]+}")
     public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
         // 사용자 정보 조회
         UserDto user = service.getUserById(id);
@@ -41,7 +41,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/username/{username}")
+    @GetMapping("/{username:[a-z0-9]+}")
     public ResponseEntity<UserDto> getUserByUsername(@PathVariable("username") String username) {
     	// 사용자 정보 조회
     	UserDto user = service.getUserByUsername(username);
