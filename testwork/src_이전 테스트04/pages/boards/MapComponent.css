@@ -1,0 +1,94 @@
+/* 부모 div를 flex container로 설정 */
+div {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+/* 지도를 왼쪽에 배치하고, 고정된 너비를 설정 */
+div > div[ref="mapRef"] {
+  flex: 1;
+  margin-right: 20px;
+}
+
+/* 검색 탭과 저장된 장소 목록을 포함하는 영역 */
+div > div:nth-child(2) {
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 검색 탭 스타일링 */
+div > div:nth-child(2) > div:first-child {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+div > div:nth-child(2) > div:first-child > input {
+  flex: 1;
+  margin-right: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+div > div:nth-child(2) > div:first-child > button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+div > div:nth-child(2) > div:first-child > button:hover {
+  background-color: #0056b3;
+}
+
+/* 저장된 장소 목록 스타일링 */
+div > div:nth-child(2) > ul:first-of-type {
+  margin-bottom: 20px;
+}
+
+div > div:nth-child(2) > ul:first-of-type > li {
+  cursor: pointer;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 5px;
+  transition: background-color 0.3s ease;
+}
+
+div > div:nth-child(2) > ul:first-of-type > li:hover {
+  background-color: #f0f0f0;
+}
+
+/* 저장된 장소 클릭 시 표시되는 정보 스타일링 */
+div > div:nth-child(2) > div:last-child {
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+}
+
+/* 저장된 장소 목록 제목 스타일링 */
+div > div:nth-child(2) > h2 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+/* 저장된 장소 정보 제목 스타일링 */
+div > div:nth-child(2) > div:last-child > h3 {
+  margin-top: 0;
+}
+
+/* 저장된 장소 정보 리스트 스타일링 */
+div > div:nth-child(2) > div:last-child > ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+div > div:nth-child(2) > div:last-child > ul > li {
+  margin-bottom: 10px;
+}

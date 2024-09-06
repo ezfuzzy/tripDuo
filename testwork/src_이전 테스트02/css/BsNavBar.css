@@ -1,0 +1,52 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+
+.appName {
+    display: flex;
+    font-family: 'Orbitron', sans-serif; /* 구글 폰트 */
+    align-items: center; 
+    justify-content: center;
+    flex-grow: 1;
+    text-align: center;
+}
+
+.appName img {
+    width: 60px;
+    height: auto; 
+    display: block; 
+    margin: 0;
+  }
+
+
+  .custom-navbar {
+    background-color: #33632b; 
+  }
+  .custom-canvas {
+    background-color: #33632b; 
+  }
+
+  .content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+    padding-left: 20px; /* 들여쓰기 */
+}
+
+.content.open {
+    max-height: 300px;
+    transition: max-height 0.5s ease;
+}
+
+.toggle {
+    font-weight: bold;
+}
+
+.custom-canvas .list-group-item {
+  background-color: #5e8a55; /*배경색 */
+  border: #5e8a55; /* 테두리 색 */
+}
+
+.custom-canvas .list-group-item:hover {
+  background-color: #5e8a55; /* hover 배경색 */
+}
+  
