@@ -53,7 +53,7 @@ const routes = [
     {path:"/mateBoard/:num/edit", element:<MateBoardEditForm/>},
     {path:"/mateBoard/:num/detail", element:<MateBoardDetail/>},
     {path:"/checklist", element:<TravelChecklist/>},
-    {path:"/exchangeInfo", element: <ExchangeInfo/>},
+    {path:"/exchange", element: <ExchangeInfo/>},
     {path:"/safetyInfo", element: <TravelSafetyInfo/>},
     {path:"/calculator", element: <TravelCostCalculator/>},
     {path:"/planner", element: <TravelPlanner/>},
