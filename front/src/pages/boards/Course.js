@@ -1,6 +1,5 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Pagination } from "react-bootstrap";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 
@@ -82,62 +81,102 @@ function Course() {
 
 
     return (
-        <>
-            <Link to="/course/new">여행코스 계획하기</Link>
-            <h2>여행 코스 게시판 입니다</h2>
+        <div className="container mx-auto p-4">
+      <Link to="/course/new" className="text-blue-500">여행코스 계획하기</Link>
+      <h2 className="text-2xl font-bold mb-4">국내여행 코스 게시판 입니다</h2>
+      <label htmlFor="search">검색조건</label>
+      <select
+        onChange={handleSearchChange}
+        value={searchState.condition}
+        name="condition"
+        id="search"
+        className="border border-gray-300 p-2 rounded-md ml-2"
+      >
+        <option value="">선택</option>
+        <option value="title_content">제목+내용</option>
+        <option value="title">제목</option>
+        <option value="writer">작성자</option>
+      </select>
+      <input
+        onChange={handleSearchChange}
+        value={searchState.keyword}
+        type="text"
+        placeholder="검색어..."
+        name="keyword"
+        className="border border-gray-300 p-2 rounded-md ml-2"
+      />
+      <button onClick={() => move()} className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md">
+        검색
+      </button>
+      <button onClick={handleReset} className="ml-2 px-4 py-2 bg-gray-500 text-white rounded-md">
+        Reset
+      </button>
+      
+      <table className="min-w-full bg-white border-collapse">
+        <thead>
+          <tr>
+            <th className="p-3 font-bold uppercase bg-gray-200 text-gray-600 border-b border-gray-300">좋아요</th>
+            <th className="p-3 font-bold uppercase bg-gray-200 text-gray-600 border-b border-gray-300">작성자</th>
+            <th className="p-3 font-bold uppercase bg-gray-200 text-gray-600 border-b border-gray-300">나라</th>
+            <th className="p-3 font-bold uppercase bg-gray-200 text-gray-600 border-b border-gray-300">도시</th>
+            <th className="p-3 font-bold uppercase bg-gray-200 text-gray-600 border-b border-gray-300">제목</th>
+            <th className="p-3 font-bold uppercase bg-gray-200 text-gray-600 border-b border-gray-300">조회수</th>
+            <th className="p-3 font-bold uppercase bg-gray-200 text-gray-600 border-b border-gray-300">태그</th>
+          </tr>
+        </thead>
+        <tbody>
+          {pageInfo.list.map((item) => (
+            <tr key={item.num} className="bg-white hover:bg-gray-100">
+              <td className="p-3 border-b border-gray-300">{item.likes}</td>
+              <td className="p-3 border-b border-gray-300">{item.user_id}</td>
+              <td className="p-3 border-b border-gray-300">{item.location_country}</td>
+              <td className="p-3 border-b border-gray-300">{item.location_city}</td>
+              <td className="p-3 border-b border-gray-300">{item.title}</td>
+              <td className="p-3 border-b border-gray-300">{item.views}</td>
+              <td className="p-3 border-b border-gray-300">{item.tags}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-            <label htmlFor="search">검색조건</label> {/* htmlFor와 id의 값을 같게 */}
-            <select onChange={handleSearchChange} value={searchState.condition} name="condition" id="search">
-                <option value="">선택</option>
-                <option value="title_content">제목+내용</option>
-                <option value="title">제목</option>
-                <option value="writer">작성자</option>
-            </select>
-            <input onChange={handleSearchChange} value={searchState.keyword} type="text" placeholder="검색어..." name="keyword" />
-            <button onClick={() => move()}>검색</button>
-            <button onClick={handleReset}>Reset</button>
-            <table>
-                <thead>
-                    <tr>
-                        <th>좋아요</th>
-                        <th>작성자</th>
-                        <th>나라</th>
-                        <th>도시</th>
-                        <th>제목</th>
-                        <th>조회수</th>
-                    </tr>
-                </thead>
-                <tbody>
+      <p className="mt-4">
+        <strong>{pageInfo.totalRow}</strong>개의 글이 있습니다
+      </p>
 
-                    {
-                        pageInfo.list.map(item => (
-                            <tr key={item.num}>
-                                <td>{item.likes}</td>
-                                {/* user_id 대신 nickname 들어가는게 좋을 것 같음 */}
-                                <td>{item.user_id}</td>
-                                <td>{item.location_country}</td>
-                                <td>{item.location_city}</td>
-                                <td>{item.title}</td>
-                                <td>{item.views}</td>
-                            </tr>
-                        ))
-                    }
-                </tbody>
-            </table>
+      <div className="flex justify-center mt-4 space-x-2">
+        <button
+          onClick={() => move(pageInfo.startPageNum - 1)}
+          className={`px-4 py-2 border rounded ${
+            pageInfo.startPageNum === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-white hover:bg-gray-100"
+          }`}
+          disabled={pageInfo.startPageNum === 1}
+        >
+          &laquo;
+        </button>
 
-            <p><strong>{pageInfo.totalRow}</strong>개의 글이 있습니다</p>
-            <Pagination className="mt-3">
-                <Pagination.Item onClick={() => move(pageInfo.startPageNum - 1)} disabled={pageInfo.startPageNum === 1}>&laquo;</Pagination.Item>
-                {
-                    pageArray.map(item => ( // item 은 pageNum
-                        <Pagination.Item onClick={() => move(item)} key={item} active={pageInfo.pageNum === item}>
-                            {item}
-                        </Pagination.Item>
-                    ))
-                }
-                <Pagination.Item onClick={() => move(pageInfo.endPageNum + 1)} disabled={pageInfo.endPageNum >= pageInfo.totalPageCount}>&raquo;</Pagination.Item>
-            </Pagination>
-        </>
+        {pageArray.map((item) => (
+          <button
+            onClick={() => move(item)}
+            key={item}
+            className={`px-4 py-2 border rounded ${
+              pageInfo.pageNum === item ? "bg-blue-500 text-white" : "bg-white hover:bg-gray-100"
+            }`}
+          >
+            {item}
+          </button>
+        ))}
+
+        <button
+          onClick={() => move(pageInfo.endPageNum + 1)}
+          className={`px-4 py-2 border rounded ${
+            pageInfo.endPageNum >= pageInfo.totalPageCount ? "bg-gray-300 cursor-not-allowed" : "bg-white hover:bg-gray-100"
+          }`}
+          disabled={pageInfo.endPageNum >= pageInfo.totalPageCount}
+        >
+          &raquo;
+        </button>
+      </div>
+    </div>
     );
 }
 

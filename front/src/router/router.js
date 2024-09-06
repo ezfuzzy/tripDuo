@@ -28,6 +28,7 @@ import ExchangeInfo from "../pages/Utilities/ExchangeInfo"
 import TravelDiary from "../pages/Utilities/TravelDiary"
 import LanguageCultureTips from "../pages/Utilities/LanguageCultureTips"
 import ExtraPage from "../pages/Utilities/ExtraPage"
+import Course from "../pages/boards/Course"
 
 const routes = [
     // /users/:id
@@ -60,7 +61,8 @@ const routes = [
     {path:"/recommendations", element: <LocationRecommendations/>},
     {path:"/diary", element: <TravelDiary/>},
     {path:"/languageTip", element: <LanguageCultureTips/>},
-    {path:"/extra", element: <ExtraPage/>}
+    {path:"/extra", element: <ExtraPage/>},
+    {path:"/course", element: <Course/>}
 ]
 
 const router = createBrowserRouter([{
