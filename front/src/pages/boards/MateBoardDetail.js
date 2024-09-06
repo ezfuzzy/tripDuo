@@ -1,6 +1,7 @@
-import { Button } from "@material-tailwind/react";
+
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { Button, Card } from "react-bootstrap";
 // import { Button, Card } from "react-bootstrap";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
@@ -61,7 +62,7 @@ function MateBoardDetail(props) {
         <p>{post.content}</p>
         <p>{post.content}</p>
 
-        {/* <Card style={{ width: "18rem" }}>
+         <Card style={{ width: "18rem" }}>
           <Card.Body>
             <Card.Title>
               {post.country} / {post.city}
@@ -74,12 +75,9 @@ function MateBoardDetail(props) {
               {isRecruited ? "취소하기" : "신청하기"}
             </Button>
           </Card.Body>
-        </Card> */}
+        </Card> 
       </div>
 
-      <div> 
-        <Button>버튼</Button>
-      </div>
     </>
   );
 }
