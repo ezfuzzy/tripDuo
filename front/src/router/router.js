@@ -29,6 +29,7 @@ import TravelDiary from "../pages/Utilities/TravelDiary"
 import LanguageCultureTips from "../pages/Utilities/LanguageCultureTips"
 import ExtraPage from "../pages/Utilities/ExtraPage"
 import Course from "../pages/boards/Course"
+import CourseForm from "../pages/boards/CourseForm"
 
 const routes = [
     // /users/:id
@@ -62,7 +63,8 @@ const routes = [
     {path:"/diary", element: <TravelDiary/>},
     {path:"/languageTip", element: <LanguageCultureTips/>},
     {path:"/extra", element: <ExtraPage/>},
-    {path:"/course", element: <Course/>}
+    {path:"/course", element: <Course/>},
+    {path:"/course/new", element:<CourseForm/>}
 ]
 
 const router = createBrowserRouter([{
