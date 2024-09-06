@@ -39,15 +39,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserDto getUserByPhonenum(String phone_num) {
-		// TODO Auto-generated method stub
-		return null;
+	public UserDto getUserByPhonenum(String phoneNumber) {
+		return UserDto.toDto(repo.findByPhoneNumber(phoneNumber));
 	}
 
 	@Override
 	public UserDto getUserByEmail(String email) {
-		// TODO Auto-generated method stub
-		return null;
+		return UserDto.toDto(repo.findByEmail(email));
 	}
 	
 	@Override
