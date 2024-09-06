@@ -203,7 +203,7 @@ function BsNavBar() {
                             </dt>
                             <dl className={`content ${openSections.domestic ? 'open' : ''}`}>
                                 <div className="ps-3">여행 기록</div>
-                                <div className="ps-3">여행 계획</div>
+                                <div className="ps-3" onClick={()=>navigate("/course")}>여행 계획</div>
                                 <div className="ps-3">여행 메이트</div>
                                 <div className="ps-3">여행 정보</div>
                                 <div className="ps-3">커뮤니티</div>
