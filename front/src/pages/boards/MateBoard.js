@@ -1,43 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
 import { Link, NavLink } from "react-router-dom";
 
 function MateBoard() {
-
   //배열 안에서 객체로 관리
-  const [pageData, setPageData] = useState([
-    {
-      id: 1,
-      userId: "Sample Id",
-      type: "Sample Type",
-      title: "SAMPLE TITLE",
-      Country: "",
-      City: "강릉",
-      tags: "",
-      views: "165",
-      likes: "6",
-      rating: "78",
-      status: "",
-      createdAt: "2024-09-03 16:21",
-      updatedAt: "2024-09-03 16:34",
-    },
-    {
-      id: 2,
-      userId: "Sample Id2",
-      type: "Sample Type2",
-      title: "SAMPLE TITLE2",
-      Country: "베트남",
-      City: "다낭",
-      tags: "",
-      views: "178",
-      likes: "12",
-      rating: "86",
-      status: "",
-      createdAt: "2024-09-03 16:26",
-      updatedAt: "2024-09-03 16:51",
-    },
-  ]);
+  const [pageData, setPageData] = useState([]);
 
   const [domesticInternational, setDomesticInternational] =
     useState("Domestic");
@@ -56,35 +23,71 @@ function MateBoard() {
   };
 
   useEffect(() => {
-    if (domesticInternational === "Domestic") {
-      // 국내 상태
-      //국내 메이트 게시판 요청
-      setWhereAreYou("국내 여행 메이트 페이지");
-      setPageTurn("to International");
-    } else if (domesticInternational === "International") {
-      //해외 메이트 게시판 요청
-      setWhereAreYou("해외 여행 메이트 페이지");
-      setPageTurn("to Domestic");
-    }
+    axios
+      .get("/api/v1/posts/mate")
+      .then((res) => {
+        const filteredData = res.data.filter((item) => {
+          return domesticInternational === "Domestic"
+            ? item.country === "한국"
+            : item.country !== "한국";
+        });
+
+        setPageData(filteredData);
+
+        setWhereAreYou(
+          domesticInternational === "Domestic"
+            ? "국내 여행 메이트 페이지"
+            : "해외 여행 메이트 페이지"
+        );
+        setPageTurn(
+          domesticInternational === "Domestic"
+            ? "to International"
+            : "to Domestic"
+        );
+      })
+      .catch((error) => console.log(error));
   }, [domesticInternational]);
 
-  
-  const [post, setPost] = useState({})
+  //   useEffect(() => {
+  //     if (domesticInternational === "Domestic") {// 국내 상태
+  //       //국내 메이트 게시판 요청
+  //       axios.get("/api/v1/posts/mate")
+  //       .then(res=>{
+  //               for (let i = 0; i < res.data.length; i++) {
+  //                   if(res.data.country === "한국")
+  //                   setPageData(res.data)
+  //               }
+  //           })
+  //       .catch(error=>console.log(error))
 
-  useEffect(()=>{
-    axios.get("/api/v1/posts/mate")
-    .then(res=>{
-        console.log(res.data);
-        setPost(res.data)
-    })
-    .catch(error=>console.log(error)
-    )
-  },[])
+  //       setWhereAreYou("국내 여행 메이트 페이지");
+  //       setPageTurn("to International");
+  //     } else if (domesticInternational === "International") {
+  //       //해외 메이트 게시판 요청
+  //       axios.get("/api/v1/posts/mate")
+  //       .then(res=>{
+  //               for (let i = 0; i < res.data.length; i++) {
+  //                   if(res.data.country !== "한국")
+  //                   setPageData(res.data)
+  //               }
+  //           })
+  //       .catch(error=>console.log(error))
+
+  //       setWhereAreYou("해외 여행 메이트 페이지");
+  //       setPageTurn("to Domestic");
+  //     }
+  //   }, [domesticInternational]);
 
   return (
     <>
-      <h3>{whereAreYou}</h3><NavLink to={"/mateBoard/new"}>새글 작성</NavLink>
-      <button className="border border-1 bg-light-green-200" onClick={handleButtonClick}>{pageTurn}</button>
+      <h3>{whereAreYou}</h3>
+      <NavLink to={"/mateBoard/new"}>새글 작성</NavLink>
+      <button
+        className="border border-1 bg-light-green-200"
+        onClick={handleButtonClick}
+      >
+        {pageTurn}
+      </button>
 
       {/* 메이트 게시판 테이블 */}
       <table className="table-auto w-full border divide-y divide-x divide-gray-200">
@@ -105,11 +108,13 @@ function MateBoard() {
               <td className="text-left">
                 {domesticInternational === "Domestic" ? (
                   <>
-                    <span className="border border-white bg-sky-200 text-gray-800 rounded px-1">{`#${item.Country}`}</span>
-                    <span className="border border-white bg-sky-200 text-gray-800 rounded px-1">{`#${item.City}`}</span>
+                    <span className="border border-white bg-sky-200 text-gray-800 rounded px-1">{`#${item.city}`}</span>
                   </>
                 ) : (
-                  <span className="border border-white bg-sky-200 text-gray-800 rounded px-1">{`#${item.City}`}</span>
+                  <>
+                    <span className="border border-white bg-sky-200 text-gray-800 rounded px-1">{`#${item.country}`}</span>
+                    <span className="border border-white bg-sky-200 text-gray-800 rounded px-1">{`#${item.city}`}</span>
+                  </>
                 )}
                 <Link to={`/mateBoard/${item.id}/detail`}>{item.title}</Link>
               </td>
