@@ -23,12 +23,12 @@ public class PostController {
 	@Autowired
 	private PostService service;
 	
-	@GetMapping("/{type}")
-	public ResponseEntity<List<PostDto>> getPostList(@PathVariable String type) {
+	@GetMapping("/{type:[a-zA-Z]+}")
+	public ResponseEntity<List<PostDto>> getPostList(@PathVariable("type") String type) {
 		return ResponseEntity.ok(service.getPostList(type));
 	}
 	
-	@GetMapping("/{id}")
+	@GetMapping("/{id:[0-9]+}")
 	public ResponseEntity<PostDto> getPost(@PathVariable("id") Long id) {
 		return ResponseEntity.ok(service.getPostById(id));
 	}
