@@ -10,7 +10,7 @@ import com.example.tripDuo.entity.Post;
 import com.example.tripDuo.repository.PostRepository;
 
 @Service
-public class PostServiceImpl implements PostService{
+public class PostServiceImpl implements PostService {
 
 	@Autowired
 	private PostRepository postRepo;

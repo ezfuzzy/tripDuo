@@ -4,13 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.tripDuo.dto.UserDto;
@@ -50,12 +44,23 @@ public class UserController {
     	return ResponseEntity.ok(user);
     }
 
+    @PostMapping("/check/{checkType}")
+    public ResponseEntity<Boolean> checkUser(@PathVariable("checkType") String checkType, @RequestBody String checkString) {
+      return ResponseEntity.ok(service.checkExists(checkType, checkString));
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable Long id,@RequestParam(required = false) MultipartFile profileImgForUpload, UserDto userDto) {
+    public ResponseEntity<UserDto> updateUserInfo(@PathVariable Long id,@RequestParam(required = false) MultipartFile profileImgForUpload, UserDto userDto) {
         // 사용자 정보 업데이트
-       service.updateUser(userDto, profileImgForUpload);
+       service.updateUserInfo(userDto, profileImgForUpload);
        
        return ResponseEntity.ok(userDto);
+    }
+
+    @PutMapping("/{id}/password")
+    public ResponseEntity<Boolean> updateUserPassword(@PathVariable int id, @RequestBody UserDto userDto) {
+        // 사용자 비밀번호 업데이트
+        return ResponseEntity.ok(service.updateUserPassword(userDto));
     }
 
     @DeleteMapping("/{id}")
