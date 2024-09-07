@@ -5,8 +5,8 @@ import { Link } from "react-router-dom";
 import 'froala-editor/css/froala_style.min.css';
 import 'froala-editor/css/froala_editor.pkgd.min.css';
             
-import FroalaEditorComponent from 'react-froala-wysiwyg';
 import axios from "axios";
+import FroalaEditor from "react-froala-wysiwyg";
 
 function MateBoardForm(props) {
   const [selectedBorder, setSelectedBorder] = useState("domestic");
@@ -101,7 +101,7 @@ function MateBoardForm(props) {
 
         <div>
           <label htmlFor="content">내용</label>
-        <FroalaEditorComponent></FroalaEditorComponent>
+        <FroalaEditor ></FroalaEditor>
         </div>
 
       </form>
