@@ -116,10 +116,5 @@ public class AuthController {
 		return ResponseEntity.status(HttpStatus.OK).body(kakaoLogout);
 	}
 	
-    @PutMapping("/{id}/password")
-    public ResponseEntity<UserDto> updateUserPassword(@PathVariable int id, @RequestBody UserDto userDto) {
-        // 사용자 비밀번호 업데이트
-    	service.updateUserPassword(userDto);
-    	return ResponseEntity.ok(userDto);
-    }
+
 }

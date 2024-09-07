@@ -17,7 +17,4 @@ public interface AuthService {
     public String KakaogetAccessToken(String code);
     public String kakaoLogout(OAuthToken oAuthToken, Long kakaoId);
 
-	// ### updateUser ###
-	public Boolean updateUserPassword(UserDto dto);
-
 }

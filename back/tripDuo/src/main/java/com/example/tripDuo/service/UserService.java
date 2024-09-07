@@ -14,12 +14,16 @@ public interface UserService {
 	
 	public UserDto getUserById(Long id);
 	public UserDto getUserByUsername(String username);
-	public UserDto getUserByPhonenum(String phone_num);
+	public UserDto getUserByPhoneNumber(String phone_num);
 	public UserDto getUserByEmail(String email);
-	
-	// ### updateUser ###
-	public Boolean updateUser(UserDto dto, MultipartFile profileImgForUpload);
-	
+
+	// ### 중복체크 ###
+	public Boolean checkExists(String checkType, String checkString);
+
+	// ### updateUserInfo ###
+	public void updateUserInfo(UserDto dto, MultipartFile profileImgForUpload);
+	public Boolean updateUserPassword(UserDto dto);
+
 	// ### deleteUser ###
 	public void deleteUser(Long id);
 	
