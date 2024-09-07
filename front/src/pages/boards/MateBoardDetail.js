@@ -2,8 +2,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Button, Card } from "react-bootstrap";
-// import { Button, Card } from "react-bootstrap";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
 
 
@@ -12,27 +11,33 @@ function MateBoardDetail(props) {
 
   const [post, setPost] = useState({});
   const [writerProfile, setWriterProfile] = useState({});
-  const [isRecruited, setIsRecuruited] = useState(false);
+  const [isRecruited, setIsRecruited] = useState(false);
+
+  const navigate = useNavigate()
 
   const buttonClasses = ` btn btn-sm ${
     isRecruited ? "btn-secondary" : "btn-success"
   }`;
 
   const handleRecruit = (e) => {
-    setIsRecuruited(!isRecruited);
+    setIsRecruited(!isRecruited);
   };
 
   useEffect(() => {
     axios
       .get(`/api/v1/posts/${num}`)
       .then((res) => {
-        console.log(res.data);
+        //글 정보 전달 확인
         setPost(res.data);
+        const id = res.data.userId  
 
-        // //유저 정보 받아서 state 값으로 저장
-        // axios.get(`/api/v1/users/${res.data.userId}`)
-        // .then(res=>setWriterProfile(res.data))
-        // .catch(error=>console.log(error))
+        //유저 정보 받아서 state 값으로 저장
+        axios.get(`/api/v1/users/${id}`)
+        .then(res=>{
+            //유저 정보 전달 확인
+            setWriterProfile(res.data)
+      })
+        .catch(error=>console.log(error))
       })
       .catch((error) => console.log(error));
   }, [num]);
@@ -48,7 +53,7 @@ function MateBoardDetail(props) {
         <h5>{num}번 {post.title}</h5>
 
         <div className="container">
-          <p>작성자 : {writerProfile.nickname}</p>
+          <p><strong>{writerProfile.nickname}</strong> {writerProfile.gender} / {writerProfile.age}</p>
         </div>
 
         <p>안녕하세요~</p>
@@ -57,10 +62,7 @@ function MateBoardDetail(props) {
         <br />
         <br />
 
-        <p>{post.content}</p>
-        <p>{post.content}</p>
-        <p>{post.content}</p>
-        <p>{post.content}</p>
+        <div dangerouslySetInnerHTML={{__html:post.content}}></div>
 
          <Card style={{ width: "18rem" }}>
           <Card.Body>
@@ -78,6 +80,10 @@ function MateBoardDetail(props) {
         </Card> 
       </div>
 
+      <div className="container mt-3">
+        <Button className="m-1" onClick={()=>navigate(`/mateBoard/${num}/edit`)}>수정</Button>
+        <Button className="m-1">삭제</Button>
+      </div>
     </>
   );
 }
