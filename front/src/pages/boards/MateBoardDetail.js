@@ -46,9 +46,9 @@ function MateBoardDetail(props) {
       <div className="container">
         <Link to={"/mateBoard"}>Mate</Link>
         <div>
-          <span className="border border-white bg-sky-200 text-gray-800 rounded px-1">#{post.country}</span>
-          <span className="border border-white bg-sky-200 text-gray-800 rounded px-1">#{post.city}</span>
-          <span className="border border-white bg-orange-200 text-gray-800 rounded px-1">#{post.tags}</span>
+          <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{post.country}</span>
+          <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{post.city}</span>
+          <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full items-center">#{post.tags}</span>
         </div>
         <h5>{num}번 {post.title}</h5>
 
