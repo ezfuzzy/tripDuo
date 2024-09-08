@@ -6,7 +6,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 function MateBoardEditForm(props) {
   const { num } = useParams();
 
-  const [post, setPost] = useState({});
+  const [post, setPost] = useState({tags:""});
 
   const navigate = useNavigate()
 
@@ -51,10 +51,17 @@ function MateBoardEditForm(props) {
     <>
       <Link to={`/mateBoard/${num}/detail`}>상세 페이지로</Link>
       <h3>{num} 번 게시물 수정 폼</h3>
-        <div>
+      <div className="flex flex-wrap gap-2 mt-2">
           <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{post.country}</span>
           <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{post.city}</span>
-          <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full items-center">#{post.tags}</span>
+          {post.tags.split(", ").map((tag, index) => (
+                    <span
+                    key={index}
+                    className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center"
+                    >
+                    {tag}
+                    </span>
+              ))}
         </div>
       <form >
         <div>

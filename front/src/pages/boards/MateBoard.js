@@ -1,12 +1,17 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { shallowEqual, useSelector } from "react-redux";
+import { Link, NavLink, useNavigate, useSearchParams } from "react-router-dom";
 
 function MateBoard() {
   //배열 안에서 객체로 관리
   const [pageData, setPageData] = useState([]);
+  //파라미터 값 관리
+  const [searchParams, setSearchParams] = useSearchParams()
 
-  const [domesticInternational, setDomesticInternational] = useState("Domestic");
+  // searchPrams 에 di 값이 있으면 그 값으로 없다면 Domestic 으로 설정
+  // *이후에 di 값이 영향을 미치지는않지만 계속 남아있음
+  const [domesticInternational, setDomesticInternational] = useState(searchParams.get('di') || 'Domestic')
   const [pageTurn, setPageTurn] = useState("to International"); // 페이지 전환 버튼
   const [whereAreYou, setWhereAreYou] = useState(null);
 
@@ -22,6 +27,7 @@ function MateBoard() {
   };
 
   useEffect(() => {
+
     axios
       .get("/api/v1/posts/mate")
       .then((res) => {
@@ -43,9 +49,10 @@ function MateBoard() {
             ? "to International"
             : "to Domestic"
         );
+        
       })
       .catch((error) => console.log(error));
-  }, [domesticInternational]);
+  }, [domesticInternational, searchParams ]);
 
   return (
     <>
@@ -75,16 +82,24 @@ function MateBoard() {
             <tr key={item.id}>
               <td>{item.id}</td> {/* 글 번호 */}
               <td className="text-left">
-                  <>
+                  <div className="flex flex-wrap gap-2 mt-2">
                     <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">{`#${item.country}`}</span>
                     <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">{`#${item.city}`}</span>
-                  </>
+                  {item.tags.split(", ").map((tag, index) => (
+                    <span
+                    key={index}
+                    className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center"
+                    >
+                    {tag}
+                    </span>
+              ))}
+              </div>
                 <Link to={`/mateBoard/${item.id}/detail`}>{item.title}</Link>
               </td>
-              <td>{item.userId}</td> {/* 작성자 */}
+              <td>{item.writer}</td> {/* 작성자 */}
               <td>{item.updatedAt ? item.updatedAt : item.createdAt}</td>
-              <td>{item.views}</td> {/* 조회수 */}
-              <td>{item.likes}</td>
+              <td>{item.viewCount}</td> {/* 조회수 */}
+              <td>{item.likeCount}</td>
             </tr>
           ))}
         </tbody>
