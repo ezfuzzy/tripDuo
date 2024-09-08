@@ -19,36 +19,39 @@ import com.example.tripDuo.service.PostService;
 @RestController
 @RequestMapping("/api/v1/posts")
 public class PostController {
-	
-	@Autowired
-	private PostService service;
+
+	private final PostService postService;
+
+	public PostController(PostService postService) {
+		this.postService = postService;
+	}
 	
 	@GetMapping("/{type:[a-zA-Z]+}")
 	public ResponseEntity<List<PostDto>> getPostList(@PathVariable("type") String type) {
-		return ResponseEntity.ok(service.getPostList(type));
+		return ResponseEntity.ok(postService.getPostList(type));
 	}
 	
 	@GetMapping("/{id:[0-9]+}")
 	public ResponseEntity<PostDto> getPost(@PathVariable("id") Long id) {
-		return ResponseEntity.ok(service.getPostById(id));
+		return ResponseEntity.ok(postService.getPostById(id));
 	}
 	
 	@PostMapping("/{type}")
 	public ResponseEntity<String> writePost(@PathVariable("type") String type, @RequestBody PostDto dto){
 		System.out.println(dto.toString());
 		dto.setType(type);
-		service.writePost(dto);
+		postService.writePost(dto);
 		return ResponseEntity.ok(dto.toString());
 	}
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<PostDto> editPost(@PathVariable("id") Long id, @RequestBody PostDto dto){
-		return ResponseEntity.ok(service.updatePost(dto));
+		return ResponseEntity.ok(postService.updatePost(dto));
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deletePost(@PathVariable("id") Long id){
-		service.deletePost(id);
+		postService.deletePost(id);
 		return ResponseEntity.ok("deleted");
 	}
 	

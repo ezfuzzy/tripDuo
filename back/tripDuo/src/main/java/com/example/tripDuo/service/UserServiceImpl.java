@@ -2,7 +2,9 @@ package com.example.tripDuo.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,44 +23,46 @@ public class UserServiceImpl implements UserService {
 	@Value("${file.location}")
 	private String fileLocation;
 
-	@Autowired
-	private UserRepository repo;
+	private final UserRepository UserRepo;
+	private final PasswordEncoder passwordEncoder;
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	public UserServiceImpl(UserRepository UserRepo, PasswordEncoder passwordEncoder) {
+		this.UserRepo = UserRepo;
+		this.passwordEncoder = passwordEncoder;
+	}
 
 	@Override
 	public List<UserDto> getUserList() {
-		return repo.findAll().stream().map(UserDto::toDto).toList();
+		return UserRepo.findAll().stream().map(UserDto::toDto).toList();
 	}
 	
 	@Override
 	public UserDto getUserById(Long id) {
-		return UserDto.toDto(repo.findById(id).get());
+		return UserDto.toDto(UserRepo.findById(id).get());
 	}
 
 	@Override
 	public UserDto getUserByUsername(String username) {
-		return UserDto.toDto(repo.findByUsername(username));
+		return UserDto.toDto(UserRepo.findByUsername(username));
 	}
 
 	@Override
 	public UserDto getUserByPhoneNumber(String phoneNumber) {
-		return UserDto.toDto(repo.findByPhoneNumber(phoneNumber));
+		return UserDto.toDto(UserRepo.findByPhoneNumber(phoneNumber));
 	}
 
 	@Override
 	public UserDto getUserByEmail(String email) {
-		return UserDto.toDto(repo.findByEmail(email));
+		return UserDto.toDto(UserRepo.findByEmail(email));
 	}
 
 	@Override
 	public Boolean checkExists(String checkType, String checkString) {
 		return switch (checkType) {
-			case "username" -> repo.existsByUsername(checkString);
-			case "nickname" -> repo.existsByNickname(checkString);
-			case "phoneNumber" -> repo.existsByPhoneNumber(checkString);
-			case "email" -> repo.existsByEmail(checkString);
+			case "username" -> UserRepo.existsByUsername(checkString);
+			case "nickname" -> UserRepo.existsByNickname(checkString);
+			case "phoneNumber" -> UserRepo.existsByPhoneNumber(checkString);
+			case "email" -> UserRepo.existsByEmail(checkString);
 			default -> throw new IllegalArgumentException("잘못된 체크 타입입니다: " + checkType);
 		};
 	}
@@ -66,8 +70,23 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void updateUserInfo(UserDto dto, MultipartFile profileImgForUpload) {
 
+		// 허용된 파일 확장자 목록
+		Set<String> allowedExtensions = new HashSet<>();
+		allowedExtensions.add("jpg");
+		allowedExtensions.add("jpeg");
+		allowedExtensions.add("png");
+
 	    // 프로필 이미지가 존재하고, 파일 크기가 0이 아닌 경우 처리
 	    if (profileImgForUpload != null && !profileImgForUpload.isEmpty()) {
+
+			String originalFileName = profileImgForUpload.getOriginalFilename();
+
+			// 파일 확장자 검증
+			String fileExtension = originalFileName.substring(originalFileName.lastIndexOf(".") + 1).toLowerCase();
+			if (!allowedExtensions.contains(fileExtension)) {
+				throw new IllegalArgumentException("허용되지 않은 파일 확장자입니다: " + fileExtension);
+			}
+
 	        String saveFileName = UUID.randomUUID().toString();
 	        String filePath = fileLocation + File.separator + saveFileName;
 	        System.out.println(filePath);
@@ -84,13 +103,13 @@ public class UserServiceImpl implements UserService {
 	    }
 
 	    // 기존 유저 정보 가져오기
-		UserDto existingUser = UserDto.toDto(repo.findById(dto.getId()).get());
+		UserDto existingUser = UserDto.toDto(UserRepo.findById(dto.getId()).get());
 
 	    // 비밀번호는 기존 것을 유지
 	    dto.setPassword(existingUser.getPassword());
 
 	    // 변경된 정보를 저장
-	    repo.save(User.toEntity(dto));
+	    UserRepo.save(User.toEntity(dto));
 
 	}
 
@@ -101,7 +120,7 @@ public class UserServiceImpl implements UserService {
 			return false;
 		}
 
-		UserDto existingUser = UserDto.toDto(repo.findByUsername(dto.getUsername()));
+		UserDto existingUser = UserDto.toDto(UserRepo.findByUsername(dto.getUsername()));
 		// 입력된 비밀번호(dto.getPassword())와 기존 비밀번호(existingUser.getPassword()) 비교
 		if (!passwordEncoder.matches(existingUser.getPassword(), dto.getPassword())) {
 			return false;
@@ -115,7 +134,7 @@ public class UserServiceImpl implements UserService {
 
 		String encodedNewPassword = passwordEncoder.encode(dto.getNewPassword());
 		dto.setPassword(encodedNewPassword);
-		repo.save(User.toEntity(dto));
+		UserRepo.save(User.toEntity(dto));
 
 		return true;
 	}
@@ -123,7 +142,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void deleteUser(Long id) {
-		repo.deleteById(id);
+		UserRepo.deleteById(id);
 	}
 
 

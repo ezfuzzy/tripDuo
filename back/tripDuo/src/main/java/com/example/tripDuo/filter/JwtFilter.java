@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,11 +28,13 @@ public class JwtFilter extends OncePerRequestFilter {
 	@Value("${jwt.name}")
 	private String jwtName;
 
-	@Autowired
-	private JwtUtil jwtUtil;
+	private final JwtUtil jwtUtil;
+	private final CustomUserDetailsService customUserDetailsService;
 
-	@Autowired
-	private CustomUserDetailsService service;
+	public JwtFilter(JwtUtil jwtUtil, @Lazy CustomUserDetailsService customUserDetailsService) {
+		this.jwtUtil = jwtUtil;
+		this.customUserDetailsService = customUserDetailsService;
+	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -50,7 +53,7 @@ public class JwtFilter extends OncePerRequestFilter {
 			}
 		}
 
-		if (jwtToken.equals("")) {
+		if (jwtToken.isEmpty()) {
 			String authHeader = request.getHeader("Authorization");
 			if (authHeader != null) {
 				jwtToken = authHeader;
@@ -66,7 +69,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
 		// 3. get UserDetails object from DB
 		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-			UserDetails userDetails = service.loadUserByUsername(username);
+			UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
 			// 4. validate token
 			boolean isValid = jwtUtil.validateToken(jwtToken, userDetails);

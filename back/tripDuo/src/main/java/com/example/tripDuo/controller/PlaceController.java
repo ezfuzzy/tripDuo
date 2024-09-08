@@ -20,34 +20,36 @@ import com.example.tripDuo.service.PlaceService;
 @RequestMapping("/api/v1/places")
 public class PlaceController {
 
-	
-	@Autowired
-	private PlaceService service;
+	private final PlaceService placeService;
+
+	public PlaceController(PlaceService placeService) {
+		this.placeService = placeService;
+	}
 	
 	@GetMapping
 	public ResponseEntity<List<PlaceDto>> getPlaceList() {
-		return ResponseEntity.ok(service.getPlaceList());
+		return ResponseEntity.ok(placeService.getPlaceList());
 	}
 	
 	@GetMapping("/{id:[0-9]+}")
 	public ResponseEntity<PlaceDto> getPost(@PathVariable("id") Long id) {
-		return ResponseEntity.ok(service.getPlaceById(id));
+		return ResponseEntity.ok(placeService.getPlaceById(id));
 	}
 	
 	@PostMapping
 	public ResponseEntity<String> writePost(@RequestBody PlaceDto dto){
-		service.addPlace(dto);
+		placeService.addPlace(dto);
 		return ResponseEntity.ok(dto.toString());
 	}
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<PlaceDto> editPost(@PathVariable("id") Long id, @RequestBody PlaceDto dto){
-		return ResponseEntity.ok(service.updatePlace(dto));
+		return ResponseEntity.ok(placeService.updatePlace(dto));
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deletePost(@PathVariable("id") Long id){
-		service.deletePlace(id);
+		placeService.deletePlace(id);
 		return ResponseEntity.ok("deleted");
 	}
 }

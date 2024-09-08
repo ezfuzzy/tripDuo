@@ -16,12 +16,16 @@ import com.example.tripDuo.dto.UserDto;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
-	@Autowired 
-	private UserService service;
+
+	private final UserService userService;
+
+	public CustomUserDetailsService(UserService userService) {
+		this.userService = userService;
+	}
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		UserDto dto = service.getUserByUsername(username);
+		UserDto dto = userService.getUserByUsername(username);
 		
 		if(dto == null) {
 			throw new UsernameNotFoundException("wrong username or password");

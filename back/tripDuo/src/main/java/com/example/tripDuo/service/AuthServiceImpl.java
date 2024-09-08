@@ -38,17 +38,11 @@ import kong.unirest.UnirestException;
 @Service
 public class AuthServiceImpl implements AuthService {
 
-	@Autowired
-	private JwtUtil jwtUtil;
-
-	@Autowired
-	private AuthenticationManager authManager;
-
-	@Autowired
-	private PasswordEncoder encoder;
-
-	@Autowired
-	private UserRepository repo;
+	private final JwtUtil jwtUtil;
+	private final AuthenticationManager authManager;
+	private final PasswordEncoder encoder;
+	private final UserRepository repo;
+	private final PhoneNumberVerificationService phoneNumberVerificationService;
 
 	@Value("${mailgun.key}")
 	private String MAIL_API_KEY;
@@ -70,7 +64,15 @@ public class AuthServiceImpl implements AuthService {
 	
 	@Value("${kakao.redirect_uri}")
 	private String redirect_url;
-	
+
+	public AuthServiceImpl(JwtUtil jwtUtil, AuthenticationManager authManager, PasswordEncoder encoder, UserRepository repo, PhoneNumberVerificationService phoneNumberVerificationService) {
+		this.jwtUtil = jwtUtil;
+		this.authManager = authManager;
+		this.encoder = encoder;
+		this.repo = repo;
+		this.phoneNumberVerificationService = phoneNumberVerificationService;
+	}
+
 	@Override
 	public String login(UserDto dto) throws Exception {
 
@@ -104,20 +106,15 @@ public class AuthServiceImpl implements AuthService {
 
 	// ### 휴대폰 인증 ###
 
-	private final PhoneNumberVerificationService phoneNumberVerificationService;
-
-	public AuthServiceImpl(PhoneNumberVerificationService phoneNumberVerificationService) {
-		this.phoneNumberVerificationService = phoneNumberVerificationService;
-	}
-
 	@Override
-	public boolean sendVerificationCode(String phone_number) {
+	public boolean sendVerificationCode(String phoneNumber) {
 		// 1. 인증번호 생성
 		String verificationCode = phoneNumberVerificationService.generateVerificationCode();
 
 		// 2. 인증번호와 휴대폰 번호를 저장
-		phoneNumberVerificationService.storeVerificationCode(phone_number, verificationCode);
+		phoneNumberVerificationService.storeVerificationCode(phoneNumber, verificationCode);
 
+		// test code -
 		System.out.println("[AuthServiceImpl - sendVerificationCode] verificationCode : " + verificationCode);
 
 //		// ### 문자 전송 api ### 
@@ -126,7 +123,7 @@ public class AuthServiceImpl implements AuthService {
 //		
 //		Message message = new Message();
 //		message.setFrom(send_number);
-//		message.setTo(phone_number);
+//		message.setTo(phoneNumber);
 //		message.setText("[tripDuo] 인증코드 : " + verificationCode);
 //
 //		try {
@@ -152,6 +149,7 @@ public class AuthServiceImpl implements AuthService {
 		return phoneNumberVerificationService.verifyCode(phoneNumber, verificationCode);
 	}
 
+	// 나중에 환영 메일 발송으로 활용할듯?
 	public JsonNode sendVerificationCodeToEmail(String code) throws UnirestException {
 		
 		// 일단 무료계정에선 "to" 부분을 email api site에서 인증받은 계정에만 전송할 수 있는 것 같음 -> 나중에 plan 업그레이드 예정 
