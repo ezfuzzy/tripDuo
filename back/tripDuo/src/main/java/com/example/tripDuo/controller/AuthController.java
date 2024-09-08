@@ -56,7 +56,6 @@ public class AuthController {
 		} else {
 			return ResponseEntity.badRequest().body("Invalid phone number");
 		}
-		
 	}
 
 	@PostMapping("/phone/verify-code")
@@ -68,9 +67,6 @@ public class AuthController {
 
             String phoneNumber = jsonNode.get("phoneNumber").asText();
             String verificationCode = jsonNode.get("code").asText();
-
-            System.out.println("Phone Number: " + phoneNumber);
-            System.out.println("Code: " + verificationCode);
 
     		boolean isVerified = authService.verifyPhoneNumber(phoneNumber, verificationCode);
     		
@@ -84,7 +80,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Invalid JSON format.");
         }
 	}
-	
+
 	// 토큰 발급 
 	@GetMapping("/accessTokenCallback")
 	public ResponseEntity<String> kakaoAccessToken(String code, HttpServletRequest request, OAuthToken oAuthToken) throws Exception {
