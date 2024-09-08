@@ -23,6 +23,7 @@ public interface UserService {
 	// ### updateUserInfo ###
 	public void updateUserInfo(UserDto dto, MultipartFile profileImgForUpload);
 	public Boolean updateUserPassword(UserDto dto);
+	public Boolean resetUserPassword(UserDto dto);
 
 	// ### deleteUser ###
 	public void deleteUser(Long id);

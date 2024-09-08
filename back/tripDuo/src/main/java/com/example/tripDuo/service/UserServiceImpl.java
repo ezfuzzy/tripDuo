@@ -129,12 +129,29 @@ public class UserServiceImpl implements UserService {
 
 		// 새 비밀번호와 새 비밀번호 확인이 일치하는지 확인
 		if (!dto.getNewPassword().equals(dto.getNewConfirmPassword())) {
-			throw new IllegalArgumentException("새 비밀번호와 새 비밀번호 확인이 일치하지 않습니다.");
+			return false;
 		}
 
 		String encodedNewPassword = passwordEncoder.encode(dto.getNewPassword());
 		dto.setPassword(encodedNewPassword);
 		UserRepo.save(User.toEntity(dto));
+
+		return true;
+	}
+
+	@Override
+	public Boolean resetUserPassword(UserDto dto) {
+
+		UserDto userInfo = UserDto.toDto(UserRepo.findById(dto.getId()).get());
+
+		// 새 비밀번호와 새 비밀번호 확인이 일치하는지 확인
+		if (!dto.getNewPassword().equals(dto.getNewConfirmPassword())) {
+			return false;
+		}
+
+		String encodedNewPassword = passwordEncoder.encode(dto.getNewPassword());
+		userInfo.setPassword(encodedNewPassword);
+		UserRepo.save(User.toEntity(userInfo));
 
 		return true;
 	}
