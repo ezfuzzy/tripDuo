@@ -65,6 +65,7 @@ public class Post {
         return Post.builder()
                 .id(dto.getId())
                 .userId(dto.getUserId())
+                .writer(dto.getWriter())
                 .type(dto.getType())
                 .title(dto.getTitle())
                 .content(dto.getContent())
