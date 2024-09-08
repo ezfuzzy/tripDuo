@@ -44,6 +44,7 @@ public class PostDto {
         return PostDto.builder()
                 .id(entity.getId())
                 .userId(entity.getUserId())
+                .writer(entity.getWriter())
                 .type(entity.getType())
                 .title(entity.getTitle())
                 .content(entity.getContent())
