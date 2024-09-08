@@ -12,8 +12,11 @@ import com.example.tripDuo.repository.PostRepository;
 @Service
 public class PostServiceImpl implements PostService {
 
-	@Autowired
-	private PostRepository postRepo;
+	private final PostRepository postRepo;
+
+	public PostServiceImpl(PostRepository postRepo) {
+		this.postRepo = postRepo;
+	}
 	
 	@Override
 	public List<PostDto> getPostList(String type) {

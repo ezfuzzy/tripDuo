@@ -25,31 +25,33 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 
-	@Autowired
-	private JwtUtil jwtUtil;
-	
-	@Autowired
-	private AuthService service;
+	private final JwtUtil jwtUtil;
+	private final AuthService authService;
+
+	public AuthController(JwtUtil jwtUtil, AuthService authService) {
+		this.jwtUtil = jwtUtil;
+		this.authService = authService;
+	}
 
 	@PostMapping("/login")
 	public ResponseEntity<String> login(@RequestBody UserDto dto) throws Exception {
-		return ResponseEntity.ok(service.login(dto));
+		return ResponseEntity.ok(authService.login(dto));
 	}
 
 	@PostMapping("/signup")
 	public ResponseEntity<String> signup(@RequestBody UserDto dto) throws Exception {
-		service.signup(dto);
+		authService.signup(dto);
 		
 		String token = jwtUtil.generateToken(dto.getUsername());
 		return ResponseEntity.ok("Bearer+" + token);
 	      
 	}
 
-	@PostMapping("/send")
-	public ResponseEntity<String> sendVerificationCode(@RequestBody String inputPhoneNumber) {
+	@PostMapping("/phone/send-code")
+	public ResponseEntity<String> sendVerificationCodeToPhone(@RequestBody String inputPhoneNumber) {
 		String phoneNumber = inputPhoneNumber.substring(0, inputPhoneNumber.length()-1);
 		
-		if(service.sendVerificationCode(phoneNumber)) {
+		if(authService.sendVerificationCode(phoneNumber)) {
 			return ResponseEntity.ok("Verification code is sent");
 		} else {
 			return ResponseEntity.badRequest().body("Invalid phone number");
@@ -57,8 +59,8 @@ public class AuthController {
 		
 	}
 
-	@PostMapping("/verify")
-	public ResponseEntity<String> verifyPhoneNumber(@RequestBody String phoneNumberWithCode) {
+	@PostMapping("/phone/verify-code")
+	public ResponseEntity<String> verifyPhoneCode(@RequestBody String phoneNumberWithCode) {
 		
 		try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -70,7 +72,7 @@ public class AuthController {
             System.out.println("Phone Number: " + phoneNumber);
             System.out.println("Code: " + verificationCode);
 
-    		boolean isVerified = service.verifyPhoneNumber(phoneNumber, verificationCode);
+    		boolean isVerified = authService.verifyPhoneNumber(phoneNumber, verificationCode);
     		
     		if (isVerified) {
     			return ResponseEntity.ok("Phone number verified successfully");
@@ -86,7 +88,7 @@ public class AuthController {
 	// 토큰 발급 
 	@GetMapping("/accessTokenCallback")
 	public ResponseEntity<String> kakaoAccessToken(String code, HttpServletRequest request, OAuthToken oAuthToken) throws Exception {
-		String kakaoToken = service.KakaogetAccessToken(request.getParameter("code"));
+		String kakaoToken = authService.KakaogetAccessToken(request.getParameter("code"));
 		return ResponseEntity.status(HttpStatus.OK).body(kakaoToken);
 		
 	}
@@ -100,7 +102,7 @@ public class AuthController {
 		OAuthToken oAuthToken = new OAuthToken();
 	    oAuthToken.setAccess_token(accessToken);
 	    
-	    String kakaoInfo = service.KakaoSignUp(oAuthToken);
+	    String kakaoInfo = authService.KakaoSignUp(oAuthToken);
 	 
 	    return ResponseEntity.status(HttpStatus.OK).body(kakaoInfo);
 	}
@@ -111,7 +113,7 @@ public class AuthController {
 		OAuthToken oAuthToken = new OAuthToken();
 	    oAuthToken.setAccess_token(accessToken);
 
-		String kakaoLogout=service.kakaoLogout(oAuthToken, kakaoId);
+		String kakaoLogout=authService.kakaoLogout(oAuthToken, kakaoId);
 		
 		return ResponseEntity.status(HttpStatus.OK).body(kakaoLogout);
 	}

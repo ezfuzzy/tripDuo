@@ -24,8 +24,11 @@ public class SecurityConfig {
 	@Value("${jwt.name}")
 	private String jwtName;
 
-	@Autowired
-	private JwtFilter jwtFilter;
+	private final JwtFilter jwtFilter;
+
+	public SecurityConfig(@Autowired JwtFilter jwtFilter) {
+		this.jwtFilter = jwtFilter;
+	}
 
 	@Bean
 	public SecurityFilterChain securityFilerChain(HttpSecurity httpSecurity) throws Exception {

@@ -12,8 +12,11 @@ import com.example.tripDuo.repository.PlaceRepository;
 @Service
 public class PlaceServiceImpl implements PlaceService{
 
-	@Autowired
-	private PlaceRepository placeRepo;
+	private final PlaceRepository placeRepo;
+
+	public PlaceServiceImpl(PlaceRepository placeRepo) {
+		this.placeRepo = placeRepo;
+	}
 	
 	@Override
 	public List<PlaceDto> getPlaceList() {

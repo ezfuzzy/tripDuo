@@ -2,7 +2,6 @@ package com.example.tripDuo.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,18 +13,21 @@ import com.example.tripDuo.service.UserService;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
-	@Autowired
-	private UserService service;
+	private final UserService UserService;
+
+    public UserController(UserService UserService) {
+        this.UserService = UserService;
+    }
 	
 	@GetMapping
 	public ResponseEntity<List<UserDto>>users_List() {
-		return ResponseEntity.ok(service.getUserList());
+		return ResponseEntity.ok(UserService.getUserList());
 	}
 	
 	@GetMapping("/{id:[0-9]+}")
     public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
         // 사용자 정보 조회
-        UserDto user = service.getUserById(id);
+        UserDto user = UserService.getUserById(id);
         user.setPassword("응 비번 없어");
         
         if (user.getId() != null) {
@@ -38,7 +40,7 @@ public class UserController {
     @GetMapping("/username/{username:[a-z0-9]+}")
     public ResponseEntity<UserDto> getUserByUsername(@PathVariable("username") String username) {
     	// 사용자 정보 조회
-    	UserDto user = service.getUserByUsername(username);
+    	UserDto user = UserService.getUserByUsername(username);
     	user.setPassword("응 비번 없어");
     	
     	return ResponseEntity.ok(user);
@@ -46,13 +48,13 @@ public class UserController {
 
     @PostMapping("/check/{checkType}")
     public ResponseEntity<Boolean> checkUser(@PathVariable("checkType") String checkType, @RequestBody String checkString) {
-      return ResponseEntity.ok(service.checkExists(checkType, checkString));
+      return ResponseEntity.ok(UserService.checkExists(checkType, checkString));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateUserInfo(@PathVariable Long id,@RequestParam(required = false) MultipartFile profileImgForUpload, UserDto userDto) {
         // 사용자 정보 업데이트
-       service.updateUserInfo(userDto, profileImgForUpload);
+       UserService.updateUserInfo(userDto, profileImgForUpload);
        
        return ResponseEntity.ok(userDto);
     }
@@ -60,12 +62,12 @@ public class UserController {
     @PutMapping("/{id}/password")
     public ResponseEntity<Boolean> updateUserPassword(@PathVariable int id, @RequestBody UserDto userDto) {
         // 사용자 비밀번호 업데이트
-        return ResponseEntity.ok(service.updateUserPassword(userDto));
+        return ResponseEntity.ok(UserService.updateUserPassword(userDto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
-        service.deleteUser(id);
+        UserService.deleteUser(id);
     	return ResponseEntity.ok(id + " user is deleted");
     }
 	
