@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import 'holderjs'
 import 'bootstrap/dist/css/bootstrap.css'
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import Mypage from './MyPage';
 
 function MyProfile(props) {
     /*
