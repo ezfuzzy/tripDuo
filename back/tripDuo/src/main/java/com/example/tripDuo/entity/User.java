@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 @Entity
-@Table(name = "users")
+@Table(name="users") // 인덱스 추가 
 public class User {
     
     @Id

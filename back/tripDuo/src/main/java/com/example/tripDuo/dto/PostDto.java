@@ -28,10 +28,11 @@ public class PostDto {
     private String country;
     private String city;
     
-    private String tags;
+    private String[] tags;
     
     private Long viewCount;
     private Long likeCount;
+    private Long commentCount;
     private Float rating;
     private String status; // mate 모집(구인)중, 모집완료, 삭제됨 등
     
@@ -39,6 +40,19 @@ public class PostDto {
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
     
+    
+    // ### for dto ###
+    
+    private int startRowNum, endRowNum;
+    private int pageNum = 1;
+
+    private String condition = "";
+    private String keyword = "";
+
+    private int prevNum, nextNum;
+    
+    
+    // ### toDto ###
     
     public static PostDto toDto(Post entity) {
         return PostDto.builder()

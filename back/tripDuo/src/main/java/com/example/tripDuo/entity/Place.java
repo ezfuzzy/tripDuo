@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 @Entity
-@Table(name = "places")
+@Table(name="places") // 인덱스 추가 
 public class Place {
 	
     @Id
