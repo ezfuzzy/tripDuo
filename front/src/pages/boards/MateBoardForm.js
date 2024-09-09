@@ -8,7 +8,7 @@ import 'froala-editor/css/froala_editor.pkgd.min.css';
 import axios from "axios";
 import FroalaEditor from "react-froala-wysiwyg";
 import FroalaEditorView from "react-froala-wysiwyg/FroalaEditorView";
-import { Button } from "react-bootstrap";
+import { Button, Placeholder } from "react-bootstrap";
 import { shallowEqual, useSelector } from "react-redux";
 
 function MateBoardForm(props) {
@@ -104,7 +104,9 @@ function MateBoardForm(props) {
   }
 
   useEffect(()=>{
-    username ?? navigate("/login")
+    username ?? navigate("/login");
+
+    
   },[username, navigate])
 
   useEffect(()=>{
@@ -148,7 +150,7 @@ function MateBoardForm(props) {
       <h3>{domesticInternational} 게시판 작성 폼</h3>
 
       {/* 국가/도시 태그 선택 폼 */}
-      <form className="m-3">
+      <div className="m-3" onSubmit={(e)=>e.preventDefault()}>
         <div>
           {/* 국내 도시 태그 선택 */}
           {/*
@@ -251,9 +253,12 @@ function MateBoardForm(props) {
           <FroalaEditor
             model={post.content}
             onModelChange={handleModelChange}
+            config={
+              {placeholderText:"정확한 장소 혹은 주소, 시간, 인원을 필수로 입력해 주세요."}
+            }
           ></FroalaEditor>
         </div>
-      </form>
+      </div>
       <Button type="button" onClick={handleSubmit}>
         제출
       </Button>
