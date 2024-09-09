@@ -30,6 +30,8 @@ import LanguageCultureTips from "../pages/Utilities/LanguageCultureTips"
 import ExtraPage from "../pages/Utilities/ExtraPage"
 import Course from "../pages/boards/Course"
 import CourseForm from "../pages/boards/CourseForm"
+import CourseDetail from "../pages/boards/CourseDetail"
+import CourseUpdateForm from "../pages/boards/CourseUpdateForm"
 
 const routes = [
     // /users/:id
@@ -64,7 +66,10 @@ const routes = [
     {path:"/languageTip", element: <LanguageCultureTips/>},
     {path:"/extra", element: <ExtraPage/>},
     {path:"/course", element: <Course/>},
-    {path:"/course/new", element:<CourseForm/>}
+    {path:"/course/new", element:<CourseForm/>},
+    {path:"/course/detail", element:<CourseDetail/>},
+    {path:"/course/:id/edit", element:<CourseUpdateForm/>}
+
 ]
 
 const router = createBrowserRouter([{
