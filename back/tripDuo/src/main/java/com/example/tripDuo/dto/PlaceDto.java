@@ -30,6 +30,8 @@ public class PlaceDto {
     private double latitude;
     private double longitude;
     
+      
+    
     // ### image, 설명, 특징, 태그 ...
     
     

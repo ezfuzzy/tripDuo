@@ -49,6 +49,7 @@ public class Post {
 
     private Long viewCount;
     private Long likeCount;
+    private Long commentCount;
     private Float rating;
 
     private String status; // mate 모집(구인)중, 모집완료, 삭제됨 등
@@ -77,6 +78,7 @@ public class Post {
                 .tags(dto.getTags())
                 .viewCount(dto.getViewCount())
                 .likeCount(dto.getLikeCount())
+                .commentCount(dto.getCommentCount())
                 .rating(dto.getRating())
                 .status(dto.getStatus())
                 .createdAt(dto.getCreatedAt() != null ? dto.getCreatedAt() : LocalDateTime.now()) // createdAt은 null일 경우 현재 시간으로 설정
