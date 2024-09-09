@@ -17,12 +17,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Getter
 @Entity
-@Table(name = "posts")
+@Table(name="posts") // 인덱스 추가 
 public class Post {
     
     @Id
@@ -43,7 +44,8 @@ public class Post {
     private String country;
     private String city;
 
-    private String tags;
+    @Column(columnDefinition = "TEXT[]")
+    private String[] tags;
 
     private Long viewCount;
     private Long likeCount;
