@@ -4,7 +4,7 @@ import FroalaEditor from "react-froala-wysiwyg";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 function MateBoardEditForm(props) {
-  const { num } = useParams();
+  const {id} = useParams();
 
   const [post, setPost] = useState({tags:""});
 
@@ -12,11 +12,11 @@ function MateBoardEditForm(props) {
 
   const handleSubmit = ()=>{
 
-      axios.put(`/api/v1/posts/${num}`, post)
+      axios.put(`/api/v1/posts/${id}`, post)
       .then(res=>{
         //데이터 전달 확인
         alert("수정에 성공하였습니다.")
-        navigate(`/mateBoard/${num}/detail`) // 상세 페이지로 돌려보내기
+        navigate(`/posts/mate/${id}/detail`) // 상세 페이지로 돌려보내기
       })
       .catch(error=>console.log(error))
     
@@ -39,18 +39,18 @@ function MateBoardEditForm(props) {
 
   useEffect(() => {
     axios
-      .get(`/api/v1/posts/${num}`)
+      .get(`/api/v1/posts/${id}`)
       .then((res) => {
         // 데이터 전달 확인
         setPost(res.data); // 저장된 내용을 model 을 통해 Froala 에디터에 전달
       })
       .catch((error) => console.log(error));
-  }, [num]);
+  }, [id]);
 
   return (
     <>
-      <Link to={`/mateBoard/${num}/detail`}>상세 페이지로</Link>
-      <h3>{num} 번 게시물 수정 폼</h3>
+      <Link to={`/posts/mate/${id}/detail`}>상세 페이지로</Link>
+      <h3>{id} 번 게시물 수정 폼</h3>
       <div className="flex flex-wrap gap-2 mt-2">
           <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{post.country}</span>
           <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{post.city}</span>

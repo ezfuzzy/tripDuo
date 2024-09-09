@@ -97,7 +97,7 @@ function MateBoardForm(props) {
       const response = await axios.post('/api/v1/posts/mate', updatedPost);
 
       alert("새 글 작성에 성공하였습니다.")
-      navigate(`/mateBoard?di=${domesticInternational}`)
+      navigate(`/posts/mate?di=${domesticInternational}`)
     }catch(error){
       console.log(error)
     }
@@ -140,7 +140,7 @@ function MateBoardForm(props) {
     <>
       <NavLink
         to={{
-          pathname: "/mateBoard",
+          pathname: "/posts/mate",
           search: `?di=${domesticInternational}`,
         }}
       >
