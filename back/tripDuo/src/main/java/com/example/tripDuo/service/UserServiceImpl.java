@@ -23,10 +23,14 @@ public class UserServiceImpl implements UserService {
 	@Value("${file.location}")
 	private String fileLocation;
 
+	private final S3Service s3Service;
 	private final UserRepository UserRepo;
 	private final PasswordEncoder passwordEncoder;
 
-	public UserServiceImpl(UserRepository UserRepo, PasswordEncoder passwordEncoder) {
+	
+	
+	public UserServiceImpl(S3Service s3Service, UserRepository UserRepo, PasswordEncoder passwordEncoder) {
+		this.s3Service = s3Service;
 		this.UserRepo = UserRepo;
 		this.passwordEncoder = passwordEncoder;
 	}
@@ -76,38 +80,40 @@ public class UserServiceImpl implements UserService {
 		allowedExtensions.add("jpeg");
 		allowedExtensions.add("png");
 
+		
+		/*
+		 * // 프로필 이미지가 존재하고, 파일 크기가 0이 아닌 경우 처리 if (profileImgForUpload != null &&
+		 * !profileImgForUpload.isEmpty()) {
+		 * 
+		 * String originalFileName = profileImgForUpload.getOriginalFilename();
+		 * 
+		 * // 파일 확장자 검증 String fileExtension =
+		 * originalFileName.substring(originalFileName.lastIndexOf(".") +
+		 * 1).toLowerCase(); if (!allowedExtensions.contains(fileExtension)) { throw new
+		 * IllegalArgumentException("허용되지 않은 파일 확장자입니다: " + fileExtension); }
+		 * 
+		 * String saveFileName = UUID.randomUUID().toString(); String filePath =
+		 * fileLocation + File.separator + saveFileName; System.out.println(filePath);
+		 * 
+		 * // 파일을 지정된 경로로 저장 try { File file = new File(filePath);
+		 * profileImgForUpload.transferTo(file); dto.setProfilePicture(saveFileName); }
+		 * catch (IOException e) { e.printStackTrace(); // throw new
+		 * CustomFileUploadException("File upload failed", e); } }
+		 */
+		
+		
+		
 	    // 프로필 이미지가 존재하고, 파일 크기가 0이 아닌 경우 처리
-	    if (profileImgForUpload != null && !profileImgForUpload.isEmpty()) {
-
-			String originalFileName = profileImgForUpload.getOriginalFilename();
-
-			// 파일 확장자 검증
-			String fileExtension = originalFileName.substring(originalFileName.lastIndexOf(".") + 1).toLowerCase();
-			if (!allowedExtensions.contains(fileExtension)) {
-				throw new IllegalArgumentException("허용되지 않은 파일 확장자입니다: " + fileExtension);
-			}
-
-	        String saveFileName = UUID.randomUUID().toString();
-	        String filePath = fileLocation + File.separator + saveFileName;
-	        System.out.println(filePath);
-
-	        // 파일을 지정된 경로로 저장
-	        try {
-	            File file = new File(filePath);
-	            profileImgForUpload.transferTo(file);
-	            dto.setProfilePicture(saveFileName);
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	            // throw new CustomFileUploadException("File upload failed", e);
-	        }
-	    }
-
+		String profilePictureName = s3Service.uploadFile(profileImgForUpload);
+		
+		
 	    // 기존 유저 정보 가져오기
 		UserDto existingUser = UserDto.toDto(UserRepo.findById(dto.getId()).get());
 
 	    // 비밀번호는 기존 것을 유지
 	    dto.setPassword(existingUser.getPassword());
-
+	    dto.setProfilePicture(profilePictureName);
+	    
 	    // 변경된 정보를 저장
 	    UserRepo.save(User.toEntity(dto));
 
