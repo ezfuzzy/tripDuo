@@ -32,6 +32,7 @@ import CourseBoard from "../pages/boards/CourseBoard";
 import CourseBoardForm from "../pages/boards/CourseBoardForm";
 import CourseBoardDetail from "../pages/boards/CourseBoardDetail";
 import CourseUpdateForm from "../pages/boards/CourseUpdateForm";
+import CourseBoardEditForm from "../pages/boards/CourseBoardEditForm";
 
 const routes = [
   // /users/:id
@@ -72,7 +73,7 @@ const routes = [
   //      ### course ###
   { path: "/posts/course", element: <CourseBoard /> },
   { path: "/posts/course/new", element: <CourseBoardForm /> },
-  { path: "/posts/course/:id/edit", element: <CourseUpdateForm /> },
+  { path: "/posts/course/:id/edit", element: <CourseBoardEditForm/> },
   { path: "/posts/course/:id/detail", element: <CourseBoardDetail /> },
 
   // ### 부가 기능 ###

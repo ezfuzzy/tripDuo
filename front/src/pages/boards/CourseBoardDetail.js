@@ -5,7 +5,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import ConfirmModal from '../../components/ConfirmModal';
 
 const CourseBoardDetail = () => {
-  //"/course/:id" 에서 id에 해당되는 경로 파라미터 값 얻어오기
+  //"/posts/course/:id" 에서 id에 해당되는 경로 파라미터 값 얻어오기
   const { id } = useParams()
   //글 하나의 정보 상태값으로 관리
   // const [post, setPost] = useState()
@@ -44,7 +44,7 @@ const CourseBoardDetail = () => {
     axios.delete(`${id}`)
       .then(res => {
         console.log(res.data)
-        navigate("/course")
+        navigate("/posts/course")
       })
       .catch(error => {
         console.log(error)
@@ -74,7 +74,7 @@ const CourseBoardDetail = () => {
           {
             username === post.writer && <>
               <button
-                onClick={() => navigate(`/course/${id}/edit`)}
+                onClick={() => navigate(`/posts/course/${id}/edit`)}
                 className="text-white bg-gray-600 hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
                 수정
               </button>
@@ -89,7 +89,7 @@ const CourseBoardDetail = () => {
                 yes={deleteHandleYes} no={()=>setConfirmShow(false)}/>
 
           <button
-            onClick={() => navigate("/course")}
+            onClick={() => navigate("/posts/course")}
             className="text-white bg-gray-600 hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
             목록으로 돌아가기
           </button>

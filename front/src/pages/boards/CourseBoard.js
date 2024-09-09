@@ -13,7 +13,7 @@ function CourseBoard() {
         condition: "",
         keyword: ""
     })
-    // "/course?pageNum=x"에서 pageNum을 추출하기 위한 Hook
+    // "/posts/course?pageNum=x"에서 pageNum을 추출하기 위한 Hook
     const [params, setParams] = useSearchParams({ pageNum: 1 })
     //페이징 숫자를 출력할 때 사용하는 배열을 상태값으로 관리
     const [pageArray, setPageArray] = useState([])
@@ -57,7 +57,7 @@ function CourseBoard() {
     const move = (pageNum = 1) => {
         //검색조건에 맞는 query 문자열 얻어내기
         const query = new URLSearchParams(searchState).toString()
-        navigate(`/course?pageNum=${pageNum}&${query}`)
+        navigate(`/posts/course?pageNum=${pageNum}&${query}`)
     }
 
     //검색 조건을 변경하거나 검색어를 입력하면 호출되는 함수
@@ -82,7 +82,7 @@ function CourseBoard() {
 
     return (
         <div className="container mx-auto p-4">
-      <Link to="/course/new" className="text-blue-500">여행코스 계획하기</Link>
+      <Link to="/posts/course/new" className="text-blue-500">여행코스 계획하기</Link>
       <h2 className="text-2xl font-bold mb-4">국내여행 코스 게시판 입니다</h2>
       <label htmlFor="search">검색조건</label>
       <select

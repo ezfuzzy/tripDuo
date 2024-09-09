@@ -62,7 +62,7 @@ const CourseBoardForm = () => {
         console.log(res.data);
         console.log(res.data.postData);
         console.log(res.data.type);
-        navigate("/course");
+        navigate("/posts/course");
       })
       .catch((error) => console.log(error));
   };
@@ -160,7 +160,7 @@ const CourseBoardForm = () => {
         <div className="flex justify-between items-center mb-2">
           <h1 className="text-2xl font-bold mb-4">여행 코스 글쓰기</h1>
           <button
-            onClick={() => navigate("/course")}
+            onClick={() => navigate("/posts/course")}
             className="text-white bg-gray-600 hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
             목록으로 돌아가기
           </button>
