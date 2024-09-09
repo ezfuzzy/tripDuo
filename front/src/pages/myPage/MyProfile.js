@@ -36,7 +36,7 @@ function MyProfile(props) {
         <>
             <div className="container h-screen">
                 <div>
-                    <div className="flex items-center gap-x-6">
+                    <div className="flex items-center gap-x-6 m-3">
                         {
                             imageData
                                 ?

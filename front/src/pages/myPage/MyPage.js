@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import styled from 'styled-components';
 
 function MyPage() {
 
@@ -8,6 +9,15 @@ function MyPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [imageData, setImageData] = useState(null)
+
+  const StyledLink = styled(Link)`
+  color: #666;
+  text-decoration: none;
+
+  &:hover {
+    color: #000;
+  }
+`;
 
   useEffect(() => {
     axios.get(`/api/v1/users/${id}`)
@@ -30,7 +40,7 @@ function MyPage() {
     <>
       {/* 프로필 */}
       <div className='container'>
-        <div className="flex items-center gap-x-6">
+        <div className="flex items-center gap-x-6 m-3">
           {
             imageData
               ?
@@ -51,24 +61,24 @@ function MyPage() {
         </div>
       </div>
 
-      <h1 className="text-3xl font-bold mb-4">My Page</h1>
+      <h1 className="text-3xl font-bold m-4">My Page</h1>
         <div className="borderbox">
           <ul className="myPage grid grid-cols-2 gap-4">
           <li className="myPageList bg-white shadow-md rounded-lg p-4">
-            <h3><Link to="/myplan"><strong>Travel Plan</strong>(여행 계획)</Link></h3>
-            <p><Link to="/myplan">여행을 계획하거나<br />계획한 여행들을 확인하실 수 있습니다.</Link></p>
+            <h3><StyledLink to={`/myPlan/${id}`}><strong>Travel Plan</strong>(여행 계획)</StyledLink></h3>
+            <p>여행을 계획하거나<br />계획한 여행들을 확인하실 수 있습니다.</p>
           </li>
           <li className="myPageList bg-white shadow-md rounded-lg p-4">
-            <h3><Link to="/myrecord"><strong>Travel Record</strong>(여행 기록)</Link></h3>
-            <p><Link to="/myrecord">고객님의 여행 기록을 확인하실 수 있습니다.</Link></p>
+            <h3><StyledLink to={`/myRecord/${id}`}><strong>Travel Record</strong>(여행 기록)</StyledLink></h3>
+            <p>고객님의 여행 기록을 확인하실 수 있습니다.</p>
           </li>
           <li className="myPageList bg-white shadow-md rounded-lg p-4">
-            <h3><Link to="/wishmate"><strong>Wish Mate</strong>(관심 메이트)</Link></h3>
-            <p><Link to="/wishmate">관심 메이트로 등록하신 여행 메이트를 확인하실 수 있습니다.</Link></p>
+            <h3><StyledLink to={`/wishMate/${id}`}><strong>Wish Mate</strong>(관심 메이트)</StyledLink></h3>
+            <p>관심 메이트로 등록하신 여행 메이트를 확인하실 수 있습니다.</p>
           </li>
           <li className="myPageList bg-white shadow-md rounded-lg p-4">
-            <h3><Link to="/myplace"><strong>My Place</strong>(마이 플레이스)</Link></h3>
-            <p><Link to="/myplace">관심있는 지역, 음식점들을 관리할 수 있습니다.</Link></p>
+            <h3><StyledLink to={`/myPlace/${id}`}><strong>My Place</strong>(마이 플레이스)</StyledLink></h3>
+            <p>관심있는 지역, 음식점들을 관리할 수 있습니다.</p>
           </li>
         </ul>
       </div>
