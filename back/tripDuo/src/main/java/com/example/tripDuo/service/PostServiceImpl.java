@@ -2,7 +2,6 @@ package com.example.tripDuo.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.tripDuo.dto.PostDto;
@@ -21,7 +20,7 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public List<PostDto> getPostList(String type) {
 		// type별 get list 
-		return postRepo.findByType(type).stream().map(PostDto::toDto).toList();
+		return postRepo.findByTypeOrderByIdDesc(type).stream().map(PostDto::toDto).toList();
 	}
 
 	@Override
