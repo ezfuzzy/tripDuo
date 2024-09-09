@@ -1,7 +1,9 @@
 package com.example.tripDuo.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.example.tripDuo.entity.PostRating;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +19,17 @@ public class PostRatingDto {
     private Long postId;
     private Long userId;
     
-    private float rating;
+    private BigDecimal rating;
     
-    private LocalDateTime createdAt; 
+    private LocalDateTime createdAt;
+
+    public static PostRatingDto toEntity(PostRating entity) {
+        return PostRatingDto.builder()
+            .id(entity.getId())
+            .postId(entity.getPostId())
+            .userId(entity.getUserId())
+            .rating(entity.getRating())
+            .createdAt(entity.getCreatedAt())
+            .build();
+    }
 }

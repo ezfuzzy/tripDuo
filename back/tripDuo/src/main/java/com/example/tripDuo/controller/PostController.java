@@ -2,15 +2,10 @@ package com.example.tripDuo.controller;
 
 import java.util.List;
 
+import com.example.tripDuo.dto.PostLikeDto;
+import com.example.tripDuo.dto.PostRatingDto;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.tripDuo.dto.PostDto;
 import com.example.tripDuo.service.PostService;
@@ -58,11 +53,19 @@ public class PostController {
 	
 	
 	// ### like ###
-//	@GetMapping("/{type:[a-zA-Z]+}/{id}")
-//	public ResponseEntity<String>
+	@PostMapping("/{type:[a-zA-Z]+}/{id}/likes")
+	public ResponseEntity<String> addLikeToPost(@PathVariable("type") String type, @PathVariable("id") Long id, @RequestBody PostLikeDto dto) {
+
+		return null;
+	}
 	
 	
 	// ### rating ###
-	
+	@PostMapping("/{type:[a-zA-Z]+}/{id}/ratings")
+	public ResponseEntity<String> addRatingToPost(@PathVariable("type") String type, @PathVariable("id") Long id, @RequestBody PostRatingDto dto) {
+
+		return null;
+	}
+
 	
 }
