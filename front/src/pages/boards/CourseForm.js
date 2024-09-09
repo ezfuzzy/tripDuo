@@ -1,8 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import CourseMapDomestic from "../../components/CourseMapDomestic";
-
+import CourseMapComponent from "../../components/CourseMapComponent";
 
 const CourseForm = () => {
   const [title, setTitle] = useState("");
@@ -27,7 +26,7 @@ const CourseForm = () => {
     // Add more countries and cities as needed
   };
   // 선택한 나라에 맞는 도시 목록을 얻음
-  const cities = citiesByCountry[country] || [];
+  const cities = citiesByCountry[country] || []; //citiesByCountry[country]가 undefined 또는 null일 경우 빈 배열 반환
   const [tagInput, setTagInput] = useState("");
   const [postTags, setTags] = useState([]);
   const [days, setDays] = useState([{ places: [""], dayMemo: "" }]);
@@ -40,7 +39,7 @@ const CourseForm = () => {
 
   const [isSelectPlace, setIsSelectPlace] = useState(false);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => { }, []);
 
@@ -63,7 +62,7 @@ const CourseForm = () => {
         console.log(res.data);
         console.log(res.data.postData);
         console.log(res.data.type);
-        navigate("/course")
+        navigate("/course");
       })
       .catch((error) => console.log(error));
   };
@@ -190,7 +189,6 @@ const CourseForm = () => {
             />
           </div>
           <div>
-            {/* 나라 선택 */}
             <div>
               <label htmlFor="country" className="block font-semibold">
                 여행할 나라
@@ -240,7 +238,6 @@ const CourseForm = () => {
               </select>
             </div>
 
-            {/* 도시 선택 */}
             <div>
               <label htmlFor="city" className="block font-semibold">
                 여행할 도시
@@ -298,7 +295,7 @@ const CourseForm = () => {
               <div className="flex justify-between items-center mb-2">
                 <h2 className="text-xl font-semibold">Day {dayIndex + 1}</h2>
                 <button
-                  className={`text-white bg-red-600 hover:bg-red-500 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center ${days.length === 1 ? "opacity-50 cursor-not-allowed" : ""
+                  className={`text-white bg-red-600 hover:bg-red-500 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-4 py-2.5 text-center ${days.length === 1 ? "opacity-50 cursor-not-allowed" : ""
                     }`}
                   onClick={() => removeDay(dayIndex)}
                   disabled={days.length === 1}>
@@ -324,24 +321,28 @@ const CourseForm = () => {
                     <button
                       type="button"
                       className="text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-4 py-2.5 text-center"
-                      onClick={() => {
-                        handlePlaceSelection(dayIndex, placeIndex)
-                      }}>
+                      onClick={() => handlePlaceSelection(dayIndex, placeIndex)}
+                    >
                       장소 선택
                     </button>
-                    <input
-                      value={place.place_name || ""}
-                      className="flex-grow border p-2"
-                      disabled
-                    />
-                    <button
-                      className={`text-white bg-red-600 hover:bg-red-500 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center ${day.places.length === 1 ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
-                      onClick={() => removePlace(dayIndex, placeIndex)}
-                      disabled={day.places.length === 1}>
-                      삭제
-                    </button>
+                    <div className="flex-grow flex items-center">
+                      <input
+                        value={place.place_name || ""}
+                        className="flex-grow border p-2"
+                        disabled
+                      />
+                      <div className="w-1/4 ml-2">
+                        <button
+                          className={`text-white bg-red-600 hover:bg-red-500 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-4 py-2.5 text-center ${day.places.length === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+                          onClick={() => removePlace(dayIndex, placeIndex)}
+                          disabled={day.places.length === 1}
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    </div>
                   </div>
+
                   <div className="mb-2">
                     {postType === "" && (
                       <>
@@ -382,7 +383,7 @@ const CourseForm = () => {
       {/* 모달 팝업 */}
       {isSelectPlace && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-2/3 max-w-4xl">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-2/3 max-w-4xl" style={{ maxHeight: '90vh', overflowY: 'auto' }}>
             <div className="flex justify-between items-center mb-4">
               <div className="flex text-xl text-black-600 font-bold justify-center my-3">
                 Day {selectedDayIndex + 1} : {selectedPlaceIndex + 1}번 장소 선택 중
@@ -396,7 +397,7 @@ const CourseForm = () => {
                 &times;
               </div>
             </div>
-            <CourseMapDomestic
+            <CourseMapComponent
               onSave={handleSavePlace}
               selectedDayIndex={selectedDayIndex}
               selectedPlaceIndex={selectedPlaceIndex}
