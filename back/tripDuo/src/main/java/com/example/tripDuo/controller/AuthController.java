@@ -82,7 +82,7 @@ public class AuthController {
 	}
 
 	// 토큰 발급 
-	@GetMapping("/accessTokenCallback")
+	@GetMapping("/kakao/accessTokenCallback")
 	public ResponseEntity<String> kakaoAccessToken(String code, HttpServletRequest request, OAuthToken oAuthToken) throws Exception {
 		String kakaoToken = authService.KakaogetAccessToken(request.getParameter("code"));
 		return ResponseEntity.status(HttpStatus.OK).body(kakaoToken);
