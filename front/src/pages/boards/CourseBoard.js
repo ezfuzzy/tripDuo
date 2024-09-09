@@ -24,7 +24,7 @@ function CourseBoard() {
     const refresh = (pageNum) => {
         //검색 기능과 관련된 query 문자열 읽어오기
         const query = new URLSearchParams(searchState).toString()
-        axios.get(`/api/v1/posts/?pageNum=${pageNum}&${query}`)
+        axios.get(`/api/v1/posts/course/?pageNum=${pageNum}&${query}`)
             .then(res => {
                 //서버로부터 응답된 데이터 state에 넣기
                 setPageInfo(res.data)
