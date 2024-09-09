@@ -68,6 +68,7 @@ public class PostDto {
                 .tags(entity.getTags())
                 .viewCount(entity.getViewCount())
                 .likeCount(entity.getLikeCount())
+                .commentCount(entity.getCommentCount())
                 .rating(entity.getRating())
                 .status(entity.getStatus())
                 .createdAt(entity.getCreatedAt() != null ? entity.getCreatedAt() : LocalDateTime.now()) // createdAt은 null일 경우 현재 시간으로 설정
