@@ -28,7 +28,7 @@ const CourseBoardForm = () => {
   // 선택한 나라에 맞는 도시 목록을 얻음
   const cities = citiesByCountry[country] || []; //citiesByCountry[country]가 undefined 또는 null일 경우 빈 배열 반환
   const [tagInput, setTagInput] = useState("");
-  const [postTags, setTags] = useState([]);
+  const [tags, setTags] = useState([]);
   const [days, setDays] = useState([{ places: [""], dayMemo: "" }]);
 
   const [postType, setPostType] = useState("");
@@ -44,8 +44,6 @@ const CourseBoardForm = () => {
   useEffect(() => { }, []);
 
   const handleSubmit = () => {
-    const tags = postTags.join(", ");
-    console.log(tags);
 
     const post = {
       title,
@@ -73,7 +71,7 @@ const CourseBoardForm = () => {
       title,
       country,
       city,
-      postTags,
+      tags,
       days,
     };
     console.log(jsonObject);
@@ -86,14 +84,14 @@ const CourseBoardForm = () => {
 
     if (value.endsWith(" ") && value.trim() !== "") {
       const newTag = value.trim();
-      if (newTag !== "#" && newTag.startsWith("#") && !postTags.includes(newTag)) {
-        setTags([...postTags, newTag]);
+      if (newTag !== "#" && newTag.startsWith("#") && !tags.includes(newTag)) {
+        setTags([...tags, newTag]);
         setTagInput("");
       }
     }
   };
 
-  const removeTag = (tagToRemove) => setTags(postTags.filter((tag) => tag !== tagToRemove));
+  const removeTag = (tagToRemove) => setTags(tags.filter((tag) => tag !== tagToRemove));
 
   const addDay = () => setDays([...days, { places: [""], dayMemo: "" }]);
 
@@ -270,7 +268,7 @@ const CourseBoardForm = () => {
               className="border p-2 w-1/3"
             />
             <div className="flex flex-wrap gap-2 mt-2">
-              {postTags.map((tag, index) => (
+              {tags.map((tag, index) => (
                 <span
                   key={index}
                   className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center"
