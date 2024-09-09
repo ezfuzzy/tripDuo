@@ -57,7 +57,7 @@ function MateBoard() {
   return (
     <>
       <h3>{whereAreYou}</h3>
-      <NavLink to={{pathname: '/mateBoard/new', search: `?di=${domesticInternational}`}}>새글 작성</NavLink>
+      <NavLink to={{pathname: '/posts/mate/new', search: `?di=${domesticInternational}`}}>새글 작성</NavLink>
       <button
         className="border border-1 bg-light-green-200"
         onClick={handleButtonClick}
@@ -94,7 +94,7 @@ function MateBoard() {
                     </span>
               ))}
               </div>
-                <Link to={`/mateBoard/${item.id}/detail`}>{item.title}</Link>
+                <Link to={`/posts/mate/${item.id}/detail`}>{item.title}</Link>
               </td>
               <td>{item.writer}</td> {/* 작성자 */}
               <td>{item.updatedAt ? item.updatedAt : item.createdAt}</td>

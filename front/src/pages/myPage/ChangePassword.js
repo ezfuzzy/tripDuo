@@ -70,7 +70,8 @@ function PasswordUpdate(props) {
     axios.put(`/api/v1/auth/${id}/password`, profile)
     .then(res=>{
       console.log(res.data)
-      
+      alert("비밀번호 수정 완료")
+      navigate(`/users/${id}/profile/edit`);
     })
     .catch(error=>console.log(error))
   };

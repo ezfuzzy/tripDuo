@@ -9,7 +9,7 @@ import { NavLink } from "react-router-dom";
 
 
 function MateBoardDetail(props) {
-  const { num } = useParams(); // 게시물 번호
+  const {id} = useParams(); // 게시물 번호
 
   const username = useSelector(state => state.username, shallowEqual); //로그인된 username
 
@@ -43,7 +43,7 @@ function MateBoardDetail(props) {
 
   useEffect(() => {
     axios
-      .get(`/api/v1/posts/${num}`)
+      .get(`/api/v1/posts/${id}`)
       .then((res) => {
         //글 정보 전달 확인
         setPost(res.data);
@@ -58,13 +58,13 @@ function MateBoardDetail(props) {
         .catch(error=>console.log(error))
       })
       .catch((error) => console.log(error));
-  }, [num]);
+  }, [id]);
   return (
     <>
       <div className="container">
         <NavLink
           to={{
-            pathname: "/mateBoard",
+            pathname: "/posts/mate",
             search: post.country === "한국" ? "?di=Domestic" : "?di=International"
           }}
         >
@@ -87,7 +87,7 @@ function MateBoardDetail(props) {
           ))}
         </div>
         <h5 className="m-3">
-          {num}번 <strong>{post.title}</strong>
+          {id}번 <strong>{post.title}</strong>
           <button
             className={`mx-3 ${
               isLiked ? "bg-pink-600" : "bg-pink-400"
@@ -173,7 +173,7 @@ function MateBoardDetail(props) {
           <div className="container mt-3">
             <Button
               className="m-1"
-              onClick={() => navigate(`/mateBoard/${num}/edit`)}
+              onClick={() => navigate(`/posts/mate/${id}/edit`)}
             >
               수정
             </Button>
@@ -181,13 +181,13 @@ function MateBoardDetail(props) {
               className="m-1"
               onClick={() => {
                 axios
-                  .delete(`/api/v1/posts/${num}`)
+                  .delete(`/api/v1/posts/${id}`)
                   .then((res) => {
                     alert("글 삭제 성공");
                     // 국/해외 페이지 별 리다일렉트
                     post.country === "한국"
-                      ? navigate(`/mateBoard?di=Domestic`)
-                      : navigate(`/mateBoard?di=International`);
+                      ? navigate(`/posts/mate?di=Domestic`)
+                      : navigate(`/posts/mate?di=International`);
                   })
                   .catch((error) => console.log(error));
               }}
