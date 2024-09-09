@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CourseMapComponent from "../../components/CourseMapComponent";
 
-const CourseUpdateForm = () => {
+const CourseBoardEditForm = () => {
     const [title, setTitle] = useState("");
     const [country, setCountry] = useState("");
     const [city, setCity] = useState("");
@@ -394,4 +394,4 @@ const CourseUpdateForm = () => {
     );
 };
 
-export default CourseUpdateForm;
+export default CourseBoardEditForm;
