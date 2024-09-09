@@ -4,7 +4,8 @@ import React, { useEffect, useState } from "react";
 import { Button, Card } from "react-bootstrap";
 import { shallowEqual, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+
 
 
 function MateBoardDetail(props) {
@@ -19,6 +20,9 @@ function MateBoardDetail(props) {
   const [writerProfile, setWriterProfile] = useState({});
   const [imageData, setImageData] = useState(null)
 
+  //좋아요 버튼 설정
+  const [isLiked, setIsLiked] = useState(false)
+
   const navigate = useNavigate()
 
   const buttonClasses = ` btn btn-sm ${
@@ -31,6 +35,10 @@ function MateBoardDetail(props) {
 
   const handleClick = () => {
     navigate(`/users/${writerProfile.id}/profile`);
+  }
+
+  const handleLike = ()=>{
+    setIsLiked(!isLiked)
   }
 
   useEffect(() => {
@@ -54,43 +62,86 @@ function MateBoardDetail(props) {
   return (
     <>
       <div className="container">
-        <Link to={"/mateBoard"}>Mate</Link>
+        <NavLink
+          to={{
+            pathname: "/mateBoard",
+            search: post.country === "한국" ? "?di=Domestic" : "?di=International"
+          }}
+        >
+          Mate
+        </NavLink>
         <div className="flex flex-wrap gap-2 mt-2">
-          <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{post.country}</span>
-          <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{post.city}</span>
+          <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">
+            #{post.country}
+          </span>
+          <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">
+            #{post.city}
+          </span>
           {post.tags.split(", ").map((tag, index) => (
-                    <span
-                    key={index}
-                    className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center"
-                    >
-                    {tag}
-                    </span>
-              ))}
+            <span
+              key={index}
+              className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center"
+            >
+              {tag}
+            </span>
+          ))}
         </div>
-        <h5>{num}번 {post.title}</h5>
+        <h5 className="m-3">
+          {num}번 <strong>{post.title}</strong>
+          <button
+            className={`mx-3 ${
+              isLiked ? "bg-pink-600" : "bg-pink-400"
+            } text-white active:bg-emerald-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
+            type="button"
+            onClick={handleLike}
+          >
+            Like
+          </button>
+          <span className="text-sm text-gray-500">
+            <span className="mx-3">view.{post.viewCount}</span>
+            <span>likes.{post.likeCount}</span>
+          </span>
+        </h5>
 
-      {/* 프로필 */}
-      <div className='container my-3'>
-        <div className="flex items-center gap-x-6">
-          {
-            imageData
-              ?
-              <img src={imageData} className='w-20 h-20 rounded-full' alt=""/>
-              :
-              <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="currentColor" className="bi bi-person-circle" viewBox="0 0 16 16">
+        {/* 프로필 */}
+        <div className="container my-3">
+          <div className="flex items-center gap-x-6">
+            {imageData ? (
+              <img src={imageData} className="w-20 h-20 rounded-full" alt="" />
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="100"
+                height="100"
+                fill="currentColor"
+                className="bi bi-person-circle"
+                viewBox="0 0 16 16"
+              >
                 <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-                <path fillRule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z" />
+                <path
+                  fillRule="evenodd"
+                  d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"
+                />
               </svg>
-          }
-          <div>
-            <h3 className="text-base font-semibold leading-7 tracking-tight text-gray-900">{writerProfile.nickname}</h3>
-            <p className="text-sm font-semibold leading-6 text-indigo-600">{writerProfile.gender} / {writerProfile.age}</p>
-          </div>
-          <div>
-            <button className='btn btn-secondary btn-sm' onClick={handleClick}>프로필 보기</button>
+            )}
+            <div>
+              <h3 className="text-base font-semibold leading-7 tracking-tight text-gray-900">
+                {writerProfile.nickname}
+              </h3>
+              <p className="text-sm font-semibold leading-6 text-indigo-600">
+                {writerProfile.gender} / {writerProfile.age}
+              </p>
+            </div>
+            <div>
+              <button
+                className="btn btn-secondary btn-sm"
+                onClick={handleClick}
+              >
+                프로필 보기
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
         <p>안녕하세요~</p>
 
@@ -98,9 +149,9 @@ function MateBoardDetail(props) {
         <br />
         <br />
 
-        <div dangerouslySetInnerHTML={{__html:post.content}}></div>
+        <div dangerouslySetInnerHTML={{ __html: post.content }}></div>
 
-         <Card style={{ width: "18rem" }}>
+        <Card style={{ width: "18rem" }}>
           <Card.Body>
             <Card.Title>
               {post.country} / {post.city}
@@ -113,27 +164,39 @@ function MateBoardDetail(props) {
               {isRecruited ? "취소하기" : "신청하기"}
             </Button>
           </Card.Body>
-        </Card> 
+        </Card>
       </div>
 
       {
         // 로그인된 username 과 post의 userId 로 불러온 작성자 아이디가 동일하면 랜더링
-        username === writerProfile.username &&
-        <div className="container mt-3">
-            <Button className="m-1" onClick={()=>navigate(`/mateBoard/${num}/edit`)}>수정</Button>
-            <Button className="m-1" onClick={()=>{
-                axios.delete(`/api/v1/posts/${num}`)
-                .then(res=> {
-                    alert("글 삭제 성공")
+        username === writerProfile.username && (
+          <div className="container mt-3">
+            <Button
+              className="m-1"
+              onClick={() => navigate(`/mateBoard/${num}/edit`)}
+            >
+              수정
+            </Button>
+            <Button
+              className="m-1"
+              onClick={() => {
+                axios
+                  .delete(`/api/v1/posts/${num}`)
+                  .then((res) => {
+                    alert("글 삭제 성공");
                     // 국/해외 페이지 별 리다일렉트
-                    post.country === "한국" ? navigate(`/mateBoard?di=Domestic`) : navigate(`/mateBoard?di=International`)
-                })
-                .catch(error=>console.log(error)
-                )
-            }}>삭제</Button>
-        </div>
+                    post.country === "한국"
+                      ? navigate(`/mateBoard?di=Domestic`)
+                      : navigate(`/mateBoard?di=International`);
+                  })
+                  .catch((error) => console.log(error));
+              }}
+            >
+              삭제
+            </Button>
+          </div>
+        )
       }
-            
     </>
   );
 }
