@@ -57,12 +57,12 @@ public class TripDuoApplication {
 		userRepo.save(t4);
 		userRepo.save(t5);
 		
-		Post p1 = Post.builder().userId(1L).type("mate").title("제목입니다 111").content("내용입니다 111").country("한국").city("강릉").tags("tag1").viewCount(123L).likeCount(18L).rating(81F).status("recruit").build();
-		Post p2 = Post.builder().userId(2L).type("mate").title("제목입니다 222").content("내용입니다 222").country("베트남").city("하노이").tags("tag2").viewCount(234L).likeCount(28L).rating(23F).status("recruit").build();
-		Post p3 = Post.builder().userId(3L).type("mate").title("제목입니다 333").content("내용입니다 333").country("태국").city("방콕").tags("tag3").viewCount(456L).likeCount(38L).rating(45F).status("recruited").build();
-		Post p4 = Post.builder().userId(4L).type("mate").title("제목입니다 444").content("내용입니다 444").country("영국").city("런던").tags("tag3").viewCount(345L).likeCount(78L).rating(88F).status("recruited").build();
-		Post p5 = Post.builder().userId(5L).type("mate").title("제목입니다 555").content("내용입니다 555").country("프랑스").city("파리").tags("tag1").viewCount(567L).likeCount(128L).rating(96F).status("recruit").build();
-		Post p6 = Post.builder().userId(6L).type("mate").title("제목입니다 666").content("내용입니다 666").country("스페인").city("바르셀로나").tags("rag4").viewCount(789L).likeCount(98L).rating(72F).status("recruited").build();
+		Post p1 = Post.builder().userId(6L).writer("닉네임1").type("mate").title("제목입니다 111").content("내용입니다 111").country("한국").city("강릉").tags("#tag1").viewCount(123L).likeCount(18L).rating(81F).status("recruit").build();
+		Post p2 = Post.builder().userId(7L).writer("닉네임2").type("mate").title("제목입니다 222").content("내용입니다 222").country("베트남").city("하노이").tags("#tag2").viewCount(234L).likeCount(28L).rating(23F).status("recruit").build();
+		Post p3 = Post.builder().userId(8L).writer("닉네임3").type("mate").title("제목입니다 333").content("내용입니다 333").country("태국").city("방콕").tags("#tag3").viewCount(456L).likeCount(38L).rating(45F).status("recruited").build();
+		Post p4 = Post.builder().userId(9L).writer("닉네임4").type("mate").title("제목입니다 444").content("내용입니다 444").country("영국").city("런던").tags("#tag3").viewCount(345L).likeCount(78L).rating(88F).status("recruited").build();
+		Post p5 = Post.builder().userId(10L).writer("닉네임5").type("mate").title("제목입니다 555").content("내용입니다 555").country("프랑스").city("파리").tags("#tag1").viewCount(567L).likeCount(128L).rating(96F).status("recruit").build();
+		Post p6 = Post.builder().userId(6L).writer("닉네임1").type("mate").title("제목입니다 666").content("내용입니다 666").country("스페인").city("바르셀로나").tags("#tag4").viewCount(789L).likeCount(98L).rating(72F).status("recruited").build();
 		
 		postRepo.save(p1);
 		postRepo.save(p2);
