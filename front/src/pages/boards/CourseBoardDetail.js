@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import ConfirmModal from '../../components/ConfirmModal';
 
-const CourseDetail = () => {
+const CourseBoardDetail = () => {
   //"/course/:id" 에서 id에 해당되는 경로 파라미터 값 얻어오기
   const { id } = useParams()
   //글 하나의 정보 상태값으로 관리
@@ -143,4 +143,4 @@ const CourseDetail = () => {
   );
 };
 
-export default CourseDetail;
+export default CourseBoardDetail;

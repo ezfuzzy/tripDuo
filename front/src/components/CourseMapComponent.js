@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 
-const CourseMapDomestic = ({ onSave, selectedDayIndex, selectedPlaceIndex, isSelectPlace }) => {
+const CourseMapComponent = ({ onSave, selectedDayIndex, selectedPlaceIndex, isSelectPlace }) => {
   const mapRef = useRef(null);
   const [map, setMap] = useState(null);
   const [selectedPlace, setSelectedPlace] = useState(null);
@@ -178,59 +178,63 @@ const CourseMapDomestic = ({ onSave, selectedDayIndex, selectedPlaceIndex, isSel
       <div
         ref={mapRef}
         className="flex-grow mb-4"
-        style={{ width: "100%", height: "60vh" }} // 맵의 높이를 뷰포트 높이의 60%로 설정
+        style={{ width: "100%", height: "50vh" }} // 맵의 높이를 뷰포트 높이의 60%로 설정
       ></div>
 
-      <div className="flex flex-col space-y-2 p-2 bg-white border-t border-gray-200 overflow-y-auto">
-        <input
-          type="text"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          onKeyDown={handleKeyPress}
-          placeholder="장소를 검색하세요"
-          className="border p-2 w-full"
-        />
-        <button
-          onClick={handleSearch}
-          className="text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-3 py-1.5 text-center">
-          검색
-        </button>
+      <div className="flex flex-col space-y-2 p-2 bg-white border-t border-gray-200">
+  <div className="flex space-x-2">
+    <input
+      type="text"
+      value={keyword}
+      onChange={(e) => setKeyword(e.target.value)}
+      onKeyDown={handleKeyPress}
+      placeholder="장소를 검색하세요"
+      className="border p-2 flex-grow"
+    />
+    <button
+      onClick={handleSearch}
+      className="text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-3 py-1.5 text-center w-1/5">
+      검색
+    </button>
+  </div>
 
-        <ul className="border border-gray-200 p-2 rounded max-h-60 overflow-y-auto">
-          {places.map((place, index) => (
-            <li
-              className="border-b last:border-none p-2 cursor-pointer hover:bg-gray-100"
-              key={index}
-              onClick={() => {
-                const selectedPosition = new window.kakao.maps.LatLng(place.y, place.x);
+  <ul className="border border-gray-200 p-2 rounded max-h-60 overflow-y-auto">
+    {places.map((place, index) => (
+      <li
+        className="border-b last:border-none p-2 cursor-pointer hover:bg-gray-100"
+        key={index}
+        onClick={() => {
+          const selectedPosition = new window.kakao.maps.LatLng(place.y, place.x);
 
-                const placeData = {
-                  address_name: place.address_name,
-                  category_group_code: place.category_group_code,
-                  category_group_name: place.category_group_name,
-                  category_name: place.category_name,
-                  id: place.id,
-                  phone: place.phone,
-                  place_name: place.place_name,
-                  place_url: place.place_url,
-                  road_address_name: place.road_address_name,
-                  position: selectedPosition,
-                };
+          const placeData = {
+            address_name: place.address_name,
+            category_group_code: place.category_group_code,
+            category_group_name: place.category_group_name,
+            category_name: place.category_name,
+            id: place.id,
+            phone: place.phone,
+            place_name: place.place_name,
+            place_url: place.place_url,
+            road_address_name: place.road_address_name,
+            position: selectedPosition,
+          };
 
-                map.setCenter(selectedPosition);
-                map.setLevel(3);
+          map.setCenter(selectedPosition);
+          map.setLevel(3);
 
-                setSelectedPlace(placeData);
+          setSelectedPlace(placeData);
 
-                handlePlaceClick(placeData);
-              }}>
-              {place.place_name}
-            </li>
-          ))}
-        </ul>
-      </div>
+          handlePlaceClick(placeData);
+        }}>
+        {place.place_name}
+      </li>
+    ))}
+  </ul>
+</div>
+
+
     </div>
   );
 };
 
-export default CourseMapDomestic;
+export default CourseMapComponent;

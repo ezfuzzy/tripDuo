@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 
-function Course() {
+function CourseBoard() {
     // 글 목록 페이지 정보
     const [pageInfo, setPageInfo] = useState({
         list: []
@@ -24,7 +24,7 @@ function Course() {
     const refresh = (pageNum) => {
         //검색 기능과 관련된 query 문자열 읽어오기
         const query = new URLSearchParams(searchState).toString()
-        axios.get(`/course?pageNum=${pageNum}&${query}`)
+        axios.get(`/api/v1/posts/?pageNum=${pageNum}&${query}`)
             .then(res => {
                 //서버로부터 응답된 데이터 state에 넣기
                 setPageInfo(res.data)
@@ -180,4 +180,4 @@ function Course() {
     );
 }
 
-export default Course;
+export default CourseBoard;
