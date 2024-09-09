@@ -27,7 +27,6 @@ public class UserDto {
     private String nickname;
               
     private Long age;
-    private String name;
     private String gender;
     private String phoneNumber;
     private String email; // [note: "인증 받으면 email 로그인 사용 가능"]
@@ -60,7 +59,6 @@ public class UserDto {
                 .password(entity.getPassword())
                 .nickname(entity.getNickname())
                 .age(entity.getAge())
-                .name(entity.getName())
                 .gender(entity.getGender())
                 .phoneNumber(entity.getPhoneNumber())
                 .email(entity.getEmail())

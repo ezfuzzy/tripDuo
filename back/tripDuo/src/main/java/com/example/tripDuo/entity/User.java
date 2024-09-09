@@ -33,7 +33,6 @@ public class User {
     private String nickname;
               
     private Long age;
-    private String name;
     private String gender;
     private String phoneNumber;
     private String email; // [note: "인증 받으면 email 로그인 사용 가능"]
@@ -69,7 +68,6 @@ public class User {
                 .password(dto.getPassword())
                 .nickname(dto.getNickname())
                 .age(dto.getAge())
-                .name(dto.getName())
                 .gender(dto.getGender())
                 .phoneNumber(dto.getPhoneNumber())
                 .email(dto.getEmail())
