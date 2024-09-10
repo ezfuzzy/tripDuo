@@ -72,6 +72,24 @@ public class AuthController {
 	}
 
 	// 토큰 발급 
+	@GetMapping("/google/accessTokenCallback")
+	public ResponseEntity<String> googleAccessToken(String code, HttpServletRequest request) throws Exception {
+		String googleCode = code;
+		String googleToken = authService.GoogleAccessToken(googleCode);
+		return ResponseEntity.status(HttpStatus.OK).body(googleToken);
+	}
+	@GetMapping("/googleLogin")
+	public ResponseEntity<String> googleInfo(@RequestHeader("Authorization") String token) {
+		String accessToken = token.replace("Bearer ", "");
+		OAuthToken oAuthToken = new OAuthToken();
+	    oAuthToken.setAccess_token(accessToken);
+	    
+	    String googleinfo = authService.GoogleSignUp(oAuthToken);
+		 
+		    return ResponseEntity.status(HttpStatus.OK).body(googleinfo);
+		}
+		
+	// 토큰 발급 
 	@GetMapping("/kakao/accessTokenCallback")
 	public ResponseEntity<String> kakaoAccessToken(String code, HttpServletRequest request, OAuthToken oAuthToken) throws Exception {
 		String kakaoToken = authService.KakaogetAccessToken(request.getParameter("code"));
