@@ -14,6 +14,7 @@ import MyProfile from "../pages/myPage/MyProfile";
 import MyProfileForm from "../pages/myPage/MyProfileForm";
 import CompletedSignup from "../pages/CompletedSignup";
 import KakaoRedirect from "../components/KakaoRedirect";
+import GoogleRedirect from "../components/GoogleRedirect";
 import ChangePassword from "../pages/myPage/ChangePassword";
 import MateBoard from "../pages/boards/MateBoard";
 import MateBoardForm from "../pages/boards/MateBoardForm";
@@ -38,6 +39,7 @@ import MyPlan from "../pages/myTripTmp/MyPlan"
 import MyRecord from "../pages/myTripTmp/MyRecord"
 import WishMate from "../pages/myTripTmp/WishMate"
 
+
 const routes = [
   // /users/:id
   // /users/:id/setting
@@ -57,6 +59,7 @@ const routes = [
   { path: "/logout", element: <LogoutPage /> },
   { path: "/completedSignup", element: <CompletedSignup /> },
   { path: "/kakaoLogin/redirect", element: <KakaoRedirect /> },
+  { path: "/googleLogin/redirect", element: <GoogleRedirect /> },
 
   // ### profile setting(보여지는 정보) ###
   { path: "/users/:id", element: <MyPage /> },
