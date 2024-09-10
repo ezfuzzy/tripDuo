@@ -13,7 +13,7 @@ function MateBoardDetail(props) {
 
   const username = useSelector(state => state.username, shallowEqual); //로그인된 username
 
-  const [post, setPost] = useState({tags:""});
+  const [post, setPost] = useState({tags:[]});
   const [isRecruited, setIsRecruited] = useState(false);
 
   // 작성자 프로필 설정
@@ -77,7 +77,7 @@ function MateBoardDetail(props) {
           <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">
             #{post.city}
           </span>
-          {post.tags.split(", ").map((tag, index) => (
+          {post.tags.map((tag, index) => (
             <span
               key={index}
               className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center"
