@@ -30,8 +30,10 @@ function MyProfileForm(props) {
 
     const {id} = useParams()
 
+    // 닉네임 중복검사 관련 
     const [isDuplicate, setIsDuplicate] = useState(null)
     const [isNicknameChanged, setIsNicknameChanged] = useState(false)
+    const [initialNickname, setInitialNickname] = useState()
     
     // useEffect
     useEffect(()=>{
@@ -39,6 +41,7 @@ function MyProfileForm(props) {
         .then(res=>{
             console.log(res.data)
             setProfile(res.data)
+            setInitialNickname(res.data.nickname) // 로딩된 닉네임 저장
             if(res.data.profilePicture){
                 setImageData(res.data.profilePicture)
             }
@@ -60,16 +63,34 @@ function MyProfileForm(props) {
         })
 
         if( e.target.name === "nickname"){
-            setIsNicknameChanged(true)
+
+            if(e.target.value === initialNickname){
+                //처음 닉네임과 같은걸 입력했다면
+                setIsDuplicate(null) // 검사 결과 리셋
+                setIsNicknameChanged(false)
+            }else{
+                setIsNicknameChanged(true)              
+            }
+
         }
     }
 
-    //중복 검사 핸들러
+    // *** 중복 검사 핸들러
     const handleCheckDuplicate = ()=>{
-    // isDuplicate 상태값 필요
-
+        
+        axios.post(`/api/v1/users/check/nickname`, profile.nickname,{
+            headers: {
+              'Content-Type': 'text/plain; charset=UTF-8'
+            }} )
+        .then(res=>{
+            console.log(res.data);
+            setIsDuplicate(res.data)
+        })
+        .catch(error=>console.log(error)
+        )
     }
 
+    // *** 이미지 input ***
     const handleInputImage = () => {
       const files = inputImage.current.files;
       if (files.length > 0) {
@@ -92,9 +113,13 @@ function MyProfileForm(props) {
       }
     };
 
+    // *** SUBMIT 이벤트 ***
     const handleSave = () => {
-        // 닉네임이 수정되고 중복체크가 성공하지 않았다면
-        if (isNicknameChanged && !isDuplicate) {
+        // 닉네임이 수정되고 && 중복체크가 성공하지 않았다면
+        console.log(isNicknameChanged);
+        console.log(isDuplicate);
+        
+        if (isNicknameChanged && (isDuplicate === true || isDuplicate === null)) {
             alert('사용 가능한 닉네임인지 확인해주세요');
             //포커스 이동 !! 좀 더 위로 올라가게 수정하기
             inputNickname.current.scrollIntoView({ behavior: 'smooth' })
@@ -201,13 +226,16 @@ const gitHubIcon = (
                 <div>
                     <label htmlFor="nickname" className="block text-sm font-medium mb-1">Nickname</label>
                     <div className='flex space-x-4'>
-                        <input ref={inputNickname} onChange={handleChange} type="text" name="nickname" value={profile.nickname} 
-                        className="flex-1 block w-full p-2 border border-gray-300 rounded-md"/>
-                        <button type="button" 
-                        onClick={handleCheckDuplicate}
-                        disabled={isNicknameChanged} //수정되면 활성화
-                        className="flex-1 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded">
-                        중복 검사</button>
+                            <input ref={inputNickname} onChange={handleChange} type="text" name="nickname" value={profile.nickname} 
+                            className="flex-1 block w-full p-2 border border-gray-300 rounded-md"/>
+
+                            <button type="button" 
+                            onClick={handleCheckDuplicate}
+                            disabled={!isNicknameChanged} //기본값 true(비활성화됨) 수정되면 활성화(false)
+                            className="flex-1 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded">
+                            중복 검사</button>
+                    </div>
+                    <div>
                         {isDuplicate === null && null}
                         {isDuplicate === true && <div className="text-red-500">이미 사용중인 닉네임입니다.</div>}
                         {isDuplicate === false && <div className="text-green-500">사용 가능한 닉네임입니다.</div>}
