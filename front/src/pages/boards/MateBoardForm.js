@@ -13,7 +13,7 @@ import { shallowEqual, useSelector } from "react-redux";
 
 function MateBoardForm(props) {
 
-  const username = useSelector(state => state.username, shallowEqual);
+  const username = useSelector(state => state.userData.username, shallowEqual);
 
   const navigate = useNavigate()
 
