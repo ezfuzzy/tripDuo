@@ -1,7 +1,8 @@
 package com.example.tripDuo.service;
 
+import java.util.regex.Pattern;
+
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -85,7 +86,7 @@ public class AuthServiceImpl implements AuthService {
 			authManager.authenticate(authToken);
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new Exception("아이디 혹은 비밀번호가 틀려요!");
+			return "fail to login"; // id or password is wrong
 		}
 		String token = jwtUtil.generateToken(dto.getUsername());
 		return "Bearer+" + token;
@@ -94,14 +95,27 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public String signup(UserDto dto) {
 
-		// 회원가입 페이지에서 user, manager, admin 설정 or admin dashboard page에서 관리
+		// ### username, nickname, password 유효성 체크 ###
+		
+		String usernamePattern = "^[a-z0-9]{6,16}$";
+        String nicknamePattern = "^[가-힣a-zA-Z0-9]{4,16}$";
+        String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,22}$";
+
+		if(!Pattern.matches(usernamePattern, dto.getUsername()) || 
+				!Pattern.matches(nicknamePattern, dto.getNickname()) ||
+				!Pattern.matches(passwordPattern, dto.getPassword())) {
+			return "유효성 검사 탈락";
+		}
+		
 		dto.setRole("USER");
 		String encodedPwd = encoder.encode(dto.getPassword());
 		dto.setPassword(encodedPwd);
 
 		repo.save(User.toEntity(dto));
 
-		return "회원가입 완료";
+		String token = jwtUtil.generateToken(dto.getUsername());
+
+		return "Bearer+" + token;
 	}
 
 	// ### 휴대폰 인증 ###
