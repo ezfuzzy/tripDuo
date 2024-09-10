@@ -1,14 +1,23 @@
 package com.example.tripDuo.entity;
 
 
+import java.time.LocalDateTime;
+
 import com.example.tripDuo.dto.PostCommentDto;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -45,6 +54,11 @@ public class PostComment {
         ON,        // 댓글 활성화 상태
         SECRET,    // 비밀댓글
         DELETED    // 삭제됨
+    }
+    
+    @PrePersist
+    public void onPrePersist() {
+        createdAt = LocalDateTime.now();
     }
 
     public static PostComment toEntity(PostCommentDto dto) {
