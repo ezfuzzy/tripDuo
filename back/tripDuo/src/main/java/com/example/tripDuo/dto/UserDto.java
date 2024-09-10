@@ -22,7 +22,7 @@ public class UserDto {
     private String username;
     private String password;
     private String newPassword;
-    private String newConfirmPassword;
+    private String confirmPassword;
     
     private String nickname;
               
