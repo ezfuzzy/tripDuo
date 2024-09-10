@@ -20,7 +20,7 @@ function MyProfile(props) {
             console.log(res.data)
             setProfile(res.data)
             if(res.data.profilePicture){
-                setImageData("/upload/images/"+res.data.profilePicture)
+                setImageData(res.data.profilePicture)
             }
         })
         .catch(error=>console.log(error))
@@ -84,7 +84,7 @@ function MyProfile(props) {
                     <p> 이메일 : {profile.email}</p>
                     <div className="mb-3">
                         <label htmlFor="profileMessage" className="form-label">자기 소개</label>
-                        <textarea name="profileMessage" className="form-control" rows="5" value={profile.profileMessage} readOnly/>
+                        <textarea name="profileMessage" className="form-control" rows="5" defaultValue={profile.profileMessage} readOnly/>
                     </div>
                 </div>
                 {/* 페이지의 정보를 가진 username 과 로그인된 username 이 같으면 ... */}
