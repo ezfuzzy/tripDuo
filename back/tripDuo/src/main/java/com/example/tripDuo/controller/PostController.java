@@ -2,12 +2,20 @@ package com.example.tripDuo.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.tripDuo.dto.PostCommentDto;
+import com.example.tripDuo.dto.PostDto;
 import com.example.tripDuo.dto.PostLikeDto;
 import com.example.tripDuo.dto.PostRatingDto;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import com.example.tripDuo.dto.PostDto;
 import com.example.tripDuo.service.PostService;
 
 @RestController
@@ -50,21 +58,26 @@ public class PostController {
 	}
 	
 	// ### comment ###
-	
+	@PostMapping("/{type:[a-z]+}/{id}/comments")
+	public ResponseEntity<String> writeComment(@PathVariable("id") Long id, @RequestBody PostCommentDto dto) {
+		postService.writeComment(dto);
+		return ResponseEntity.ok("write comment done");
+	}
 	
 	// ### like ###
-	@PostMapping("/{type:[a-zA-Z]+}/{id}/likes")
-	public ResponseEntity<String> addLikeToPost(@PathVariable("type") String type, @PathVariable("id") Long id, @RequestBody PostLikeDto dto) {
-
-		return null;
+	@PostMapping("/{type:[a-z]+}/{id}/likes")
+	public ResponseEntity<String> addLikeToPost(@PathVariable("id") Long id, @RequestBody PostLikeDto dto) {
+		// id는 post의 id 
+		postService.addLikeToPost(dto);
+		return ResponseEntity.ok("like done");
 	}
 	
 	
 	// ### rating ###
 	@PostMapping("/{type:[a-zA-Z]+}/{id}/ratings")
-	public ResponseEntity<String> addRatingToPost(@PathVariable("type") String type, @PathVariable("id") Long id, @RequestBody PostRatingDto dto) {
-
-		return null;
+	public ResponseEntity<String> addRatingToPost(@PathVariable("id") Long id, @RequestBody PostRatingDto dto) {
+		postService.addRatingToPost(dto);
+		return ResponseEntity.ok("rate done");
 	}
 
 	
