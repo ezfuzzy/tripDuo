@@ -29,7 +29,7 @@ public class PostController {
 	}
 	
 	@GetMapping("/{type:[a-zA-Z]+}")
-	public ResponseEntity<List<PostDto>> getPostList(@PathVariable("type") String type) {
+	public ResponseEntity<List<PostDto>> getPostList(@PathVariable("type") String type, PostDto dto) {
 		return ResponseEntity.ok(postService.getPostList(type));
 	}
 	

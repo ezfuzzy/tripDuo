@@ -64,12 +64,24 @@ public class TripDuoApplication {
 		Post p5 = Post.builder().userId(10L).writer("닉네임5").type("mate").title("제목입니다 555").content("내용입니다 555").country("프랑스").city("파리").viewCount(567L).likeCount(128L).rating(96F).status("recruit").build();
 		Post p6 = Post.builder().userId(6L).writer("닉네임1").type("mate").title("제목입니다 666").content("내용입니다 666").country("스페인").city("바르셀로나").viewCount(789L).likeCount(98L).rating(72F).status("recruited").build();
 		
+		Post p7 = Post.builder().userId(6L).writer("닉네임1").type("course").title("course 1").content("내용입니다 666").country("스페인").city("바르셀로나").viewCount(789L).likeCount(98L).rating(72F).status("recruited").build();
+		Post p8 = Post.builder().userId(7L).writer("닉네임2").type("course").title("course 2").content("내용입니다 666").country("스페인").city("바르셀로나").viewCount(789L).likeCount(98L).rating(72F).status("recruited").build();
+		Post p9 = Post.builder().userId(8L).writer("닉네임3").type("course").title("course 3").content("내용입니다 666").country("스페인").city("바르셀로나").viewCount(789L).likeCount(98L).rating(72F).status("recruited").build();
+		Post p10 = Post.builder().userId(9L).writer("닉네임4").type("course").title("course 4").content("내용입니다 666").country("스페인").city("바르셀로나").viewCount(789L).likeCount(98L).rating(72F).status("recruited").build();
+		Post p11 = Post.builder().userId(10L).writer("닉네임5").type("course").title("course 5").content("내용입니다 666").country("스페인").city("바르셀로나").viewCount(789L).likeCount(98L).rating(72F).status("recruited").build();
+		
 		postRepo.save(p1);
 		postRepo.save(p2);
 		postRepo.save(p3);
 		postRepo.save(p4);
 		postRepo.save(p5);
 		postRepo.save(p6);
+		
+		postRepo.save(p7);
+		postRepo.save(p8); 
+		postRepo.save(p9);
+		postRepo.save(p10);
+		postRepo.save(p11);
 		
         System.out.println("\n\n### ### ### ### ### ### ### ###");
         System.out.println("#                             #");
