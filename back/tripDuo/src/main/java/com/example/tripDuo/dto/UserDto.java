@@ -52,7 +52,13 @@ public class UserDto {
     @JsonIgnore
     private MultipartFile profileImgForUpload;
     
-    public static UserDto toDto(User entity) {
+    public static UserDto toDto(User entity, String cloudFrontUrl) {
+    	
+    	String profilePictureUrl = entity.getProfilePicture();
+    	if(profilePictureUrl != null && !profilePictureUrl.isEmpty() && cloudFrontUrl != null && !cloudFrontUrl.isEmpty()) {
+    		profilePictureUrl = cloudFrontUrl + "/" + profilePictureUrl;
+    	}
+    	
         return UserDto.builder()
                 .id(entity.getId())
                 .username(entity.getUsername())
@@ -62,7 +68,7 @@ public class UserDto {
                 .gender(entity.getGender())
                 .phoneNumber(entity.getPhoneNumber())
                 .email(entity.getEmail())
-                .profilePicture(entity.getProfilePicture())
+                .profilePicture(profilePictureUrl)
                 .profileMessage(entity.getProfileMessage())
                 .curLocation(entity.getCurLocation())
                 .verificationStatus(entity.getVerificationStatus())
@@ -71,9 +77,9 @@ public class UserDto {
                 .role(entity.getRole())
                 .ratings(entity.getRatings())
                 .lastLogin(entity.getLastLogin())
-                .createdAt(entity.getCreatedAt() != null ? entity.getCreatedAt() : null)
-                .updatedAt(entity.getUpdatedAt() != null ? entity.getUpdatedAt() : null)
-                .deletedAt(entity.getDeletedAt() != null ? entity.getDeletedAt() : null)
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .deletedAt(entity.getDeletedAt())
                 .build();
     }
 }

@@ -81,8 +81,8 @@ public class User {
                 .ratings(dto.getRatings())
                 .lastLogin(dto.getLastLogin())
                 .createdAt(dto.getCreatedAt())
-                .updatedAt(dto.getUpdatedAt() != null ? dto.getUpdatedAt() : null)
-                .deletedAt(dto.getDeletedAt() != null ? dto.getDeletedAt() : null)
+                .updatedAt(dto.getUpdatedAt())
+                .deletedAt(dto.getDeletedAt())
                 .build();    
     }
 }

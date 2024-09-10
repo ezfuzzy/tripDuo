@@ -19,9 +19,6 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 public class S3ServiceImpl implements S3Service{
 	 
 	private final AmazonS3 amazonS3; 
-
-	 @Value("${cloud.aws.cloudfront.url}")
-	 private String cloudFrontUrl;
 	 
 	 @Value("${cloud.aws.s3.bucket}")
 	 private String bucket;

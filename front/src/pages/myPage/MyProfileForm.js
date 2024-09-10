@@ -40,7 +40,7 @@ function MyProfileForm(props) {
             console.log(res.data)
             setProfile(res.data)
             if(res.data.profilePicture){
-                setImageData("/upload/images/"+res.data.profilePicture)
+                setImageData(res.data.profilePicture)
             }
         })
         .catch(error=>console.log(error))
@@ -265,7 +265,7 @@ const gitHubIcon = (
                     {/* 프로필 메세지 */}
                     <div className="mb-3">
                         <label htmlFor="profileMessage" className="block text-sm font-medium mb-1">Profile Message</label>
-                        <textarea onChange={handleChange} name="profileMessage" className="form-control w-full h-auto resize-none overflow-y-auto" rows="5" value={profile.profileMessage} />
+                        <textarea onChange={handleChange} name="profileMessage" className="form-control w-full h-auto resize-none overflow-y-auto" rows="5" defaultValue={profile.profileMessage} />
                     </div>
                     
                     {/* save 버튼 */}

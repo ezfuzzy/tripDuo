@@ -25,7 +25,7 @@ function MyPage() {
         console.log(res)
         setProfile(res.data)
         if(res.data.profilePicture){
-          setImageData("/upload/images/"+res.data.profilePicture)
+          setImageData(res.data.profilePicture)
       }
       })
       .catch(error => console.log(error))
