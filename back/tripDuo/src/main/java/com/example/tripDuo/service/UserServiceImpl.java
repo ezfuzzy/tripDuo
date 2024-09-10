@@ -132,11 +132,6 @@ public class UserServiceImpl implements UserService {
 			//throw new Exception("기존 비밀번호가 일치하지 않습니다.");
 		}
 
-		// 새 비밀번호와 새 비밀번호 확인이 일치하는지 확인
-		if (!dto.getNewPassword().equals(dto.getConfirmPassword())) {
-			return false;
-		}
-
 		String encodedNewPassword = passwordEncoder.encode(dto.getNewPassword());
 		dto.setPassword(encodedNewPassword);
 		UserRepo.save(User.toEntity(dto));
