@@ -10,15 +10,6 @@ function MyPage() {
   const navigate = useNavigate()
   const [imageData, setImageData] = useState(null)
 
-  const StyledLink = styled(Link)`
-  color: #666;
-  text-decoration: none;
-
-  &:hover {
-    color: #000;
-  }
-`;
-
   useEffect(() => {
     axios.get(`/api/v1/users/${id}`)
       .then(res => {
@@ -65,19 +56,19 @@ function MyPage() {
         <div className="borderbox">
           <ul className="myPage grid grid-cols-2 gap-4">
           <li className="myPageList bg-white shadow-md rounded-lg p-4">
-            <h3><StyledLink to={`/myPlan/${id}`}><strong>Travel Plan</strong>(여행 계획)</StyledLink></h3>
+            <h3><Link className="text-gray-500 hover:text-black text-decoration-none" to={`/myPlan/${id}`}><strong>Travel Plan</strong>(여행 계획)</Link></h3>
             <p>여행을 계획하거나<br />계획한 여행들을 확인하실 수 있습니다.</p>
           </li>
           <li className="myPageList bg-white shadow-md rounded-lg p-4">
-            <h3><StyledLink to={`/myRecord/${id}`}><strong>Travel Record</strong>(여행 기록)</StyledLink></h3>
+            <h3><Link className="text-gray-500 hover:text-black text-decoration-none" to={`/myRecord/${id}`}><strong>Travel Record</strong>(여행 기록)</Link></h3>
             <p>고객님의 여행 기록을 확인하실 수 있습니다.</p>
           </li>
           <li className="myPageList bg-white shadow-md rounded-lg p-4">
-            <h3><StyledLink to={`/wishMate/${id}`}><strong>Wish Mate</strong>(관심 메이트)</StyledLink></h3>
+            <h3><Link className="text-gray-500 hover:text-black text-decoration-none" to={`/wishMate/${id}`}><strong>Wish Mate</strong>(관심 메이트)</Link></h3>
             <p>관심 메이트로 등록하신 여행 메이트를 확인하실 수 있습니다.</p>
           </li>
           <li className="myPageList bg-white shadow-md rounded-lg p-4">
-            <h3><StyledLink to={`/myPlace/${id}`}><strong>My Place</strong>(마이 플레이스)</StyledLink></h3>
+            <h3><Link className="text-gray-500 hover:text-black text-decoration-none" to={`/myPlace/${id}`}><strong>My Place</strong>(마이 플레이스)</Link></h3>
             <p>관심있는 지역, 음식점들을 관리할 수 있습니다.</p>
           </li>
         </ul>
