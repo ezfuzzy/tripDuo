@@ -1,5 +1,6 @@
 package com.example.tripDuo.service;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -72,20 +73,45 @@ public class UserServiceImpl implements UserService {
 	public void updateUserInfo(UserDto dto, MultipartFile profileImgForUpload) {
 
 		// 허용된 파일 확장자 목록
-		Set<String> allowedExtensions = new HashSet<>();
-		allowedExtensions.add("jpg");
-		allowedExtensions.add("jpeg");
-		allowedExtensions.add("png");
+	    Set<String> allowedExtensions = new HashSet<>(Arrays.asList(
+	            "jpg", "jpeg", "png", "heic", "heif"
+	    		));
+	    
 		
 	    // 프로필 이미지가 존재하고, 파일 크기가 0이 아닌 경우 처리
-		String profilePictureName = s3Service.uploadFile(profileImgForUpload);
-		
+	    if (profileImgForUpload != null && !profileImgForUpload.isEmpty()) {
+
+	        String originalFilename = profileImgForUpload.getOriginalFilename();
+	        if (originalFilename == null) {
+	            throw new IllegalArgumentException("파일 이름이 누락되었습니다.");
+	        }
+	    	
+	        // 파일 확장자 추출 및 검증
+	        String fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
+	        if (!allowedExtensions.contains(fileExtension)) {
+	            throw new IllegalArgumentException("허용되지 않는 파일 형식입니다.");
+	        }
+
+	        // 파일 크기 제한 5MB
+	        long maxFileSize = 5 * 1024 * 1024;
+	        if (profileImgForUpload.getSize() > maxFileSize) {
+	            throw new IllegalArgumentException("파일 크기가 너무 큽니다. 최대 5MB까지 허용됩니다.");
+	        }
+	        
+	        // MIME 타입 검사
+	        String mimeType = profileImgForUpload.getContentType();
+	        if (mimeType == null || !(mimeType.equals("image/jpeg") || mimeType.equals("image/png") || mimeType.equals("image/heic") || mimeType.equals("image/heif"))) {
+	            throw new IllegalArgumentException("허용되지 않는 MIME 타입입니다.");
+	        }
+	    	
+	        // s3에 저장되는 profilePicture ( 파일 이름.확장자 ) dto에 저장
+	        dto.setProfilePicture(s3Service.uploadFile(profileImgForUpload));
+	    }
 	    // 기존 유저 정보 가져오기
 		UserDto existingUser = UserDto.toDto(UserRepo.findById(dto.getId()).get(), "");
 
 	    // 비밀번호는 기존 것을 유지
 	    dto.setPassword(existingUser.getPassword());
-	    dto.setProfilePicture(profilePictureName);
 	    
 	    // 변경된 정보를 저장
 	    UserRepo.save(User.toEntity(dto));
@@ -95,7 +121,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Boolean updateUserPassword(UserDto dto) {
 
-		if(!dto.getNewPassword().equals(dto.getNewConfirmPassword())) {
+		if(!dto.getNewPassword().equals(dto.getConfirmPassword())) {
 			return false;
 		}
 
@@ -107,7 +133,7 @@ public class UserServiceImpl implements UserService {
 		}
 
 		// 새 비밀번호와 새 비밀번호 확인이 일치하는지 확인
-		if (!dto.getNewPassword().equals(dto.getNewConfirmPassword())) {
+		if (!dto.getNewPassword().equals(dto.getConfirmPassword())) {
 			return false;
 		}
 
@@ -124,7 +150,7 @@ public class UserServiceImpl implements UserService {
 		UserDto userInfo = UserDto.toDto(UserRepo.findById(dto.getId()).get(), "");
 
 		// 새 비밀번호와 새 비밀번호 확인이 일치하는지 확인
-		if (!dto.getNewPassword().equals(dto.getNewConfirmPassword())) {
+		if (!dto.getNewPassword().equals(dto.getConfirmPassword())) {
 			return false;
 		}
 
