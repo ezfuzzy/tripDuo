@@ -32,7 +32,6 @@ import ExtraPage from "../pages/Utilities/ExtraPage";
 import CourseBoard from "../pages/boards/CourseBoard";
 import CourseBoardForm from "../pages/boards/CourseBoardForm";
 import CourseBoardDetail from "../pages/boards/CourseBoardDetail";
-import CourseUpdateForm from "../pages/boards/CourseUpdateForm";
 import CourseBoardEditForm from "../pages/boards/CourseBoardEditForm";
 import MyPlace from "../pages/myTripTmp/MyPlace"
 import MyPlan from "../pages/myTripTmp/MyPlan"

@@ -1,7 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import CourseMapComponent from "../../components/CourseMapComponent";
+import CourseKakaoMapComponent from "../../components/CourseKakaoMapComponent";
+
 
 const CourseBoardForm = () => {
   const [title, setTitle] = useState("");
@@ -395,7 +396,7 @@ const CourseBoardForm = () => {
                 &times;
               </div>
             </div>
-            <CourseMapComponent
+            <CourseKakaoMapComponent
               onSave={handleSavePlace}
               selectedDayIndex={selectedDayIndex}
               selectedPlaceIndex={selectedPlaceIndex}
