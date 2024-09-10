@@ -70,27 +70,27 @@ function MyProfileForm(props) {
 
     }
 
-    const handleInputImage = ()=>{
+    const handleInputImage = () => {
+      const files = inputImage.current.files;
+      if (files.length > 0) {
+        const file = files[0];
+        const reg = /image/;
 
-        const file = inputImage.current.files[0]
-        
-        const reg=/image/
-
-        if(!reg.test(file.type)){ 
-            alert("이미지 파일이 아닙니다")
-            return
+        if (!reg.test(file.type)) {
+          alert("이미지 파일이 아닙니다");
+          return;
         }
 
-        const reader = new FileReader()
-        reader.readAsDataURL(file)
-        reader.onload=(e)=>{
-            const data = e.target.result
-            // file.dataUrl = data
-            
-            setImageData(data)          
-        }
-        
-    }
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+          const data = e.target.result;
+          // file.dataUrl = data
+
+          setImageData(data);
+        };
+      }
+    };
 
     const handleSave = () => {
         // 닉네임이 수정되고 중복체크가 성공하지 않았다면
