@@ -1,12 +1,9 @@
 package com.example.tripDuo.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.tripDuo.dto.OAuthToken;
 import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.service.AuthService;
-import com.example.tripDuo.util.JwtUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -25,11 +21,9 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 
-	private final JwtUtil jwtUtil;
 	private final AuthService authService;
 
-	public AuthController(JwtUtil jwtUtil, AuthService authService) {
-		this.jwtUtil = jwtUtil;
+	public AuthController(AuthService authService) {
 		this.authService = authService;
 	}
 
@@ -40,11 +34,7 @@ public class AuthController {
 
 	@PostMapping("/signup")
 	public ResponseEntity<String> signup(@RequestBody UserDto dto) throws Exception {
-		authService.signup(dto);
-		
-		String token = jwtUtil.generateToken(dto.getUsername());
-		return ResponseEntity.ok("Bearer+" + token);
-	      
+		return ResponseEntity.ok(authService.signup(dto));
 	}
 
 	@PostMapping("/phone/send-code")
@@ -109,7 +99,7 @@ public class AuthController {
 		OAuthToken oAuthToken = new OAuthToken();
 	    oAuthToken.setAccess_token(accessToken);
 
-		String kakaoLogout=authService.kakaoLogout(oAuthToken, kakaoId);
+		String kakaoLogout = authService.kakaoLogout(oAuthToken, kakaoId);
 		
 		return ResponseEntity.status(HttpStatus.OK).body(kakaoLogout);
 	}
