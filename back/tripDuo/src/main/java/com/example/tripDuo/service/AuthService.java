@@ -12,6 +12,8 @@ public interface AuthService {
     public boolean sendVerificationCode(String phoneNumber);
     public boolean verifyPhoneNumber(String phoneNumber, String verificationCode);
     
+    public String GoogleAccessToken(String code);
+    public String GoogleSignUp(OAuthToken googleToken)  ;
     public User KakaoFindId(String username);
     public String KakaoSignUp(OAuthToken kakaoToken);
     public String KakaogetAccessToken(String code);

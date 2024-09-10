@@ -9,7 +9,7 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class GoogleProfile {
 	   // 구글 프로필에서의 사용자 ID
-    private String sub;
+    private String id;
 
     // 사용자 이름
     private String name;

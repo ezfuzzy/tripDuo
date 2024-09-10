@@ -18,6 +18,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import com.example.tripDuo.dto.GoogleProfile;
 import com.example.tripDuo.dto.KakaoProfile;
 import com.example.tripDuo.dto.OAuthToken;
 import com.example.tripDuo.dto.UserDto;
@@ -57,14 +58,23 @@ public class AuthServiceImpl implements AuthService {
 	@Value("${coolsms.secret}")
 	private String COOLSMS_SECRET;
 	
-	@Value("${kakaopassword.key}")
-	private String kakaopassword;
+	@Value("${google.client.key}")
+	private String GOOGLE_LOGIN_KEY;
 	
-	@Value("${kakao.client_id}")
-	private String client_id;
+	@Value("${google.client.secret}")
+	private String GOOGLE_LOGIN_SECRET;
+			
+	@Value("${google.redirect.uri}")
+	private String GOOGLE_REDIRECT_URI;
 	
-	@Value("${kakao.redirect_uri}")
-	private String redirect_url;
+	@Value("${oauthpassword}")
+	private String OAUTHPASSWORD;
+	
+	@Value("${kakao.client_key}")
+	private String KAKAO_LOGIN_KEY;
+	
+	@Value("${kakao.redirect.uri}")
+	private String KAKAO_REDIRECT_URI;
 
 	public AuthServiceImpl(JwtUtil jwtUtil, AuthenticationManager authManager, PasswordEncoder encoder, UserRepository repo, PhoneNumberVerificationService phoneNumberVerificationService) {
 		this.jwtUtil = jwtUtil;
@@ -186,11 +196,114 @@ public class AuthServiceImpl implements AuthService {
 				User user  = repo.findByUsername(username);
 				return user;
 			}
+			
+			
 
-			// 카카오 로그인 및 가입
+			@Override
+			public String GoogleAccessToken(String code) {
+				RestTemplate rt = new RestTemplate();
+				HttpHeaders headers = new HttpHeaders();
+				headers.add("Content-type", "application/x-www-form-urlencoded");
+				
+				MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+			        params.add("code", code);
+			        params.add("client_id", GOOGLE_LOGIN_KEY);
+			        params.add("client_secret", GOOGLE_LOGIN_SECRET);
+			        params.add("redirect_uri", GOOGLE_REDIRECT_URI);
+			        params.add("grant_type", "authorization_code");
+				
+				HttpEntity<MultiValueMap<String, String>> googleTokenRequest = 
+						new HttpEntity<>(params, headers);
+				System.out.println(params);
+				
+				ResponseEntity<String> response = rt.exchange(
+						"https://oauth2.googleapis.com/token",
+						HttpMethod.POST,
+						googleTokenRequest,
+						String.class
+				);
+
+				System.out.println(response.getBody());
+				
+				ObjectMapper objectMapper = new ObjectMapper();
+				OAuthToken oauthToken = null;
+
+				try {
+					oauthToken = objectMapper.readValue(response.getBody(), OAuthToken.class);
+				} catch (JsonMappingException e) {
+					e.printStackTrace();
+				} catch (JsonProcessingException e) {
+					e.printStackTrace();
+				}
+				System.out.println("구글 엑세스 토큰 : "+oauthToken.getAccess_token());
+				return "Bearer "+oauthToken.getAccess_token();
+			}
+
+			@Override
+			public String GoogleSignUp(OAuthToken googleToken) {
+				RestTemplate  rt2 = new RestTemplate();
+				HttpHeaders headers2 = new HttpHeaders();
+				headers2.add("Authorization", "Bearer " + googleToken.getAccess_token());
+				headers2.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8"); 
+
+				HttpEntity<MultiValueMap<String, String>> googleProfileRequest = 
+						new HttpEntity<>(headers2);
+
+				ResponseEntity<String> response2 = rt2.exchange(
+						"https://www.googleapis.com/userinfo/v2/me",
+						HttpMethod.GET,
+						googleProfileRequest,
+				        String.class
+				);
+				
+				System.out.println("유저정보 : " + response2.getBody());
+
+				ObjectMapper objectMapper2 = new ObjectMapper();
+				objectMapper2.registerModule(new JavaTimeModule());
+				objectMapper2.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+				objectMapper2.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE); 
+				GoogleProfile googleProfile = null;
+					try {
+						googleProfile = objectMapper2.readValue(response2.getBody(), GoogleProfile.class);
+					} catch (JsonMappingException e) {
+						e.printStackTrace();
+					} catch (JsonProcessingException e) {
+						e.printStackTrace();
+					}
+				
+				User googleUser=User.builder()
+						.username("google_"+googleProfile.getEmail())
+						.password(encoder.encode(OAUTHPASSWORD))
+						.email(googleProfile.getEmail())
+						.build();
+					
+				User originUser = repo.findByUsername(googleUser.getUsername());
+					if (originUser != null) {
+				        System.out.println("이미 존재하는 유저입니다.");
+				    } else {
+				        repo.save(googleUser);
+				        System.out.println("새로운 유저가 저장되었습니다.");
+				    }
+						
+					Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(googleUser.getUsername(), OAUTHPASSWORD));
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+						
+					JSONObject googleInfo2 = new JSONObject();
+					googleInfo2.put("id", googleProfile.getId());
+					googleInfo2.put("name", googleProfile.getName());
+					googleInfo2.put("nickname", googleProfile.getGivenName());
+					googleInfo2.put("picture", googleProfile.getPicture());
+					googleInfo2.put("email", googleProfile.getEmail());
+					googleInfo2.put("googleToken",googleToken.getAccess_token());
+					googleInfo2.put("kakaoRefreshToken", googleToken.getRefresh_token());
+			            
+			        System.out.println("googleInfo2: " + googleInfo2.toString());  // 보기 좋게 출력
+			                 
+			        return googleInfo2.toString();
+			}
+			
 			@Override
 			public String KakaoSignUp(OAuthToken kakaoToken) {
-				// 1. Kakao API를 통해 사용자 정보 요청
 				RestTemplate  rt2 = new RestTemplate();
 				HttpHeaders headers2 = new HttpHeaders();
 				headers2.add("Authorization", "Bearer " + kakaoToken.getAccess_token());
@@ -203,12 +316,11 @@ public class AuthServiceImpl implements AuthService {
 						"https://kapi.kakao.com/v2/user/me",
 						HttpMethod.POST,
 						kakaoProfileRequest,
-				        String.class // String 타입으로 응답 데이터를 받겠다.
+				        String.class 
 				);
 				
 				System.out.println("유저정보 : " + response2.getBody());
 
-				// 2. 응답된 JSON을 KakaoProfile 객체로 변환
 				ObjectMapper objectMapper2 = new ObjectMapper();
 				objectMapper2.registerModule(new JavaTimeModule());
 				objectMapper2.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -222,54 +334,49 @@ public class AuthServiceImpl implements AuthService {
 						e.printStackTrace();
 					}
 				
-					 // 3. 유저 정보 생성
-					User kakaoUser=User.builder()
-							.username(kakaoProfile.getId()+"_"+kakaoProfile.getKakao_account().getEmail())
-							.password(encoder.encode(kakaopassword))
-							.email(kakaoProfile.getKakao_account().getEmail())
-							.build();
+				User kakaoUser=User.builder()
+						.username(kakaoProfile.getId()+"_"+kakaoProfile.getKakao_account().getEmail())
+						.password(encoder.encode(OAUTHPASSWORD))
+						.email(kakaoProfile.getKakao_account().getEmail())
+						.build();
 					
-					// 4. 데이터베이스에서 유저 조회
-					User originUser = repo.findByUsername(kakaoUser.getUsername());
-						if (originUser != null) {
-					        System.out.println("이미 존재하는 유저입니다.");
-					    } else {
-					        // 5. 유저가 없을 경우 저장
-					        repo.save(kakaoUser);
-					        System.out.println("새로운 유저가 저장되었습니다.");
-					    }
+				User originUser = repo.findByUsername(kakaoUser.getUsername());
+					if (originUser != null) {
+				        System.out.println("이미 존재하는 유저입니다.");
+				    } else {
+				        // 5. 유저가 없을 경우 저장
+				        repo.save(kakaoUser);
+				        System.out.println("새로운 유저가 저장되었습니다.");
+				    }
 						
-						 // 6. 로그인 처리	 
-						Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(kakaoUser.getUsername(), kakaopassword));
-						SecurityContextHolder.getContext().setAuthentication(authentication);
+				Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(kakaoUser.getUsername(), OAUTHPASSWORD));
+				SecurityContextHolder.getContext().setAuthentication(authentication);
 						
-						// 7. 카카오 유저 정보를 JSON으로 반환
-						JSONObject kakaoInfo2 = new JSONObject();
-						kakaoInfo2.put("id", kakaoProfile.id);
-						kakaoInfo2.put("nickname", kakaoProfile.getKakao_account().getProfile().getNickname());
-			            kakaoInfo2.put("profile_image", kakaoProfile.getKakao_account().getProfile().getProfile_image_url());
-			            kakaoInfo2.put("email", kakaoProfile.getKakao_account().getEmail());
-			            kakaoInfo2.put("kakaoToken", kakaoToken.getAccess_token());
-			            kakaoInfo2.put("kakaoRefreshToken", kakaoToken.getRefresh_token());
+				JSONObject kakaoInfo2 = new JSONObject();
+				kakaoInfo2.put("id", kakaoProfile.id);
+				kakaoInfo2.put("nickname", kakaoProfile.getKakao_account().getProfile().getNickname());
+		        kakaoInfo2.put("profile_image", kakaoProfile.getKakao_account().getProfile().getProfile_image_url());
+		        kakaoInfo2.put("email", kakaoProfile.getKakao_account().getEmail());
+		        kakaoInfo2.put("kakaoToken", kakaoToken.getAccess_token());
+		        kakaoInfo2.put("kakaoRefreshToken", kakaoToken.getRefresh_token());
 			            
-			            System.out.println("kakaoInfo2: " + kakaoInfo2.toString());  // 보기 좋게 출력
-			        return kakaoInfo2.toString();
-			        		
+		        System.out.println("kakaoInfo2: " + kakaoInfo2.toString());  // 보기 좋게 출력
+
+		        return kakaoInfo2.toString();
 			}
-			// 카카오 액세스 토큰 발급 
+
 			@Override
 			public String KakaogetAccessToken(String code) {
 				RestTemplate rt = new RestTemplate();
 				
-				// HttpHeader 오브젝트 생성
 				HttpHeaders headers = new HttpHeaders();
 				headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 				
 				// HttpBody 오브젝트 생성
 				MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 				params.add("grant_type", "authorization_code");
-				params.add("client_id", client_id);
-				params.add("redirect_url", redirect_url);
+				params.add("client_id", KAKAO_LOGIN_KEY);
+				params.add("redirect_url", KAKAO_REDIRECT_URI);
 				params.add("code", code);
 				
 				// HttpHeader와 HttpBody를 하나의 오브젝트에 담기
@@ -318,18 +425,15 @@ public class AuthServiceImpl implements AuthService {
 			// 카카오 로그아웃
 			@Override
 			public String kakaoLogout(OAuthToken oAuthToken,  Long kakaoId) {
-				System.out.println("11");
-				 // RestTemplate를 사용해 로그아웃 요청
 			    RestTemplate rt = new RestTemplate();
 			    HttpHeaders headers = new HttpHeaders();
 			    headers.add("Authorization", "Bearer " + oAuthToken.getAccess_token());
 			    headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
 
-			 // HttpBody 오브젝트 생성
-			 			MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-			 			params.add("target_id_type", "user_id");
-			 			params.add("target_id",  kakaoId.toString());
+	 			MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+	 			params.add("target_id_type", "user_id");
+	 			params.add("target_id",  kakaoId.toString());
 			 			
 			    HttpEntity<MultiValueMap<String, String>> kakaoLogoutRequest = 
 			    		new HttpEntity<>(headers);
@@ -350,6 +454,8 @@ public class AuthServiceImpl implements AuthService {
 			        return "카카오 로그아웃 실패";
 			    }
 			  }
+
+
 			
 
 }
