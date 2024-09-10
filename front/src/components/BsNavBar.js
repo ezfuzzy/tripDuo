@@ -158,7 +158,7 @@ function BsNavBar() {
                         {isLoggedIn && 
                         <Nav.Link as={NavLink} to={`/users/${profile.id}`}>
                             {profile.profilePicture != null
-                                ? <img src={profile.profilePicture[0]} className='w-[30px] h-[30px] rounded-full' alt="Profile" />
+                                ? <img src={profile.profilePicture} className='w-[30px] h-[30px] rounded-full' alt="Profile" />
                                 : myPageIcon}
                         </Nav.Link>}
                         {isLoggedIn ? (
