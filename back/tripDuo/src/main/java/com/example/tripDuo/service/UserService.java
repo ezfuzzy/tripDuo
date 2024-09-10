@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.tripDuo.dto.UserDto;
+import com.example.tripDuo.dto.UserFollowDto;
 
 public interface UserService {
 
@@ -28,5 +29,7 @@ public interface UserService {
 	// ### deleteUser ###
 	public void deleteUser(Long id);
 	
-		
+	
+	// ### follow ###
+	public void addFollow(UserFollowDto dto);
 }

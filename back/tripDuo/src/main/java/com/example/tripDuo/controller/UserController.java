@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.tripDuo.dto.UserDto;
+import com.example.tripDuo.dto.UserFollowDto;
 import com.example.tripDuo.service.UserService;
 
 @RestController
@@ -90,6 +91,16 @@ public class UserController {
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
     	return ResponseEntity.ok(id + " user is deleted");
+    }
+    
+    // ### follow ###
+    
+    @PostMapping("/{id}/follows")
+    public ResponseEntity<String> addFollow(@PathVariable Long id, @RequestBody UserFollowDto dto) {
+    	
+    
+    	userService.addFollow(dto);
+    	return ResponseEntity.ok("Follow added successfully");
     }
 	
 }
