@@ -10,7 +10,7 @@ import bootstrapBundleMin from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import axios from 'axios';
 
 function BsNavBar() {
-    const username = useSelector(state => state.username, shallowEqual);
+    const username = useSelector(state => state.userData.username, shallowEqual);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();

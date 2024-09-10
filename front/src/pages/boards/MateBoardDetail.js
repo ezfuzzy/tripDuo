@@ -11,7 +11,7 @@ import { NavLink } from "react-router-dom";
 function MateBoardDetail(props) {
   const {id} = useParams(); // 게시물 번호
 
-  const username = useSelector(state => state.username, shallowEqual); //로그인된 username
+  const username = useSelector(state => state.userData.username, shallowEqual); //로그인된 username
 
   const [post, setPost] = useState({tags:[]});
   const [isRecruited, setIsRecruited] = useState(false);
