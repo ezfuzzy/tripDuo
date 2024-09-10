@@ -4,17 +4,32 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example.tripDuo.dto.PostCommentDto;
 import com.example.tripDuo.dto.PostDto;
+import com.example.tripDuo.dto.PostLikeDto;
+import com.example.tripDuo.dto.PostRatingDto;
 import com.example.tripDuo.entity.Post;
+import com.example.tripDuo.entity.PostComment;
+import com.example.tripDuo.entity.PostLike;
+import com.example.tripDuo.entity.PostRating;
+import com.example.tripDuo.repository.PostCommentRepository;
+import com.example.tripDuo.repository.PostLikeRepository;
+import com.example.tripDuo.repository.PostRatingRepository;
 import com.example.tripDuo.repository.PostRepository;
 
 @Service
 public class PostServiceImpl implements PostService {
 
 	private final PostRepository postRepo;
-
-	public PostServiceImpl(PostRepository postRepo) {
+	private final PostCommentRepository postCommentRepo;
+	private final PostLikeRepository postLikeRepo;
+	private final PostRatingRepository postRatingRepo;
+	
+	public PostServiceImpl(PostRepository postRepo, PostCommentRepository postCommentRepo, PostLikeRepository postLikeRepo, PostRatingRepository postRatingRepo) {
 		this.postRepo = postRepo;
+		this.postCommentRepo = postCommentRepo;
+		this.postLikeRepo = postLikeRepo;
+		this.postRatingRepo = postRatingRepo;
 	}
 	
 	@Override
@@ -25,9 +40,20 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public PostDto getPostById(Long id) {
+		// 이건 수정폼에서 쓸 메소드
 		return PostDto.toDto(postRepo.findById(id).get());
 	}
 
+	@Override
+	public PostDto getPostDetailById(Long id) {
+		
+		PostDto dto = PostDto.toDto(postRepo.findById(id).get());
+		// 각종 처리 
+		// + 댓글 목록도 가져와야할듯 
+		return null;
+	}
+	
+	
 	@Override
 	public void writePost(PostDto dto) {
 		postRepo.save(Post.toEntity(dto));
@@ -50,6 +76,28 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public void deletePost(Long id) {
 		postRepo.deleteById(id);
+	}
+	
+	// ### comment ###
+	
+	@Override
+	public void writeComment(PostCommentDto dto) {
+		// service code 
+		postCommentRepo.save(PostComment.toEntity(dto));
+	}
+	
+	// ### like ###
+
+	@Override
+	public void addLikeToPost(PostLikeDto dto) {
+		postLikeRepo.save(PostLike.toEntity(dto));
+	}
+
+	// ### rating ###
+	
+	@Override
+	public void addRatingToPost(PostRatingDto dto) {
+		postRatingRepo.save(PostRating.toEntity(dto));
 	}
 
 }
