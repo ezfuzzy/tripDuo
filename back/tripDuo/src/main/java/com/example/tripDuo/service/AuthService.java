@@ -13,7 +13,7 @@ public interface AuthService {
     public boolean verifyPhoneNumber(String phoneNumber, String verificationCode);
     
     public User KakaoFindId(String username);
-    public String KakaoSignUp(OAuthToken kakaoToken)  ;
+    public String KakaoSignUp(OAuthToken kakaoToken);
     public String KakaogetAccessToken(String code);
     public String kakaoLogout(OAuthToken oAuthToken, Long kakaoId);
 
