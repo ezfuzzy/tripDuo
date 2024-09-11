@@ -20,6 +20,7 @@ import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.dto.UserFollowDto;
 import com.example.tripDuo.dto.UserProfileInfoDto;
 import com.example.tripDuo.dto.UserReviewDto;
+import com.example.tripDuo.enums.FollowType;
 import com.example.tripDuo.service.UserService;
 
 @RestController
@@ -100,7 +101,17 @@ public class UserController {
     @PostMapping("/{id}/follows/{type}")
     public ResponseEntity<String> addFollow(@PathVariable("id") Long id, @PathVariable("type") String type, @RequestBody UserFollowDto dto) {
     	dto.setFolloweeUserId(id);
-    	dto.setType(type);
+    	
+		FollowType followType;
+		
+        try {
+        	followType = FollowType.fromString(type);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid post type: " + type);
+        }
+
+        dto.setFollowType(followType);
+    	
     	userService.addFollow(dto);
     	return ResponseEntity.ok("Follow added successfully");
     }

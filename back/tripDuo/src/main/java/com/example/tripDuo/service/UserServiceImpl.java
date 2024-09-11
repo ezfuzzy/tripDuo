@@ -37,7 +37,10 @@ public class UserServiceImpl implements UserService {
 	private final UserReviewRepository userReviewRepo;
 	private final PasswordEncoder passwordEncoder;
 	
-	public UserServiceImpl(S3Service s3Service, UserRepository userRepo, UserProfileInfoRepository userProfileInfoRepo, UserFollowRepository userFollowRepo, PasswordEncoder passwordEncoder) {
+	public UserServiceImpl(S3Service s3Service, UserRepository userRepo, 
+			UserProfileInfoRepository userProfileInfoRepo, UserFollowRepository userFollowRepo, 
+			PasswordEncoder passwordEncoder, UserReviewRepository userReviewRepo) {
+		
 		this.s3Service = s3Service;
 		this.userRepo = userRepo;
 		this.userProfileInfoRepo = userProfileInfoRepo;

@@ -10,7 +10,6 @@ public enum PostType {
         try {
             return PostType.valueOf(type.toUpperCase());
         } catch (IllegalArgumentException e) {
-            // 예외 처리 로직, 예를 들어 기본값 설정 또는 로그 기록
             throw new IllegalArgumentException("Invalid post type: " + type, e);
         }
     }
