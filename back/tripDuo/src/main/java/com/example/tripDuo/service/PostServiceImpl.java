@@ -13,6 +13,7 @@ import com.example.tripDuo.entity.Post;
 import com.example.tripDuo.entity.PostComment;
 import com.example.tripDuo.entity.PostLike;
 import com.example.tripDuo.entity.PostRating;
+import com.example.tripDuo.enums.PostType;
 import com.example.tripDuo.repository.PostCommentRepository;
 import com.example.tripDuo.repository.PostLikeRepository;
 import com.example.tripDuo.repository.PostRatingRepository;
@@ -36,7 +37,7 @@ public class PostServiceImpl implements PostService {
 	}
 	
 	@Override
-	public List<PostDto> getPostList(String type) {
+	public List<PostDto> getPostList(PostType type) {
 		// type별 get list 
 		return postRepo.findByTypeOrderByIdDesc(type).stream().map(PostDto::toDto).toList();
 	}

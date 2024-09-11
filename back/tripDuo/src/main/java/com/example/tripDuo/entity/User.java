@@ -3,8 +3,14 @@ package com.example.tripDuo.entity;
 import java.time.LocalDateTime;
 
 import com.example.tripDuo.dto.UserDto;
+import com.example.tripDuo.enums.AccountStatus;
+import com.example.tripDuo.enums.Gender;
+import com.example.tripDuo.enums.UserRole;
+import com.example.tripDuo.enums.VerificationStatus;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,7 +39,9 @@ public class User {
     private String nickname;
               
     private Long age;
-    private String gender;
+    
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
     private String phoneNumber;
     private String email; // [note: "인증 받으면 email 로그인 사용 가능 ?? "]
 
@@ -41,11 +49,17 @@ public class User {
     private String profileMessage;
     
     private String curLocation;
-    private String verificationStatus; // 인증 상태 enum [note: "unverified, verified, pending"]
-    private String accountStatus; // 관리자의 조치 enum [note: "active, inactive, suspended"]
-    private String socialLinks;
+    
+    @Enumerated(EnumType.STRING)
+    private VerificationStatus verificationStatus; // 인증 상태 enum [note: "unverified, verified, pending"]
+    
+    @Enumerated(EnumType.STRING)
+    private AccountStatus accountStatus; // 관리자의 조치 enum [note: "active, inactive, suspended"]
+    
+    private String socialLinks; // > json 처리 
               
-    private String role; // enum [note: "user, manager, admin"]
+    @Enumerated(EnumType.STRING)
+    private UserRole role; // enum [note: "user, manager, admin"]
 
     private Float ratings; // 지표 설정 
 

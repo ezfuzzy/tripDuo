@@ -4,6 +4,7 @@ package com.example.tripDuo.entity;
 import java.time.LocalDateTime;
 
 import com.example.tripDuo.dto.PostCommentDto;
+import com.example.tripDuo.enums.CommentStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,8 +41,7 @@ public class PostComment {
     private Long toUserId;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Status status;
+    private CommentStatus status;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -49,12 +49,6 @@ public class PostComment {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
-
-    public enum Status {
-        ON,        // 댓글 활성화 상태
-        SECRET,    // 비밀댓글
-        DELETED    // 삭제됨
-    }
     
     @PrePersist
     public void onPrePersist() {
@@ -70,7 +64,7 @@ public class PostComment {
             .groupId(dto.getGroupId())
             .depth(dto.getDepth())
             .toUserId(dto.getToUserId())
-            .status(PostComment.Status.valueOf(dto.getStatus().name()))  // Status 변환
+            .status(dto.getStatus())
             .createdAt(dto.getCreatedAt())
             .updatedAt(dto.getUpdatedAt())
             .deletedAt(dto.getDeletedAt())

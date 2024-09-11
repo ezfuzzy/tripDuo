@@ -1,12 +1,14 @@
 package com.example.tripDuo.dto;
 
+import java.time.LocalDateTime;
+
 import com.example.tripDuo.entity.PostComment;
+import com.example.tripDuo.enums.CommentStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,17 +27,11 @@ public class PostCommentDto {
     private Long depth;
     private Long toUserId;
 
-    private Status status;
+    private CommentStatus status;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
-
-    public enum Status {
-        ON,        // 댓글 활성화 상태
-        SECRET,    // 비밀댓글
-        DELETED    // 삭제됨
-    }
 
     public static PostCommentDto toDto(PostComment entity) {
         return PostCommentDto.builder()
@@ -46,7 +42,7 @@ public class PostCommentDto {
             .groupId(entity.getGroupId())
             .depth(entity.getDepth())
             .toUserId(entity.getToUserId())
-            .status(PostCommentDto.Status.valueOf(entity.getStatus().name()))  // Status 변환
+            .status(entity.getStatus())  // Status 변환
             .createdAt(entity.getCreatedAt())
             .updatedAt(entity.getUpdatedAt())
             .deletedAt(entity.getDeletedAt())

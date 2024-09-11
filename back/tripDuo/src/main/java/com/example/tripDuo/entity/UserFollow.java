@@ -3,8 +3,11 @@ package com.example.tripDuo.entity;
 import java.time.LocalDateTime;
 
 import com.example.tripDuo.dto.UserFollowDto;
+import com.example.tripDuo.enums.FollowType;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,7 +33,8 @@ public class UserFollow {
 	private long followerUserId; // 팔로우 하는 사람 (팔로워)
 	private long followeeUserId; // 팔로우 당하는 사람 (팔로이)
 	
-	private String type;
+    @Enumerated(EnumType.STRING)
+	private FollowType followType;
 	
 	private LocalDateTime createdAt;
 	
@@ -44,7 +48,7 @@ public class UserFollow {
     			.id(dto.getId())
     			.followerUserId(dto.getFollowerUserId())
     			.followeeUserId(dto.getFolloweeUserId())
-    			.type(dto.getType())
+    			.followType(dto.getFollowType())
     			.createdAt(dto.getCreatedAt())
     			.build();
     }

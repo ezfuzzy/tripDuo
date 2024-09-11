@@ -3,6 +3,8 @@ package com.example.tripDuo.dto;
 import java.time.LocalDateTime;
 
 import com.example.tripDuo.entity.Post;
+import com.example.tripDuo.enums.PostStatus;
+import com.example.tripDuo.enums.PostType;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import lombok.AllArgsConstructor;
@@ -19,7 +21,7 @@ public class PostDto {
     
     private Long userId;
     private String writer;
-    private String type; // mate / course / 여행기 / 커뮤니티
+    private PostType type; // mate / course / 여행기 / 커뮤니티
     private String title;
     
     private String content; // 메이트, 커뮤니티 게시글에만 있음
@@ -34,7 +36,7 @@ public class PostDto {
     private Long likeCount;
     private Long commentCount;
     private Float rating;
-    private String status; // mate 모집(구인)중, 모집완료, 삭제됨 등
+    private PostStatus status; // mate 모집(구인)중, 모집완료, 삭제됨 등
     
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

@@ -5,6 +5,10 @@ import java.time.LocalDateTime;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.tripDuo.entity.User;
+import com.example.tripDuo.enums.AccountStatus;
+import com.example.tripDuo.enums.Gender;
+import com.example.tripDuo.enums.UserRole;
+import com.example.tripDuo.enums.VerificationStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -27,7 +31,7 @@ public class UserDto {
     private String nickname;
               
     private Long age;
-    private String gender;
+    private Gender gender;
     private String phoneNumber;
     private String email; // [note: "인증 받으면 email 로그인 사용 가능"]
 
@@ -35,11 +39,11 @@ public class UserDto {
     private String profileMessage;
     
     private String curLocation;
-    private String verificationStatus; // [note: "인증 상태"]
-    private String accountStatus; // [note: "관리자의 조치"]
+    private VerificationStatus verificationStatus; // [note: "인증 상태"]
+    private AccountStatus accountStatus; // [note: "관리자의 조치"]
     private String socialLinks;
               
-    private String role; // [note: "user / manager / admin"]
+    private UserRole role; // [note: "user / manager / admin"]
 
     private Float ratings; // 지표 설정 
 
