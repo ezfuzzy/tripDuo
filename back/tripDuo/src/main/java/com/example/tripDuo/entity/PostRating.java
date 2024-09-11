@@ -35,7 +35,7 @@ public class PostRating {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
     
-    private Long userId;
+    private long userId;
 
     @Column(nullable = false, precision = 2, scale = 1)
     private BigDecimal rating;
@@ -47,11 +47,11 @@ public class PostRating {
         createdAt = LocalDateTime.now();
     }
     
-    public static PostRating toEntity(PostRatingDto dto) {
+    public static PostRating toEntity(PostRatingDto dto, Post post) {
         return PostRating.builder()
             .id(dto.getId())
-            .post(Post.builder().id(dto.getPostId()).build())
-            .userId(dto.getUserId())
+            .post(post)
+            .userId(dto.getUserId() != null ? dto.getUserId() : 0L)
             .rating(dto.getRating())
             .createdAt(dto.getCreatedAt())
             .build();

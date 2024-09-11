@@ -28,7 +28,7 @@ public class UserFollow {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+	private Long id;
 	
 	private long followerUserId; // 팔로우 하는 사람 (팔로워)
 	private long followeeUserId; // 팔로우 당하는 사람 (팔로이)
@@ -46,8 +46,8 @@ public class UserFollow {
     public static UserFollow toEntity(UserFollowDto dto) {
     	return UserFollow.builder()
     			.id(dto.getId())
-    			.followerUserId(dto.getFollowerUserId())
-    			.followeeUserId(dto.getFolloweeUserId())
+    			.followerUserId(dto.getFollowerUserId() != null ? dto.getFollowerUserId() : 0L)
+    			.followeeUserId(dto.getFolloweeUserId() != null ? dto.getFolloweeUserId() : 0L)
     			.followType(dto.getFollowType())
     			.createdAt(dto.getCreatedAt())
     			.build();

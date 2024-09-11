@@ -4,10 +4,10 @@ import java.time.LocalDateTime;
 
 import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.enums.AccountStatus;
-import com.example.tripDuo.enums.Gender;
 import com.example.tripDuo.enums.UserRole;
 import com.example.tripDuo.enums.VerificationStatus;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -33,38 +33,25 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
+    @Column(nullable = false)
     private String username;
+    
+    @Column(nullable = false)
     private String password;
     
-    private String nickname;
-              
-    private Long age;
-    
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
+    @Column(nullable = false)
     private String phoneNumber;
     private String email; // [note: "인증 받으면 email 로그인 사용 가능 ?? "]
-
-    private String profilePicture;
-    private String profileMessage;
-    
-    private String curLocation;
     
     @Enumerated(EnumType.STRING)
     private VerificationStatus verificationStatus; // 인증 상태 enum [note: "unverified, verified, pending"]
     
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus; // 관리자의 조치 enum [note: "active, inactive, suspended"]
-    
-    private String socialLinks; // > json 처리 
               
     @Enumerated(EnumType.STRING)
     private UserRole role; // enum [note: "user, manager, admin"]
 
-    private Float ratings; // 지표 설정 
-
-    private String lastLogin; // 몇분전 접속  
-    
     private LocalDateTime createdAt; 
     private LocalDateTime updatedAt; 
     private LocalDateTime deletedAt; //  [note:"soft delete 지원?"]
@@ -80,20 +67,11 @@ public class User {
                 .id(dto.getId())
                 .username(dto.getUsername())
                 .password(dto.getPassword())
-                .nickname(dto.getNickname())
-                .age(dto.getAge())
-                .gender(dto.getGender())
                 .phoneNumber(dto.getPhoneNumber())
                 .email(dto.getEmail())
-                .profilePicture(dto.getProfilePicture())
-                .profileMessage(dto.getProfileMessage())
-                .curLocation(dto.getCurLocation())
                 .verificationStatus(dto.getVerificationStatus())
                 .accountStatus(dto.getAccountStatus())
-                .socialLinks(dto.getSocialLinks())
                 .role(dto.getRole())
-                .ratings(dto.getRatings())
-                .lastLogin(dto.getLastLogin())
                 .createdAt(dto.getCreatedAt())
                 .updatedAt(dto.getUpdatedAt())
                 .deletedAt(dto.getDeletedAt())

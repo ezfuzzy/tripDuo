@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.dto.UserFollowDto;
+import com.example.tripDuo.dto.UserProfileInfoDto;
 import com.example.tripDuo.dto.UserReviewDto;
 
 public interface UserService {
@@ -23,10 +24,15 @@ public interface UserService {
 	public Boolean checkExists(String checkType, String checkString);
 
 	// ### updateUserInfo ###
-	public void updateUserInfo(UserDto dto, MultipartFile profileImgForUpload);
+	public void updateUserPrivateInfo(UserDto dto);
 	public Boolean updateUserPassword(UserDto dto);
 	public Boolean resetUserPassword(UserDto dto);
 
+	
+	// ### updateUserProfileInfo ###
+	public void updateUserProfileInfo(UserProfileInfoDto dto, MultipartFile profileImgForUpload);
+	
+	
 	// ### deleteUser ###
 	public void deleteUser(Long id);
 	

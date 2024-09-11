@@ -3,6 +3,7 @@ package com.example.tripDuo.dto;
 import java.time.LocalDateTime;
 
 import com.example.tripDuo.entity.PostLike;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

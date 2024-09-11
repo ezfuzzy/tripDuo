@@ -11,7 +11,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	// username 중복 여부 체크
 	boolean existsByUsername(String username);
-	boolean existsByNickname(String nickname);
 	boolean existsByPhoneNumber(String phoneNumber);
 	boolean existsByEmail(String email);
 }

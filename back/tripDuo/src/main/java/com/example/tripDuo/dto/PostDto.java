@@ -59,7 +59,7 @@ public class PostDto {
     public static PostDto toDto(Post entity) {
         return PostDto.builder()
                 .id(entity.getId())
-                .userId(entity.getUserId())
+                .userId(entity.getUser() != null ? entity.getUser().getId() : null)
                 .writer(entity.getWriter())
                 .type(entity.getType())
                 .title(entity.getTitle())
@@ -73,7 +73,7 @@ public class PostDto {
                 .commentCount(entity.getCommentCount())
                 .rating(entity.getRating())
                 .status(entity.getStatus())
-                .createdAt(entity.getCreatedAt() != null ? entity.getCreatedAt() : LocalDateTime.now()) // createdAt은 null일 경우 현재 시간으로 설정
+                .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .deletedAt(entity.getDeletedAt())
                 .build();

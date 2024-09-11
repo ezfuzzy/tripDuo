@@ -16,10 +16,10 @@ import lombok.NoArgsConstructor;
 @Data
 public class UserFollowDto {
 	
-	private long id;
+	private Long id;
 	
-	private long followerUserId; // 팔로우 하는 사람 (팔로워)
-	private long followeeUserId; // 팔로우 당하는 사람 (팔로이)
+	private Long followerUserId; // 팔로우 하는 사람 (팔로워)
+	private Long followeeUserId; // 팔로우 당하는 사람 (팔로이)
 	
 	private FollowType followType; // 팔로우, 차단 
 	

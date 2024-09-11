@@ -13,11 +13,13 @@ import com.example.tripDuo.entity.Post;
 import com.example.tripDuo.entity.PostComment;
 import com.example.tripDuo.entity.PostLike;
 import com.example.tripDuo.entity.PostRating;
+import com.example.tripDuo.entity.User;
 import com.example.tripDuo.enums.PostType;
 import com.example.tripDuo.repository.PostCommentRepository;
 import com.example.tripDuo.repository.PostLikeRepository;
 import com.example.tripDuo.repository.PostRatingRepository;
 import com.example.tripDuo.repository.PostRepository;
+import com.example.tripDuo.repository.UserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -29,11 +31,16 @@ public class PostServiceImpl implements PostService {
 	private final PostLikeRepository postLikeRepo;
 	private final PostRatingRepository postRatingRepo;
 	
-	public PostServiceImpl(PostRepository postRepo, PostCommentRepository postCommentRepo, PostLikeRepository postLikeRepo, PostRatingRepository postRatingRepo) {
+	private final UserRepository userRepo;
+
+	public PostServiceImpl(PostRepository postRepo, PostCommentRepository postCommentRepo, 
+			PostLikeRepository postLikeRepo, PostRatingRepository postRatingRepo, 
+			UserRepository userRepo) {
 		this.postRepo = postRepo;
 		this.postCommentRepo = postCommentRepo;
 		this.postLikeRepo = postLikeRepo;
 		this.postRatingRepo = postRatingRepo;
+		this.userRepo = userRepo;
 	}
 	
 	@Override
@@ -61,17 +68,20 @@ public class PostServiceImpl implements PostService {
 	
 	@Override
 	public void writePost(PostDto dto) {
-		postRepo.save(Post.toEntity(dto));
+		User user = userRepo.findById(dto.getId()).get();
+		postRepo.save(Post.toEntity(dto, user));
 	}
 	
 	@Override
 	public PostDto updatePost(PostDto dto) {
 		
+		User user = userRepo.findById(dto.getId()).get();
+
 		// put mapping이니까 정보 삭제 안되게 ... 
 //		PostDto existingPost = PostDto.toDto(postRepo.findById(dto.getId()).get());
 		
 		// 1. 만약 기존의 모든 정보가 그대로 넘어오면
-		postRepo.save(Post.toEntity(dto));
+		postRepo.save(Post.toEntity(dto, user));
 		
 		// 2. 만약 기존 정보중 일부만 넘어오면 -> controller에서 setId하고 넘겨준 다음에 로직 실행
 		// 협의하고 코드 짤 부분
@@ -104,7 +114,7 @@ public class PostServiceImpl implements PostService {
 		existingPost.setCommentCount(postCommentRepo.countByPostId(existingPost.getId()));
 	}
 	
-	// ### like ###
+	// ### like ### 
 
 	@Override
 	@Transactional
@@ -140,7 +150,7 @@ public class PostServiceImpl implements PostService {
 	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
 		
 		// 평점 db 저장
-		postRatingRepo.save(PostRating.toEntity(dto));
+		postRatingRepo.save(PostRating.toEntity(dto, existingPost));
 		
 		// post 평점 update
 		existingPost.updateRating(postRatingRepo.findAverageRatingByPostId(existingPost.getId()));

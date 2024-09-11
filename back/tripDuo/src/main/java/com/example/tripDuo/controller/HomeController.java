@@ -45,7 +45,7 @@ public class HomeController {
             System.out.println("oldPassword: " + oldPassword);
             System.out.println("newPassword: " + newPassword);
             
-            UserDto dto = UserDto.toDto(userRepo.findByUsername(username), "");
+            UserDto dto = UserDto.toDto(userRepo.findByUsername(username));
 
             if (!encoder.matches(oldPassword, dto.getPassword())) {
                 throw new Exception("기존 비밀번호가 일치하지 않습니다.");

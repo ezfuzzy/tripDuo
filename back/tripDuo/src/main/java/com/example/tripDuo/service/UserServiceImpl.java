@@ -12,11 +12,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.dto.UserFollowDto;
+import com.example.tripDuo.dto.UserProfileInfoDto;
 import com.example.tripDuo.dto.UserReviewDto;
 import com.example.tripDuo.entity.User;
 import com.example.tripDuo.entity.UserFollow;
+import com.example.tripDuo.entity.UserProfileInfo;
 import com.example.tripDuo.entity.UserReview;
 import com.example.tripDuo.repository.UserFollowRepository;
+import com.example.tripDuo.repository.UserProfileInfoRepository;
 import com.example.tripDuo.repository.UserRepository;
 import com.example.tripDuo.repository.UserReviewRepository;
 
@@ -29,13 +32,15 @@ public class UserServiceImpl implements UserService {
 	
 	private final S3Service s3Service;
 	private final UserRepository userRepo;
+	private final UserProfileInfoRepository userProfileInfoRepo;
 	private final UserFollowRepository userFollowRepo;
 	private final UserReviewRepository userReviewRepo;
 	private final PasswordEncoder passwordEncoder;
 	
-	public UserServiceImpl(S3Service s3Service, UserRepository userRepo, UserFollowRepository userFollowRepo, UserReviewRepository userReviewRepo, PasswordEncoder passwordEncoder) {
+	public UserServiceImpl(S3Service s3Service, UserRepository userRepo, UserProfileInfoRepository userProfileInfoRepo, UserFollowRepository userFollowRepo, PasswordEncoder passwordEncoder) {
 		this.s3Service = s3Service;
 		this.userRepo = userRepo;
+		this.userProfileInfoRepo = userProfileInfoRepo;
 		this.userFollowRepo = userFollowRepo;
 		this.userReviewRepo = userReviewRepo;
 		this.passwordEncoder = passwordEncoder;
@@ -44,35 +49,35 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<UserDto> getUserList() {
 	    return userRepo.findAll().stream()
-	        .map(user -> UserDto.toDto(user, cloudFrontUrl))
+	        .map(user -> UserDto.toDto(user))
 	        .toList();
 	}
 	
 	@Override
 	public UserDto getUserById(Long id) {
-		return UserDto.toDto(userRepo.findById(id).get(), cloudFrontUrl);
+		return UserDto.toDto(userRepo.findById(id).get());
 	}
 
 	@Override
 	public UserDto getUserByUsername(String username) {
-		return UserDto.toDto(userRepo.findByUsername(username), cloudFrontUrl);
+		return UserDto.toDto(userRepo.findByUsername(username));
 	}
 
 	@Override
 	public UserDto getUserByPhoneNumber(String phoneNumber) {
-		return UserDto.toDto(userRepo.findByPhoneNumber(phoneNumber), cloudFrontUrl);
+		return UserDto.toDto(userRepo.findByPhoneNumber(phoneNumber));
 	}
 
 	@Override
 	public UserDto getUserByEmail(String email) {
-		return UserDto.toDto(userRepo.findByEmail(email), cloudFrontUrl);
+		return UserDto.toDto(userRepo.findByEmail(email));
 	}
 
 	@Override
 	public Boolean checkExists(String checkType, String checkString) {
 		return switch (checkType) {
 			case "username" -> userRepo.existsByUsername(checkString);
-			case "nickname" -> userRepo.existsByNickname(checkString);
+			case "nickname" -> userProfileInfoRepo.existsByNickname(checkString);
 			case "phoneNumber" -> userRepo.existsByPhoneNumber(checkString);
 			case "email" -> userRepo.existsByEmail(checkString);
 			default -> throw new IllegalArgumentException("잘못된 체크 타입입니다: " + checkType);
@@ -80,7 +85,51 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void updateUserInfo(UserDto dto, MultipartFile profileImgForUpload) {
+	public void updateUserPrivateInfo(UserDto dto) {
+		// TODO
+	}
+
+
+	@Override
+	public Boolean updateUserPassword(UserDto dto) {
+
+		if(!dto.getNewPassword().equals(dto.getConfirmPassword())) {
+			return false;
+		}
+
+		UserDto existingUser = UserDto.toDto(userRepo.findByUsername(dto.getUsername()));
+		// 입력된 비밀번호(dto.getPassword())와 기존 비밀번호(existingUser.getPassword()) 비교
+		if (!passwordEncoder.matches(existingUser.getPassword(), dto.getPassword())) {
+			return false;
+			//throw new Exception("기존 비밀번호가 일치하지 않습니다.");
+		}
+
+		String encodedNewPassword = passwordEncoder.encode(dto.getNewPassword());
+		dto.setPassword(encodedNewPassword);
+		userRepo.save(User.toEntity(dto));
+
+		return true;
+	}
+
+	@Override
+	public Boolean resetUserPassword(UserDto dto) {
+
+		UserDto userInfo = UserDto.toDto(userRepo.findById(dto.getId()).get());
+
+		// 새 비밀번호와 새 비밀번호 확인이 일치하는지 확인
+		if (!dto.getNewPassword().equals(dto.getConfirmPassword())) {
+			return false;
+		}
+
+		String encodedNewPassword = passwordEncoder.encode(dto.getNewPassword());
+		userInfo.setPassword(encodedNewPassword);
+		userRepo.save(User.toEntity(userInfo));
+
+		return true;
+	}
+
+	@Override
+	public void updateUserProfileInfo(UserProfileInfoDto dto, MultipartFile profileImgForUpload) {
 
 		// 허용된 파일 확장자 목록
 	    Set<String> allowedExtensions = new HashSet<>(Arrays.asList(
@@ -117,56 +166,14 @@ public class UserServiceImpl implements UserService {
 	        // s3에 저장되는 profilePicture ( 파일 이름.확장자 ) dto에 저장
 	        dto.setProfilePicture(s3Service.uploadFile(profileImgForUpload));
 	    }
-	    // 기존 유저 정보 가져오기
-		UserDto existingUser = UserDto.toDto(userRepo.findById(dto.getId()).get(), "");
 
-	    // 비밀번호는 기존 것을 유지
-	    dto.setPassword(existingUser.getPassword());
+	    User user = userRepo.findById(dto.getUserId()).get();
 	    
 	    // 변경된 정보를 저장
-	    userRepo.save(User.toEntity(dto));
+	    userProfileInfoRepo.save(UserProfileInfo.toEntity(dto, user));
 
 	}
-
-	@Override
-	public Boolean updateUserPassword(UserDto dto) {
-
-		if(!dto.getNewPassword().equals(dto.getConfirmPassword())) {
-			return false;
-		}
-
-		UserDto existingUser = UserDto.toDto(userRepo.findByUsername(dto.getUsername()), "");
-		// 입력된 비밀번호(dto.getPassword())와 기존 비밀번호(existingUser.getPassword()) 비교
-		if (!passwordEncoder.matches(existingUser.getPassword(), dto.getPassword())) {
-			return false;
-			//throw new Exception("기존 비밀번호가 일치하지 않습니다.");
-		}
-
-		String encodedNewPassword = passwordEncoder.encode(dto.getNewPassword());
-		dto.setPassword(encodedNewPassword);
-		userRepo.save(User.toEntity(dto));
-
-		return true;
-	}
-
-	@Override
-	public Boolean resetUserPassword(UserDto dto) {
-
-		UserDto userInfo = UserDto.toDto(userRepo.findById(dto.getId()).get(), "");
-
-		// 새 비밀번호와 새 비밀번호 확인이 일치하는지 확인
-		if (!dto.getNewPassword().equals(dto.getConfirmPassword())) {
-			return false;
-		}
-
-		String encodedNewPassword = passwordEncoder.encode(dto.getNewPassword());
-		userInfo.setPassword(encodedNewPassword);
-		userRepo.save(User.toEntity(userInfo));
-
-		return true;
-	}
-
-
+	
 	@Override
 	public void deleteUser(Long id) {
 		userRepo.deleteById(id);

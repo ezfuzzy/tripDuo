@@ -27,8 +27,8 @@ public class PostLike {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private Long postId;
-    private Long userId;
+    private long postId;
+    private long userId;
 
     private LocalDateTime createdAt;
 
@@ -40,8 +40,8 @@ public class PostLike {
     public static PostLike toEntity(PostLikeDto dto){
         return PostLike.builder()
             .id(dto.getId())
-            .postId(dto.getPostId())
-            .userId(dto.getUserId())
+            .postId(dto.getPostId() != null ? dto.getPostId() : 0L)
+            .userId(dto.getUserId() != null ? dto.getUserId() : 0L)
             .createdAt(dto.getCreatedAt())
             .build();
     }

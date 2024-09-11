@@ -27,7 +27,7 @@ public class PostRatingDto {
     public static PostRatingDto toEntity(PostRating entity) {
         return PostRatingDto.builder()
             .id(entity.getId())
-            .postId(entity.getPost().getId())
+            .postId(entity.getPost() != null ? entity.getPost().getId() : null)
             .userId(entity.getUserId())
             .rating(entity.getRating())
             .createdAt(entity.getCreatedAt())
