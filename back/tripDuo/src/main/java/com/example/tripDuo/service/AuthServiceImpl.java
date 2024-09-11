@@ -22,8 +22,11 @@ import com.example.tripDuo.dto.GoogleProfile;
 import com.example.tripDuo.dto.KakaoProfile;
 import com.example.tripDuo.dto.OAuthToken;
 import com.example.tripDuo.dto.UserDto;
+import com.example.tripDuo.dto.UserProfileInfoDto;
 import com.example.tripDuo.entity.User;
+import com.example.tripDuo.entity.UserProfileInfo;
 import com.example.tripDuo.enums.UserRole;
+import com.example.tripDuo.repository.UserProfileInfoRepository;
 import com.example.tripDuo.repository.UserRepository;
 import com.example.tripDuo.util.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -44,7 +47,8 @@ public class AuthServiceImpl implements AuthService {
 	private final JwtUtil jwtUtil;
 	private final AuthenticationManager authManager;
 	private final PasswordEncoder encoder;
-	private final UserRepository repo;
+	private final UserRepository userRepo;
+	private final UserProfileInfoRepository userProfileInfoRepo;
 	private final PhoneNumberVerificationService phoneNumberVerificationService;
 
 	@Value("${mailgun.key}")
@@ -77,11 +81,15 @@ public class AuthServiceImpl implements AuthService {
 	@Value("${kakao.redirect.uri}")
 	private String KAKAO_REDIRECT_URI;
 
-	public AuthServiceImpl(JwtUtil jwtUtil, AuthenticationManager authManager, PasswordEncoder encoder, UserRepository repo, PhoneNumberVerificationService phoneNumberVerificationService) {
+	public AuthServiceImpl(JwtUtil jwtUtil, AuthenticationManager authManager, 
+			PasswordEncoder encoder, UserRepository userRepo, 
+			UserProfileInfoRepository userProfileInfoRepo,
+			PhoneNumberVerificationService phoneNumberVerificationService) {
 		this.jwtUtil = jwtUtil;
 		this.authManager = authManager;
 		this.encoder = encoder;
-		this.repo = repo;
+		this.userRepo = userRepo;
+		this.userProfileInfoRepo = userProfileInfoRepo;
 		this.phoneNumberVerificationService = phoneNumberVerificationService;
 	}
 
@@ -104,7 +112,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public String signup(UserDto dto) {
+	public String signup(UserDto userDto, UserProfileInfoDto userProfileInfoDto) {
 
 		// ### username, nickname, password 유효성 체크 ###
 		
@@ -112,19 +120,22 @@ public class AuthServiceImpl implements AuthService {
         String nicknamePattern = "^[가-힣a-zA-Z0-9]{4,16}$";
         String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,22}$";
 
-		if(!Pattern.matches(usernamePattern, dto.getUsername()) || 
-				!Pattern.matches(nicknamePattern, dto.getNickname()) ||
-				!Pattern.matches(passwordPattern, dto.getPassword())) {
+		if(!Pattern.matches(usernamePattern, userDto.getUsername()) || 
+				!Pattern.matches(nicknamePattern, userProfileInfoDto.getNickname()) ||
+				!Pattern.matches(passwordPattern, userDto.getPassword())) {
 			return "유효성 검사 탈락";
 		}
 		
-		dto.setRole(UserRole.USER);
-		String encodedPwd = encoder.encode(dto.getPassword());
-		dto.setPassword(encodedPwd);
+		userDto.setRole(UserRole.USER);
+		String encodedPwd = encoder.encode(userDto.getPassword());
+		userDto.setPassword(encodedPwd);
 
-		repo.save(User.toEntity(dto));
-
-		String token = jwtUtil.generateToken(dto.getUsername());
+		
+		User savedUser = userRepo.save(User.toEntity(userDto));
+		
+		userProfileInfoRepo.save(UserProfileInfo.toEntity(userProfileInfoDto, savedUser));
+		
+		String token = jwtUtil.generateToken(userDto.getUsername());
 
 		return "Bearer+" + token;
 	}
@@ -194,7 +205,7 @@ public class AuthServiceImpl implements AuthService {
 			// 카카오 회원 찾기
 			@Override
 			public User KakaoFindId(String username) {
-				User user  = repo.findByUsername(username);
+				User user  = userRepo.findByUsername(username);
 				return user;
 			}
 			
@@ -278,11 +289,11 @@ public class AuthServiceImpl implements AuthService {
 						.email(googleProfile.getEmail())
 						.build();
 					
-				User originUser = repo.findByUsername(googleUser.getUsername());
+				User originUser = userRepo.findByUsername(googleUser.getUsername());
 					if (originUser != null) {
 				        System.out.println("이미 존재하는 유저입니다.");
 				    } else {
-				        repo.save(googleUser);
+				    	userRepo.save(googleUser);
 				        System.out.println("새로운 유저가 저장되었습니다.");
 				    }
 						
@@ -341,12 +352,12 @@ public class AuthServiceImpl implements AuthService {
 						.email(kakaoProfile.getKakao_account().getEmail())
 						.build();
 					
-				User originUser = repo.findByUsername(kakaoUser.getUsername());
+				User originUser = userRepo.findByUsername(kakaoUser.getUsername());
 					if (originUser != null) {
 				        System.out.println("이미 존재하는 유저입니다.");
 				    } else {
 				        // 5. 유저가 없을 경우 저장
-				        repo.save(kakaoUser);
+				    	userRepo.save(kakaoUser);
 				        System.out.println("새로운 유저가 저장되었습니다.");
 				    }
 						

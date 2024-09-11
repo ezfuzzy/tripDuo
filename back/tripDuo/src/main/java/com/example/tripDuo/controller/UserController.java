@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.dto.UserFollowDto;
+import com.example.tripDuo.dto.UserProfileInfoDto;
 import com.example.tripDuo.dto.UserReviewDto;
 import com.example.tripDuo.service.UserService;
 
@@ -68,11 +69,11 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUserInfo(@PathVariable Long id,@RequestParam(required = false) MultipartFile profileImgForUpload, UserDto userDto) {
+    public ResponseEntity<UserProfileInfoDto> updateUserInfo(@PathVariable Long id,@RequestParam(required = false) MultipartFile profileImgForUpload, UserProfileInfoDto dto) {
         // 사용자 정보 업데이트
-       userService.updateUserInfo(userDto, profileImgForUpload);
+       userService.updateUserProfileInfo(dto, profileImgForUpload);
        
-       return ResponseEntity.ok(userDto);
+       return ResponseEntity.ok(dto);
     }
 
     @PutMapping("/{id}/password")

@@ -14,6 +14,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -34,13 +36,20 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+    
+    @Column(nullable = false)
     private String writer;
     
     @Enumerated(EnumType.STRING)
     private PostType type;
 
+    @Column(nullable = false)
     private String title;    
+    
+    @Column(nullable = false)
     private String content; // 메이트, 커뮤니티 게시글에만 있음
     
 //    @Convert(converter = JsonNodeConverter.class)  // converter
@@ -53,10 +62,10 @@ public class Post {
     @Column(columnDefinition = "TEXT[]")
     private String[] tags;
 
-    private Long viewCount;
-    private Long likeCount;
-    private Long commentCount;
-    private Float rating;
+    private long viewCount;
+    private long likeCount;
+    private long commentCount;
+    private float rating;
 
     @Enumerated(EnumType.STRING)
     private PostStatus status;
@@ -82,11 +91,11 @@ public class Post {
         this.rating = rating;
     }
     
-    public static Post toEntity(PostDto dto) {
+    public static Post toEntity(PostDto dto, User user) {
     	
         return Post.builder()
                 .id(dto.getId())
-                .userId(dto.getUserId())
+                .user(user)
                 .writer(dto.getWriter())
                 .type(dto.getType())
                 .title(dto.getTitle())
@@ -95,10 +104,10 @@ public class Post {
                 .country(dto.getCountry())
                 .city(dto.getCity())
                 .tags(dto.getTags())
-                .viewCount(dto.getViewCount())
-                .likeCount(dto.getLikeCount())
-                .commentCount(dto.getCommentCount())
-                .rating(dto.getRating())
+                .viewCount(dto.getViewCount() != null ? dto.getViewCount() : 0L)
+                .likeCount(dto.getLikeCount() != null ? dto.getLikeCount() : 0L)
+                .commentCount(dto.getCommentCount() != null ? dto.getCommentCount() : 0L)
+                .rating(dto.getRating() != null ? dto.getCommentCount() : 0.0f)
                 .status(dto.getStatus())
                 .createdAt(dto.getCreatedAt())
                 .updatedAt(dto.getUpdatedAt())

@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import com.example.tripDuo.dto.PostCommentDto;
 import com.example.tripDuo.enums.CommentStatus;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -32,21 +31,19 @@ public class PostComment {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private Long postId;
-    private Long userId;
+    private long postId;
+    private long userId;
 
     private String content;
-    private Long groupId;
-    private Long depth;
+    
+    private long groupId;
+    private long depth;
     private Long toUserId;
 
     @Enumerated(EnumType.STRING)
     private CommentStatus status;
 
-    @Column(nullable = false)
     private LocalDateTime createdAt;
-
-    @Column(nullable = false)
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
     
@@ -58,11 +55,11 @@ public class PostComment {
     public static PostComment toEntity(PostCommentDto dto) {
         return PostComment.builder()
             .id(dto.getId())
-            .postId(dto.getPostId())
-            .userId(dto.getUserId())
+            .postId(dto.getPostId() != null ? dto.getPostId() : 0L)
+            .userId(dto.getUserId() != null ? dto.getUserId() : 0L)
             .content(dto.getContent())
-            .groupId(dto.getGroupId())
-            .depth(dto.getDepth())
+            .groupId(dto.getGroupId() != null ? dto.getGroupId() : 0L)
+            .depth(dto.getDepth() != null ? dto.getDepth() : 0L)
             .toUserId(dto.getToUserId())
             .status(dto.getStatus())
             .createdAt(dto.getCreatedAt())

@@ -42,7 +42,7 @@ public class PostCommentDto {
             .groupId(entity.getGroupId())
             .depth(entity.getDepth())
             .toUserId(entity.getToUserId())
-            .status(entity.getStatus())  // Status 변환
+            .status(entity.getStatus())
             .createdAt(entity.getCreatedAt())
             .updatedAt(entity.getUpdatedAt())
             .deletedAt(entity.getDeletedAt())

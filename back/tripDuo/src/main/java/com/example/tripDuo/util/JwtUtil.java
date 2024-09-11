@@ -6,12 +6,13 @@ import java.util.Map;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import com.example.tripDuo.dto.UserDto;
-import com.example.tripDuo.service.UserService;
+import com.example.tripDuo.entity.User;
+import com.example.tripDuo.entity.UserProfileInfo;
+import com.example.tripDuo.repository.UserProfileInfoRepository;
+import com.example.tripDuo.repository.UserRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -20,7 +21,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Service
 public class JwtUtil {
 
-	private final UserService userService;
+	private final UserRepository userRepo;
+	private final UserProfileInfoRepository userProfileInfoRepo; 
 	
 	@Value("${jwt.secret}")
 	private String secret;
@@ -28,8 +30,9 @@ public class JwtUtil {
 	@Value("${jwt.expiration}")
 	private long expiration;
 
-	public JwtUtil(@Lazy UserService userService) {
-		this.userService = userService;
+	public JwtUtil(UserRepository userRepo, UserProfileInfoRepository userProfileInfoRepo) {
+		this.userRepo = userRepo;
+		this.userProfileInfoRepo = userProfileInfoRepo;
 	}
 	
 	public String extractUsername(String token) {
@@ -56,12 +59,13 @@ public class JwtUtil {
 	public String generateToken(String username) {
 		Map<String, Object> claims = new HashMap<>();
 
-		UserDto dto = userService.getUserByUsername(username);
+		User user = userRepo.findByUsername(username);
+		UserProfileInfo userProfileInfo = userProfileInfoRepo.findByUserId(user.getId()); 
 		
-		claims.put("id", dto.getId());
-		claims.put("username", dto.getUsername());
-		claims.put("nickname", dto.getNickname());
-		claims.put("profilePicture", dto.getProfilePicture());
+		claims.put("id", user.getId());
+		claims.put("username", user.getUsername());
+		claims.put("nickname", userProfileInfo.getNickname());
+		claims.put("profilePicture", userProfileInfo.getProfilePicture());
 		return createToken(claims, username);
 	}
 
