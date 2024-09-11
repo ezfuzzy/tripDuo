@@ -10,6 +10,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -29,7 +31,10 @@ public class PostRating {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private Long postId;
+    @ManyToOne
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
+    
     private Long userId;
 
     @Column(nullable = false, precision = 2, scale = 1)
@@ -45,7 +50,7 @@ public class PostRating {
     public static PostRating toEntity(PostRatingDto dto) {
         return PostRating.builder()
             .id(dto.getId())
-            .postId(dto.getPostId())
+            .post(Post.builder().id(dto.getPostId()).build())
             .userId(dto.getUserId())
             .rating(dto.getRating())
             .createdAt(dto.getCreatedAt())
