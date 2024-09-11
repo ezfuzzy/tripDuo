@@ -2,6 +2,7 @@ package com.example.tripDuo.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,8 @@ import com.example.tripDuo.dto.PostDto;
 import com.example.tripDuo.dto.PostLikeDto;
 import com.example.tripDuo.dto.PostRatingDto;
 import com.example.tripDuo.service.PostService;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/api/v1/posts")
@@ -34,8 +37,17 @@ public class PostController {
 	}
 	
 	@GetMapping("/{id:[0-9]+}")
-	public ResponseEntity<PostDto> getPost(@PathVariable("id") Long id) {
-		return ResponseEntity.ok(postService.getPostById(id));
+	public ResponseEntity<PostDto> getPostById(@PathVariable("id") Long id) {
+
+		try {
+			return ResponseEntity.ok(postService.getPostById(id));
+		} catch (EntityNotFoundException e) {
+	        // 게시글이 존재하지 않는 경우에 대한 처리
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+	    } catch (Exception e) {
+	        // 기타 예외에 대한 처리
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	    } 
 	}
 	
 	@PostMapping("/{type}")
@@ -54,30 +66,62 @@ public class PostController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deletePost(@PathVariable("id") Long id){
 		postService.deletePost(id);
-		return ResponseEntity.ok("deleted");
+		return ResponseEntity.ok("Post id deleted");
 	}
 	
 	// ### comment ###
 	@PostMapping("/{type:[a-z]+}/{id}/comments")
 	public ResponseEntity<String> writeComment(@PathVariable("id") Long id, @RequestBody PostCommentDto dto) {
-		postService.writeComment(dto);
-		return ResponseEntity.ok("write comment done");
+		
+		try {
+			postService.writeComment(dto);
+			return ResponseEntity.ok("Comment is written successfully");
+		} catch (EntityNotFoundException e) {
+	        // 게시글이 존재하지 않는 경우에 대한 처리
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+	    } catch (Exception e) {
+	        // 기타 예외에 대한 처리
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+	    } 
 	}
 	
 	// ### like ###
 	@PostMapping("/{type:[a-z]+}/{id}/likes")
 	public ResponseEntity<String> addLikeToPost(@PathVariable("id") Long id, @RequestBody PostLikeDto dto) {
-		// id는 post의 id 
-		postService.addLikeToPost(dto);
-		return ResponseEntity.ok("like done");
+
+	    try {
+	        postService.addLikeToPost(dto);
+	        return ResponseEntity.ok("Like added successfully");
+	    } catch (IllegalStateException e) {
+	        // 이미 좋아요를 누른 경우에 대한 처리
+	        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+	    } catch (EntityNotFoundException e) {
+	        // 게시글이 존재하지 않는 경우에 대한 처리
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+	    } catch (Exception e) {
+	        // 기타 예외에 대한 처리
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+	    }
 	}
 	
 	
 	// ### rating ###
 	@PostMapping("/{type:[a-zA-Z]+}/{id}/ratings")
 	public ResponseEntity<String> addRatingToPost(@PathVariable("id") Long id, @RequestBody PostRatingDto dto) {
-		postService.addRatingToPost(dto);
-		return ResponseEntity.ok("rate done");
+		
+	    try {
+			postService.addRatingToPost(dto);
+	        return ResponseEntity.ok("Rating added successfully");
+	    } catch (IllegalStateException e) {
+	        // 이미 좋아요를 누른 경우에 대한 처리
+	        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+	    } catch (EntityNotFoundException e) {
+	        // 게시글이 존재하지 않는 경우에 대한 처리
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+	    } catch (Exception e) {
+	        // 기타 예외에 대한 처리
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+	    }
 	}
 
 	

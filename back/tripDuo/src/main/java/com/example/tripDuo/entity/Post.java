@@ -63,6 +63,18 @@ public class Post {
         createdAt = LocalDateTime.now();
     }
     
+    public void setLikeCount(Long likeCount) {
+    	this.likeCount = likeCount;
+    }
+
+    public void setCommentCount(Long commentCount) {
+    	this.commentCount = commentCount;
+    }
+    
+    public void updateRating(Float rating) {
+        this.rating = rating;
+    }
+    
     public static Post toEntity(PostDto dto) {
     	
         return Post.builder()
