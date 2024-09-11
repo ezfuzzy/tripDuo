@@ -25,12 +25,12 @@ public class UserFollow {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
+	private long id;
 	
-	private String followerUserId; // 팔로우 하는 사람 (팔로워)
-	private String followeeUserId; // 팔로우 당하는 사람 (팔로이)
+	private long followerUserId; // 팔로우 하는 사람 (팔로워)
+	private long followeeUserId; // 팔로우 당하는 사람 (팔로이)
 	
-	private String status;
+	private String type;
 	
 	private LocalDateTime createdAt;
 	
@@ -44,7 +44,7 @@ public class UserFollow {
     			.id(dto.getId())
     			.followerUserId(dto.getFollowerUserId())
     			.followeeUserId(dto.getFolloweeUserId())
-    			.status(dto.getStatus())
+    			.type(dto.getType())
     			.createdAt(dto.getCreatedAt())
     			.build();
     }
