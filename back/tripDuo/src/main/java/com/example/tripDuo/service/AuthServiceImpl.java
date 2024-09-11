@@ -23,6 +23,7 @@ import com.example.tripDuo.dto.KakaoProfile;
 import com.example.tripDuo.dto.OAuthToken;
 import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.entity.User;
+import com.example.tripDuo.enums.UserRole;
 import com.example.tripDuo.repository.UserRepository;
 import com.example.tripDuo.util.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -117,7 +118,7 @@ public class AuthServiceImpl implements AuthService {
 			return "유효성 검사 탈락";
 		}
 		
-		dto.setRole("USER");
+		dto.setRole(UserRole.USER);
 		String encodedPwd = encoder.encode(dto.getPassword());
 		dto.setPassword(encodedPwd);
 
