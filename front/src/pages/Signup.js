@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from 'react-router'
 function Signup() {
   const location = useLocation()
   const { termsService, termsPrivacy, essential } = location.state || {}
+  const navigate = useNavigate()
   //약관동의 필수항목 체크 안하고 접근시 리다이렉트
   useEffect(() => {
     if (!(termsService && termsPrivacy && essential)) {
@@ -25,7 +26,9 @@ function Signup() {
   //아이디, 닉네임 사용중인지
   const [isUsernameExist, setIsUsernameExist] = useState(false)
   const [isNicknameExist, setIsNicknameExist] = useState(false)
-  
+  //아이디, 닉네임 중복검사 통과 했는지
+  const [isUsernameUnique, setIsUsernameUnique] = useState(false)
+  const [isNicknameUnique, setIsNicknameUnique] = useState(false)
 
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -46,7 +49,7 @@ function Signup() {
   const [isVerified, setIsVerified] = useState(false)
 
   const [isAllChecked, setIsAllChecked] = useState(false)
-  const navigate = useNavigate()
+
 
   const validateUsername = (value) => {
     // 아이디 : 영어 소문자와 숫자로 이루어진 6~16자리
@@ -72,58 +75,58 @@ function Signup() {
     return regex.test(value) || value === ""
   }
   const updateIsAllChecked = (validUsername, validPassword, passwordMatched, validNickname, validEmail, isVerified) => {
-    setIsAllChecked(validUsername && validPassword && passwordMatched && validNickname && validEmail && isVerified)
+    setIsAllChecked(validUsername && validPassword && passwordMatched && validNickname && validEmail && isVerified && isUsernameUnique && isNicknameUnique)
   }
 
   //아이디, 닉네임 중복검사
   const checkUsernameAvailability = (username) => {
-    try {
-      axios.post(`/api/v1/users/check/username`, username, {
-        headers: {
-          'Content-Type': 'text/plain'
-        }
-      })
-      .then(response=>{
-        if(response.data){
+    axios.post(`/api/v1/users/check/username`, username, {
+      headers: { 'Content-Type': 'text/plain' },
+    })
+      .then((response) => {
+        if (response.data) {
           setIsUsernameExist(true)
-        } else{
+        } else {
           alert("사용 가능한 아이디입니다.")
+          setIsUsernameUnique(true)
+          updateIsAllChecked()
         }
       })
-    } catch (error) {
-      alert("중복 확인에 실패했습니다.")
-    }
+      .catch(() => {
+        alert("중복 확인에 실패했습니다.")
+      })
   }
 
-  const checkNicknameAvailability =  (nickname) => {
-    try {
-      axios.post(`/api/v1/users/check/nickname`, nickname, {
-        headers: {
-          'Content-Type': 'text/plain'
-        }
-      })
-      .then(response=>{
-        if(response.data){
+  const checkNicknameAvailability = (nickname) => {
+    axios.post(`/api/v1/users/check/nickname`, nickname, {
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    })
+      .then(response => {
+        if (response.data) {
           setIsNicknameExist(true)
-        }else{
+        } else {
           alert("사용 가능한 닉네임 입니다.")
+          setIsNicknameUnique(true)
+          updateIsAllChecked()
         }
       })
-      
-    } catch (error) {
-      alert("중복 확인에 실패했습니다.")
-    }
+      .catch(() => {
+        alert("중복 확인에 실패했습니다.")
+      })
   }
+
 
   const handleCheckUsername = () => {
     if (isValidUsername) {
-       checkUsernameAvailability(username);
+      checkUsernameAvailability(username);
     } else alert("아이디 형식에 맞지 않습니다")
   }
 
   const handleCheckNickname = () => {
     if (isValidUsername) {
-       checkNicknameAvailability(nickname);
+      checkNicknameAvailability(nickname);
     } else alert("닉네임 형식에 맞지 않습니다")
   };
 
@@ -158,11 +161,7 @@ function Signup() {
     setIsValidPassword(validPassword)
 
     // 비밀번호가 입력되지 않은 경우 메시지 숨기기
-    if (value === "") {
-      setShowValidationMessage(false);
-    } else {
-      setShowValidationMessage(!validPassword);
-    }
+    setShowValidationMessage(value !== "" && !validPassword)
 
     updateIsAllChecked(isValidUsername, validPassword, isValidNickname, isValidEmail, isVerified)
   }
@@ -282,6 +281,7 @@ function Signup() {
                 required
               />
               <button
+                type="button"
                 onClick={handleCheckUsername}
                 className="ml-2 w-1/5 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
@@ -381,6 +381,7 @@ function Signup() {
                 required
               />
               <button
+                type="button"
                 onClick={handleCheckNickname}
                 className="ml-2 w-1/5 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
@@ -473,7 +474,7 @@ function Signup() {
 
         <div className="mt-10">
           <button
-            type="submit"
+            type="button"
             className="block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             disabled={!isAllChecked}  // 인증 성공 후에만 버튼 활성화
             onClick={handleSignUp}
