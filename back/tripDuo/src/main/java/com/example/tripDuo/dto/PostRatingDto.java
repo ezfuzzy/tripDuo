@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.example.tripDuo.entity.PostRating;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,7 +27,7 @@ public class PostRatingDto {
     public static PostRatingDto toEntity(PostRating entity) {
         return PostRatingDto.builder()
             .id(entity.getId())
-            .postId(entity.getPostId())
+            .postId(entity.getPost().getId())
             .userId(entity.getUserId())
             .rating(entity.getRating())
             .createdAt(entity.getCreatedAt())
