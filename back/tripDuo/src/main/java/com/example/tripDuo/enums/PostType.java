@@ -3,7 +3,7 @@ package com.example.tripDuo.enums;
 public enum PostType {
     MATE,       // 매이트
     COURSE,     // 코스
-    TRIP_LOG,     // 리뷰
+    TRIP_LOG,     // 여행기
     COMMUNITY;	// 커뮤니티
     
     public static PostType fromString(String type) {
