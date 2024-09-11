@@ -32,8 +32,8 @@ public class PostController {
 		this.postService = postService;
 	}
 	
-	@GetMapping("/{type:[a-zA-Z]+}")
-	public ResponseEntity<List<PostDto>> getPostList(@PathVariable("type") String type, PostDto dto) {
+	@GetMapping("/{postType:[a-zA-Z]+}")
+	public ResponseEntity<List<PostDto>> getPostList(@PathVariable("postType") String type, PostDto dto) {
 		
 		PostType postType;
 		
@@ -59,8 +59,8 @@ public class PostController {
 	    } 
 	}
 	
-	@PostMapping("/{type}")
-	public ResponseEntity<String> writePost(@PathVariable("type") String type, @RequestBody PostDto dto){
+	@PostMapping("/{postType}")
+	public ResponseEntity<String> writePost(@PathVariable("postType") String type, @RequestBody PostDto dto){
 		
 		PostType postType;
 		
@@ -87,7 +87,7 @@ public class PostController {
 	}
 	
 	// ### comment ###
-	@PostMapping("/{type:[a-z]+}/{id}/comments")
+	@PostMapping("/{postType:[a-z]+}/{id}/comments")
 	public ResponseEntity<String> writeComment(@PathVariable("id") Long id, @RequestBody PostCommentDto dto) {
 		
 		try {
@@ -103,7 +103,7 @@ public class PostController {
 	}
 	
 	// ### like ###
-	@PostMapping("/{type:[a-z]+}/{id}/likes")
+	@PostMapping("/{postType:[a-z]+}/{id}/likes")
 	public ResponseEntity<String> addLikeToPost(@PathVariable("id") Long id, @RequestBody PostLikeDto dto) {
 
 	    try {
@@ -123,7 +123,7 @@ public class PostController {
 	
 	
 	// ### rating ###
-	@PostMapping("/{type:[a-zA-Z]+}/{id}/ratings")
+	@PostMapping("/{postType:[a-zA-Z]+}/{id}/ratings")
 	public ResponseEntity<String> addRatingToPost(@PathVariable("id") Long id, @RequestBody PostRatingDto dto) {
 		
 	    try {
