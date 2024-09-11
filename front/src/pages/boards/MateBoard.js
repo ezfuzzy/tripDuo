@@ -11,7 +11,7 @@ function MateBoard() {
 
   // searchPrams 에 di 값이 있으면 그 값으로 없다면 Domestic 으로 설정
   // *이후에 di 값이 영향을 미치지는않지만 계속 남아있음
-  const [domesticInternational, setDomesticInternational] = useState(searchParams.get("di") || "Domestic");
+  const [domesticInternational, setDomesticInternational] = useState();
   const [pageTurn, setPageTurn] = useState("to International"); // 페이지 전환 버튼
   const [whereAreYou, setWhereAreYou] = useState(null);
 
@@ -27,20 +27,34 @@ function MateBoard() {
   };
 
   useEffect(() => {
+
+    const diValue = searchParams.get("di") || "Domestic";
+    setDomesticInternational(diValue);
+
     axios
       .get("/api/v1/posts/mate")
       .then((res) => {
         const filteredData = res.data.filter((item) => {
-          return domesticInternational === "Domestic" ? item.country === "한국" : item.country !== "한국";
+          return diValue === "Domestic"
+            ? item.country === "한국"
+            : item.country !== "한국";
         });
 
         setPageData(filteredData);
 
-        setWhereAreYou(domesticInternational === "Domestic" ? "국내 여행 메이트 페이지" : "해외 여행 메이트 페이지");
-        setPageTurn(domesticInternational === "Domestic" ? "to International" : "to Domestic");
+        setWhereAreYou(
+          diValue === "Domestic"
+            ? "국내 여행 메이트 페이지"
+            : "해외 여행 메이트 페이지"
+        );
+        setPageTurn(
+          diValue === "Domestic"
+            ? "to International"
+            : "to Domestic"
+        );
       })
       .catch((error) => console.log(error));
-  }, [domesticInternational, searchParams]);
+  }, [searchParams]);
 
   return (
     <>
