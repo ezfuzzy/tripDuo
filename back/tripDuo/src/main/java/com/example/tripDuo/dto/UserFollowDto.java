@@ -15,12 +15,12 @@ import lombok.NoArgsConstructor;
 @Data
 public class UserFollowDto {
 	
-	private Long id;
+	private long id;
 	
-	private String followerUserId; // 팔로우 하는 사람 (팔로워)
-	private String followeeUserId; // 팔로우 당하는 사람 (팔로이)
+	private long followerUserId; // 팔로우 하는 사람 (팔로워)
+	private long followeeUserId; // 팔로우 당하는 사람 (팔로이)
 	
-	private String status; // 팔로우, 차단 
+	private String type; // 팔로우, 차단 
 	
 	private LocalDateTime createdAt;
 	
@@ -29,7 +29,7 @@ public class UserFollowDto {
     			.id(entity.getId())
     			.followerUserId(entity.getFollowerUserId())
     			.followeeUserId(entity.getFolloweeUserId())
-    			.status(entity.getStatus())
+    			.type(entity.getType())
     			.createdAt(entity.getCreatedAt())
 				.build();
 	}

@@ -35,17 +35,17 @@ public class User {
     private Long age;
     private String gender;
     private String phoneNumber;
-    private String email; // [note: "인증 받으면 email 로그인 사용 가능"]
+    private String email; // [note: "인증 받으면 email 로그인 사용 가능 ?? "]
 
     private String profilePicture;
     private String profileMessage;
     
     private String curLocation;
-    private String verificationStatus; // [note: "인증 상태"]
-    private String accountStatus; // [note: "관리자의 조치"]
+    private String verificationStatus; // 인증 상태 enum [note: "unverified, verified, pending"]
+    private String accountStatus; // 관리자의 조치 enum [note: "active, inactive, suspended"]
     private String socialLinks;
               
-    private String role; // [note: "user / manager / admin"]
+    private String role; // enum [note: "user, manager, admin"]
 
     private Float ratings; // 지표 설정 
 
