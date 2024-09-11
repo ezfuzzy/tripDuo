@@ -6,12 +6,13 @@ import com.example.tripDuo.dto.PostCommentDto;
 import com.example.tripDuo.dto.PostDto;
 import com.example.tripDuo.dto.PostLikeDto;
 import com.example.tripDuo.dto.PostRatingDto;
+import com.example.tripDuo.enums.PostType;
 
 public interface PostService {
 	
 		// ### getPost ### 
 		
-		public List<PostDto> getPostList(String type); // 기본 getList
+		public List<PostDto> getPostList(PostType type); // 기본 getList
 		// getPostList - 페이징 + 검색
 		public PostDto getPostById(Long id); // 간단한 
 //		public PostDto getPostByUsername(String username);

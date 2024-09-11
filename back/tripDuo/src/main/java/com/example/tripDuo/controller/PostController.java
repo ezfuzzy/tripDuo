@@ -17,6 +17,7 @@ import com.example.tripDuo.dto.PostCommentDto;
 import com.example.tripDuo.dto.PostDto;
 import com.example.tripDuo.dto.PostLikeDto;
 import com.example.tripDuo.dto.PostRatingDto;
+import com.example.tripDuo.enums.PostType;
 import com.example.tripDuo.service.PostService;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -33,7 +34,15 @@ public class PostController {
 	
 	@GetMapping("/{type:[a-zA-Z]+}")
 	public ResponseEntity<List<PostDto>> getPostList(@PathVariable("type") String type, PostDto dto) {
-		return ResponseEntity.ok(postService.getPostList(type));
+		
+		PostType postType;
+		
+        try {
+            postType = PostType.fromString(type);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+		return ResponseEntity.ok(postService.getPostList(postType));
 	}
 	
 	@GetMapping("/{id:[0-9]+}")
@@ -52,8 +61,16 @@ public class PostController {
 	
 	@PostMapping("/{type}")
 	public ResponseEntity<String> writePost(@PathVariable("type") String type, @RequestBody PostDto dto){
-		System.out.println(dto.toString());
-		dto.setType(type);
+		
+		PostType postType;
+		
+        try {
+            postType = PostType.fromString(type);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid post type: " + type);
+        }
+
+        dto.setType(postType);
 		postService.writePost(dto);
 		return ResponseEntity.ok(dto.toString());
 	}

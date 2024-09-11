@@ -3,10 +3,14 @@ package com.example.tripDuo.entity;
 import java.time.LocalDateTime;
 
 import com.example.tripDuo.dto.PostDto;
+import com.example.tripDuo.enums.PostStatus;
+import com.example.tripDuo.enums.PostType;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,7 +36,9 @@ public class Post {
 
     private Long userId;
     private String writer;
-    private String type; // mate / course / 여행기 / 커뮤니티
+    
+    @Enumerated(EnumType.STRING)
+    private PostType type;
 
     private String title;    
     private String content; // 메이트, 커뮤니티 게시글에만 있음
@@ -52,7 +58,8 @@ public class Post {
     private Long commentCount;
     private Float rating;
 
-    private String status; // mate 모집(구인)중, 모집완료, 삭제됨 등
+    @Enumerated(EnumType.STRING)
+    private PostStatus status;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -93,7 +100,7 @@ public class Post {
                 .commentCount(dto.getCommentCount())
                 .rating(dto.getRating())
                 .status(dto.getStatus())
-                .createdAt(dto.getCreatedAt() != null ? dto.getCreatedAt() : LocalDateTime.now()) // createdAt은 null일 경우 현재 시간으로 설정
+                .createdAt(dto.getCreatedAt())
                 .updatedAt(dto.getUpdatedAt())
                 .deletedAt(dto.getDeletedAt())
                 .build();
