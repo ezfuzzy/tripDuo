@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.dto.UserFollowDto;
+import com.example.tripDuo.dto.UserReviewDto;
 import com.example.tripDuo.service.UserService;
 
 @RestController
@@ -95,12 +96,33 @@ public class UserController {
     
     // ### follow ###
     
-    @PostMapping("/{id}/follows")
-    public ResponseEntity<String> addFollow(@PathVariable Long id, @RequestBody UserFollowDto dto) {
-    	
-    
+    @PostMapping("/{id}/follows/{type}")
+    public ResponseEntity<String> addFollow(@PathVariable("id") Long id, @PathVariable("type") String type, @RequestBody UserFollowDto dto) {
+    	dto.setFolloweeUserId(id);
+    	dto.setType(type);
     	userService.addFollow(dto);
     	return ResponseEntity.ok("Follow added successfully");
     }
 	
+    // ### review ###
+    
+    @PostMapping("/{id}/reviews")
+    public ResponseEntity<String> addReview(@PathVariable Long id, @RequestBody UserReviewDto dto){
+    	dto.setRevieweeId(id);
+    	userService.addReview(dto);
+    	return ResponseEntity.ok("Review added successfully");
+    }
+    
+    @DeleteMapping("/{id}/reviews")
+    public ResponseEntity<String> deleteReview(@PathVariable Long id){
+    	userService.deleteReview(id);
+    	return ResponseEntity.ok("Review deleted successfully");
+    }
+    
+    @PutMapping("/{id}/reviews")
+    public ResponseEntity<String> updateReview(@PathVariable Long id, @RequestBody UserReviewDto dto){
+    	dto.setId(id);
+    	userService.editReview(dto);
+    	return ResponseEntity.ok("Review updated successfully");
+    }
 }

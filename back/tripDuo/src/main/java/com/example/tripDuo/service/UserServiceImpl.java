@@ -12,10 +12,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.dto.UserFollowDto;
+import com.example.tripDuo.dto.UserReviewDto;
 import com.example.tripDuo.entity.User;
 import com.example.tripDuo.entity.UserFollow;
+import com.example.tripDuo.entity.UserReview;
 import com.example.tripDuo.repository.UserFollowRepository;
 import com.example.tripDuo.repository.UserRepository;
+import com.example.tripDuo.repository.UserReviewRepository;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -27,12 +30,14 @@ public class UserServiceImpl implements UserService {
 	private final S3Service s3Service;
 	private final UserRepository userRepo;
 	private final UserFollowRepository userFollowRepo;
+	private final UserReviewRepository userReviewRepo;
 	private final PasswordEncoder passwordEncoder;
 	
-	public UserServiceImpl(S3Service s3Service, UserRepository userRepo, UserFollowRepository userFollowRepo, PasswordEncoder passwordEncoder) {
+	public UserServiceImpl(S3Service s3Service, UserRepository userRepo, UserFollowRepository userFollowRepo, UserReviewRepository userReviewRepo, PasswordEncoder passwordEncoder) {
 		this.s3Service = s3Service;
 		this.userRepo = userRepo;
 		this.userFollowRepo = userFollowRepo;
+		this.userReviewRepo = userReviewRepo;
 		this.passwordEncoder = passwordEncoder;
 	}
 
@@ -172,5 +177,23 @@ public class UserServiceImpl implements UserService {
 		userFollowRepo.save(UserFollow.toEntity(dto));
 	}
 
+	@Override
+	public void addReview(UserReviewDto dto) {
+		userReviewRepo.save(UserReview.toEntity(dto));
+	}
 
+	@Override
+	public void deleteReview(Long id) {
+		userReviewRepo.deleteById(id);
+	}
+
+	@Override
+	public void editReview(UserReviewDto dto) {
+		UserReviewDto existingUserReview = UserReviewDto.toDto(userReviewRepo.findById(dto.getId()).get());
+		dto.setReviewerId(existingUserReview.getReviewerId());
+		dto.setRevieweeId(existingUserReview.getRevieweeId());
+		dto.setCreatedAt(existingUserReview.getCreatedAt());
+		
+		userReviewRepo.save(UserReview.toEntity(dto));
+	}
 }
