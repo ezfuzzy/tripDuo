@@ -11,7 +11,8 @@ import { NavLink } from "react-router-dom";
 function MateBoardDetail(props) {
   const {id} = useParams(); // 게시물 번호
 
-  const username = useSelector(state => state.userData.username, shallowEqual); //로그인된 username
+  const username = useSelector(state => state.userData.username, shallowEqual); // 로그인된 username
+  const [userProfile, setUserProfile] = useState({}) //로그인된 user 의 profile
 
   const [post, setPost] = useState({tags:[]});
   const [isRecruited, setIsRecruited] = useState(false);
@@ -38,7 +39,22 @@ function MateBoardDetail(props) {
   }
 
   const handleLike = ()=>{
-    setIsLiked(!isLiked)
+      if(username){
+      axios.post(`/api/v1/posts/mate/${id}/likes`, {postId : post.id, userId : userProfile.id})
+      .then(res=>{
+        setIsLiked(!isLiked)
+        setPost({
+          ...post,
+          likeCount:post.likeCount+1
+        })
+      })
+      .catch((error)=>{
+        alert(error.response.data)
+      })
+    } else {
+      alert("로그인을 해주세요")
+    }
+
   }
 
   useEffect(() => {
@@ -47,10 +63,11 @@ function MateBoardDetail(props) {
       .then((res) => {
         //글 정보 전달 확인
         setPost(res.data);
-        const id = res.data.userId  
+
+        const userId = res.data.userId  
 
         //유저 정보 받아서 state 값으로 저장
-        axios.get(`/api/v1/users/${id}`)
+        axios.get(`/api/v1/users/${userId}`)
         .then(res=>{
             //유저 정보 전달 확인
             setWriterProfile(res.data)
@@ -59,6 +76,21 @@ function MateBoardDetail(props) {
       })
       .catch((error) => console.log(error));
   }, [id]);
+
+// 로그인된 유저 정보 불러오기
+  useEffect(()=>{
+    if(username){
+      
+      axios.get(`/api/v1/users/username/${username}`)
+      .then(res=>{
+        setUserProfile(res.data) 
+      })
+      .catch(error=>{
+        console.log(error)
+      })
+  }
+  },[username])
+
   return (
     <>
       <div className="container">
@@ -91,11 +123,13 @@ function MateBoardDetail(props) {
         {/* title */}
         <h5 className="m-3">
           {id}번 <strong>{post.title}</strong>
+          {/* title / 좋아요 버튼 / 좋아요,조회수 */}
           <button
             className={`mx-3 ${
               isLiked ? "bg-pink-600" : "bg-pink-400"
             } text-white active:bg-emerald-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
             type="button"
+            disabled={isLiked}
             onClick={handleLike}
           >
             Like
