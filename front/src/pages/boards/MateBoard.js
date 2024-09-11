@@ -25,17 +25,22 @@ function MateBoard() {
       setDomesticInternational("International");
     }
   };
-
-  useEffect(() => {
-
+  
+  useEffect(()=>{
+    // searchParams 가 바뀔때마다 실행된다.
+    // searchParams 가 없다면 초기값 "Domestic" 있다면 di 란 key 값의 데이터를 domesticInternational에 전달한다
     const diValue = searchParams.get("di") || "Domestic";
     setDomesticInternational(diValue);
+  },[searchParams])
 
+  useEffect(() => {
+    // domesticInternational 가 바뀔때마다 실행된다.
+    // to D~ I~ Button 을 누를때 or 새로운 요청이 들어왔을때 
     axios
       .get("/api/v1/posts/mate")
       .then((res) => {
         const filteredData = res.data.filter((item) => {
-          return diValue === "Domestic"
+          return domesticInternational === "Domestic"
             ? item.country === "한국"
             : item.country !== "한국";
         });
@@ -43,18 +48,18 @@ function MateBoard() {
         setPageData(filteredData);
 
         setWhereAreYou(
-          diValue === "Domestic"
+          domesticInternational === "Domestic"
             ? "국내 여행 메이트 페이지"
             : "해외 여행 메이트 페이지"
         );
         setPageTurn(
-          diValue === "Domestic"
+          domesticInternational === "Domestic"
             ? "to International"
             : "to Domestic"
         );
       })
       .catch((error) => console.log(error));
-  }, [searchParams]);
+  }, [domesticInternational]);
 
   return (
     <>
