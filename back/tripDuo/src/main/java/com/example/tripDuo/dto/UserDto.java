@@ -24,6 +24,8 @@ public class UserDto {
     private String newPassword;
     private String confirmPassword;
     
+    private String nickname;
+    
     private String phoneNumber;
     private String email; // [note: "인증 받으면 email 로그인 사용 가능"]
 

@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.tripDuo.dto.OAuthToken;
-import com.example.tripDuo.dto.SignupRequest;
 import com.example.tripDuo.dto.UserDto;
-import com.example.tripDuo.dto.UserProfileInfoDto;
 import com.example.tripDuo.service.AuthService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,10 +33,9 @@ public class AuthController {
 	}
 
 	@PostMapping("/signup")
-	public ResponseEntity<String> signup(@RequestBody SignupRequest signupRequest) throws Exception {
-	    UserDto userDto = signupRequest.getUserDto();
-	    UserProfileInfoDto userProfileInfoDto = signupRequest.getUserProfileInfoDto();
-	    return ResponseEntity.ok(authService.signup(userDto, userProfileInfoDto));
+	public ResponseEntity<String> signup(@RequestBody UserDto userDto) throws Exception {
+	    
+	    return ResponseEntity.ok(authService.signup(userDto));
 	}
 
 	@PostMapping("/phone/send-code")
