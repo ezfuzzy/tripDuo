@@ -41,7 +41,7 @@ function MateBoardDetail(props) {
 
   const handleLike = ()=>{
       if(username){
-      axios.post(`/api/v1/posts/mate/${id}/likes`, {postId : post.id, userId : userProfile.id})
+      axios.post(`/api/v1/posts/${id}/likes`, {postId : post.id, userId : userProfile.id})
       .then(res=>{
         setIsLiked(!isLiked)
         setPost({
@@ -50,6 +50,7 @@ function MateBoardDetail(props) {
         })
       })
       .catch((error)=>{
+        console.log(error)
         alert(error.response.data)
       })
     } else {
