@@ -125,16 +125,20 @@ function MateBoardDetail(props) {
         <h5 className="m-3">
           {id}번 <strong>{post.title}</strong>
           {/* title / 좋아요 버튼 / 좋아요,조회수 */}
-          <button
-            className={`mx-3 ${
-              isLiked ? "bg-pink-600" : "bg-pink-400"
-            } text-white active:bg-emerald-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
-            type="button"
-            disabled={isLiked}
-            onClick={handleLike}
-          >
-            Like
-          </button>
+          {/* 내 게시물이 아닌경우에만 좋아요 버튼 보여주기 */}
+          {         
+            userId !== post.userId && 
+            <button
+              className={`mx-3 ${
+                isLiked ? "bg-pink-600" : "bg-pink-400"
+              } text-white active:bg-emerald-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
+              type="button"
+              disabled={isLiked}
+              onClick={handleLike}
+            >
+              Like
+            </button>
+          }
           <span className="text-sm text-gray-500">
             <span className="mx-3">view.{post.viewCount}</span>
             <span>likes.{post.likeCount}</span>
