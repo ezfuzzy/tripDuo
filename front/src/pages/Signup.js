@@ -3,10 +3,13 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
+import { decodeToken } from 'jsontokens';
+import { useDispatch } from 'react-redux';
 
 function Signup() {
   const location = useLocation()
   const { termsService, termsPrivacy, essential } = location.state || {}
+  const dispatch = useDispatch()
   const navigate = useNavigate()
   //약관동의 필수항목 체크 안하고 접근시 리다이렉트
   useEffect(() => {
@@ -19,7 +22,7 @@ function Signup() {
   const [username, setUsername] = useState('')
   const [nickname, setNickname] = useState('')
   const [isValidUsername, setIsValidUsername] = useState(true)
-  const [isValidPassword, setIsValidPassword] = useState(true)
+  const [isValidPassword, setIsValidPassword] = useState(false)
   const [isValidNickname, setIsValidNickname] = useState(true)
   const [isValidEmail, setIsValidEmail] = useState(true)
 
@@ -74,60 +77,48 @@ function Signup() {
     const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
     return regex.test(value) || value === ""
   }
-  const updateIsAllChecked = (validUsername, validPassword, passwordMatched, validNickname, validEmail, isVerified) => {
-    setIsAllChecked(validUsername && validPassword && passwordMatched && validNickname && validEmail && isVerified && isUsernameUnique && isNicknameUnique)
+  const updateIsAllChecked = () => {
+    setIsAllChecked(
+      isValidUsername &&
+      isValidPassword &&
+      isPasswordMatched &&
+      isValidNickname &&
+      isValidEmail &&
+      isVerified &&
+      isUsernameUnique &&
+      isNicknameUnique
+    )
   }
 
   //아이디, 닉네임 중복검사
-  const checkUsernameAvailability = (username) => {
-    axios.post(`/api/v1/users/check/username`, username, {
+  const checkAvailability = (type, value, setExist, setUnique) => {
+    axios.post(`/api/v1/users/check/${type}`, value, {
       headers: { 'Content-Type': 'text/plain' },
     })
       .then((response) => {
         if (response.data) {
-          setIsUsernameExist(true)
+          setExist(true)
         } else {
-          alert("사용 가능한 아이디입니다.")
-          setIsUsernameUnique(true)
-          updateIsAllChecked()
+          alert(`사용 가능한 ${type === 'username' ? '아이디' : '닉네임'} 입니다.`)
+          setExist(false)
+          setUnique(true)
         }
+        updateIsAllChecked()
       })
       .catch(() => {
         alert("중복 확인에 실패했습니다.")
       })
   }
-
-  const checkNicknameAvailability = (nickname) => {
-    axios.post(`/api/v1/users/check/nickname`, nickname, {
-      headers: {
-        'Content-Type': 'text/plain'
-      }
-    })
-      .then(response => {
-        if (response.data) {
-          setIsNicknameExist(true)
-        } else {
-          alert("사용 가능한 닉네임 입니다.")
-          setIsNicknameExist(false)
-          setIsNicknameUnique(true)
-          updateIsAllChecked()
-        }
-      })
-      .catch(() => {
-        alert("중복 확인에 실패했습니다.")
-      })
-  }
-
 
   const handleCheckUsername = () => {
     if (isValidUsername) {
-      checkUsernameAvailability(username);
+      checkAvailability('username', username, setIsUsernameExist, setIsUsernameUnique)
     } else alert("아이디 형식에 맞지 않습니다")
   }
 
   const handleCheckNickname = () => {
-    if (isValidUsername) {
-      checkNicknameAvailability(nickname);
+    if (isValidNickname) {
+      checkAvailability('nickname', nickname, setIsNicknameExist, setIsNicknameUnique)
     } else alert("닉네임 형식에 맞지 않습니다")
   };
 
@@ -136,8 +127,8 @@ function Signup() {
     setUsername(value)
     const validUsername = validateUsername(value)
     setIsValidUsername(validUsername)
-
-    updateIsAllChecked(validUsername, isValidPassword, isPasswordMatched, isValidNickname, isValidEmail, isVerified)
+    setIsUsernameUnique(false) //중복체크 후 데이터 변경 방지
+    updateIsAllChecked()
   }
 
   const passwordHandleChange = (e) => {
@@ -164,7 +155,7 @@ function Signup() {
     // 비밀번호가 입력되지 않은 경우 메시지 숨기기
     setShowValidationMessage(value !== "" && !validPassword)
 
-    updateIsAllChecked(isValidUsername, validPassword, isValidNickname, isValidEmail, isVerified)
+    updateIsAllChecked()
   }
   //비밀번호 확인
   const confirmPasswordHandleChange = (e) => {
@@ -173,7 +164,7 @@ function Signup() {
     const passwordMatched = validateConfirmPassword(value)
     setIsPasswordMatched(passwordMatched)
 
-    updateIsAllChecked(isValidUsername, isValidPassword, passwordMatched, isValidNickname, isValidEmail, isVerified)
+    updateIsAllChecked()
   }
 
   const nicknameHandleChange = (e) => {
@@ -181,8 +172,9 @@ function Signup() {
     setNickname(value)
     const validNickname = validateNickname(value)
     setIsValidNickname(validNickname)
+    setIsNicknameUnique(false) //중복 체크 후 데이터 변경 방지
 
-    updateIsAllChecked(isValidUsername, isValidPassword, isPasswordMatched, validNickname, isValidEmail, isVerified)
+    updateIsAllChecked()
   }
 
   const phoneNumberHandleChange = (e) => {
@@ -192,6 +184,8 @@ function Signup() {
     // 전화번호 형식으로 변환
     const formattedValue = formatPhoneNumber(numericValue);
     setPhoneNumber(formattedValue)
+
+    updateIsAllChecked()
   }
   //전화번호 포맷처리 함수
   const formatPhoneNumber = (value) => {
@@ -208,11 +202,13 @@ function Signup() {
     const validEmail = validateEmail(value)
     setEmail(value)
     setIsValidEmail(validEmail)
-    updateIsAllChecked(isValidUsername, isValidPassword, isPasswordMatched, isValidNickname, validEmail, isVerified)
+
+    updateIsAllChecked()
   }
 
   const verificationCodeHandleChange = (e) => {
     setVerificationCode(e.target.value)
+    updateIsAllChecked()
   }
 
   const sendVerificationCode = () => {
@@ -232,7 +228,7 @@ function Signup() {
     axios.post('/api/v1/auth/phone/verify-code', { phoneNumber, code })
       .then((response) => {
         setIsVerified(true)
-        updateIsAllChecked(isValidUsername, isValidPassword, isPasswordMatched, isValidNickname, isValidEmail, true)
+        updateIsAllChecked()
         alert('휴대폰 번호가 성공적으로 인증되었습니다.')
       })
       .catch((error) => {
@@ -240,24 +236,49 @@ function Signup() {
       })
   }
 
+  const processToken = (token) => {
+    if (token.startsWith("Bearer+")) {
+      localStorage.setItem("token", token)
+      const result = decodeToken(token.substring(7))
+
+      const userData = {
+        id: result.payload.id,
+        username: result.payload.username,
+        nickname: result.payload.nickname,
+        profilePicture: result.payload.profilePicture,
+      }
+
+      const loginStatus = {
+        isLogin: true,
+        role: result.payload.role,
+      }
+
+      dispatch({ type: "LOGIN_USER", payload: { userData, loginStatus } })
+      axios.defaults.headers.common["Authorization"] = token
+      navigate("/completedSignup", { state: { isAllChecked } })
+    }
+  }
+
   const handleSignUp = (e) => {
     e.preventDefault()
-    try {
-      //회원가입 api
-      axios.post(`/api/v1/auth/signup`, { username, password, confirmPassword, nickname, phoneNumber, email })
-        .then((response) => {
-          // 회원가입 성공시 토큰 발급으로 로그인 처리
-          const token = response.data
-          localStorage.setItem('token', token)
-          axios.defaults.headers.common["Authorization"] = token
-          navigate("/completedSignup", { state: { isAllChecked } })
-        })
-        .catch((error) => {
-          console.error('회원가입에 실패하였습니다')
-        })
-    } catch (error) {
-      console.error('회원가입에 실패하였습니다')
+    if(!isAllChecked){
+      alert("모든 항목을 올바르게 입력해주세요.")
+      return
     }
+    //회원가입 api
+    axios.post(`/api/v1/auth/signup`, {
+      username,
+      password,
+      confirmPassword,
+      nickname,
+      phoneNumber: getUnformattedPhoneNumber(),
+      email })
+      .then((response) => {
+        processToken(response.data)
+      })
+      .catch((error) => {
+        console.error('회원가입에 실패하였습니다');
+      })
   }
 
   return (
@@ -299,7 +320,6 @@ function Signup() {
                 이미 사용중인 아이디입니다.
               </p>
             )}
-
           </div>
 
           <div className="sm:col-span-6">
@@ -477,7 +497,7 @@ function Signup() {
         <div className="mt-10">
           <button
             type="button"
-            className="block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            className={`block w-full rounded-md ${!isAllChecked ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-indigo-600 text-white hover:bg-indigo-500'} px-3.5 py-2.5 text-center text-sm font-semibold shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
             disabled={!isAllChecked}  // 인증 성공 후에만 버튼 활성화
             onClick={handleSignUp}
           >
