@@ -2,6 +2,7 @@ package com.example.tripDuo.service;
 
 import java.util.List;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,19 +51,30 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public PostDto getPostById(Long id) {
+	public PostDto getPostById(Long postId) {
 		// 이건 수정폼에서 쓸 메소드
-		return PostDto.toDto(postRepo.findById(id)
+		return PostDto.toDto(postRepo.findById(postId)
 		        .orElseThrow(() -> new EntityNotFoundException("Post not found")));
 	}
 
 	@Override
-	public PostDto getPostDetailById(Long id) {
+	public PostDto getPostDetailById(Long postId) {
+		// 글 자세히 보기 페이지에서 필요한 정보 return 
+		PostDto dto = PostDto.toDto(postRepo.findById(postId)
+				.orElseThrow(() -> new EntityNotFoundException("Post not found")));
+
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		dto.setLike(postLikeRepo.existsByPostIdAndUserId(postId, userRepo.findByUsername(username).getId()));
 		
-		PostDto dto = PostDto.toDto(postRepo.findById(id).get());
-		// 각종 처리 
-		// + 댓글 목록도 가져와야할듯 
-		return null;
+		// 댓글 list 
+		
+		
+		// view count + 1
+		
+		dto.setViewCount(dto.getViewCount()+1);
+		postRepo.save(Post.toEntity(dto, userRepo.findById(dto.getUserId()).get()));
+		return dto;
 	}
 	
 	
@@ -90,8 +102,8 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public void deletePost(Long id) {
-		postRepo.deleteById(id);
+	public void deletePost(Long postId) {
+		postRepo.deleteById(postId);
 	}
 	
 	// ### comment ###
@@ -145,7 +157,7 @@ public class PostServiceImpl implements PostService {
 	public void addLikeToPost(PostLikeDto dto) {
 		
 		// userId, postId 검사 - 같은 유저가 같은 게시글에 2개 이상 좋아요 남기지 못하게
-	    if (postLikeRepo.countByPostIdAndUserId(dto.getPostId(), dto.getUserId()) > 0) {
+	    if (postLikeRepo.existsByPostIdAndUserId(dto.getPostId(), dto.getUserId())) {
 	        throw new IllegalStateException("이미 좋아요를 누른 게시글 입니다.");
 	    }		
 		
@@ -178,7 +190,7 @@ public class PostServiceImpl implements PostService {
 	public void addRatingToPost(PostRatingDto dto) {
 		
 		// userId, postId 검사 - 같은 유저가 같은 게시글에 2개 이상 평점 남기지 못하게
-	    if (postRatingRepo.countByPostIdAndUserId(dto.getPostId(), dto.getUserId()) > 0) {
+	    if (postRatingRepo.existsByPostIdAndUserId(dto.getPostId(), dto.getUserId())) {
 	        throw new IllegalStateException("이미 평점을 남긴 게시글 입니다.");
 	    }
 	    
@@ -196,7 +208,7 @@ public class PostServiceImpl implements PostService {
 	@Transactional
 	public void updateRatingForPost(PostRatingDto dto) {
 		
-		if (postRatingRepo.countByPostIdAndUserId(dto.getPostId(), dto.getUserId()) == 0) {
+		if (!postRatingRepo.existsByPostIdAndUserId(dto.getPostId(), dto.getUserId())) {
 	        throw new IllegalStateException("게시글에 남긴 평점이 없습니다.");
 	    }
 	    
