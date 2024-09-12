@@ -1,4 +1,6 @@
 
+import { faEye, faHeart, faMessage } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Button, Card } from "react-bootstrap";
@@ -20,7 +22,6 @@ function MateBoardDetail(props) {
 
   // 작성자 프로필 설정
   const [writerProfile, setWriterProfile] = useState({});
-  const [imageData, setImageData] = useState(null)
 
   //좋아요 버튼 설정
   const [isLiked, setIsLiked] = useState(false)
@@ -137,12 +138,14 @@ function MateBoardDetail(props) {
               disabled={isLiked}
               onClick={handleLike}
             >
+              <FontAwesomeIcon icon={faHeart} className="mr-2"/>
               Like
             </button>
           }
           <span className="text-sm text-gray-500">
-            <span className="mx-3">view.{post.viewCount}</span>
-            <span>likes.{post.likeCount}</span>
+            <span className="mx-3"><FontAwesomeIcon icon={faEye} className="h-5 w-5 mr-2" />{post.viewCount}</span>
+            <span className="mr-3"><FontAwesomeIcon icon={faHeart} className="h-4 w-4 mr-2"/>{post.likeCount}</span>
+            <span className="mr-3"><FontAwesomeIcon icon={faMessage} className="h-4 w-4 mr-2"/>{post.likeCount}</span>
           </span>
         </h5>
 
