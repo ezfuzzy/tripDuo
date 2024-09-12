@@ -139,7 +139,7 @@ public class UserController {
     @PutMapping("/{id}/reviews")
     public ResponseEntity<String> updateReview(@PathVariable Long id, @RequestBody UserReviewDto dto){
     	dto.setId(id);
-    	userService.editReview(dto);
+    	userService.updateReview(dto);
     	return ResponseEntity.ok("Review updated successfully");
     }
 }

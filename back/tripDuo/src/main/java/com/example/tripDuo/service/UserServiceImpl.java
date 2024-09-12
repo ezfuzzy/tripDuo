@@ -237,7 +237,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void editReview(UserReviewDto dto) {
+	public void updateReview(UserReviewDto dto) {
 		UserReviewDto existingUserReview = UserReviewDto.toDto(userReviewRepo.findById(dto.getId()).get());
 		dto.setReviewerId(existingUserReview.getReviewerId());
 		dto.setRevieweeId(existingUserReview.getRevieweeId());
