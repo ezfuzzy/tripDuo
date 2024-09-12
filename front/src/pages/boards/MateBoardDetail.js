@@ -12,6 +12,7 @@ function MateBoardDetail(props) {
   const {id} = useParams(); // 게시물 번호
 
   const username = useSelector(state => state.userData.username, shallowEqual); // 로그인된 username
+  const userId = useSelector(state => state.userData.id, shallowEqual) // 로그인된 user의 id
   const [userProfile, setUserProfile] = useState({}) //로그인된 user 의 profile
 
   const [post, setPost] = useState({tags:[]});
@@ -206,7 +207,7 @@ function MateBoardDetail(props) {
 
       {
         // 로그인된 username 과 post의 userId 로 불러온 작성자 아이디가 동일하면 랜더링
-        username === writerProfile.username && (
+        userId === post.userId && (
           <div className="container mt-3">
             <Button
               className="m-1"
