@@ -48,5 +48,5 @@ public interface UserService {
 	// ### review ###
 	public void addReview(UserReviewDto dto);
 	public void deleteReview(Long id);
-	public void editReview(UserReviewDto dto);
+	public void updateReview(UserReviewDto dto);
 }
