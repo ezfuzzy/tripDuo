@@ -1,9 +1,11 @@
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Col, Form } from 'react-bootstrap';
+import { shallowEqual, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router';
 
 function MyProfileForm(props) {
+    const userId = useSelector(state => state.userData.id, shallowEqual) // 접속된 사용자의 id
 
     const profileImage = useRef();
     const inputImage = useRef();
@@ -39,12 +41,18 @@ function MyProfileForm(props) {
     useEffect(()=>{
         axios.get(`/api/v1/users/${id}`)
         .then(res=>{
-            console.log(res.data)
+            if(!userId || userId !== res.data.userId){
+                alert("잘못된 접근입니다.")
+                navigate(`/`)
+              }
+
             setProfile(res.data)
-            setInitialNickname(res.data.nickname) // 로딩된 닉네임 저장
+            
+            setInitialNickname(res.data.nickname) // 로딩된 닉네임 초기값 저장
             if(res.data.profilePicture){
                 setImageData(res.data.profilePicture)
             }
+
         })
         .catch(error=>console.log(error))
 

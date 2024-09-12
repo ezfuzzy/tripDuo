@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { shallowEqual, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 function MyPage() {
-
+  const userId = useSelector(state => state.userData.id, shallowEqual) // 접속된 사용자의 id
   const [profile, setProfile] = useState({})
   const { id } = useParams()
   const navigate = useNavigate()
@@ -13,11 +14,18 @@ function MyPage() {
   useEffect(() => {
     axios.get(`/api/v1/users/${id}`)
       .then(res => {
-        console.log(res)
+        if(!userId || userId !== res.data.userId){
+          alert("잘못된 접근입니다.")
+          navigate(`/`)
+        }
+
         setProfile(res.data)
+
         if(res.data.profilePicture){
           setImageData(res.data.profilePicture)
-      }
+        }
+
+
       })
       .catch(error => console.log(error))
 
