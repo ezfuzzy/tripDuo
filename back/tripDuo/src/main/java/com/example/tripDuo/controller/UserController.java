@@ -114,6 +114,12 @@ public class UserController {
     	userService.addFollow(dto);
     	return ResponseEntity.ok("Follow added successfully");
     }
+    
+    @DeleteMapping("/{id}/follows")
+    public ResponseEntity<String> deleteFollow(@PathVariable Long id){
+    	userService.deleteFollow(id);
+    	return ResponseEntity.ok("Follow deleted successfully");
+    }
 	
     // ### review ###
     

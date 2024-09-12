@@ -220,6 +220,11 @@ public class UserServiceImpl implements UserService {
 	public void addFollow(UserFollowDto dto) {
 		userFollowRepo.save(UserFollow.toEntity(dto));
 	}
+	
+	@Override
+	public void deleteFollow(Long id) {
+		userFollowRepo.deleteById(id);
+	}
 
 	@Override
 	public void addReview(UserReviewDto dto) {
