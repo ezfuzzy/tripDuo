@@ -202,7 +202,7 @@ const gitHubIcon = (
     return (
         <>
             <h3>Profile Update Form</h3>
-            <div className="mt-20 flex justify-center h-screen">
+            <div className="isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
 
                 <form className="space-y-4" >
                 {/* 프로필 이미지 */}

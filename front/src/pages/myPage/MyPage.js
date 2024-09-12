@@ -30,7 +30,7 @@ function MyPage() {
   return (
     <>
       {/* 프로필 */}
-      <div className='container'>
+      <div className='m-3 flex justify-center'>
         <div className="flex items-center gap-x-6 m-3">
           {
             imageData
