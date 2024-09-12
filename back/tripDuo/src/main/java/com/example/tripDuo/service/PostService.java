@@ -10,7 +10,7 @@ import com.example.tripDuo.enums.PostType;
 
 public interface PostService {
 	
-		// ### getPost ### 
+		// ### post ### 
 		
 		public List<PostDto> getPostList(PostType type); // 기본 getList
 		// getPostList - 페이징 + 검색
@@ -20,25 +20,23 @@ public interface PostService {
 		
 		// getPostDetailById - 페이징 + 검색 ... 자세한 정보 + 댓글 
 		
-		// ### new post ###
 		public void writePost(PostDto dto);
-		
-		// ### updatePost ###
 		public PostDto updatePost(PostDto dto);
-		
-		// ### deletePost ###
 		public void deletePost(Long id);
 		
 		// ### comment ###
-		public void writeComment(PostCommentDto dto);
 		
+		public void writeComment(PostCommentDto dto);
+		public void updateComment(PostCommentDto dto);
+		public void deleteComment(Long commentId);
 		
 		// ### like ###
 		public void addLikeToPost(PostLikeDto dto);
-		
+		public void deleteLikeFromPost(Long likeId);
 		
 		// ### rating ###
 		public void addRatingToPost(PostRatingDto dto);
-		
+		public void updateRatingForPost(PostRatingDto dto);
+		public void deleteRatingFromPost(Long ratingId);
 		
 }

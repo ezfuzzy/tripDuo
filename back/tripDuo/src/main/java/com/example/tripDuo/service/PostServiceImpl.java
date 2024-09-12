@@ -114,6 +114,30 @@ public class PostServiceImpl implements PostService {
 		existingPost.setCommentCount(postCommentRepo.countByPostId(existingPost.getId()));
 	}
 	
+	@Override
+	@Transactional
+	public void updateComment(PostCommentDto dto) {
+		
+		Post existingPost = postRepo.findById(dto.getPostId())
+	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+		
+		// 댓글 db 저장
+		postCommentRepo.save(PostComment.toEntity(dto));
+		
+		// post의 댓글 수 update
+		existingPost.setCommentCount(postCommentRepo.countByPostId(existingPost.getId()));
+	}
+	
+	@Override
+	@Transactional
+	public void deleteComment(Long commentId) {
+		Post existingPost = postRepo.findById(postCommentRepo.findById(commentId).get().getPostId())
+	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+		
+		postCommentRepo.deleteById(commentId);
+		existingPost.setCommentCount(postCommentRepo.countByPostId(existingPost.getId()));
+	}
+	
 	// ### like ### 
 
 	@Override
@@ -134,6 +158,18 @@ public class PostServiceImpl implements PostService {
 		// post 좋아요 수 update
 		existingPost.setLikeCount(postLikeRepo.countByPostId(existingPost.getId()));
 	}
+	
+	@Override
+	@Transactional
+	public void deleteLikeFromPost(Long likeId) {
+		
+		Post existingPost = postRepo.findById(postLikeRepo.findById(likeId).get().getPostId())
+	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+		
+		postLikeRepo.deleteById(likeId);
+		existingPost.setLikeCount(postLikeRepo.countByPostId(existingPost.getId()));
+	}
+
 
 	// ### rating ###
 	
@@ -156,4 +192,34 @@ public class PostServiceImpl implements PostService {
 		existingPost.updateRating(postRatingRepo.findAverageRatingByPostId(existingPost.getId()));
 	}
 
+	@Override
+	@Transactional
+	public void updateRatingForPost(PostRatingDto dto) {
+		
+		if (postRatingRepo.countByPostIdAndUserId(dto.getPostId(), dto.getUserId()) == 0) {
+	        throw new IllegalStateException("게시글에 남긴 평점이 없습니다.");
+	    }
+	    
+		Post existingPost = postRepo.findById(dto.getPostId())
+	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+		
+		// 평점 db 저장
+		postRatingRepo.save(PostRating.toEntity(dto, existingPost));
+		
+		// post 평점 update
+		existingPost.updateRating(postRatingRepo.findAverageRatingByPostId(existingPost.getId()));
+	}
+	
+	@Override
+	@Transactional
+	public void deleteRatingFromPost(Long ratingId) {
+
+		Post existingPost = postRatingRepo.findById(ratingId).get().getPost();
+		
+		postRatingRepo.deleteById(ratingId);
+		
+		// post 평점 update
+		existingPost.updateRating(postRatingRepo.findAverageRatingByPostId(existingPost.getId()));
+	}
+	
 }
