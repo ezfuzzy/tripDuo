@@ -76,6 +76,23 @@ public class UserServiceImpl implements UserService {
 		return UserDto.toDto(userRepo.findByEmail(email));
 	}
 
+	@Override	
+	public UserProfileInfoDto getUserProfileInfoByUsername(String username) {
+		
+		User user = userRepo.findByUsername(username);
+        if (user == null) {
+            return null;
+        }
+        
+        UserProfileInfo userProfileInfo = userProfileInfoRepo.findByUserId(user.getId());
+        if (userProfileInfo == null) {
+            return null;  
+        }
+
+        return UserProfileInfoDto.toDto(userProfileInfo, cloudFrontUrl);
+	}
+
+	
 	@Override
 	public Boolean checkExists(String checkType, String checkString) {
 		return switch (checkType) {

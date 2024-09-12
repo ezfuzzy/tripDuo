@@ -20,6 +20,10 @@ public interface UserService {
 	public UserDto getUserByPhoneNumber(String phone_num);
 	public UserDto getUserByEmail(String email);
 
+	// ### getUserProfileInfo ###
+	public UserProfileInfoDto getUserProfileInfoByUsername(String username); 
+	
+	
 	// ### 중복체크 ###
 	public Boolean checkExists(String checkType, String checkString);
 

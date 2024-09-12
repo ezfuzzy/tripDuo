@@ -42,7 +42,7 @@ public class UserController {
     public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
         // 사용자 정보 조회
         UserDto user = userService.getUserById(id);
-        user.setPassword("응 비번 없어");
+        user.setPassword("");
         
         if (user.getId() != null) {
             return ResponseEntity.ok(user);
@@ -52,12 +52,13 @@ public class UserController {
     }
 
     @GetMapping("/username/{username:[a-z0-9]+}")
-    public ResponseEntity<UserDto> getUserByUsername(@PathVariable("username") String username) {
-    	// 사용자 정보 조회
-    	UserDto user = userService.getUserByUsername(username);
-    	user.setPassword("응 비번 없어");
-    	
-    	return ResponseEntity.ok(user);
+    public ResponseEntity<UserProfileInfoDto> getUserProfileInfoByUsername(@PathVariable("username") String username) {
+    	UserProfileInfoDto userProfileInfoDto = userService.getUserProfileInfoByUsername(username);
+        if (userProfileInfoDto != null) {
+            return ResponseEntity.ok(userProfileInfoDto);
+        } else {
+            return ResponseEntity.notFound().build();  // 유저가 없으면 404 반환
+        }
     }
 
     @PostMapping("/check/{checkType}")
