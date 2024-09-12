@@ -14,15 +14,15 @@ public interface PostService {
 		
 		public List<PostDto> getPostList(PostType type); // 기본 getList
 		// getPostList - 페이징 + 검색
-		public PostDto getPostById(Long id); // 간단한 
+		public PostDto getPostById(Long postId); // 간단한 
 //		public PostDto getPostByUsername(String username);
-		public PostDto getPostDetailById(Long id);
+		public PostDto getPostDetailById(Long postId);
 		
 		// getPostDetailById - 페이징 + 검색 ... 자세한 정보 + 댓글 
 		
 		public void writePost(PostDto dto);
 		public PostDto updatePost(PostDto dto);
-		public void deletePost(Long id);
+		public void deletePost(Long postId);
 		
 		// ### comment ###
 		
