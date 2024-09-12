@@ -43,13 +43,27 @@ public class PostController {
             return ResponseEntity.badRequest().body(null);
         }
 		return ResponseEntity.ok(postService.getPostList(postType));
+	}	
+	
+	@GetMapping("/{postId:[0-9]+}")
+	public ResponseEntity<PostDto> getPostDetailById(@PathVariable("postId") Long postId) {
+		// 글 자세히 보기 페이지에서 axios할 api end point 
+		try {
+			return ResponseEntity.ok(postService.getPostDetailById(postId));
+		} catch (EntityNotFoundException e) {
+	        // 게시글이 존재하지 않는 경우에 대한 처리
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+	    } catch (Exception e) {
+	        // 기타 예외에 대한 처리
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	    } 
 	}
 	
-	@GetMapping("/{id:[0-9]+}")
-	public ResponseEntity<PostDto> getPostById(@PathVariable("id") Long id) {
-
+	@GetMapping("/{postId:[0-9]+}/update")
+	public ResponseEntity<PostDto> getPostById(@PathVariable("postId") Long postId) {
+		// 글 수정 페이지에서 axios
 		try {
-			return ResponseEntity.ok(postService.getPostById(id));
+			return ResponseEntity.ok(postService.getPostById(postId));
 		} catch (EntityNotFoundException e) {
 	        // 게시글이 존재하지 않는 경우에 대한 처리
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -75,21 +89,21 @@ public class PostController {
 		return ResponseEntity.ok(dto.toString());
 	}
 	
-	@PutMapping("/{id:[0-9]+}")
-	public ResponseEntity<PostDto> editPost(@PathVariable("id") Long id, @RequestBody PostDto dto){
+	@PutMapping("/{postId:[0-9]+}")
+	public ResponseEntity<PostDto> editPost(@PathVariable("postId") Long postId, @RequestBody PostDto dto){
 		return ResponseEntity.ok(postService.updatePost(dto));
 	}
 	
-	@DeleteMapping("/{id:[0-9]+}")
-	public ResponseEntity<String> deletePost(@PathVariable("id") Long id){
-		postService.deletePost(id);
+	@DeleteMapping("/{postId:[0-9]+}")
+	public ResponseEntity<String> deletePost(@PathVariable("postId") Long postId){
+		postService.deletePost(postId);
 		return ResponseEntity.ok("Post id deleted");
 	}
 	
 	// ### comment ###
 	
-	@PostMapping("/{id:[0-9]+}/comments")
-	public ResponseEntity<String> writeComment(@PathVariable("id") Long id, @RequestBody PostCommentDto dto) {
+	@PostMapping("/{postId:[0-9]+}/comments")
+	public ResponseEntity<String> writeComment(@PathVariable("postId") Long postId, @RequestBody PostCommentDto dto) {
 		
 		try {
 			postService.writeComment(dto);
@@ -103,7 +117,7 @@ public class PostController {
 	    } 
 	}
 	
-	@PutMapping("/{id:[0-9]+}/comments/{commentId:[0-9]+}")
+	@PutMapping("/{postId:[0-9]+}/comments/{commentId:[0-9]+}")
 	public ResponseEntity<String> updateComment(@PathVariable("commentId") Long commentId, @RequestBody PostCommentDto dto) {
 		
 		try {
@@ -118,7 +132,7 @@ public class PostController {
 	    } 
 	}
 	
-	@DeleteMapping("/{id:[0-9]+}/comments/{commentId:[0-9]+}")
+	@DeleteMapping("/{postId:[0-9]+}/comments/{commentId:[0-9]+}")
 	public ResponseEntity<String> deleteComment(@PathVariable("commentId") Long commentId) {
 		
 		try {
@@ -135,8 +149,8 @@ public class PostController {
 	
 	// ### like ###
 	
-	@PostMapping("/{id:[0-9]+}/likes")
-	public ResponseEntity<String> addLikeToPost(@PathVariable("id") Long id, @RequestBody PostLikeDto dto) {
+	@PostMapping("/{postId:[0-9]+}/likes")
+	public ResponseEntity<String> addLikeToPost(@PathVariable("postId") Long postId, @RequestBody PostLikeDto dto) {
 
 	    try {
 	        postService.addLikeToPost(dto);
@@ -153,7 +167,7 @@ public class PostController {
 	    }
 	}
 	
-	@DeleteMapping("/{id:[0-9]+}/likes/{likeId:[0-9]+}")
+	@DeleteMapping("/{postId:[0-9]+}/likes/{likeId:[0-9]+}")
 	public ResponseEntity<String> deleteLikeFromPost(@PathVariable("likeId") Long likeId) {
 
 		try {
@@ -171,8 +185,8 @@ public class PostController {
 	
 	// ### rating ###
 	
-	@PostMapping("/{id:[0-9]+}/ratings")
-	public ResponseEntity<String> addRatingToPost(@PathVariable("id") Long id, @RequestBody PostRatingDto dto) {
+	@PostMapping("/{postId:[0-9]+}/ratings")
+	public ResponseEntity<String> addRatingToPost(@PathVariable("postId") Long postId, @RequestBody PostRatingDto dto) {
 		
 	    try {
 			postService.addRatingToPost(dto);
@@ -189,7 +203,7 @@ public class PostController {
 	    }
 	}
 
-	@PutMapping("/{id:[0-9]+}/ratings/{ratingId:[0-9]+}")
+	@PutMapping("/{postId:[0-9]+}/ratings/{ratingId:[0-9]+}")
 	public ResponseEntity<String> updateRatingForPost(@PathVariable("ratingId") Long ratingId, @RequestBody PostRatingDto dto) {
 		
 	    try {
