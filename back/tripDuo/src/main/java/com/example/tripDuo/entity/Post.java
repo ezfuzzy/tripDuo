@@ -38,10 +38,7 @@ public class Post {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-    
-    @Column(nullable = false)
-    private String writer;
+    private UserProfileInfo userProfileInfo;
     
     @Enumerated(EnumType.STRING)
     private PostType type;
@@ -91,12 +88,11 @@ public class Post {
         this.rating = rating;
     }
     
-    public static Post toEntity(PostDto dto, User user) {
+    public static Post toEntity(PostDto dto, UserProfileInfo userProfileInfo) {
     	
         return Post.builder()
                 .id(dto.getId())
-                .user(user)
-                .writer(dto.getWriter())
+                .userProfileInfo(userProfileInfo)
                 .type(dto.getType())
                 .title(dto.getTitle())
                 .content(dto.getContent())

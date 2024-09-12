@@ -20,7 +20,8 @@ public class PostCommentDto {
 
     private Long postId;
     private Long userId;
-
+    private String writer;
+    
     private String content;
 
     private Long groupId;
@@ -37,7 +38,8 @@ public class PostCommentDto {
         return PostCommentDto.builder()
             .id(entity.getId())
             .postId(entity.getPostId())
-            .userId(entity.getUserId())
+            .userId(entity.getUserProfileInfo() != null ? entity.getUserProfileInfo().getId() : null)
+            .writer(entity.getUserProfileInfo() != null ? entity.getUserProfileInfo().getNickname() : null)
             .content(entity.getContent())
             .groupId(entity.getGroupId())
             .depth(entity.getDepth())

@@ -1,7 +1,6 @@
 package com.example.tripDuo.dto;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import com.example.tripDuo.entity.Post;
 import com.example.tripDuo.enums.PostStatus;
@@ -47,7 +46,6 @@ public class PostDto {
     // ### for app ###
     
     private boolean isLike;
-    private List<PostCommentDto> commentList;
     
     private int startRowNum, endRowNum;
     private int pageNum = 1;
@@ -63,8 +61,8 @@ public class PostDto {
     public static PostDto toDto(Post entity) {
         return PostDto.builder()
                 .id(entity.getId())
-                .userId(entity.getUser() != null ? entity.getUser().getId() : null)
-                .writer(entity.getWriter())
+                .userId(entity.getUserProfileInfo() != null ? entity.getUserProfileInfo().getId() : null)
+                .writer(entity.getUserProfileInfo() != null ? entity.getUserProfileInfo().getNickname() : null)
                 .type(entity.getType())
                 .title(entity.getTitle())
                 .content(entity.getContent())
