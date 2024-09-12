@@ -43,6 +43,7 @@ public interface UserService {
 	
 	// ### follow ###
 	public void addFollow(UserFollowDto dto);
+	public void deleteFollow(Long id);
 	
 	// ### review ###
 	public void addReview(UserReviewDto dto);
