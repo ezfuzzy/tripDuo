@@ -21,6 +21,7 @@ public interface UserService {
 	public UserDto getUserByEmail(String email);
 
 	// ### getUserProfileInfo ###
+	public UserProfileInfoDto getUserProfileInfoById(Long id);
 	public UserProfileInfoDto getUserProfileInfoByUsername(String username); 
 	
 	

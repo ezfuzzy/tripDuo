@@ -39,15 +39,13 @@ public class UserController {
 	}
 	
 	@GetMapping("/{id:[0-9]+}")
-    public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
-        // 사용자 정보 조회
-        UserDto user = userService.getUserById(id);
-        user.setPassword("");
+    public ResponseEntity<UserProfileInfoDto> getUserProfileInfoById(@PathVariable Long id) {
         
-        if (user.getId() != null) {
-            return ResponseEntity.ok(user);
+    	UserProfileInfoDto userProfileInfoDto = userService.getUserProfileInfoById(id);
+        if (userProfileInfoDto != null) {
+            return ResponseEntity.ok(userProfileInfoDto);
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound().build();  // 유저가 없으면 404 반환
         }
     }
 

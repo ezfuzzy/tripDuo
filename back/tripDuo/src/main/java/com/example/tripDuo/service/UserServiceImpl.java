@@ -75,7 +75,24 @@ public class UserServiceImpl implements UserService {
 	public UserDto getUserByEmail(String email) {
 		return UserDto.toDto(userRepo.findByEmail(email));
 	}
+	
+	@Override
+	public UserProfileInfoDto getUserProfileInfoById(Long id) {
+		User user = userRepo.findById(id).get();
+		if(user == null) {
+			return null;
+		}
+		
+        UserProfileInfo userProfileInfo = userProfileInfoRepo.findByUserId(user.getId());
+        if (userProfileInfo == null) {
+            return null;  
+        }
 
+        return UserProfileInfoDto.toDto(userProfileInfo, cloudFrontUrl);
+		
+	}
+
+	
 	@Override	
 	public UserProfileInfoDto getUserProfileInfoByUsername(String username) {
 		
