@@ -28,7 +28,7 @@ function MyProfile(props) {
                 setImageData(res.data.profilePicture)
             }
             // 접속된 사용자의 정보가 있고, 
-            if(userId && userId === res.data.userId){
+            if(userId || userId === res.data.userId){
                 setProfileOwner(true)
             }
         })
