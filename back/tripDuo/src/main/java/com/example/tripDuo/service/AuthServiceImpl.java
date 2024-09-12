@@ -112,7 +112,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public String signup(UserDto userDto, UserProfileInfoDto userProfileInfoDto) {
+	public String signup(UserDto userDto) {
 
 		// ### username, nickname, password 유효성 체크 ###
 		
@@ -121,7 +121,7 @@ public class AuthServiceImpl implements AuthService {
         String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,22}$";
 
 		if(!Pattern.matches(usernamePattern, userDto.getUsername()) || 
-				!Pattern.matches(nicknamePattern, userProfileInfoDto.getNickname()) ||
+				!Pattern.matches(nicknamePattern, userDto.getNickname()) ||
 				!Pattern.matches(passwordPattern, userDto.getPassword())) {
 			return "유효성 검사 탈락";
 		}
@@ -133,7 +133,8 @@ public class AuthServiceImpl implements AuthService {
 		
 		User savedUser = userRepo.save(User.toEntity(userDto));
 		
-		userProfileInfoRepo.save(UserProfileInfo.toEntity(userProfileInfoDto, savedUser));
+		userProfileInfoRepo.save(UserProfileInfo.toEntity(
+				UserProfileInfoDto.builder().nickname(userDto.getNickname()).build(), savedUser));
 		
 		String token = jwtUtil.generateToken(userDto.getUsername());
 

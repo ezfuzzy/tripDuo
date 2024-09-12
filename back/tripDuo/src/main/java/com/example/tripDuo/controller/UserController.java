@@ -76,7 +76,7 @@ public class UserController {
        return ResponseEntity.ok(dto);
     }
 
-    @PutMapping("/{id}/password")
+    @PutMapping("/{id}/change-password")
     public ResponseEntity<Boolean> updateUserPassword(@PathVariable Long id, @RequestBody UserDto userDto) {
         userDto.setId(id);
         // 사용자 비밀번호 업데이트
