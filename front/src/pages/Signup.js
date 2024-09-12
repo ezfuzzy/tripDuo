@@ -108,6 +108,7 @@ function Signup() {
           setIsNicknameExist(true)
         } else {
           alert("사용 가능한 닉네임 입니다.")
+          setIsNicknameExist(false)
           setIsNicknameUnique(true)
           updateIsAllChecked()
         }
@@ -387,17 +388,18 @@ function Signup() {
               >
                 닉네임<br />중복 확인
               </button>
-              {!isValidNickname && (
-                <p className="mt-2 text-sm text-red-600">
-                  닉네임은 한글, 영어 대소문자, 숫자로 이루어진 2~16자리여야 합니다.
-                </p>
-              )}
-              {isNicknameExist && (
-                <p className="mt-2 text-sm text-red-600">
-                  이미 사용중인 닉네임 입니다.
-                </p>
-              )}
             </div>
+            {!isValidNickname && (
+              <p className="mt-2 text-sm text-red-600">
+                닉네임은 한글, 영어 대소문자, 숫자로 이루어진 2~16자리여야 합니다.
+              </p>
+            )}
+            {isNicknameExist && (
+              <p className="mt-2 text-sm text-red-600">
+                이미 사용중인 닉네임 입니다.
+              </p>
+            )}
+
           </div>
           <div className="sm:col-span-6">
             <label htmlFor="email" className="block text-sm font-semibold leading-6 text-gray-900">
