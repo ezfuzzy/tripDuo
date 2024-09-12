@@ -14,12 +14,13 @@ import com.example.tripDuo.entity.Post;
 import com.example.tripDuo.entity.PostComment;
 import com.example.tripDuo.entity.PostLike;
 import com.example.tripDuo.entity.PostRating;
-import com.example.tripDuo.entity.User;
+import com.example.tripDuo.entity.UserProfileInfo;
 import com.example.tripDuo.enums.PostType;
 import com.example.tripDuo.repository.PostCommentRepository;
 import com.example.tripDuo.repository.PostLikeRepository;
 import com.example.tripDuo.repository.PostRatingRepository;
 import com.example.tripDuo.repository.PostRepository;
+import com.example.tripDuo.repository.UserProfileInfoRepository;
 import com.example.tripDuo.repository.UserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -33,15 +34,17 @@ public class PostServiceImpl implements PostService {
 	private final PostRatingRepository postRatingRepo;
 	
 	private final UserRepository userRepo;
+	private final UserProfileInfoRepository userProfileInfoRepo;
 
 	public PostServiceImpl(PostRepository postRepo, PostCommentRepository postCommentRepo, 
 			PostLikeRepository postLikeRepo, PostRatingRepository postRatingRepo, 
-			UserRepository userRepo) {
+			UserRepository userRepo, UserProfileInfoRepository userProfileInfoRepo) {
 		this.postRepo = postRepo;
 		this.postCommentRepo = postCommentRepo;
 		this.postLikeRepo = postLikeRepo;
 		this.postRatingRepo = postRatingRepo;
 		this.userRepo = userRepo;
+		this.userProfileInfoRepo = userProfileInfoRepo;
 	}
 	
 	@Override
@@ -58,14 +61,15 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public PostDto getPostDetailById(Long postId) {
+	public PostDto getPostDetailById(PostDto dto) {
 		// 글 자세히 보기 페이지에서 필요한 정보 return 
-		PostDto dto = PostDto.toDto(postRepo.findById(postId)
+		PostDto existingDto = PostDto.toDto(postRepo.findById(dto.getId())
 				.orElseThrow(() -> new EntityNotFoundException("Post not found")));
-
+		
+		
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-		dto.setLike(postLikeRepo.existsByPostIdAndUserId(postId, userRepo.findByUsername(username).getId()));
+		dto.setLike(postLikeRepo.existsByPostIdAndUserId(dto.getId(), userRepo.findByUsername(username).getId()));
 		
 		// 댓글 list 
 		
@@ -73,27 +77,27 @@ public class PostServiceImpl implements PostService {
 		// view count + 1
 		
 		dto.setViewCount(dto.getViewCount()+1);
-		postRepo.save(Post.toEntity(dto, userRepo.findById(dto.getUserId()).get()));
+		postRepo.save(Post.toEntity(dto, userProfileInfoRepo.findById(dto.getUserId()).get()));
 		return dto;
 	}
 	
 	
 	@Override
 	public void writePost(PostDto dto) {
-		User user = userRepo.findById(dto.getId()).get();
-		postRepo.save(Post.toEntity(dto, user));
+		UserProfileInfo userProfileInfo = userProfileInfoRepo.findById(dto.getUserId()).get();
+		postRepo.save(Post.toEntity(dto, userProfileInfo));
 	}
 	
 	@Override
 	public PostDto updatePost(PostDto dto) {
 		
-		User user = userRepo.findById(dto.getId()).get();
+		UserProfileInfo userProfileInfo = userProfileInfoRepo.findById(dto.getId()).get();
 
 		// put mapping이니까 정보 삭제 안되게 ... 
 //		PostDto existingPost = PostDto.toDto(postRepo.findById(dto.getId()).get());
 		
 		// 1. 만약 기존의 모든 정보가 그대로 넘어오면
-		postRepo.save(Post.toEntity(dto, user));
+		postRepo.save(Post.toEntity(dto, userProfileInfo));
 		
 		// 2. 만약 기존 정보중 일부만 넘어오면 -> controller에서 setId하고 넘겨준 다음에 로직 실행
 		// 협의하고 코드 짤 부분
@@ -118,9 +122,9 @@ public class PostServiceImpl implements PostService {
 		
 		Post existingPost = postRepo.findById(dto.getPostId())
 	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
-		
+		UserProfileInfo userProfileInfo = userProfileInfoRepo.findByUserId(dto.getUserId());
 		// 댓글 db 저장
-		postCommentRepo.save(PostComment.toEntity(dto));
+		postCommentRepo.save(PostComment.toEntity(dto, userProfileInfo));
 		
 		// post의 댓글 수 update
 		existingPost.setCommentCount(postCommentRepo.countByPostId(existingPost.getId()));
@@ -132,9 +136,9 @@ public class PostServiceImpl implements PostService {
 		
 		Post existingPost = postRepo.findById(dto.getPostId())
 	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
-		
+		UserProfileInfo userProfileInfo = userProfileInfoRepo.findByUserId(dto.getUserId());
 		// 댓글 db 저장
-		postCommentRepo.save(PostComment.toEntity(dto));
+		postCommentRepo.save(PostComment.toEntity(dto, userProfileInfo));
 		
 		// post의 댓글 수 update
 		existingPost.setCommentCount(postCommentRepo.countByPostId(existingPost.getId()));

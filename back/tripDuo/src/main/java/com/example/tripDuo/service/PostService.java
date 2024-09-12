@@ -16,7 +16,7 @@ public interface PostService {
 		// getPostList - 페이징 + 검색
 		public PostDto getPostById(Long postId); // 간단한 
 //		public PostDto getPostByUsername(String username);
-		public PostDto getPostDetailById(Long postId);
+		public PostDto getPostDetailById(PostDto dto);
 		
 		// getPostDetailById - 페이징 + 검색 ... 자세한 정보 + 댓글 
 		

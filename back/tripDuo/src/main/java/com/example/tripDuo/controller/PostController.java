@@ -46,10 +46,11 @@ public class PostController {
 	}	
 	
 	@GetMapping("/{postId:[0-9]+}")
-	public ResponseEntity<PostDto> getPostDetailById(@PathVariable("postId") Long postId) {
+	public ResponseEntity<PostDto> getPostDetailById(@PathVariable("postId") Long postId, PostDto dto) {
 		// 글 자세히 보기 페이지에서 axios할 api end point 
+		dto.setId(postId);
 		try {
-			return ResponseEntity.ok(postService.getPostDetailById(postId));
+			return ResponseEntity.ok(postService.getPostDetailById(dto));
 		} catch (EntityNotFoundException e) {
 	        // 게시글이 존재하지 않는 경우에 대한 처리
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

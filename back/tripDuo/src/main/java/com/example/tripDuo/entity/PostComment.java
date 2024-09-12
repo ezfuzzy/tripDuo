@@ -12,6 +12,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -32,7 +34,10 @@ public class PostComment {
     private Long id;
 
     private long postId;
-    private long userId;
+    
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserProfileInfo userProfileInfo;
 
     private String content;
     
@@ -52,11 +57,11 @@ public class PostComment {
         createdAt = LocalDateTime.now();
     }
 
-    public static PostComment toEntity(PostCommentDto dto) {
+    public static PostComment toEntity(PostCommentDto dto, UserProfileInfo userProfileInfo) {
         return PostComment.builder()
             .id(dto.getId())
             .postId(dto.getPostId() != null ? dto.getPostId() : 0L)
-            .userId(dto.getUserId() != null ? dto.getUserId() : 0L)
+            .userProfileInfo(userProfileInfo)
             .content(dto.getContent())
             .groupId(dto.getGroupId() != null ? dto.getGroupId() : 0L)
             .depth(dto.getDepth() != null ? dto.getDepth() : 0L)
