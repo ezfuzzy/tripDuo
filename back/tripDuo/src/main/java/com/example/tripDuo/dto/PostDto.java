@@ -1,6 +1,7 @@
 package com.example.tripDuo.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.example.tripDuo.entity.Post;
 import com.example.tripDuo.enums.PostStatus;
@@ -43,7 +44,10 @@ public class PostDto {
     private LocalDateTime deletedAt;
     
     
-    // ### for dto ###
+    // ### for app ###
+    
+    private boolean isLike;
+    private List<PostCommentDto> commentList;
     
     private int startRowNum, endRowNum;
     private int pageNum = 1;
