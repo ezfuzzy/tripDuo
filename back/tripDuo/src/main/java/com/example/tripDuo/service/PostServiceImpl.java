@@ -92,10 +92,11 @@ public class PostServiceImpl implements PostService {
 		
 		existingDto.setCondition(dto.getCondition());
 		existingDto.setKeyword(dto.getKeyword());
-		
+
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-		if(username != null) {
+		if(username != null && !username.equals("anonymousUser")) {
+			System.out.println("3-1");
 			existingDto.setLike(postLikeRepo.existsByPostIdAndUserId(existingDto.getId(), userRepo.findByUsername(username).getId()));
 		}
 		
