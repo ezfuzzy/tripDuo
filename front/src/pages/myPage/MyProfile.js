@@ -3,52 +3,56 @@ import 'bootstrap/dist/css/bootstrap.css'
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { shallowEqual, useSelector } from 'react-redux';
+import FroalaEditor from 'react-froala-wysiwyg';
 
 function MyProfile(props) {
     /*
         cur_location, rating, last_login
     */
-    const {id} = useParams() // 프로필 사용자의 id
+    const { id } = useParams() // 프로필 사용자의 id
     const userId = useSelector(state => state.userData.id, shallowEqual) // 접속된 사용자의 id
+    const nickname = useSelector(state => state.userData.nickname, shallowEqual) // 접속된 사용자의 nickname
     const [isProfileOwner, setProfileOwner] = useState(false)
 
     const navigate = useNavigate()
     const [profile, setProfile] = useState({})
     const [imageData, setImageData] = useState(null)
 
-    
+    const [profileComment, setProfileComment] = useState()
 
-    useEffect(()=>{
+
+
+    useEffect(() => {
         axios.get(`/api/v1/users/${id}`)
-        .then(res=>{
-            //불러온 사용자의 정보 저장
-            setProfile(res.data)
-            //불러온 사용자의 정보에 프로필 사진이 있다면 imageData 에 설정
-            if(res.data.profilePicture){
-                setImageData(res.data.profilePicture)
-            }
-            // 접속된 사용자의 정보가 있고, 
-            if(userId || userId === res.data.userId){
-                setProfileOwner(true)
-            }
-        })
-        .catch(error=>console.log(error))
+            .then(res => {
+                //불러온 사용자의 정보 저장
+                setProfile(res.data)
+                //불러온 사용자의 정보에 프로필 사진이 있다면 imageData 에 설정
+                if (res.data.profilePicture) {
+                    setImageData(res.data.profilePicture)
+                }
+                // 접속된 사용자의 정보가 있고, 
+                if (userId === res.data.userId) {
+                    setProfileOwner(true)
+                }
+            })
+            .catch(error => console.log(error))
 
     }, [id])
 
     //이벤트 관리 부
     const handleClick = () => {
         navigate(`/users/${id}/profile/edit`);
-    }    
-    const handleClickFollow = ()=>{
-        
     }
-    const handleCLickRating = ()=>{
+    const handleClickFollow = () => {
+
+    }
+    const handleCLickRating = () => {
 
     }
 
     return (
-        <>  
+        <>
             {/* 전체 div */}
             <div className="container h-screen">
                 {/* 프로필 부분 */}
@@ -57,7 +61,7 @@ function MyProfile(props) {
                         {
                             imageData
                                 ?
-                                 <img src={imageData} className='w-20 h-20 rounded-full' />
+                                <img src={imageData} className='w-20 h-20 rounded-full' />
                                 :
                                 <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="currentColor" className="bi bi-person-circle" viewBox="0 0 16 16">
                                     <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
@@ -69,17 +73,17 @@ function MyProfile(props) {
                             <p className="text-sm font-semibold leading-6 text-indigo-600">{profile.gender} / {profile.age}</p>
                         </div>
                         {
-                            isProfileOwner 
-                            ?
-                            <div>
-                                <button className='btn btn-secondary btn-sm' onClick={handleClick}>프로필 수정하기</button>
-                            </div>
-                            :
-                            <div className='flex '>
-                                <button className='btn btn-primary btn-sm' onClick={handleClickFollow}>팔로우</button>
-                                <button className='btn btn-warning btn-sm ms-2' onClick={handleCLickRating}>평가</button>
-                            </div>
-                            
+                            isProfileOwner
+                                ?
+                                <div>
+                                    <button className='btn btn-secondary btn-sm' onClick={handleClick}>프로필 수정하기</button>
+                                </div>
+                                :
+                                <div className='flex '>
+                                    <button className='btn btn-primary btn-sm' onClick={handleClickFollow}>팔로우</button>
+                                    <button className='btn btn-warning btn-sm ms-2' onClick={handleCLickRating}>평가</button>
+                                </div>
+
                         }
                     </div>
                     {/* sns 아이콘 */}
@@ -110,10 +114,31 @@ function MyProfile(props) {
                     </div>
                     <div className="my-3">
                         <label htmlFor="profileMessage" className="form-label">자기 소개</label>
-                        <textarea name="profileMessage" className="form-control" rows="5" defaultValue={profile.profileMessage} readOnly/>
+                        <div id="profileMessage" className="border border-gray-300 rounded-md p-2 min-h-[100px] overflow-y-auto">{profile.profileMessage}</div>
                     </div>
                 </div>
 
+                {/* 로그인 되어있지 않으면 댓글 기능 막기 */}
+                <div className='flex flex-col mb-3'>
+                    <label htmlFor="commentContent"><strong>Comments for {profile.nickname}</strong></label>
+                    <input type="hidden" name="ref_group" defaultValue={id} />
+                    <input type="hidden" name="target_id" defaultValue={userId} />
+                    <div className='flex'>
+                        <FroalaEditor
+                            model={profileComment}
+                            onModelChange={(e) => setProfileComment()}
+                            config={{
+                                placeholderText: "정확한 장소 혹은 주소, 시간, 인원을 필수로 입력해 주세요.",
+                                toolbarButtons: ['bold', 'italic'],
+                                toolbarBottom : true,
+                                charCounterCount: false,
+                                emoticonsButtons: ["emoticonsBack", "|"],
+                                charCounterMax: 20
+                            }}
+                        ></FroalaEditor>
+                        <button className='flex-basis-16 btn btn-primary' type="submit">등록</button>
+                    </div>
+                </div>
                 {/* 페이지의 정보를 가진 username 과 로그인된 username 이 같으면 ... */}
                 {
                     isProfileOwner &&
