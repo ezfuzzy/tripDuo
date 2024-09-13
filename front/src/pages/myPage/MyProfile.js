@@ -20,7 +20,15 @@ function MyProfile(props) {
     const [profile, setProfile] = useState({});
     const [imageData, setImageData] = useState(null);
 
-    const [profileComment, setProfileComment] = useState();
+    // 리뷰 작성 관련
+    const [userReview, setUserReview] = useState({
+        reviewerId : id,
+        content : ""
+        // tags : [],
+        // rating : 0
+    })
+
+    const maxLength = 3000
 
     useEffect(() => {
         axios
@@ -38,7 +46,7 @@ function MyProfile(props) {
                 }
             })
             .catch((error) => console.log(error));
-    }, [id]);
+    }, [id, userId]);
 
     //이벤트 관리 부
     const handleClick = () => {
@@ -46,9 +54,34 @@ function MyProfile(props) {
     };
     const handleClickFollow = () => { };
     const handleCLickRating = () => { };
-    
-    const handleCommentSubmit = () => {
 
+    // 입력된 리뷰 내용 상태값으로 저장
+    const handleInputReview = (e) => {
+        setUserReview({
+            ...userReview,
+            content : e.target.value
+        })
+    }
+
+    const handleCommentSubmit = (e) => {
+        e.preventDefault()
+
+        userId
+        ?
+        axios.post(`/api/v1/users/${id}/reviews`, userReview)
+            .then(res => {
+                console.log(res.data)
+
+                // 초기화
+                setUserReview({
+                    ...userReview,
+                    content : ""
+                }) 
+            })
+            .catch(error => console.log(error))
+        :
+        alert("로그인 페이지로 이동됩니다.")
+        navigate("/login")
     };
 
     return (
@@ -164,26 +197,30 @@ function MyProfile(props) {
                 </div>
 
                 {/* todo - 로그인 되어있지 않으면 댓글 기능 막기 */}
-                <div className="container rounded-lg border-2 border-gray-300 flex flex-col p-2 mx-auto mt-20">
-                    <div className="m-2">
-                        <label htmlFor="commentContent">
-                            <strong>Comments for {profile.nickname}</strong>
-                        </label>
-                        <input type="hidden" name="ref_group" defaultValue={id} />
-                        <input type="hidden" name="target_id" defaultValue={userId} />
-                        <div className="px-3 mb-2 mt-2">
-                            <textarea className="w-full bg-gray-100 rounded border border-gray-400 leading-normal resize-none h-20 py-2 px-3 font-medium placeholder-gray-700 focus:outline-none focus:bg-white"></textarea>
+                <div className="border-3 rounded-lg p-3 mt-6 mb-6 bg-white">
+                    <div className="font-bold">{nickname}</div>
+                    <form onSubmit={handleCommentSubmit}>
+                        <div className="relative">
+                            <textarea
+                                className="border border-white rounded w-full h-24 p-2"
+                                placeholder={ userId ? "리뷰를 남겨보세요" : "리뷰를 작성하시려면 로그인이 필요합니다."}
+                                value={userReview.content}
+                                maxLength={maxLength}
+                                onChange={handleInputReview}
+                            />
+                            <div className="absolute top-2 right-2 text-gray-500 text-sm">
+                                {userReview.content.length}/{maxLength}
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <button
+                                    type="submit"
+                                    className="text-gray-500 hover:text-gray-700 font-semibold"
+                                >
+                                    등록
+                                </button>
+                            </div>
                         </div>
-                        <div className="flex justify-end px-3">
-                            <button
-                                className="px-2.5 py-1.5 rounded-md text-white text-sm bg-indigo-500"
-                                type="button"
-                                onClick={handleCommentSubmit}
-                            >
-                                등록
-                            </button>
-                        </div>
-                    </div>
+                    </form>
                 </div>
                 {/* 페이지의 정보를 가진 username 과 로그인된 username 이 같으면 ... */}
                 {isProfileOwner && (
@@ -194,9 +231,6 @@ function MyProfile(props) {
                         <p>회원 탈퇴</p>
                         <p>로그인 기록</p>
                         <p>내 활동 기록</p>
-                        <button class="bg-primaryLight hover:bg-primary hover:text-white text-primary text-sm py-2.5 px-5 mr-2 mb-2 rounded-xl transition duration-300">
-            Primary
-        </button>
                     </div>
                 )}
             </div>
