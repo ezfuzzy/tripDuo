@@ -80,8 +80,10 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public Map<String, Object> getPostDetailById(PostDto dto) {
 		// 글 자세히 보기 페이지에서 필요한 정보 return 
-		PostDto existingDto = PostDto.toDto(postRepo.findById(dto.getId())
-				.orElseThrow(() -> new EntityNotFoundException("Post not found")));
+		Post post = postRepo.findById(dto.getId())
+				.orElseThrow(() -> new EntityNotFoundException("Post not found"));
+		
+		PostDto existingDto = PostDto.toDto(post);
 		
 		existingDto.setCondition(dto.getCondition());
 		existingDto.setKeyword(dto.getKeyword());
@@ -103,7 +105,12 @@ public class PostServiceImpl implements PostService {
 		existingDto.setViewCount(existingDto.getViewCount()+1);
 		postRepo.save(Post.toEntity(existingDto, userProfileInfoRepo.findById(existingDto.getUserId()).get()));
 		
-		return Map.of("dto", existingDto, "commentList", commentList, "totalCommentPages", totalCommentPages);
+		return Map.of(
+			"dto", existingDto, 
+			"userProfileInfo", post.getUserProfileInfo(),
+			"commentList", commentList, 
+			"totalCommentPages", totalCommentPages
+		);
 	}
 	
 	
