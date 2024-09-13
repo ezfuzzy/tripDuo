@@ -3,6 +3,7 @@ package com.example.tripDuo.service;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import com.example.tripDuo.dto.PostCommentDto;
 import com.example.tripDuo.dto.PostDto;
 import com.example.tripDuo.dto.PostLikeDto;
 import com.example.tripDuo.dto.PostRatingDto;
+import com.example.tripDuo.dto.UserProfileInfoDto;
 import com.example.tripDuo.entity.Post;
 import com.example.tripDuo.entity.PostComment;
 import com.example.tripDuo.entity.PostLike;
@@ -33,6 +35,9 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class PostServiceImpl implements PostService {
 
+	@Value("${cloud.aws.cloudfront.url}")
+	private String cloudFrontUrl;
+	
 	private final PostRepository postRepo;
 	private final PostCommentRepository postCommentRepo;
 	private final PostLikeRepository postLikeRepo;
@@ -90,7 +95,9 @@ public class PostServiceImpl implements PostService {
 		
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-		existingDto.setLike(postLikeRepo.existsByPostIdAndUserId(existingDto.getId(), userRepo.findByUsername(username).getId()));
+		if(username != null) {
+			existingDto.setLike(postLikeRepo.existsByPostIdAndUserId(existingDto.getId(), userRepo.findByUsername(username).getId()));
+		}
 		
 		// 댓글 list 
 		Sort sort = Sort.by("parentCommentId").ascending().and(Sort.by("createdAt").ascending());
@@ -102,12 +109,14 @@ public class PostServiceImpl implements PostService {
 		
 		// view count + 1
 		
+		UserProfileInfoDto upiDto = UserProfileInfoDto.toDto(post.getUserProfileInfo(), cloudFrontUrl);
+		
 		existingDto.setViewCount(existingDto.getViewCount()+1);
 		postRepo.save(Post.toEntity(existingDto, userProfileInfoRepo.findById(existingDto.getUserId()).get()));
 		
 		return Map.of(
 			"dto", existingDto, 
-			"userProfileInfo", post.getUserProfileInfo(),
+			"userProfileInfo", upiDto,
 			"commentList", commentList, 
 			"totalCommentPages", totalCommentPages
 		);
