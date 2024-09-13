@@ -24,13 +24,21 @@ public interface PostService {
 		public PostDto updatePost(PostDto dto);
 		public void deletePost(Long postId);
 		
-		// ### comment ###
+		/*
+		 * comment, like, rating은 
+		 * write, delete 할때마다 post의 각 count와 rating을 업데이트 하므로 
+		 * get 요청은 따로 없음
+		 * -> 추후 내 comment, like, rating을 조회할 수 있도록 구현할 예정 
+		 */
 		
+		// ### comment ###		
+ 
 		public void writeComment(PostCommentDto dto);
 		public void updateComment(PostCommentDto dto);
 		public void deleteComment(Long commentId);
 		
 		// ### like ###
+		
 		public void addLikeToPost(PostLikeDto dto);
 		public void deleteLikeFromPost(Long likeId);
 		

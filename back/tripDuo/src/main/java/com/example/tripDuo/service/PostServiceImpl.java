@@ -112,6 +112,14 @@ public class PostServiceImpl implements PostService {
 	
 	// ### comment ###
 	
+	/**
+	 * @date : 2024. 9. 13.
+	 * @user : 김민준
+	 * writeComment: comment 추가 post의 commentCount 갱신
+	 * 
+	 * @param dto
+	 * TODO 댓글의 group_id, depth 설정 로직 생각 + 추가 
+	 */
 	@Override
 	@Transactional
 	public void writeComment(PostCommentDto dto) {
@@ -130,20 +138,31 @@ public class PostServiceImpl implements PostService {
 		existingPost.setCommentCount(postCommentRepo.countByPostId(existingPost.getId()));
 	}
 	
+	/**
+	 * @date : 2024. 9. 13.
+	 * @user : 김민준
+	 * updateComment: comment 수정
+	 * 
+	 * @param dto
+	 */
 	@Override
 	@Transactional
 	public void updateComment(PostCommentDto dto) {
 		
-		Post existingPost = postRepo.findById(dto.getPostId())
-	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
 		UserProfileInfo userProfileInfo = userProfileInfoRepo.findByUserId(dto.getUserId());
 		// 댓글 db 저장
 		postCommentRepo.save(PostComment.toEntity(dto, userProfileInfo));
 		
-		// post의 댓글 수 update
-		existingPost.setCommentCount(postCommentRepo.countByPostId(existingPost.getId()));
 	}
 	
+	/**
+	 * @date : 2024. 9. 13.
+	 * @user : 김민준
+	 * deleteComment: comment 삭제 + post의 commentCount 갱신 
+	 * 
+	 * @param commentId
+	 * TODO - 실제로 삭제하는 것이 아닌 deletedAt 에 값을 설정
+	 */
 	@Override
 	@Transactional
 	public void deleteComment(Long commentId) {
@@ -156,6 +175,14 @@ public class PostServiceImpl implements PostService {
 	
 	// ### like ### 
 
+	/**
+	 * @date : 2024. 9. 13.
+	 * @user : 김민준
+	 * addLikeToPost: post에 대한 like정보 추가 + post의 likeCount 갱신
+	 * 
+	 * @param dto
+	 * TODO
+	 */
 	@Override
 	@Transactional
 	public void addLikeToPost(PostLikeDto dto) {
@@ -175,6 +202,14 @@ public class PostServiceImpl implements PostService {
 		existingPost.setLikeCount(postLikeRepo.countByPostId(existingPost.getId()));
 	}
 	
+	/**
+	 * @date : 2024. 9. 13.
+	 * @user : 김민준
+	 * deleteLikeFromPost: post에 대한 like정보 삭제 + post의 likeCount 갱신 
+	 * 
+	 * @param likeId
+	 * TODO
+	 */
 	@Override
 	@Transactional
 	public void deleteLikeFromPost(Long likeId) {
@@ -189,6 +224,13 @@ public class PostServiceImpl implements PostService {
 
 	// ### rating ###
 	
+	/**
+	 * @date : 2024. 9. 13.
+	 * @user : 김민준
+	 * addRatingToPost: post에 대한 rating정보 추가 + post의 rating 갱신 
+	 * 
+	 * @param dto
+	 */
 	@Override
 	@Transactional
 	public void addRatingToPost(PostRatingDto dto) {
@@ -208,6 +250,13 @@ public class PostServiceImpl implements PostService {
 		existingPost.updateRating(postRatingRepo.findAverageRatingByPostId(existingPost.getId()));
 	}
 
+	/**
+	 * @date : 2024. 9. 13.
+	 * @user : 김민준
+	 * updateRatingForPost: post에 대한 rating정보를 update - rating 값이 바뀔 수 있으니 post테이블의 rating 갱신
+	 * 
+	 * @param dto
+	 */
 	@Override
 	@Transactional
 	public void updateRatingForPost(PostRatingDto dto) {
@@ -226,6 +275,13 @@ public class PostServiceImpl implements PostService {
 		existingPost.updateRating(postRatingRepo.findAverageRatingByPostId(existingPost.getId()));
 	}
 	
+	/**
+	 * @date : 2024. 9. 13.
+	 * @user : 김민준
+	 * deleteRatingFromPost: post에 대한 rating정보를 삭제 + post의 rating 갱신
+	 * 
+	 * @param ratingId
+	 */
 	@Override
 	@Transactional
 	public void deleteRatingFromPost(Long ratingId) {
