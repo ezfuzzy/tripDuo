@@ -136,7 +136,7 @@ public class PostController {
 	}
 	
 	@GetMapping("/{postId:[0-9]+}/comments")
-	public Map<String, Object> getCommentList(@PathVariable("num") Long postId, int pageNum) {
+	public Map<String, Object> getCommentList(@PathVariable("postId") Long postId, int pageNum) {
 		PostCommentDto dto = new PostCommentDto();
 		dto.setPostId(postId);
 		dto.setPageNum(pageNum);
