@@ -62,12 +62,12 @@ function MateBoardDetail(props) {
   useEffect(() => {
     axios.get(`/api/v1/posts/${id}`)
       .then((res) => {
-        console.log(res.data);
+        console.log(res.data.dto);
         
         //글 정보 전달 확인
-        setPost(res.data);
+        setPost(res.data.dto);
 
-        const resUserId = res.data.userId  
+        const resUserId = res.data.dto.userId  
 
         //유저 정보 받아서 state 값으로 저장
         axios.get(`/api/v1/users/${resUserId}`)
