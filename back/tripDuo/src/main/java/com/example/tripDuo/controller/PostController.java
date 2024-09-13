@@ -32,6 +32,22 @@ public class PostController {
 	public PostController(PostService postService) {
 		this.postService = postService;
 	}
+
+	@PostMapping("/{postType:[a-zA-Z]+}")
+	public ResponseEntity<String> writePost(@PathVariable("postType") String type, @RequestBody PostDto dto){
+		
+		PostType postType;
+		
+        try {
+            postType = PostType.fromString(type);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid post type: " + type);
+        }
+
+        dto.setType(postType);
+		postService.writePost(dto);
+		return ResponseEntity.ok(dto.toString());
+	}
 	
 	@GetMapping("/{postType:[a-zA-Z]+}")
 	public ResponseEntity<List<PostDto>> getPostList(@PathVariable("postType") String type, PostDto dto) {
@@ -47,8 +63,9 @@ public class PostController {
 	}	
 	
 	@GetMapping("/{postId:[0-9]+}")
-	public ResponseEntity<Map<String, Object>> getPostDetailById(PostDto dto) {
+	public ResponseEntity<Map<String, Object>> getPostDetailById(@PathVariable("postId") Long postId, PostDto dto) {
 		// 글 자세히 보기 페이지에서 axios할 api end point 
+		dto.setId(postId);
 		try {
 			return ResponseEntity.ok(postService.getPostDetailById(dto));
 		} catch (EntityNotFoundException e) {
@@ -72,22 +89,6 @@ public class PostController {
 	        // 기타 예외에 대한 처리
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	    } 
-	}
-	
-	@PostMapping("/{postType:[a-zA-Z]+}")
-	public ResponseEntity<String> writePost(@PathVariable("postType") String type, @RequestBody PostDto dto){
-		
-		PostType postType;
-		
-        try {
-            postType = PostType.fromString(type);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Invalid post type: " + type);
-        }
-
-        dto.setType(postType);
-		postService.writePost(dto);
-		return ResponseEntity.ok(dto.toString());
 	}
 	
 	@PutMapping("/{postId:[0-9]+}")
@@ -142,9 +143,7 @@ public class PostController {
     
 		return postService.getCommentList(dto);
 	}
-	
-	
-	
+		
 	@PutMapping("/{postId:[0-9]+}/comments/{commentId:[0-9]+}")
 	public ResponseEntity<String> updateComment(@RequestBody PostCommentDto dto) {
 		
