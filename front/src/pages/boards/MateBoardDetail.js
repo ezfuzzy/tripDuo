@@ -15,7 +15,6 @@ function MateBoardDetail(props) {
 
   const username = useSelector(state => state.userData.username, shallowEqual); // 로그인된 username
   const userId = useSelector(state => state.userData.id, shallowEqual) // 로그인된 user의 id
-  const [userProfile, setUserProfile] = useState({}) //로그인된 user 의 profile
 
   const [post, setPost] = useState({tags:[]});
   const [isRecruited, setIsRecruited] = useState(false);
@@ -42,7 +41,7 @@ function MateBoardDetail(props) {
 
   const handleLike = ()=>{
       if(username){
-      axios.post(`/api/v1/posts/${id}/likes`, {postId : post.id, userId : userProfile.id})
+      axios.post(`/api/v1/posts/${id}/likes`, {postId : post.id, userId : userId})
       .then(res=>{
         setIsLiked(!isLiked)
         setPost({
@@ -61,17 +60,20 @@ function MateBoardDetail(props) {
   }
 
   useEffect(() => {
-    axios
-      .get(`/api/v1/posts/${id}`)
+    axios.get(`/api/v1/posts/${id}`)
       .then((res) => {
+        console.log(res.data);
+        
         //글 정보 전달 확인
         setPost(res.data);
 
-        const userId = res.data.userId  
+        const resUserId = res.data.userId  
 
         //유저 정보 받아서 state 값으로 저장
-        axios.get(`/api/v1/users/${userId}`)
+        axios.get(`/api/v1/users/${resUserId}`)
         .then(res=>{
+          console.log(res.data);
+          
             //유저 정보 전달 확인
             setWriterProfile(res.data)
       })
@@ -79,20 +81,6 @@ function MateBoardDetail(props) {
       })
       .catch((error) => console.log(error));
   }, [id]);
-
-// 로그인된 유저 정보 불러오기
-  useEffect(()=>{
-    if(username){
-      
-      axios.get(`/api/v1/users/username/${username}`)
-      .then(res=>{
-        setUserProfile(res.data) 
-      })
-      .catch(error=>{
-        console.log(error)
-      })
-  }
-  },[username])
 
   return (
     <>
