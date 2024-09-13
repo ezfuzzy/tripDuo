@@ -7,7 +7,6 @@ import 'froala-editor/css/froala_editor.pkgd.min.css';
             
 import axios from "axios";
 import FroalaEditor from "react-froala-wysiwyg";
-import FroalaEditorView from "react-froala-wysiwyg/FroalaEditorView";
 import { Button } from "react-bootstrap";
 import { shallowEqual, useSelector } from "react-redux";
 
