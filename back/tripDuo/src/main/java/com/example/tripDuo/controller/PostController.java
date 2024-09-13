@@ -1,6 +1,7 @@
 package com.example.tripDuo.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,9 +47,8 @@ public class PostController {
 	}	
 	
 	@GetMapping("/{postId:[0-9]+}")
-	public ResponseEntity<PostDto> getPostDetailById(@PathVariable("postId") Long postId, PostDto dto) {
+	public ResponseEntity<Map<String, Object>> getPostDetailById(PostDto dto) {
 		// 글 자세히 보기 페이지에서 axios할 api end point 
-		dto.setId(postId);
 		try {
 			return ResponseEntity.ok(postService.getPostDetailById(dto));
 		} catch (EntityNotFoundException e) {
@@ -91,20 +91,36 @@ public class PostController {
 	}
 	
 	@PutMapping("/{postId:[0-9]+}")
-	public ResponseEntity<PostDto> editPost(@PathVariable("postId") Long postId, @RequestBody PostDto dto){
-		return ResponseEntity.ok(postService.updatePost(dto));
+	public ResponseEntity<String> updatePost(@RequestBody PostDto dto){
+		
+		try {
+			postService.updatePost(dto);
+			return ResponseEntity.ok("Post is updated successfully");
+		} catch (EntityNotFoundException e) {
+	        // 게시글이 존재하지 않는 경우에 대한 처리
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+	    } catch (Exception e) {
+	        // 기타 예외에 대한 처리
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+	    } 
 	}
 	
 	@DeleteMapping("/{postId:[0-9]+}")
 	public ResponseEntity<String> deletePost(@PathVariable("postId") Long postId){
-		postService.deletePost(postId);
-		return ResponseEntity.ok("Post id deleted");
+		
+		try {
+			postService.deletePost(postId);
+			return ResponseEntity.ok("Post is deleted successfully");
+		} catch (Exception e) {
+	        // 기타 예외에 대한 처리
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+	    } 
 	}
 	
-	// ### comment ###
+	// ### comment ###	
 	
 	@PostMapping("/{postId:[0-9]+}/comments")
-	public ResponseEntity<String> writeComment(@PathVariable("postId") Long postId, @RequestBody PostCommentDto dto) {
+	public ResponseEntity<String> writeComment(@RequestBody PostCommentDto dto) {
 		
 		try {
 			postService.writeComment(dto);
@@ -118,8 +134,19 @@ public class PostController {
 	    } 
 	}
 	
+	@GetMapping("/{postId:[0-9]+}/comments")
+	public Map<String, Object> getCommentList(@PathVariable("num") Long postId, int pageNum) {
+		PostCommentDto dto = new PostCommentDto();
+		dto.setPostId(postId);
+		dto.setPageNum(pageNum);
+    
+		return postService.getCommentList(dto);
+	}
+	
+	
+	
 	@PutMapping("/{postId:[0-9]+}/comments/{commentId:[0-9]+}")
-	public ResponseEntity<String> updateComment(@PathVariable("commentId") Long commentId, @RequestBody PostCommentDto dto) {
+	public ResponseEntity<String> updateComment(@RequestBody PostCommentDto dto) {
 		
 		try {
 			postService.updateComment(dto);
@@ -151,7 +178,7 @@ public class PostController {
 	// ### like ###
 	
 	@PostMapping("/{postId:[0-9]+}/likes")
-	public ResponseEntity<String> addLikeToPost(@PathVariable("postId") Long postId, @RequestBody PostLikeDto dto) {
+	public ResponseEntity<String> addLikeToPost(@RequestBody PostLikeDto dto) {
 
 	    try {
 	        postService.addLikeToPost(dto);
@@ -187,7 +214,7 @@ public class PostController {
 	// ### rating ###
 	
 	@PostMapping("/{postId:[0-9]+}/ratings")
-	public ResponseEntity<String> addRatingToPost(@PathVariable("postId") Long postId, @RequestBody PostRatingDto dto) {
+	public ResponseEntity<String> addRatingToPost(@RequestBody PostRatingDto dto) {
 		
 	    try {
 			postService.addRatingToPost(dto);
@@ -205,7 +232,7 @@ public class PostController {
 	}
 
 	@PutMapping("/{postId:[0-9]+}/ratings/{ratingId:[0-9]+}")
-	public ResponseEntity<String> updateRatingForPost(@PathVariable("ratingId") Long ratingId, @RequestBody PostRatingDto dto) {
+	public ResponseEntity<String> updateRatingForPost(@RequestBody PostRatingDto dto) {
 		
 	    try {
 			postService.updateRatingForPost(dto);

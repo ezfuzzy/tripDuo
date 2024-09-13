@@ -41,9 +41,8 @@ public class PostComment {
 
     private String content;
     
-    private long groupId;
-    private long depth;
-    private Long toUserId;
+    private long parentCommentId;
+    private String toUsername;
 
     @Enumerated(EnumType.STRING)
     private CommentStatus status;
@@ -63,9 +62,8 @@ public class PostComment {
             .postId(dto.getPostId() != null ? dto.getPostId() : 0L)
             .userProfileInfo(userProfileInfo)
             .content(dto.getContent())
-            .groupId(dto.getGroupId() != null ? dto.getGroupId() : 0L)
-            .depth(dto.getDepth() != null ? dto.getDepth() : 0L)
-            .toUserId(dto.getToUserId())
+            .parentCommentId(dto.getParentCommentId() != null ? dto.getParentCommentId() : 0L)
+            .toUsername(dto.getToUsername())
             .status(dto.getStatus())
             .createdAt(dto.getCreatedAt())
             .updatedAt(dto.getUpdatedAt())

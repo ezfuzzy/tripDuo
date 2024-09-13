@@ -21,12 +21,12 @@ public class PostCommentDto {
     private Long postId;
     private Long userId;
     private String writer;
+    private String profilePicture;
     
     private String content;
 
-    private Long groupId;
-    private Long depth;
-    private Long toUserId;
+    private Long parentCommentId;
+    private String toUsername;
 
     private CommentStatus status;
 
@@ -34,16 +34,24 @@ public class PostCommentDto {
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
 
+    // ### for app ###
+    
+    private int startRowNum;
+    private int endRowNum;
+    private int pageNum;
+    
+    
+    
     public static PostCommentDto toDto(PostComment entity) {
         return PostCommentDto.builder()
             .id(entity.getId())
             .postId(entity.getPostId())
             .userId(entity.getUserProfileInfo() != null ? entity.getUserProfileInfo().getId() : null)
             .writer(entity.getUserProfileInfo() != null ? entity.getUserProfileInfo().getNickname() : null)
+            .profilePicture(entity.getUserProfileInfo() != null ? entity.getUserProfileInfo().getProfilePicture() : null)
             .content(entity.getContent())
-            .groupId(entity.getGroupId())
-            .depth(entity.getDepth())
-            .toUserId(entity.getToUserId())
+            .parentCommentId(entity.getParentCommentId())
+            .toUsername(entity.getToUsername())
             .status(entity.getStatus())
             .createdAt(entity.getCreatedAt())
             .updatedAt(entity.getUpdatedAt())
