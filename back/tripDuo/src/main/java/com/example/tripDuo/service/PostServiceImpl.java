@@ -1,7 +1,12 @@
 package com.example.tripDuo.service;
 
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +41,9 @@ public class PostServiceImpl implements PostService {
 	private final UserRepository userRepo;
 	private final UserProfileInfoRepository userProfileInfoRepo;
 
+	final int POST_PAGE_SIZE = 10;
+	final int COMMENT_PAGE_SIZE = 10;
+	
 	public PostServiceImpl(PostRepository postRepo, PostCommentRepository postCommentRepo, 
 			PostLikeRepository postLikeRepo, PostRatingRepository postRatingRepo, 
 			UserRepository userRepo, UserProfileInfoRepository userProfileInfoRepo) {
@@ -47,6 +55,15 @@ public class PostServiceImpl implements PostService {
 		this.userProfileInfoRepo = userProfileInfoRepo;
 	}
 	
+	/**
+	 * @date : 2024. 9. 13.
+	 * @user : 김민준
+	 * getPostList: [함수에 대한 설명을 작성하세요.]
+	 * 
+	 * @param type
+	 * @return
+	 * TODO
+	 */
 	@Override
 	public List<PostDto> getPostList(PostType type) {
 		// type별 get list 
@@ -61,24 +78,32 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public PostDto getPostDetailById(PostDto dto) {
+	public Map<String, Object> getPostDetailById(PostDto dto) {
 		// 글 자세히 보기 페이지에서 필요한 정보 return 
 		PostDto existingDto = PostDto.toDto(postRepo.findById(dto.getId())
 				.orElseThrow(() -> new EntityNotFoundException("Post not found")));
 		
+		existingDto.setCondition(dto.getCondition());
+		existingDto.setKeyword(dto.getKeyword());
 		
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-		dto.setLike(postLikeRepo.existsByPostIdAndUserId(dto.getId(), userRepo.findByUsername(username).getId()));
+		existingDto.setLike(postLikeRepo.existsByPostIdAndUserId(existingDto.getId(), userRepo.findByUsername(username).getId()));
 		
 		// 댓글 list 
+		Sort sort = Sort.by("parentCommentId").ascending().and(Sort.by("createdAt").ascending());
+		Pageable pageable = PageRequest.of(0, COMMENT_PAGE_SIZE, sort);
+		Page<PostComment> page = postCommentRepo.findByPostIdOrderByParentCommentIdAscCreatedAtAsc(dto.getId(), pageable);
+		List<PostCommentDto> commentList = page.stream().map(PostCommentDto::toDto).toList();
 		
+		int totalCommentPages = (int) (existingDto.getCommentCount() / COMMENT_PAGE_SIZE);
 		
 		// view count + 1
 		
-		dto.setViewCount(dto.getViewCount()+1);
-		postRepo.save(Post.toEntity(dto, userProfileInfoRepo.findById(dto.getUserId()).get()));
-		return dto;
+		existingDto.setViewCount(existingDto.getViewCount()+1);
+		postRepo.save(Post.toEntity(existingDto, userProfileInfoRepo.findById(existingDto.getUserId()).get()));
+		
+		return Map.of("dto", existingDto, "commentList", commentList, "totalCommentPages", totalCommentPages);
 	}
 	
 	
@@ -89,9 +114,10 @@ public class PostServiceImpl implements PostService {
 	}
 	
 	@Override
-	public PostDto updatePost(PostDto dto) {
+	public void updatePost(PostDto dto) {
 		
-		UserProfileInfo userProfileInfo = userProfileInfoRepo.findById(dto.getId()).get();
+		UserProfileInfo userProfileInfo = userProfileInfoRepo.findById(dto.getId())
+				.orElseThrow(() -> new EntityNotFoundException("Post not found"));
 
 		// put mapping이니까 정보 삭제 안되게 ... 
 //		PostDto existingPost = PostDto.toDto(postRepo.findById(dto.getId()).get());
@@ -101,8 +127,6 @@ public class PostServiceImpl implements PostService {
 		
 		// 2. 만약 기존 정보중 일부만 넘어오면 -> controller에서 setId하고 넘겨준 다음에 로직 실행
 		// 협의하고 코드 짤 부분
-		
-		return dto; // 정보가 다 들어있는 dto 반환 - 안해줘도 되긴함
 	}
 
 	@Override
@@ -111,6 +135,9 @@ public class PostServiceImpl implements PostService {
 	}
 	
 	// ### comment ###
+	
+
+
 	
 	/**
 	 * @date : 2024. 9. 13.
@@ -124,18 +151,37 @@ public class PostServiceImpl implements PostService {
 	@Transactional
 	public void writeComment(PostCommentDto dto) {
 		
-		// service code 
-		// PostCommentDto를 return해줘야할수도있음 - 댓글 출력 ? 
-		// groupId setting 
-		
 		Post existingPost = postRepo.findById(dto.getPostId())
 	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
 		UserProfileInfo userProfileInfo = userProfileInfoRepo.findByUserId(dto.getUserId());
+
 		// 댓글 db 저장
 		postCommentRepo.save(PostComment.toEntity(dto, userProfileInfo));
 		
 		// post의 댓글 수 update
 		existingPost.setCommentCount(postCommentRepo.countByPostId(existingPost.getId()));
+	}
+	
+	@Override
+	public Map<String, Object> getCommentList(PostCommentDto dto) {
+		
+	    
+	    // 정렬 기준 설정
+	    Sort sort = Sort.by("parentCommentId").ascending().and(Sort.by("createdAt").ascending());
+	    Pageable pageable = PageRequest.of(dto.getPageNum(), COMMENT_PAGE_SIZE, sort);
+
+	    // 댓글 페이지 조회
+	    Page<PostComment> page = postCommentRepo.findByPostIdOrderByParentCommentIdAscCreatedAtAsc(dto.getPostId(), pageable);
+	    List<PostCommentDto> commentList = page.stream().map(PostCommentDto::toDto).toList();
+	    
+	    // 총 페이지 수 계산
+	    int totalCommentPages = page.getTotalPages();
+
+	    // 결과 반환
+	    return Map.of(
+	        "commentList", commentList,
+	        "totalCommentPages", totalCommentPages
+	    );
 	}
 	
 	/**
