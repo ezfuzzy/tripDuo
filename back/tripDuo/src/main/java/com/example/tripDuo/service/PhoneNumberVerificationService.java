@@ -11,6 +11,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Service;
 
+/**
+ * 휴대폰 번호로 인증번호를 전송하는 class
+ * 해시한 6자리 문자열을 전송
+ * TODO : 숫자 6자리로 변경
+ */
 @Service
 public class PhoneNumberVerificationService {
 	
