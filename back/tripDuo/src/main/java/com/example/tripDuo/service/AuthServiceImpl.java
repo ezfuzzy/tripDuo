@@ -94,20 +94,20 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public String login(UserDto dto) throws Exception {
+	public String login(UserDto userDto) throws Exception {
 
-		System.out.println(dto.getUsername() + " " + dto.getPassword());
+		System.out.println(userDto.getUsername() + " " + userDto.getPassword());
 
 		try {
-			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(dto.getUsername(),
-					dto.getPassword());
+			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDto.getUsername(),
+					userDto.getPassword());
 
 			authManager.authenticate(authToken);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "fail to login"; // id or password is wrong
 		}
-		String token = jwtUtil.generateToken(dto.getUsername());
+		String token = jwtUtil.generateToken(userDto.getUsername());
 		return "Bearer+" + token;
 	}
 

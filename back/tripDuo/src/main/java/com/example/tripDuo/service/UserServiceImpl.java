@@ -49,16 +49,24 @@ public class UserServiceImpl implements UserService {
 		this.passwordEncoder = passwordEncoder;
 	}
 
+	/**
+	 * @date : 2024. 9. 14.
+	 * @user : 김민준
+	 * getUserList : admin dashboard 페이지에서 호출할 api
+	 *
+	 * @return
+	 * TODO : role이나 조건, 검색등의 옵션도 제공 예정
+	 */
 	@Override
 	public List<UserDto> getUserList() {
 	    return userRepo.findAll().stream()
 	        .map(user -> UserDto.toDto(user))
 	        .toList();
 	}
-	
+
 	@Override
-	public UserDto getUserById(Long id) {
-		return UserDto.toDto(userRepo.findById(id).get());
+	public UserDto getUserById(Long userId) {
+		return UserDto.toDto(userRepo.findById(userId).get());
 	}
 
 	@Override
@@ -77,8 +85,8 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	@Override
-	public UserProfileInfoDto getUserProfileInfoById(Long id) {
-		User user = userRepo.findById(id).get();
+	public UserProfileInfoDto getUserProfileInfoById(Long userId) {
+		User user = userRepo.findById(userId).get();
 		if(user == null) {
 			return null;
 		}
@@ -92,7 +100,6 @@ public class UserServiceImpl implements UserService {
 		
 	}
 
-	
 	@Override	
 	public UserProfileInfoDto getUserProfileInfoByUsername(String username) {
 		
@@ -109,7 +116,15 @@ public class UserServiceImpl implements UserService {
         return UserProfileInfoDto.toDto(userProfileInfo, cloudFrontUrl);
 	}
 
-	
+	/**
+	 * @date : 2024. 9. 14.
+	 * @user : 김민준
+	 * checkExists : 중복체크 메소드
+	 *
+	 * @param checkType
+	 * @param checkString
+	 * @return
+	 */
 	@Override
 	public Boolean checkExists(String checkType, String checkString) {
 		return switch (checkType) {
@@ -121,52 +136,82 @@ public class UserServiceImpl implements UserService {
 		};
 	}
 
+	/**
+	 * @date : 2024. 9. 14.
+	 * @user : 김민준
+	 * updateUserPrivateInfo : user 엔티티의 정보 변경 메소드
+	 *
+	 * @param userDto
+	 */
 	@Override
-	public void updateUserPrivateInfo(UserDto dto) {
+	public void updateUserPrivateInfo(UserDto userDto) {
 		// TODO
 	}
 
-
+	/**
+	 * @date : 2024. 9. 14.
+	 * @user : 김민준
+	 * updateUserPassword : password 변경 메소드
+	 *
+	 * @param userDto
+	 * @return
+	 */
 	@Override
-	public Boolean updateUserPassword(UserDto dto) {
+	public Boolean updateUserPassword(UserDto userDto) {
 
-		if(!dto.getNewPassword().equals(dto.getConfirmPassword())) {
+		if(!userDto.getNewPassword().equals(userDto.getConfirmPassword())) {
 			return false;
 		}
 
-		UserDto existingUser = UserDto.toDto(userRepo.findByUsername(dto.getUsername()));
-		// 입력된 비밀번호(dto.getPassword())와 기존 비밀번호(existingUser.getPassword()) 비교
-		if (!passwordEncoder.matches(existingUser.getPassword(), dto.getPassword())) {
+		UserDto existingUser = UserDto.toDto(userRepo.findByUsername(userDto.getUsername()));
+		// 입력된 비밀번호(userDto.getPassword())와 기존 비밀번호(existingUser.getPassword()) 비교
+		if (!passwordEncoder.matches(existingUser.getPassword(), userDto.getPassword())) {
 			return false;
 			//throw new Exception("기존 비밀번호가 일치하지 않습니다.");
 		}
 
-		String encodedNewPassword = passwordEncoder.encode(dto.getNewPassword());
-		dto.setPassword(encodedNewPassword);
-		userRepo.save(User.toEntity(dto));
+		String encodedNewPassword = passwordEncoder.encode(userDto.getNewPassword());
+		userDto.setPassword(encodedNewPassword);
+		userRepo.save(User.toEntity(userDto));
 
 		return true;
 	}
 
+	/**
+	 * @date : 2024. 9. 14.
+	 * @user : 김민준
+	 * resetUserPassword : 비밀번호 초기화 메소드
+	 *
+	 * @param userDto
+	 * @return
+	 */
 	@Override
-	public Boolean resetUserPassword(UserDto dto) {
+	public Boolean resetUserPassword(UserDto userDto) {
 
-		UserDto userInfo = UserDto.toDto(userRepo.findById(dto.getId()).get());
+		UserDto userInfo = UserDto.toDto(userRepo.findById(userDto.getId()).get());
 
 		// 새 비밀번호와 새 비밀번호 확인이 일치하는지 확인
-		if (!dto.getNewPassword().equals(dto.getConfirmPassword())) {
+		if (!userDto.getNewPassword().equals(userDto.getConfirmPassword())) {
 			return false;
 		}
 
-		String encodedNewPassword = passwordEncoder.encode(dto.getNewPassword());
+		String encodedNewPassword = passwordEncoder.encode(userDto.getNewPassword());
 		userInfo.setPassword(encodedNewPassword);
 		userRepo.save(User.toEntity(userInfo));
 
 		return true;
 	}
 
+	/**
+	 * @date : 2024. 9. 14.
+	 * @user : 김민준
+	 * updateUserProfileInfo : UserProfileInfo 엔티티의 정보 변경 메소드
+	 *
+	 * @param userProfileInfoDto
+	 * @param profileImgForUpload
+	 */
 	@Override
-	public void updateUserProfileInfo(UserProfileInfoDto dto, MultipartFile profileImgForUpload) {
+	public void updateUserProfileInfo(UserProfileInfoDto userProfileInfoDto, MultipartFile profileImgForUpload) {
 
 		// 허용된 파일 확장자 목록
 	    Set<String> allowedExtensions = new HashSet<>(Arrays.asList(
@@ -200,20 +245,20 @@ public class UserServiceImpl implements UserService {
 	            throw new IllegalArgumentException("허용되지 않는 MIME 타입입니다.");
 	        }
 	    	
-	        // s3에 저장되는 profilePicture ( 파일 이름.확장자 ) dto에 저장
-	        dto.setProfilePicture(s3Service.uploadFile(profileImgForUpload));
+	        // s3에 저장되는 profilePicture ( 파일 이름.확장자 ) userProfileInfoDto에 저장
+	        userProfileInfoDto.setProfilePicture(s3Service.uploadFile(profileImgForUpload));
 	    }
 
-	    User user = userRepo.findById(dto.getUserId()).get();
+	    User user = userRepo.findById(userProfileInfoDto.getUserId()).get();
 	    
 	    // 변경된 정보를 저장
-	    userProfileInfoRepo.save(UserProfileInfo.toEntity(dto, user));
+	    userProfileInfoRepo.save(UserProfileInfo.toEntity(userProfileInfoDto, user));
 
 	}
 	
 	@Override
-	public void deleteUser(Long id) {
-		userRepo.deleteById(id);
+	public void deleteUser(Long userId) {
+		userRepo.deleteById(userId);
 	}
 
 	@Override
