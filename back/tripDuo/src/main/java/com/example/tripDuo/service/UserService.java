@@ -42,11 +42,15 @@ public interface UserService {
 	public void deleteUser(Long id);
 	
 	// ### follow ###
-	public void addFollow(UserFollowDto dto);
-	public void deleteFollow(Long id);
+	public List<Long> getFolloweeUserIdList(Long followerUserId);
+	public List<Long> getFollowerUserIdList(Long followeeUserId);
+	public void addFollowOrBlock(UserFollowDto userFollowDto);
+	public void deleteFollowOrBlock(UserFollowDto userFollowDto);
 	
 	// ### review ###
 	public void addReview(UserReviewDto dto);
 	public void deleteReview(Long id);
 	public void updateReview(UserReviewDto dto);
+
+	
 }

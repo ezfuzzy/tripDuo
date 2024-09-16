@@ -29,117 +29,148 @@ public class UserController {
 
 	private final UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-	
+	public UserController(UserService userService) {
+		this.userService = userService;
+	}
+
 	@GetMapping
-	public ResponseEntity<List<UserDto>>users_List() {
+	public ResponseEntity<List<UserDto>> users_List() {
 		return ResponseEntity.ok(userService.getUserList());
 	}
-	
+
 	@GetMapping("/{id:[0-9]+}")
-    public ResponseEntity<UserProfileInfoDto> getUserProfileInfoById(@PathVariable Long id) {
-        
-    	UserProfileInfoDto userProfileInfoDto = userService.getUserProfileInfoById(id);
-        if (userProfileInfoDto != null) {
-            return ResponseEntity.ok(userProfileInfoDto);
-        } else {
-            return ResponseEntity.notFound().build();  // 유저가 없으면 404 반환
-        }
-    }
+	public ResponseEntity<UserProfileInfoDto> getUserProfileInfoById(@PathVariable Long id) {
 
-    @GetMapping("/username/{username:[a-z0-9]+}")
-    public ResponseEntity<UserProfileInfoDto> getUserProfileInfoByUsername(@PathVariable("username") String username) {
-    	UserProfileInfoDto userProfileInfoDto = userService.getUserProfileInfoByUsername(username);
-        if (userProfileInfoDto != null) {
-            return ResponseEntity.ok(userProfileInfoDto);
-        } else {
-            return ResponseEntity.notFound().build();  // 유저가 없으면 404 반환
-        }
-    }
+		UserProfileInfoDto userProfileInfoDto = userService.getUserProfileInfoById(id);
+		if (userProfileInfoDto != null) {
+			return ResponseEntity.ok(userProfileInfoDto);
+		} else {
+			return ResponseEntity.notFound().build(); // 유저가 없으면 404 반환
+		}
+	}
 
-    @PostMapping("/check/{checkType}")
-    public ResponseEntity<Boolean> checkUser(@PathVariable("checkType") String checkType, @RequestBody String checkString) {
-    	if(checkType == "nickname") {
-    		String nickname = URLDecoder.decode(checkString, StandardCharsets.UTF_8);
-    		checkString = nickname;       
-    	}
-    	return ResponseEntity.ok(userService.checkExists(checkType, checkString));
-    }
+	@GetMapping("/username/{username:[a-z0-9]+}")
+	public ResponseEntity<UserProfileInfoDto> getUserProfileInfoByUsername(@PathVariable("username") String username) {
+		UserProfileInfoDto userProfileInfoDto = userService.getUserProfileInfoByUsername(username);
+		if (userProfileInfoDto != null) {
+			return ResponseEntity.ok(userProfileInfoDto);
+		} else {
+			return ResponseEntity.notFound().build(); // 유저가 없으면 404 반환
+		}
+	}
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UserProfileInfoDto> updateUserInfo(@PathVariable Long id,@RequestParam(required = false) MultipartFile profileImgForUpload, UserProfileInfoDto dto) {
-        // 사용자 정보 업데이트
-       userService.updateUserProfileInfo(dto, profileImgForUpload);
-       
-       return ResponseEntity.ok(dto);
-    }
+	@PostMapping("/check/{checkType}")
+	public ResponseEntity<Boolean> checkUser(@PathVariable("checkType") String checkType,
+			@RequestBody String checkString) {
+		if (checkType == "nickname") {
+			String nickname = URLDecoder.decode(checkString, StandardCharsets.UTF_8);
+			checkString = nickname;
+		}
+		return ResponseEntity.ok(userService.checkExists(checkType, checkString));
+	}
 
-    @PutMapping("/{id}/change-password")
-    public ResponseEntity<Boolean> updateUserPassword(@PathVariable Long id, @RequestBody UserDto userDto) {
-        userDto.setId(id);
-        // 사용자 비밀번호 업데이트
-        return ResponseEntity.ok(userService.updateUserPassword(userDto));
-    }
+	@PutMapping("/{id}")
+	public ResponseEntity<UserProfileInfoDto> updateUserInfo(@PathVariable Long id,
+			@RequestParam(required = false) MultipartFile profileImgForUpload, UserProfileInfoDto dto) {
+		// 사용자 정보 업데이트
+		userService.updateUserProfileInfo(dto, profileImgForUpload);
 
-    @PostMapping("/{id}/reset-password")
-    public ResponseEntity<Boolean> resetUserPassword(@PathVariable Long id, @RequestBody UserDto userDto) {
-        userDto.setId(id);
-        return ResponseEntity.ok(userService.resetUserPassword(userDto));
-    }
+		return ResponseEntity.ok(dto);
+	}
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-    	return ResponseEntity.ok(id + " user is deleted");
-    }
-    
-    // ### follow ###
-    
-    @PostMapping("/{id}/follows/{type}")
-    public ResponseEntity<String> addFollow(@PathVariable("id") Long id, @PathVariable("type") String type, @RequestBody UserFollowDto dto) {
-    	dto.setFolloweeUserId(id);
-    	
-		FollowType followType;
+	@PutMapping("/{id}/change-password")
+	public ResponseEntity<Boolean> updateUserPassword(@PathVariable Long id, @RequestBody UserDto userDto) {
+		userDto.setId(id);
+		// 사용자 비밀번호 업데이트
+		return ResponseEntity.ok(userService.updateUserPassword(userDto));
+	}
+
+	@PostMapping("/{id}/reset-password")
+	public ResponseEntity<Boolean> resetUserPassword(@PathVariable Long id, @RequestBody UserDto userDto) {
+		userDto.setId(id);
+		return ResponseEntity.ok(userService.resetUserPassword(userDto));
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+		userService.deleteUser(id);
+		return ResponseEntity.ok(id + " user is deleted");
+	}
+
+	// ### follow ###
+
+	@GetMapping("/{followerUserId}/followees")
+	public ResponseEntity<List<Long>> getFolloweeUserIdList(@PathVariable("followerUserId") Long followerUserId) {
 		
-        try {
-        	followType = FollowType.fromString(type);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Invalid post type: " + type);
-        }
+		List<Long> followeeUserIdList = userService.getFolloweeUserIdList(followerUserId);
+		return ResponseEntity.ok(followeeUserIdList);
+	}
 
-        dto.setFollowType(followType);
-    	
-    	userService.addFollow(dto);
-    	return ResponseEntity.ok("Follow added successfully");
-    }
-    
-    @DeleteMapping("/{id}/follows")
-    public ResponseEntity<String> deleteFollow(@PathVariable Long id){
-    	userService.deleteFollow(id);
-    	return ResponseEntity.ok("Follow deleted successfully");
-    }
-	
-    // ### review ###
-    
-    @PostMapping("/{id}/reviews")
-    public ResponseEntity<String> addReview(@PathVariable Long id, @RequestBody UserReviewDto dto){
-    	dto.setRevieweeId(id);
-    	userService.addReview(dto);
-    	return ResponseEntity.ok("Review added successfully");
-    }
-    
-    @DeleteMapping("/{id}/reviews")
-    public ResponseEntity<String> deleteReview(@PathVariable Long id){
-    	userService.deleteReview(id);
-    	return ResponseEntity.ok("Review deleted successfully");
-    }
-    
-    @PutMapping("/{id}/reviews")
-    public ResponseEntity<String> updateReview(@PathVariable Long id, @RequestBody UserReviewDto dto){
-    	dto.setId(id);
-    	userService.updateReview(dto);
-    	return ResponseEntity.ok("Review updated successfully");
-    }
+	@GetMapping("/{followeeUserId}/followers")
+	public ResponseEntity<List<Long>> getFollowerUserIdList(@PathVariable("followeeUserId") Long followeeUserId) {
+		
+		List<Long> followerUserIdList = userService.getFollowerUserIdList(followeeUserId);
+		return ResponseEntity.ok(followerUserIdList);
+	}
+
+	@PostMapping("/follow/{followType}")
+	public ResponseEntity<String> addFollowOrBlock(@PathVariable("followType") String type,
+			@RequestBody UserFollowDto userFollowDto) {
+		
+		FollowType followType;
+
+		try {
+			followType = FollowType.fromString(type);
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.badRequest().body("Invalid post type: " + type);
+		}
+
+		userFollowDto.setFollowType(followType);
+		
+		userService.addFollowOrBlock(userFollowDto);
+
+		return ResponseEntity.ok(type + "ed successfully");
+	}
+
+	@DeleteMapping("/follow/{followType}")
+	public ResponseEntity<String> deleteFollowOrBlock(@PathVariable("followType") String type,
+			@RequestBody UserFollowDto userFollowDto) {
+		
+		FollowType followType;
+
+		try {
+			followType = FollowType.fromString(type);
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.badRequest().body("Invalid post type: " + type);
+		}
+		
+		userFollowDto.setFollowType(followType);
+		
+		userService.deleteFollowOrBlock(userFollowDto);
+		
+		return ResponseEntity.ok("un" + type + "ed successfully");
+	}
+
+	// ### review ###
+
+	@PostMapping("/{id}/reviews")
+	public ResponseEntity<String> writeReview(@PathVariable Long id, @RequestBody UserReviewDto dto) {
+		dto.setRevieweeId(id);
+		userService.addReview(dto);
+		return ResponseEntity.ok("Review added successfully");
+	}
+
+	@PutMapping("/{id}/reviews")
+	public ResponseEntity<String> updateReview(@PathVariable Long id, @RequestBody UserReviewDto dto) {
+		dto.setId(id);
+		userService.updateReview(dto);
+		return ResponseEntity.ok("Review updated successfully");
+	}
+
+	@DeleteMapping("/{id}/reviews")
+	public ResponseEntity<String> deleteReview(@PathVariable Long id) {
+		userService.deleteReview(id);
+		return ResponseEntity.ok("Review deleted successfully");
+	}
+
 }

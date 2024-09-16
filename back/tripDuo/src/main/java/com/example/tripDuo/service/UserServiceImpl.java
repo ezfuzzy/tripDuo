@@ -18,6 +18,7 @@ import com.example.tripDuo.entity.User;
 import com.example.tripDuo.entity.UserFollow;
 import com.example.tripDuo.entity.UserProfileInfo;
 import com.example.tripDuo.entity.UserReview;
+import com.example.tripDuo.enums.FollowType;
 import com.example.tripDuo.repository.UserFollowRepository;
 import com.example.tripDuo.repository.UserProfileInfoRepository;
 import com.example.tripDuo.repository.UserRepository;
@@ -261,14 +262,55 @@ public class UserServiceImpl implements UserService {
 		userRepo.deleteById(userId);
 	}
 
+	/**
+	 * @date : 2024. 9. 15.
+	 * @user : 유병한
+	 * getFolloweeUserIds: 내가 팔로우한 유저들 id 받아오기
+	 * 
+	 * @param followerUserId
+	 * @return List<Long>
+	 * TODO
+	 */
 	@Override
-	public void addFollow(UserFollowDto dto) {
-		userFollowRepo.save(UserFollow.toEntity(dto));
+	public List<Long> getFolloweeUserIdList(Long followerUserId) {
+		return userFollowRepo.findFolloweeUserIdsByFollowerUserIdAndFollowType(followerUserId, FollowType.FOLLOW);
 	}
-	
+
+	/**
+	 * @date : 2024. 9. 15.
+	 * @user : 유병한
+	 * getFollowerUserIds: 나를 팔로우한 유저들 id 받아오기
+	 * 
+	 * @param followeeUserId
+	 * @return List<Long>
+	 */
 	@Override
-	public void deleteFollow(Long id) {
-		userFollowRepo.deleteById(id);
+	public List<Long> getFollowerUserIdList(Long followeeUserId) {
+		return userFollowRepo.findFollowerUserIdsByFolloweeUserIdAndFollowType(followeeUserId, FollowType.FOLLOW);
+	}
+
+	/**
+	 * @date : 2024. 9. 15.
+	 * @user : 유병한
+	 * addFollowOrBlock: 팔로우/차단 하기
+	 * 
+	 * @param userFollowDto
+	 */
+	@Override
+	public void addFollowOrBlock(UserFollowDto userFollowDto) {
+		userFollowRepo.save(UserFollow.toEntity(userFollowDto));
+	}
+
+	/**
+	 * @date : 2024. 9. 15.
+	 * @user : 유병한
+	 * deleteFollowOrBlock: 팔로우/차단 해제하기
+	 * 
+	 * @param userFollowDto
+	 */
+	@Override
+	public void deleteFollowOrBlock(UserFollowDto userFollowDto) {
+		userFollowRepo.deleteByFolloweeUserIdAndFollowTypeAndFollowerUserId(userFollowDto.getFolloweeUserId(), userFollowDto.getFollowType(), userFollowDto.getFollowerUserId());
 	}
 
 	@Override
