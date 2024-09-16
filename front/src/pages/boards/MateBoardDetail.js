@@ -2,7 +2,7 @@ import { faEye, faHeart, faMessage } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import axios from "axios"
 import React, { useEffect, useState } from "react"
-import { Button, Card } from "react-bootstrap"
+import { Card } from "react-bootstrap"
 import { shallowEqual, useSelector } from "react-redux"
 import { useNavigate, useParams } from "react-router"
 import { NavLink } from "react-router-dom"
@@ -23,10 +23,12 @@ function MateBoardDetail(props) {
   const [isLiked, setLiked] = useState(false)
   const [commentList, setCommentList] = useState([])
   const [totalCommentPages, setTotalCommentPages] = useState(0)
-  
+
   const navigate = useNavigate()
 
-  const buttonClasses = ` btn btn-sm ${isRecruited ? "btn-secondary" : "btn-success"}`
+  const buttonClasses = `px-4 py-2 text-sm font-medium rounded-md ${
+    isRecruited ? 'bg-gray-200 text-gray-800' : 'bg-green-500 text-white'
+  }`;
 
   useEffect(() => {
     axios
@@ -100,9 +102,8 @@ function MateBoardDetail(props) {
           {/* 내 게시물이 아닌경우에만 좋아요 버튼 보여주기 */}
           {userId !== post.userId && (
             <button
-              className={`mx-3 ${
-                isLiked ? "bg-pink-600" : "bg-pink-400"
-              } text-white active:bg-emerald-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
+              className={`mx-3 ${isLiked ? "bg-pink-600" : "bg-pink-400"
+                } text-white active:bg-emerald-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
               type="button"
               disabled={isLiked}
               onClick={handleLike}>
@@ -155,7 +156,9 @@ function MateBoardDetail(props) {
               </p>
             </div>
             <div>
-              <button className="btn btn-secondary btn-sm" onClick={handleClick}>
+              <button type="button"
+                className="text-white bg-gray-500 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-3 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
+                onClick={handleClick}>
                 프로필 보기
               </button>
             </div>
@@ -170,29 +173,45 @@ function MateBoardDetail(props) {
 
         <div dangerouslySetInnerHTML={{ __html: post.content }}></div>
 
-        <Card style={{ width: "18rem" }}>
-          <Card.Body>
-            <Card.Title>
-              {post.country} / {post.city}
-            </Card.Title>
-            <Card.Subtitle className="mb-2 text-muted">태그 / {post.tags}</Card.Subtitle>
-            <Card.Text>저녁 7시 30분 tmp 역 앞 test 카페</Card.Text>
-            <Button className={buttonClasses} onClick={handleRecruit}>
-              {isRecruited ? "취소하기" : "신청하기"}
-            </Button>
-          </Card.Body>
-        </Card>
+        {/* 카드 */}
+        <div class="mt-20 max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">
+              {post.country} / {post.city}</h5>
+
+          <p class="mb-3 font-normal text-gray-500">
+            tag.
+            {post.tags &&
+            post.tags.map((tag, index) => (
+              <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center">
+                {tag}
+              </span>
+            ))}</p>
+
+            <p class="mb-3 font-normal text-gray-700">
+              저녁 7시 30분 -역 앞 -카페 
+            </p>
+
+
+          <button className={buttonClasses} onClick={handleRecruit}>
+            {isRecruited ? "취소하기" : "신청하기"}
+          </button>
+
+        </div>
+
       </div>
 
       {
         // 로그인된 username 과 post의 userId 로 불러온 작성자 아이디가 동일하면 랜더링
         userId === post.userId && (
           <div className="container mt-3">
-            <Button className="m-1" onClick={() => navigate(`/posts/mate/${id}/edit`)}>
+            <button type="button"
+              className="m-1 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+              onClick={() => navigate(`/posts/mate/${id}/edit`)}>
               수정
-            </Button>
-            <Button
-              className="m-1"
+            </button>
+            <button
+              type="button"
+              className="m-1 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
               onClick={() => {
                 axios
                   .delete(`/api/v1/posts/${id}`)
@@ -206,7 +225,7 @@ function MateBoardDetail(props) {
                   .catch((error) => console.log(error))
               }}>
               삭제
-            </Button>
+            </button>
           </div>
         )
       }
