@@ -148,8 +148,8 @@ function NavBar() {
             </nav>
 
             {/* Tabs */}
-            <div class="border-b border-gray-200">
-                <ul class="flex flex-wrap justify-around -mb-px text-sm font-medium text-center text-gray-500 ">
+            <div className="border-b border-gray-200">
+                <ul className="flex flex-wrap justify-around -mb-px text-sm font-medium text-center text-gray-500 ">
                     <li className="mx-2">
                         <NavLink className="font-bold text-lg inline-flex items-center justify-center p-3 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 group"
                             style={{
