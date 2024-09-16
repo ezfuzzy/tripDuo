@@ -165,7 +165,7 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public void updatePost(PostDto postDto) {
 		
-		UserProfileInfo userProfileInfo = userProfileInfoRepo.findById(postDto.getId())
+		UserProfileInfo userProfileInfo = userProfileInfoRepo.findById(postDto.getUserId())
 				.orElseThrow(() -> new EntityNotFoundException("Post not found"));
 
 		// put mapping이니까 정보 삭제 안되게 ... 
