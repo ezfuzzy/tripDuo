@@ -211,7 +211,7 @@ function NavBar() {
                             {isLoggedIn ? '로그아웃' : '로그인/회원가입'}
                         </button>
                     </h5>
-                    <button className="text-lg" onClick={() => document.getElementById('staticBackdrop').classList.add('hidden')}>X</button>
+                    <button className="text-lg" onClick={() => offcanvasRef.current.classList.add('hidden')}>X</button>
                 </div>
 
                 <div className="p-4">
