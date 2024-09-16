@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import AlertModal from "./AlertModal";
@@ -8,6 +8,8 @@ import { faBars, faBell, faPeoplePulling, faPersonSwimming, faPersonThroughWindo
 
 function NavBar() {
     const username = useSelector(state => state.userData.username, shallowEqual);
+    const profilePicture = useSelector(state => state.userData.profilePicture, shallowEqual);
+    const userId = useSelector(state => state.userData.id, shallowEqual);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();
@@ -16,8 +18,14 @@ function NavBar() {
     const [openSections, setOpenSections] = useState({});
     const [lastVisited, setLastVisited] = useState('/');
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [profile, setProfile] = useState({});
     const [kakaoId, setKakaoId] = useState(null);
+
+    // off-canvas ref
+    const offcanvasRef = useRef(null);
+
+    // NavLink 공통 css
+    // to do : 모듈 사용으로 컴포넌트별 css 설정  || 글로벌 css 관리로 요소별 css 통일 || styled 기능 활용
+    const offCanvasNavLinkStyle = "hover:bg-gray-100 cursor-pointer text-black no-underline"
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -32,6 +40,25 @@ function NavBar() {
             setIsLoggedIn(false);
         }
     }, [username]);
+
+    useEffect(() => {
+        if (location.pathname === '/home-abroad' || location.pathname === '/') {
+            setLastVisited(location.pathname);
+        }
+    }, [location.pathname]);
+
+    // off-canvas 바깥 클릭 감지
+    useEffect(() => {
+        const handleOutsideClick = (event) => {
+          if (offcanvasRef.current && !offcanvasRef.current.contains(event.target) && !event.target.closest('.offcanvas-toggle')) {
+            offcanvasRef.current.classList.add('hidden');
+          }
+        };
+    
+        document.addEventListener('mousedown', handleOutsideClick);
+    
+        return () => document.removeEventListener('mousedown', handleOutsideClick);
+      }, []);
 
     const toggleSection = (section) => {
         setOpenSections(prevState => ({
@@ -99,30 +126,23 @@ function NavBar() {
         navigate(lastVisited);
     };
 
-    useEffect(() => {
-        if (username) {
-            axios.get(`/api/v1/users/username/${username}`)
-                .then(res => {
-                    console.log(res);
-                    setProfile(res.data);
-                })
-                .catch(error => console.log(error));
+    // 링크 클릭시 off-canvas 닫기 로직
+    const closeOffCanvas = () => {
+        const offcanvasElement = document.getElementById('staticBackdrop');
+        if (offcanvasElement) {
+            offcanvasElement.classList.add('hidden');
         }
-    }, [username]);
+    };
 
-    useEffect(() => {
-        if (location.pathname === '/home-abroad' || location.pathname === '/') {
-            setLastVisited(location.pathname);
-        }
-    }, [location.pathname]);
 
     return (
         <>
             <AlertModal show={alertShow} message={"로그아웃 되었습니다"} yes={handleYes} />
 
+            {/* 글로벌 네비게이션 바 */}
             <nav className="bg-white p-4 shadow-md flex justify-between items-center">
                 {/* Off-canvas toggle button */}
-                <button type="button" className="text-gray-600 pl-20" onClick={() => document.getElementById('staticBackdrop').classList.toggle('hidden')}>
+                <button type="button" className="text-gray-600 pl-20" onClick={() => offcanvasRef.current.classList.toggle('hidden')}>
                     <FontAwesomeIcon icon={faBars} className="h-5 w-5 mr-2" />
                 </button>
 
@@ -134,9 +154,9 @@ function NavBar() {
                     {isLoggedIn && (
                         <>
                             <FontAwesomeIcon icon={faBell} className="h-5 w-5 mr-2" />
-                            <NavLink className="mx-3" to={`/users/${profile.id}`}>
-                                {profile.profilePicture
-                                    ? <img src={profile.profilePicture} className="w-8 h-8 rounded-full" alt="Profile" />
+                            <NavLink className="mx-3" to={`/users/${userId}`}>
+                                {profilePicture
+                                    ? <img src={profilePicture} className="w-8 h-8 rounded-full" alt="Profile" />
                                     : <FontAwesomeIcon icon={faUser} color="black" className="h-5 w-5 mr-2" />}
                             </NavLink>
                         </>
@@ -184,7 +204,7 @@ function NavBar() {
             </div>
 
             {/* Off-canvas */}
-            <div className="fixed top-0 left-0 w-64 bg-white shadow-lg h-full hidden" id="staticBackdrop">
+            <div ref={offcanvasRef} className="fixed top-0 left-0 w-64 bg-white shadow-lg h-full hidden">
                 <div className="p-4 border-b flex justify-between">
                     <h5>
                         <button className="text-lg font-semibold" onClick={handleLoginLogoutClick}>
@@ -201,7 +221,7 @@ function NavBar() {
                             {openSections.domestic && (
                                 <div className="pl-4">
                                     <div>여행 기록</div>
-                                    <div className="hover:bg-gray-100 cursor-pointer" onClick={() => navigate("/posts/course")}>여행 계획</div>
+                                    <div><NavLink to={"/posts/course"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>여행 계획</NavLink></div>
                                     <div>여행 메이트</div>
                                     <div>여행 정보</div>
                                     <div>커뮤니티</div>
@@ -213,8 +233,8 @@ function NavBar() {
                             <button className="font-bold" onClick={() => toggleSection('travelMate')}>여행 메이트</button>
                             {openSections.travelMate && (
                                 <div className="pl-4">
-                                    <div className="hover:bg-gray-100 cursor-pointer" onClick={() => { navigate(`/posts/mate?di=Domestic`) }}>국내 메이트 게시판</div>
-                                    <div className="hover:bg-gray-100 cursor-pointer" onClick={() => navigate(`/posts/mate?di=International`)}>해외 메이트 게시판</div>
+                                    <div><NavLink to={"/posts/mate?di=Domestic"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>국내 메이트 게시판</NavLink></div>
+                                    <div><NavLink to={"/posts/mate?di=International"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>해외 메이트 게시판</NavLink></div>
                                 </div>
                             )}
                         </li>
@@ -223,7 +243,7 @@ function NavBar() {
                             <button className="font-bold" onClick={() => toggleSection('myPage')}>마이 페이지</button>
                             {openSections.myPage && (
                                 <div className="pl-4">
-                                    <div className="hover:bg-gray-100 cursor-pointer" onClick={() => navigate(`/users/${profile.id}`)}>마이 페이지</div>
+                                    <div><NavLink to={`/users/${userId}`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>마이 페이지</NavLink></div>
                                     <div>여행 기록</div>
                                     <div>여행 계획</div>
                                     <div>관심 메이트</div>
