@@ -173,20 +173,20 @@ function MateBoardDetail(props) {
         <div dangerouslySetInnerHTML={{ __html: post.content }}></div>
 
         {/* 카드 */}
-        <div class="mt-20 max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">
+        <div className="mt-20 max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+            <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
               {post.country} / {post.city}</h5>
 
-          <p class="mb-3 font-normal text-gray-500">
-            tag.
+          <div className="mb-3 flex flex-wrap gap-2">
+            <p className="text-sm text-gray-500">Tags.</p>
             {post.tags &&
             post.tags.map((tag, index) => (
               <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center">
                 {tag}
               </span>
-            ))}</p>
+            ))}</div>
 
-            <p class="mb-3 font-normal text-gray-700">
+            <p className="mb-3 font-semibold text-gray-600">
               저녁 7시 30분 -역 앞 -카페 
             </p>
 
