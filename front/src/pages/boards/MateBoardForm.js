@@ -119,7 +119,7 @@ function MateBoardForm(props) {
             viewCount: 10,
             likeCount: 10,
             rating: 80,
-            status: "recruiting",
+            status: "OPEN",
             city: "city"
           });
           setUserId(res.data.id)
