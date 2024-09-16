@@ -14,6 +14,7 @@ function MateBoardEditForm(props) {
 
       axios.put(`/api/v1/posts/${id}`, post)
       .then(res=>{
+        console.log(post)
         //데이터 전달 확인
         alert("수정에 성공하였습니다.")
         navigate(`/posts/mate/${id}/detail`) // 상세 페이지로 돌려보내기
@@ -39,8 +40,9 @@ function MateBoardEditForm(props) {
 
   useEffect(() => {
     axios
-      .get(`/api/v1/posts/${id}`)
+      .get(`/api/v1/posts/${id}/update`)
       .then((res) => {
+        console.log(res.data)
         // 데이터 전달 확인
         setPost(res.data); // 저장된 내용을 model 을 통해 Froala 에디터에 전달
       })
