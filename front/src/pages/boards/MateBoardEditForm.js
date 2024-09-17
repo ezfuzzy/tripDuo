@@ -77,7 +77,9 @@ function MateBoardEditForm(props) {
           <label htmlFor="content">내용</label>
           <FroalaEditor model={post.content} onModelChange={handleModelChange} />
         </div>
-        <button onClick={handleSubmit} type="button" className="mt-3">수정</button>
+        <button onClick={handleSubmit} type="button" 
+        className="mt-3 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+          수정</button>
       </form>
 
     </>
