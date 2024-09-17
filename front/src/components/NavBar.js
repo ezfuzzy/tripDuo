@@ -2,262 +2,356 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import AlertModal from "./AlertModal";
-import axios from 'axios';
+import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faBell, faPeoplePulling, faPersonSwimming, faPersonThroughWindow, faPersonWalkingLuggage, faUser } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBars,
+  faBell,
+  faPeoplePulling,
+  faPersonSwimming,
+  faPersonThroughWindow,
+  faPersonWalkingLuggage,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
 
 function NavBar() {
-    const username = useSelector(state => state.userData.username, shallowEqual);
-    const profilePicture = useSelector(state => state.userData.profilePicture, shallowEqual);
-    const userId = useSelector(state => state.userData.id, shallowEqual);
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-    const location = useLocation();
+  const username = useSelector((state) => state.userData.username, shallowEqual);
+  const profilePicture = useSelector((state) => state.userData.profilePicture, shallowEqual);
+  const userId = useSelector((state) => state.userData.id, shallowEqual);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    const [alertShow, setAlertShow] = useState(false);
-    const [openSections, setOpenSections] = useState({});
-    const [lastVisited, setLastVisited] = useState('/');
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [kakaoId, setKakaoId] = useState(null);
+  const [alertShow, setAlertShow] = useState(false);
+  const [openSections, setOpenSections] = useState({});
+  const [lastVisited, setLastVisited] = useState("/");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [kakaoId, setKakaoId] = useState(null);
 
-    // off-canvas ref
-    const offcanvasRef = useRef(null);
+  // off-canvas ref
+  const offcanvasRef = useRef(null);
 
-    // NavLink 공통 css
-    // to do : 모듈 사용으로 컴포넌트별 css 설정  || 글로벌 css 관리로 요소별 css 통일 || styled 기능 활용
-    const offCanvasNavLinkStyle = "hover:bg-gray-100 cursor-pointer text-black no-underline"
+  // NavLink 공통 css
+  // to do : 모듈 사용으로 컴포넌트별 css 설정  || 글로벌 css 관리로 요소별 css 통일 || styled 기능 활용
+  const offCanvasNavLinkStyle = "hover:bg-gray-100 cursor-pointer text-black no-underline";
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        const kakaoToken = localStorage.getItem('KakaoToken');
-        const KakaoId = localStorage.getItem('kakaoId');
-        if (token || kakaoToken || username) {
-            setIsLoggedIn(true);
-            if (KakaoId) {
-                setKakaoId(JSON.parse(KakaoId))
-            }
-        } else {
-            setIsLoggedIn(false);
-        }
-    }, [username]);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const kakaoToken = localStorage.getItem("KakaoToken");
+    const KakaoId = localStorage.getItem("kakaoId");
+    if (token || kakaoToken || username) {
+      setIsLoggedIn(true);
+      if (KakaoId) {
+        setKakaoId(JSON.parse(KakaoId));
+      }
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [username]);
 
-    useEffect(() => {
-        if (location.pathname === '/home-abroad' || location.pathname === '/') {
-            setLastVisited(location.pathname);
-        }
-    }, [location.pathname]);
+  useEffect(() => {
+    if (location.pathname === "/home-abroad" || location.pathname === "/") {
+      setLastVisited(location.pathname);
+    }
+  }, [location.pathname]);
 
-    // off-canvas 바깥 클릭 감지
-    useEffect(() => {
-        const handleOutsideClick = (event) => {
-          if (offcanvasRef.current && !offcanvasRef.current.contains(event.target) && !event.target.closest('.offcanvas-toggle')) {
-            offcanvasRef.current.classList.add('hidden');
+  // off-canvas 바깥 클릭 감지
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (
+        offcanvasRef.current &&
+        !offcanvasRef.current.contains(event.target) &&
+        !event.target.closest(".offcanvas-toggle")
+      ) {
+        offcanvasRef.current.classList.add("hidden");
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
+  const toggleSection = (section) => {
+    setOpenSections((prevState) => ({
+      ...prevState,
+      [section]: !prevState[section],
+    }));
+  };
+
+  const handleLogout = () => {
+    const kakaoToken = localStorage.getItem("KakaoToken");
+    const kakaoId = localStorage.getItem("kakaoId");
+
+    if (kakaoToken && kakaoId) {
+      axios
+        .post(
+          "/api/v1/auth/kakaoLogout",
+          { kakaoId },
+          {
+            headers: {
+              Authorization: `Bearer ${kakaoToken.substring(7)}`,
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
           }
-        };
-    
-        document.addEventListener('mousedown', handleOutsideClick);
-    
-        return () => document.removeEventListener('mousedown', handleOutsideClick);
-      }, []);
+        )
+        .then((res) => {
+          console.log("카카오 로그아웃 성공:", res.data);
+          localStorage.removeItem("KakaoToken");
+          localStorage.removeItem("kakaoId");
+          completeLogout();
+        })
+        .catch((error) => {
+          console.error("카카오 로그아웃 실패:", error);
+          alert("로그아웃에 실패했습니다.");
+        });
+    } else {
+      completeLogout();
+    }
+  };
 
-    const toggleSection = (section) => {
-        setOpenSections(prevState => ({
-            ...prevState,
-            [section]: !prevState[section],
-        }));
-    };
+  const completeLogout = () => {
+    localStorage.clear();
+    dispatch({ type: "LOGOUT_USER", payload: null });
+    setIsLoggedIn(false);
+    navigate("/");
+    window.location.reload();
+  };
 
-    const handleLogout = () => {
-        const kakaoToken = localStorage.getItem("KakaoToken");
-        const kakaoId = localStorage.getItem("kakaoId");
+  const handleYes = () => {
+    setAlertShow(false);
+  };
 
-        if (kakaoToken && kakaoId) {
-            axios.post("/api/v1/auth/kakaoLogout", { kakaoId }, {
-                headers: {
-                    "Authorization": `Bearer ${kakaoToken.substring(7)}`,
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-            })
-                .then(res => {
-                    console.log("카카오 로그아웃 성공:", res.data);
-                    localStorage.removeItem("KakaoToken");
-                    localStorage.removeItem("kakaoId");
-                    completeLogout();
-                })
-                .catch(error => {
-                    console.error("카카오 로그아웃 실패:", error);
-                    alert("로그아웃에 실패했습니다.");
-                });
-        } else {
-            completeLogout();
-        }
-    };
+  const handleLogin = useCallback(() => {
+    navigate("/login");
+  }, [navigate]);
 
-    const completeLogout = () => {
-        localStorage.clear();
-        dispatch({ type: "LOGOUT_USER", payload: null });
-        setIsLoggedIn(false);
-        navigate('/');
-        window.location.reload();
-    };
+  const handleLoginLogoutClick = () => {
+    if (isLoggedIn) {
+      handleLogout();
+    } else {
+      handleLogin();
+    }
 
-    const handleYes = () => {
-        setAlertShow(false);
-    };
+    if (offcanvasRef.current) {
+      offcanvasRef.current.classList.add("hidden");
+    }
+  };
 
-    const handleLogin = useCallback(() => {
-        navigate('/login');
-    }, [navigate]);
+  const handleTripDuoClick = () => {
+    navigate(lastVisited);
+  };
 
-    const handleLoginLogoutClick = () => {
-        if (isLoggedIn) {
-            handleLogout();
-        } else {
-            handleLogin();
-        }
+  // 링크 클릭시 off-canvas 닫기 로직
+  const closeOffCanvas = () => {
+    if (offcanvasRef.current) {
+      offcanvasRef.current.classList.add("hidden");
+    }
+  };
 
-        const offcanvasElement = document.getElementById('staticBackdrop');
-        if (offcanvasElement) {
-            offcanvasElement.classList.add('hidden');
-        }
-    };
+  return (
+    <>
+      <AlertModal show={alertShow} message={"로그아웃 되었습니다"} yes={handleYes} />
 
-    const handleTripDuoClick = () => {
-        navigate(lastVisited);
-    };
+      {/* 글로벌 네비게이션 바 */}
+      <nav className="bg-white p-4 shadow-md flex justify-between items-center">
+        {/* Off-canvas toggle button */}
+        <button
+          type="button"
+          className="text-gray-600 pl-20"
+          onClick={() => offcanvasRef.current.classList.toggle("hidden")}
+        >
+          <FontAwesomeIcon icon={faBars} className="h-5 w-5 mr-2" />
+        </button>
 
-    // 링크 클릭시 off-canvas 닫기 로직
-    const closeOffCanvas = () => {
-        const offcanvasElement = document.getElementById('staticBackdrop');
-        if (offcanvasElement) {
-            offcanvasElement.classList.add('hidden');
-        }
-    };
+        <button
+          className="font-bold text-2xl absolute left-1/2 transform -translate-x-1/2"
+          onClick={handleTripDuoClick}
+        >
+          TripDuo
+        </button>
 
+        <div className="flex space-x-4">
+          {isLoggedIn && (
+            <>
+              <FontAwesomeIcon icon={faBell} className="h-5 w-5 mr-2" />
+              <NavLink className="mx-3" to={`/users/${userId}`}>
+                {profilePicture ? (
+                  <img src={profilePicture} className="w-8 h-8 rounded-full" alt="Profile" />
+                ) : (
+                  <FontAwesomeIcon icon={faUser} color="black" className="h-5 w-5 mr-2" />
+                )}
+              </NavLink>
+            </>
+          )}
+          <button className="font-bold text-gray-800 pr-20" onClick={handleLoginLogoutClick}>
+            {isLoggedIn ? "로그아웃" : "로그인/회원가입"}
+          </button>
+        </div>
+      </nav>
 
-    return (
-        <>
-            <AlertModal show={alertShow} message={"로그아웃 되었습니다"} yes={handleYes} />
+      {/* Tabs */}
+      <div className="border-b border-gray-200">
+        <ul className="flex flex-wrap justify-around -mb-px text-sm font-medium text-center text-gray-500 ">
+          <li className="mx-2">
+            <NavLink
+              className="font-bold text-lg inline-flex items-center justify-center p-3 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 group"
+              style={{
+                color: "black",
+                textDecoration: "none",
+              }}
+              to="/"
+              onClick={() => setLastVisited("/")}
+            >
+              <FontAwesomeIcon icon={faPersonThroughWindow} />
+              &nbsp;국내 여행
+            </NavLink>
+          </li>
+          <li className="mx-2">
+            <NavLink
+              className="font-bold text-lg inline-flex items-center justify-center p-3 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 group"
+              style={{
+                color: "black",
+                textDecoration: "none",
+              }}
+              to="/home-abroad"
+              onClick={() => setLastVisited("/home-abroad")}
+            >
+              <FontAwesomeIcon icon={faPersonSwimming} />
+              &nbsp;해외 여행
+            </NavLink>
+          </li>
+          <li className="mx-2">
+            <NavLink
+              className="font-bold text-lg inline-flex items-center justify-center p-3 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 group"
+              style={{
+                color: "black",
+                textDecoration: "none",
+              }}
+              to="/home-mate"
+            >
+              <FontAwesomeIcon icon={faPeoplePulling} />
+              &nbsp;여행 메이트
+            </NavLink>
+          </li>
+        </ul>
+      </div>
 
-            {/* 글로벌 네비게이션 바 */}
-            <nav className="bg-white p-4 shadow-md flex justify-between items-center">
-                {/* Off-canvas toggle button */}
-                <button type="button" className="text-gray-600 pl-20" onClick={() => offcanvasRef.current.classList.toggle('hidden')}>
-                    <FontAwesomeIcon icon={faBars} className="h-5 w-5 mr-2" />
-                </button>
+      {/* Off-canvas */}
+      <div ref={offcanvasRef} className="fixed top-0 left-0 w-64 bg-white shadow-lg h-full hidden">
+        <div className="p-4 border-b flex justify-between">
+          <h5>
+            <button className="text-lg font-semibold" onClick={handleLoginLogoutClick}>
+              {isLoggedIn ? "로그아웃" : "로그인/회원가입"}
+            </button>
+          </h5>
+          <button className="text-lg" onClick={() => offcanvasRef.current.classList.add("hidden")}>
+            X
+          </button>
+        </div>
 
-                <button className='font-bold text-2xl absolute left-1/2 transform -translate-x-1/2' onClick={handleTripDuoClick}>
-                    TripDuo
-                </button>
-
-                <div className="flex space-x-4">
-                    {isLoggedIn && (
-                        <>
-                            <FontAwesomeIcon icon={faBell} className="h-5 w-5 mr-2" />
-                            <NavLink className="mx-3" to={`/users/${userId}`}>
-                                {profilePicture
-                                    ? <img src={profilePicture} className="w-8 h-8 rounded-full" alt="Profile" />
-                                    : <FontAwesomeIcon icon={faUser} color="black" className="h-5 w-5 mr-2" />}
-                            </NavLink>
-                        </>
-                    )}
-                    <button className="font-bold text-gray-800 pr-20" onClick={handleLoginLogoutClick}>
-                        {isLoggedIn ? '로그아웃' : '로그인/회원가입'}
-                    </button>
+        <div className="p-4">
+          <ul>
+            <li className="mb-4">
+              <button className="font-bold" onClick={() => toggleSection("domestic")}>
+                국내 여행
+              </button>
+              {openSections.domestic && (
+                <div className="pl-4">
+                  <div>여행 기록</div>
+                  <div>
+                    <NavLink to={"/posts/course"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                      여행 계획
+                    </NavLink>
+                  </div>
+                  <div>여행 메이트</div>
+                  <div>여행 정보</div>
+                  <div>커뮤니티</div>
                 </div>
-            </nav>
+              )}
+            </li>
 
-            {/* Tabs */}
-            <div className="border-b border-gray-200">
-                <ul className="flex flex-wrap justify-around -mb-px text-sm font-medium text-center text-gray-500 ">
-                    <li className="mx-2">
-                        <NavLink className="font-bold text-lg inline-flex items-center justify-center p-3 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 group"
-                            style={{
-                                color: "black",
-                                textDecoration: "none"
-                            }}
-                            to="/"
-                            onClick={() => setLastVisited('/')}>
-                            <FontAwesomeIcon icon={faPersonThroughWindow} />&nbsp;국내 여행</NavLink>
-
-                    </li>
-                    <li className="mx-2">
-                        <NavLink className="font-bold text-lg inline-flex items-center justify-center p-3 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 group"
-                            style={{
-                                color: "black",
-                                textDecoration: "none"
-                            }}
-                            to="/home-abroad"
-                            onClick={() => setLastVisited('/home-abroad')}>
-                            <FontAwesomeIcon icon={faPersonSwimming} />&nbsp;해외 여행</NavLink>
-                    </li>
-                    <li className="mx-2">
-                        <NavLink className="font-bold text-lg inline-flex items-center justify-center p-3 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 group"
-                            style={{
-                                color: "black",
-                                textDecoration: "none"
-                            }}
-                            to="/home-mate">
-                            <FontAwesomeIcon icon={faPeoplePulling} />&nbsp;여행 메이트</NavLink>
-                    </li>
-                </ul>
-            </div>
-
-            {/* Off-canvas */}
-            <div ref={offcanvasRef} className="fixed top-0 left-0 w-64 bg-white shadow-lg h-full hidden">
-                <div className="p-4 border-b flex justify-between">
-                    <h5>
-                        <button className="text-lg font-semibold" onClick={handleLoginLogoutClick}>
-                            {isLoggedIn ? '로그아웃' : '로그인/회원가입'}
-                        </button>
-                    </h5>
-                    <button className="text-lg" onClick={() => offcanvasRef.current.classList.add('hidden')}>X</button>
+            <li className="mb-4">
+              <button className="font-bold" onClick={() => toggleSection("travelMate")}>
+                여행 메이트
+              </button>
+              {openSections.travelMate && (
+                <div className="pl-4">
+                  <div>
+                    <NavLink to={"/posts/mate?di=Domestic"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                      국내 메이트 게시판
+                    </NavLink>
+                  </div>
+                  <div>
+                    <NavLink
+                      to={"/posts/mate?di=International"}
+                      className={offCanvasNavLinkStyle}
+                      onClick={closeOffCanvas}
+                    >
+                      해외 메이트 게시판
+                    </NavLink>
+                  </div>
                 </div>
+              )}
+            </li>
 
-                <div className="p-4">
-                    <ul>
-                        <li className="mb-4">
-                            <button className="font-bold" onClick={() => toggleSection('domestic')}>국내 여행</button>
-                            {openSections.domestic && (
-                                <div className="pl-4">
-                                    <div>여행 기록</div>
-                                    <div><NavLink to={"/posts/course"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>여행 계획</NavLink></div>
-                                    <div>여행 메이트</div>
-                                    <div>여행 정보</div>
-                                    <div>커뮤니티</div>
-                                </div>
-                            )}
-                        </li>
-
-                        <li className="mb-4">
-                            <button className="font-bold" onClick={() => toggleSection('travelMate')}>여행 메이트</button>
-                            {openSections.travelMate && (
-                                <div className="pl-4">
-                                    <div><NavLink to={"/posts/mate?di=Domestic"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>국내 메이트 게시판</NavLink></div>
-                                    <div><NavLink to={"/posts/mate?di=International"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>해외 메이트 게시판</NavLink></div>
-                                </div>
-                            )}
-                        </li>
-
-                        <li className="mb-4">
-                            <button className="font-bold" onClick={() => toggleSection('myPage')}>마이 페이지</button>
-                            {openSections.myPage && (
-                                <div className="pl-4">
-                                    <div><NavLink to={`/users/${userId}`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>마이 페이지</NavLink></div>
-                                    <div>여행 기록</div>
-                                    <div>여행 계획</div>
-                                    <div>관심 메이트</div>
-                                    <div>마이 플레이스</div>
-                                    <div>체크 리스트</div>
-                                    <div>예산 관리</div>
-                                </div>
-                            )}
-                        </li>
-                    </ul>
+            <li className="mb-4">
+              <button className="font-bold" onClick={() => toggleSection("myPage")}>
+                마이 페이지
+              </button>
+              {openSections.myPage && (
+                <div className="pl-4">
+                  <div>
+                    <NavLink to={`/users/${userId}`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                      마이 페이지
+                    </NavLink>
+                  </div>
+                  <div>
+                    <NavLink
+                      to={`/myPlan/${userId}`}
+                      className={offCanvasNavLinkStyle}
+                      onClick={closeOffCanvas}
+                    >
+                      여행 계획
+                    </NavLink>
+                  </div>
+                  <div>
+                    <NavLink
+                      to={`/myRecord/${userId}`}
+                      className={offCanvasNavLinkStyle}
+                      onClick={closeOffCanvas}
+                    >
+                      여행 기록
+                    </NavLink>
+                  </div>
+                  <div>
+                    <NavLink
+                      to={`/wishMate/${userId}`}
+                      className={offCanvasNavLinkStyle}
+                      onClick={closeOffCanvas}
+                    >
+                      관심 메이트
+                    </NavLink>
+                  </div>
+                  <div>
+                    <NavLink
+                      to={`/myPlace/${userId}`}
+                      className={offCanvasNavLinkStyle}
+                      onClick={closeOffCanvas}
+                    >
+                      마이 플레이스
+                    </NavLink>
+                  </div>
+                  <div>체크 리스트</div>
+                  <div>예산 관리</div>
                 </div>
-            </div>
-        </>
-    );
+              )}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </>
+  );
 }
 
 export default NavBar;
