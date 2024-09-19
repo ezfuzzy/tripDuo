@@ -1,13 +1,11 @@
 package com.example.tripDuo.service;
 
-import java.util.List;
 import java.util.Map;
 
 import com.example.tripDuo.dto.PostCommentDto;
 import com.example.tripDuo.dto.PostDto;
 import com.example.tripDuo.dto.PostLikeDto;
 import com.example.tripDuo.dto.PostRatingDto;
-import com.example.tripDuo.enums.PostType;
 
 public interface PostService {
 	
@@ -15,7 +13,7 @@ public interface PostService {
 
 	public void writePost(PostDto dto);
 		
-	public List<PostDto> getPostList(PostType type); // 기본 getList
+	public Map<String, Object> getPostList(PostDto postDto); // 기본 getList
 	// getPostList - 페이징 + 검색
 	public PostDto getPostById(Long postId); // 간단한 
 //		public PostDto getPostByUsername(String username);
