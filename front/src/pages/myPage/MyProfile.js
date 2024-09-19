@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { shallowEqual, useSelector } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import "../../css/MyProfile.css"
 
 function MyProfile(props) {
   // to do : cur_location, rating, last_login
@@ -15,6 +18,11 @@ function MyProfile(props) {
   const [profile, setProfile] = useState({});
   const [imageData, setImageData] = useState(null);
 
+  // 팔로우 상태 관리
+  const [followingStatus, setFollowingStatus] = useState(false);
+  // 팔로우 알림 관리
+  const toastMessageRef = useRef();
+
   // 리뷰 작성 관련
   const [userReview, setUserReview] = useState({
     reviewerId: id,
@@ -22,6 +30,11 @@ function MyProfile(props) {
     // tags : [],
     // rating : 0
   });
+
+  // 버튼 스타일 - 신청 전/후 색상 변경
+  const followButtonClasses = `px-4 py-2 text-sm font-medium rounded-md ${
+    followingStatus ? "bg-gray-200 text-gray-800" : "bg-blue-500 text-white"
+  }`;
 
   // 리뷰 최대 글자수
   const maxLength = 3000;
@@ -44,11 +57,32 @@ function MyProfile(props) {
       .catch((error) => console.log(error));
   }, [id, userId]);
 
-  //이벤트 관리 부
+  //--------------------------이벤트 관리 부--------------------------------------
+
+  // 프로필 수정 클릭
   const handleClick = () => {
     navigate(`/users/${id}/profile/edit`);
   };
-  const handleClickFollow = () => {};
+
+  const toastOn = ()=>{
+    toastMessageRef.current.classList.add('active');
+    setTimeout(()=>{
+        toastMessageRef.current.classList.remove('active');
+    },1500);
+  }
+
+  //팔로우 버튼 클릭 이벤트
+  // to do : 팔로우 상태 알림 ( ex) android splash )
+  function handleClickFollow() {
+    if (!followingStatus) {
+      //팔로우 중이지 않은경우 (followingStatue = false)
+      toastOn()
+      setFollowingStatus(true);
+    } else {
+      // 팔로우 중인 경우 (followingStatus = true)
+      window.confirm("팔로우를 취소 하시겠습니까?") && setFollowingStatus(false)
+    }
+  }
   const handleCLickRating = () => {};
 
   // 입력된 리뷰 내용 상태값으로 저장
@@ -113,16 +147,24 @@ function MyProfile(props) {
             </div>
             {isProfileOwner ? (
               <div>
-                <button className="btn btn-secondary btn-sm" onClick={handleClick}>
+                <button
+                  className="px-4 py-2 text-sm font-medium rounded-md bg-gray-200 text-gray-500"
+                  onClick={handleClick}
+                >
                   프로필 수정하기
                 </button>
               </div>
             ) : (
               <div className="flex ">
-                <button className="btn btn-primary btn-sm" onClick={handleClickFollow}>
-                  팔로우
+                <button className={followButtonClasses} onClick={handleClickFollow}>
+                  {followingStatus && <FontAwesomeIcon icon={faCheck} />}
+                  &nbsp;팔로우
                 </button>
-                <button className="btn btn-warning btn-sm ms-2" onClick={handleCLickRating}>
+                <div id="toast_message" ref={toastMessageRef}>{profile.nickname}님을 팔로우하기 시작합니다</div>
+                <button
+                  className="ml-2 px-4 py-2 text-sm font-medium rounded-md bg-orange-300 text-gray-800"
+                  onClick={handleCLickRating}
+                >
                   평가
                 </button>
               </div>
