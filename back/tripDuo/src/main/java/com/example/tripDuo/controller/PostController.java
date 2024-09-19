@@ -1,6 +1,5 @@
 package com.example.tripDuo.controller;
 
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -50,7 +49,7 @@ public class PostController {
 	}
 	
 	@GetMapping("/{postType:[a-zA-Z]+}")
-	public ResponseEntity<List<PostDto>> getPostList(@PathVariable("postType") String postType, PostDto postDto) {
+	public ResponseEntity<Map<String, Object>> getPostList(@PathVariable("postType") String postType, PostDto postDto) {
 		
 		PostType postTypeEnum;
 		
@@ -63,7 +62,7 @@ public class PostController {
         postDto.setType(postTypeEnum);
         
         // TODO - postDto 로 list 가져오기 
-		return ResponseEntity.ok(postService.getPostList(postTypeEnum));
+		return ResponseEntity.ok(postService.getPostList(postDto));
 	}	
 	
 	@GetMapping("/{postId:[0-9]+}")

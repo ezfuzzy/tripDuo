@@ -46,7 +46,6 @@ public class Post {
     @Column(nullable = false)
     private String title;    
     
-    @Column(nullable = false)
     private String content; // 메이트, 커뮤니티 게시글에만 있음
     
 //    @Convert(converter = JsonNodeConverter.class)  // converter
@@ -86,11 +85,11 @@ public class Post {
     
     public void updateRating(Float rating) {
         this.rating = rating;
-        status = PostStatus.DELETED;
     }
     
-    public void softDeletePostComment() {
+    public void softDeletePost() {
     	deletedAt = LocalDateTime.now();
+    	status = PostStatus.DELETED;
     }
     
     public static Post toEntity(PostDto dto, UserProfileInfo userProfileInfo) {
