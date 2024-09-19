@@ -27,7 +27,7 @@ function MateBoardDetail(props) {
   const [totalCommentPages, setTotalCommentPages] = useState(0);
 
   // 버튼 스타일 - 신청 전/후 색상 변경
-  const buttonClasses = `px-4 py-2 text-sm font-medium rounded-md ${
+  const likeButtonClasses = `px-4 py-2 text-sm font-medium rounded-md ${
     isRecruited ? "bg-gray-200 text-gray-800" : "bg-green-500 text-white"
   }`;
 
@@ -205,7 +205,7 @@ function MateBoardDetail(props) {
 
           <p className="mb-3 font-semibold text-gray-600">저녁 7시 30분 -역 앞 -카페</p>
 
-          <button className={buttonClasses} onClick={handleRecruit}>
+          <button className={likeButtonClasses} onClick={handleRecruit}>
             {isRecruited ? "취소하기" : "신청하기"}
           </button>
         </div>
