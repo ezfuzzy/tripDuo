@@ -37,6 +37,7 @@ import MyPlace from "../pages/myTripTmp/MyPlace"
 import MyPlan from "../pages/myTripTmp/MyPlan"
 import MyRecord from "../pages/myTripTmp/MyRecord"
 import WishMate from "../pages/myTripTmp/WishMate"
+import Alarm from "../pages/Alarm";
 
 
 const routes = [
@@ -99,6 +100,7 @@ const routes = [
   { path: "/diary", element: <TravelDiary /> },
   { path: "/languageTip", element: <LanguageCultureTips /> },
   { path: "/extra", element: <ExtraPage /> },
+  { path: "/alarm", element: <Alarm />}
 ];
 
 const router = createBrowserRouter([
