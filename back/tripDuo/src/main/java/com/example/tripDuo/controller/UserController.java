@@ -99,40 +99,45 @@ public class UserController {
 
 	// ### follow ###
 
-	@GetMapping("/{followerUserId}/followees")
-	public ResponseEntity<List<Long>> getFolloweeUserIdList(@PathVariable("followerUserId") Long followerUserId) {
-		
-		List<Long> followeeUserIdList = userService.getFolloweeUserIdList(followerUserId);
-		return ResponseEntity.ok(followeeUserIdList);
-	}
-
-	@GetMapping("/{followeeUserId}/followers")
-	public ResponseEntity<List<Long>> getFollowerUserIdList(@PathVariable("followeeUserId") Long followeeUserId) {
-		
-		List<Long> followerUserIdList = userService.getFollowerUserIdList(followeeUserId);
-		return ResponseEntity.ok(followerUserIdList);
-	}
-
-	@PostMapping("/follow/{followType}")
+	@PostMapping("/{followeeUserId}/{followType}/{followerUserId}")
 	public ResponseEntity<String> addFollowOrBlock(@PathVariable("followType") String type,
 			@RequestBody UserFollowDto userFollowDto) {
 		
 		FollowType followType;
-
+		
 		try {
 			followType = FollowType.fromString(type);
 		} catch (IllegalArgumentException e) {
 			return ResponseEntity.badRequest().body("Invalid post type: " + type);
 		}
-
+		
 		userFollowDto.setFollowType(followType);
 		
 		userService.addFollowOrBlock(userFollowDto);
-
+		
 		return ResponseEntity.ok(type + "ed successfully");
 	}
 
-	@DeleteMapping("/follow/{followType}")
+	// followerUserId를 팔로우하는 사람들의 리스트
+	// 프로필 view 페이지에서 호출
+	@GetMapping("/{followerUserId}/followees")
+	public ResponseEntity<List<Long>> getFollowerUserList(@PathVariable("followerUserId") Long followerUserId) {
+		
+		List<Long> followeeUserIdList = userService.getFolloweeUserIdList(followerUserId);
+		return ResponseEntity.ok(followeeUserIdList);
+	}
+
+	// followeeUserId가 팔로우하는 사람들의 리스트
+	// 
+	@GetMapping("/{followeeUserId}/followers")
+	public ResponseEntity<List<Long>> getFolloweeUserList(@PathVariable("followeeUserId") Long followeeUserId) {
+		
+		List<Long> followerUserIdList = userService.getFollowerUserIdList(followeeUserId);
+		return ResponseEntity.ok(followerUserIdList);
+	}
+
+	
+	@DeleteMapping("/{followeeUserId}/{followType}/{followerUserId}")
 	public ResponseEntity<String> deleteFollowOrBlock(@PathVariable("followType") String type,
 			@RequestBody UserFollowDto userFollowDto) {
 		
