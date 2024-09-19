@@ -34,40 +34,44 @@ public class PostController {
 	}
 
 	@PostMapping("/{postType:[a-zA-Z]+}")
-	public ResponseEntity<String> writePost(@PathVariable("postType") String type, @RequestBody PostDto dto){
+	public ResponseEntity<String> writePost(@PathVariable("postType") String postType, @RequestBody PostDto postDto){
 		
-		PostType postType;
+		PostType postTypeEnum;
 		
         try {
-            postType = PostType.fromString(type);
+        	postTypeEnum = PostType.fromString(postType);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Invalid post type: " + type);
+            return ResponseEntity.badRequest().body("Invalid post type: " + postType);
         }
 
-        dto.setType(postType);
-		postService.writePost(dto);
-		return ResponseEntity.ok(dto.toString());
+        postDto.setType(postTypeEnum);
+		postService.writePost(postDto);
+		return ResponseEntity.ok(postDto.toString());
 	}
 	
 	@GetMapping("/{postType:[a-zA-Z]+}")
-	public ResponseEntity<List<PostDto>> getPostList(@PathVariable("postType") String type, PostDto dto) {
+	public ResponseEntity<List<PostDto>> getPostList(@PathVariable("postType") String postType, PostDto postDto) {
 		
-		PostType postType;
+		PostType postTypeEnum;
 		
         try {
-            postType = PostType.fromString(type);
+        	postTypeEnum = PostType.fromString(postType);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
         }
-		return ResponseEntity.ok(postService.getPostList(postType));
+        
+        postDto.setType(postTypeEnum);
+        
+        // TODO - postDto 로 list 가져오기 
+		return ResponseEntity.ok(postService.getPostList(postTypeEnum));
 	}	
 	
 	@GetMapping("/{postId:[0-9]+}")
-	public ResponseEntity<Map<String, Object>> getPostDetailById(@PathVariable("postId") Long postId, PostDto dto) {
+	public ResponseEntity<Map<String, Object>> getPostDetailById(@PathVariable("postId") Long postId, PostDto postDto) {
 		// 글 자세히 보기 페이지에서 axios할 api end point 
-		dto.setId(postId);
+		postDto.setId(postId);
 		try {
-			return ResponseEntity.ok(postService.getPostDetailById(dto));
+			return ResponseEntity.ok(postService.getPostDetailById(postDto));
 		} catch (EntityNotFoundException e) {
 	        // 게시글이 존재하지 않는 경우에 대한 처리
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -92,10 +96,10 @@ public class PostController {
 	}
 	
 	@PutMapping("/{postId:[0-9]+}")
-	public ResponseEntity<String> updatePost(@RequestBody PostDto dto){
+	public ResponseEntity<String> updatePost(@RequestBody PostDto postDto){
 		
 		try {
-			postService.updatePost(dto);
+			postService.updatePost(postDto);
 			return ResponseEntity.ok("Post is updated successfully");
 		} catch (EntityNotFoundException e) {
 	        // 게시글이 존재하지 않는 경우에 대한 처리
@@ -121,10 +125,10 @@ public class PostController {
 	// ### comment ###	
 	
 	@PostMapping("/{postId:[0-9]+}/comments")
-	public ResponseEntity<String> writeComment(@RequestBody PostCommentDto dto) {
+	public ResponseEntity<String> writeComment(@RequestBody PostCommentDto postCommentDto) {
 		
 		try {
-			postService.writeComment(dto);
+			postService.writeComment(postCommentDto);
 			return ResponseEntity.ok("Comment is written successfully");
 		} catch (EntityNotFoundException e) {
 	        // 게시글이 존재하지 않는 경우에 대한 처리
@@ -145,10 +149,10 @@ public class PostController {
 	}
 		
 	@PutMapping("/{postId:[0-9]+}/comments/{commentId:[0-9]+}")
-	public ResponseEntity<String> updateComment(@RequestBody PostCommentDto dto) {
+	public ResponseEntity<String> updateComment(@RequestBody PostCommentDto postCommentDto) {
 		
 		try {
-			postService.updateComment(dto);
+			postService.updateComment(postCommentDto);
 			return ResponseEntity.ok("Comment is updated successfully");
 		} catch (EntityNotFoundException e) {
 	        // 게시글이 존재하지 않는 경우에 대한 처리
@@ -177,10 +181,10 @@ public class PostController {
 	// ### like ###
 	
 	@PostMapping("/{postId:[0-9]+}/likes")
-	public ResponseEntity<String> addLikeToPost(@RequestBody PostLikeDto dto) {
+	public ResponseEntity<String> addLikeToPost(@RequestBody PostLikeDto postLikeDto) {
 
 	    try {
-	        postService.addLikeToPost(dto);
+	        postService.addLikeToPost(postLikeDto);
 	        return ResponseEntity.ok("Like added successfully");
 	    } catch (IllegalStateException e) {
 	        // 이미 좋아요를 누른 경우에 대한 처리
@@ -213,10 +217,10 @@ public class PostController {
 	// ### rating ###
 	
 	@PostMapping("/{postId:[0-9]+}/ratings")
-	public ResponseEntity<String> addRatingToPost(@RequestBody PostRatingDto dto) {
+	public ResponseEntity<String> addRatingToPost(@RequestBody PostRatingDto postRatingDto) {
 		
 	    try {
-			postService.addRatingToPost(dto);
+			postService.addRatingToPost(postRatingDto);
 	        return ResponseEntity.ok("Rating added successfully");
 	    } catch (IllegalStateException e) {
 	        // 이미 평점을 남긴 경우에 대한 처리
@@ -231,10 +235,10 @@ public class PostController {
 	}
 
 	@PutMapping("/{postId:[0-9]+}/ratings/{ratingId:[0-9]+}")
-	public ResponseEntity<String> updateRatingForPost(@RequestBody PostRatingDto dto) {
+	public ResponseEntity<String> updateRatingForPost(@RequestBody PostRatingDto postRatingDto) {
 		
 	    try {
-			postService.updateRatingForPost(dto);
+			postService.updateRatingForPost(postRatingDto);
 	        return ResponseEntity.ok("Rating is updated successfully");
 	    } catch (IllegalStateException e) {
 	        // 남긴 퍙잠이 없는 경우에 대한 처리
