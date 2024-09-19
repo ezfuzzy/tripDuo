@@ -28,10 +28,11 @@ function MateBoard() {
     axios
       .get("/api/v1/posts/mate")
       .then((res) => {
-        const filteredData = res.data.filter((item) => {
+        
+        const filteredData = res.data.list.filter((item) => {
           return domesticInternational === "Domestic" ? item.country === "한국" : item.country !== "한국";
         });
-
+        
         setPageData(filteredData);
 
         setWhereAreYou(domesticInternational === "Domestic" ? "국내 여행 메이트 페이지" : "해외 여행 메이트 페이지");

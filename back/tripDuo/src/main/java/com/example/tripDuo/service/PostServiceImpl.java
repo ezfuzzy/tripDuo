@@ -22,7 +22,6 @@ import com.example.tripDuo.entity.PostComment;
 import com.example.tripDuo.entity.PostLike;
 import com.example.tripDuo.entity.PostRating;
 import com.example.tripDuo.entity.UserProfileInfo;
-import com.example.tripDuo.enums.PostType;
 import com.example.tripDuo.repository.PostCommentRepository;
 import com.example.tripDuo.repository.PostLikeRepository;
 import com.example.tripDuo.repository.PostRatingRepository;
@@ -63,16 +62,32 @@ public class PostServiceImpl implements PostService {
 	/**
 	 * @date : 2024. 9. 13.
 	 * @user : 김민준
-	 * getPostList: post list 리턴
+	 * getPostList: 검색, 정렬, 페이징처리가 된 post list 리턴
 	 * 
-	 * @param postType
+	 * @param postDto
 	 * @return
 	 * TODO : pageable과 condition 적용(검색)
 	 */
 	@Override
-	public List<PostDto> getPostList(PostType postType) {
-		// type별 get list 
-		return postRepo.findByTypeOrderByIdDesc(postType).stream().map(PostDto::toDto).toList();
+	public Map<String, Object> getPostList(PostDto postDto) {
+		// 검색 - 태그로 검색, 제목으로 검색, 내용으로 검색, 제목 + 내용, 나라, 도시?, 
+		
+		Sort sort = Sort.by("createdAt").descending();
+		Pageable pageable = PageRequest.of(postDto.getPageNum() - 1, POST_PAGE_SIZE, sort);
+		
+		Page<Post> posts = postRepo.findAll(PostSpecification.searchPosts(postDto), pageable);
+		List<PostDto> postList = posts.stream().map(PostDto::toDto).toList();
+		
+		int totalPostPages = (int) (postList.size()  / POST_PAGE_SIZE);
+		
+		Map<String, Object> map = Map.of(
+				"list", postList, 
+				"pageNum", postDto.getPageNum(), 
+				"totalRow", postList.size(), 
+				"totalPostPages", totalPostPages
+		);
+		
+		return map;
 	}
 
 	/**
@@ -122,8 +137,8 @@ public class PostServiceImpl implements PostService {
 		// 댓글 list 
 		Sort sort = Sort.by("parentCommentId").ascending().and(Sort.by("createdAt").ascending());
 		Pageable pageable = PageRequest.of(0, COMMENT_PAGE_SIZE, sort);
-		Page<PostComment> page = postCommentRepo.findByPostIdOrderByParentCommentIdAscCreatedAtAsc(postDto.getId(), pageable);
-		List<PostCommentDto> commentList = page.stream().map(PostCommentDto::toDto).toList();
+		Page<PostComment> comments = postCommentRepo.findByPostIdOrderByParentCommentIdAscCreatedAtAsc(postDto.getId(), pageable);
+		List<PostCommentDto> commentList = comments.stream().map(PostCommentDto::toDto).toList();
 		
 		int totalCommentPages = (int) (existingDto.getCommentCount() / COMMENT_PAGE_SIZE);
 		
@@ -134,12 +149,14 @@ public class PostServiceImpl implements PostService {
 		existingDto.setViewCount(existingDto.getViewCount()+1);
 		postRepo.save(Post.toEntity(existingDto, userProfileInfoRepo.findById(existingDto.getUserId()).get()));
 		
-		return Map.of(
-			"dto", existingDto, 
-			"userProfileInfo", upiDto,
-			"commentList", commentList, 
-			"totalCommentPages", totalCommentPages
+		Map<String, Object> map = Map.of(
+				"dto", existingDto, 
+				"userProfileInfo", upiDto,
+				"commentList", commentList, 
+				"totalCommentPages", totalCommentPages
 		);
+		
+		return map;
 	}
 
 	/**
@@ -151,7 +168,10 @@ public class PostServiceImpl implements PostService {
 	 */
 	@Override
 	public void writePost(PostDto postDto) {
+		System.out.println("111 여기");
+		System.out.println(postDto.getUserId());
 		UserProfileInfo userProfileInfo = userProfileInfoRepo.findById(postDto.getUserId()).get();
+		System.out.println("222 here");
 		postRepo.save(Post.toEntity(postDto, userProfileInfo));
 	}
 
@@ -192,7 +212,7 @@ public class PostServiceImpl implements PostService {
 		Post existingPost = postRepo.findById(postId)
 	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
 
-		existingPost.softDeletePostComment();
+		existingPost.softDeletePost();
 	}
 	
 	// ### comment ###
@@ -240,17 +260,20 @@ public class PostServiceImpl implements PostService {
 	    Pageable pageable = PageRequest.of(postCommentDto.getPageNum() - 1, COMMENT_PAGE_SIZE, sort);
 
 	    // 댓글 페이지 조회
-	    Page<PostComment> page = postCommentRepo.findByPostIdOrderByParentCommentIdAscCreatedAtAsc(postCommentDto.getPostId(), pageable);
-	    List<PostCommentDto> commentList = page.stream().map(PostCommentDto::toDto).toList();
+	    Page<PostComment> comments = postCommentRepo.findByPostIdOrderByParentCommentIdAscCreatedAtAsc(postCommentDto.getPostId(), pageable);
+	    List<PostCommentDto> commentList = comments.stream().map(PostCommentDto::toDto).toList();
 	    
 	    // 총 페이지 수 계산
-	    int totalCommentPages = page.getTotalPages();
+	    int totalCommentPages = comments.getTotalPages();
 
-	    // 결과 반환
-	    return Map.of(
-	        "commentList", commentList,
-	        "totalCommentPages", totalCommentPages
+	    
+	    Map<String, Object> map =  Map.of(
+		        "commentList", commentList,
+		        "totalCommentPages", totalCommentPages
 	    );
+	    
+	    // 결과 반환
+	    return map;
 	}
 	
 	/**
