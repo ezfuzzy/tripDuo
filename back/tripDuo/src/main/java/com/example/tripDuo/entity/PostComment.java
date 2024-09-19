@@ -56,6 +56,11 @@ public class PostComment {
         createdAt = LocalDateTime.now();
     }
 
+    public void softDeletePostComment() {
+    	deletedAt = LocalDateTime.now();
+    	status = CommentStatus.DELETED;
+    }
+    
     public static PostComment toEntity(PostCommentDto dto, UserProfileInfo userProfileInfo) {
         return PostComment.builder()
             .id(dto.getId())

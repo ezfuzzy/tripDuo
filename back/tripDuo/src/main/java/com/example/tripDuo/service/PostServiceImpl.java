@@ -184,11 +184,15 @@ public class PostServiceImpl implements PostService {
 	 * deletePost : post 삭제
 	 *
 	 * @param postId
-	 * TODO : soft 삭제 ?
 	 */
 	@Override
+	@Transactional
 	public void deletePost(Long postId) {
-		postRepo.deleteById(postId);
+		
+		Post existingPost = postRepo.findById(postId)
+	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+
+		existingPost.softDeletePostComment();
 	}
 	
 	// ### comment ###
@@ -202,7 +206,6 @@ public class PostServiceImpl implements PostService {
 	 * writeComment: comment 추가 post의 commentCount 갱신
 	 * 
 	 * @param postCommentDto
-	 * TODO : 댓글의 group_id, depth 설정 로직 생각 + 추가
 	 */
 	@Override
 	@Transactional
@@ -270,10 +273,9 @@ public class PostServiceImpl implements PostService {
 	/**
 	 * @date : 2024. 9. 13.
 	 * @user : 김민준
-	 * deleteComment: comment 삭제 + post의 commentCount 갱신 
+	 * deleteComment: comment soft delete + post의 commentCount 갱신 
 	 * 
 	 * @param commentId
-	 * TODO : 실제로 삭제하는 것이 아닌 deletedAt 에 값을 설정
 	 */
 	@Override
 	@Transactional
@@ -281,7 +283,10 @@ public class PostServiceImpl implements PostService {
 		Post existingPost = postRepo.findById(postCommentRepo.findById(commentId).get().getPostId())
 	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
 		
-		postCommentRepo.deleteById(commentId);
+		PostComment existingPostComment = postCommentRepo.findById(commentId)
+				.orElseThrow(() -> new EntityNotFoundException("PostComment not found")); 
+		
+		existingPostComment.softDeletePostComment(); // dto에 코드 존재 - set deletedAt
 		existingPost.setCommentCount(postCommentRepo.countByPostId(existingPost.getId()));
 	}
 	

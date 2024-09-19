@@ -86,10 +86,15 @@ public class Post {
     
     public void updateRating(Float rating) {
         this.rating = rating;
+        status = PostStatus.DELETED;
+    }
+    
+    public void softDeletePostComment() {
+    	deletedAt = LocalDateTime.now();
     }
     
     public static Post toEntity(PostDto dto, UserProfileInfo userProfileInfo) {
-    	
+        
         return Post.builder()
                 .id(dto.getId())
                 .userProfileInfo(userProfileInfo)
@@ -103,7 +108,7 @@ public class Post {
                 .viewCount(dto.getViewCount() != null ? dto.getViewCount() : 0L)
                 .likeCount(dto.getLikeCount() != null ? dto.getLikeCount() : 0L)
                 .commentCount(dto.getCommentCount() != null ? dto.getCommentCount() : 0L)
-                .rating(dto.getRating() != null ? dto.getCommentCount() : 0.0f)
+                .rating(dto.getRating() != null ? dto.getRating() : 0.0f)
                 .status(dto.getStatus())
                 .createdAt(dto.getCreatedAt())
                 .updatedAt(dto.getUpdatedAt())
