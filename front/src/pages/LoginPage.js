@@ -43,7 +43,7 @@ function LoginPage() {
         id: result.payload.id,
         username: result.payload.username,
         nickname: result.payload.nickname,
-        profilePicture: "https://dudszofpa0onq.cloudfront.net/" + result.payload.profilePicture,
+        profilePicture: result.payload.profilePicture,
       };
 
       const loginStatus = {
