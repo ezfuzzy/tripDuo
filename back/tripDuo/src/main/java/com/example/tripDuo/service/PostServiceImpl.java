@@ -1,5 +1,6 @@
 package com.example.tripDuo.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -88,12 +89,14 @@ public class PostServiceImpl implements PostService {
 		Page<Post> posts = postRepo.findAll(PostSpecification.searchPosts(postDto), pageable);
 		List<PostDto> postList = posts.stream().map(PostDto::toDto).toList();
 		
+		// page객체는 페이징처리 전의 전체 데이터 개수를 가지고있음
+	    long totalRowCount = posts.getTotalElements();
 		int totalPostPages = (int) (postList.size()  / POST_PAGE_SIZE);
 		
 		Map<String, Object> map = Map.of(
 				"list", postList, 
 				"pageNum", postDto.getPageNum(), 
-				"totalRow", postList.size(), 
+				"totalRowCount", totalRowCount, 
 				"totalPostPages", totalPostPages
 		);
 		
@@ -197,11 +200,12 @@ public class PostServiceImpl implements PostService {
 		
 		UserProfileInfo userProfileInfo = userProfileInfoRepo.findById(postDto.getUserId())
 				.orElseThrow(() -> new EntityNotFoundException("Post not found"));
-
+		
 		// put mapping이니까 정보 삭제 안되게 ... 
 //		PostDto existingPost = PostDto.toDto(postRepo.findById(postDto.getId()).get());
 		
 		// 1. 만약 기존의 모든 정보가 그대로 넘어오면
+		postDto.setUpdatedAt(LocalDateTime.now());
 		postRepo.save(Post.toEntity(postDto, userProfileInfo));
 		
 		// 2. 만약 기존 정보중 일부만 넘어오면 -> controller에서 setId하고 넘겨준 다음에 로직 실행
@@ -244,7 +248,7 @@ public class PostServiceImpl implements PostService {
 		Post existingPost = postRepo.findById(postCommentDto.getPostId())
 	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
 		UserProfileInfo userProfileInfo = userProfileInfoRepo.findByUserId(postCommentDto.getUserId());
-
+		
 		// 댓글 db 저장
 		postCommentRepo.save(PostComment.toEntity(postCommentDto, userProfileInfo));
 		
@@ -298,6 +302,7 @@ public class PostServiceImpl implements PostService {
 	public void updateComment(PostCommentDto postCommentDto) {
 		
 		UserProfileInfo userProfileInfo = userProfileInfoRepo.findByUserId(postCommentDto.getUserId());
+		postCommentDto.setUpdatedAt(LocalDateTime.now());
 		// 댓글 db 저장
 		postCommentRepo.save(PostComment.toEntity(postCommentDto, userProfileInfo));
 		
