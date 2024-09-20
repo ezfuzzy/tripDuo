@@ -90,7 +90,6 @@ function MyProfile(props) {
 
   //프로필 토글 버튼 클릭
   const handleClickToggle = (e) => {
-    // 버튼의 위치 정보 가져오기
     dropdownMenuRef.current.classList.toggle("hidden");
   };
 
@@ -101,6 +100,16 @@ function MyProfile(props) {
       content: e.target.value,
     });
   };
+
+  //프로필 링크 복사
+  const handleCopy = ()=>{
+    const tmpText = `localhost:3000/users/${id}/profile`
+    navigator.clipboard.writeText(tmpText)
+    .then(()=>{
+      alert("클립보드에 복사되었습니다.")
+    })
+    .catch(error=>console.log(error))
+  }
 
   //덧글 작성 요청시 사용자 정보가 없으면 로그인 페이지로 리다일렉트
   const handleCommentSubmit = (e) => {
@@ -207,9 +216,9 @@ function MyProfile(props) {
               className="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-40 dropdown-inner"
             >
               <div className="py-2 text-sm text-gray-700" aria-labelledby="dropdownMenuIconButton">
-                <p className="block px-4 py-2 hover:bg-gray-100">프로필 링크</p>
-                <p className="block px-4 py-2 hover:bg-gray-100">차단</p>
-                <p className="block px-4 py-2 hover:bg-gray-100">신고</p>
+                <p onClick={handleCopy} className="block px-4 py-2 hover:bg-gray-100 cursor-pointer">프로필 링크</p>
+                <p className="block px-4 py-2 hover:bg-gray-100 cursor-pointer">차단</p>
+                <p className="block px-4 py-2 hover:bg-gray-100 cursor-pointer">신고</p>
               </div>
             </div>
           </div>
