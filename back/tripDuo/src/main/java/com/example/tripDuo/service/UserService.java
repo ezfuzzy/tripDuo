@@ -8,6 +8,7 @@ import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.dto.UserFollowDto;
 import com.example.tripDuo.dto.UserProfileInfoDto;
 import com.example.tripDuo.dto.UserReviewDto;
+import com.example.tripDuo.enums.FollowType;
 
 public interface UserService {
 
@@ -42,15 +43,15 @@ public interface UserService {
 	public void deleteUser(Long usreId);
 	
 	// ### follow ###
-	public List<Long> getFolloweeUserIdList(Long followerUserId);
-	public List<Long> getFollowerUserIdList(Long followeeUserId);
+	public Long getFollowerUserCount(Long followeeUserId);
+	public Long getFolloweeUserCount(Long followerUserId);
+	public List<UserProfileInfoDto> getFollowerProfileInfoList(Long followeeUserId);
+	public List<UserProfileInfoDto> getFolloweeProfileInfoList(Long followerUserId, FollowType followType);
 	public void addFollowOrBlock(UserFollowDto userFollowDto);
 	public void deleteFollowOrBlock(UserFollowDto userFollowDto);
 	
 	// ### review ###
 	public void addReview(UserReviewDto dto);
 	public void deleteReview(Long id);
-	public void updateReview(UserReviewDto dto);
-
-	
+	public void updateReview(UserReviewDto dto);	
 }

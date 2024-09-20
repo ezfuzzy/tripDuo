@@ -2,6 +2,7 @@ package com.example.tripDuo.controller;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -98,62 +99,77 @@ public class UserController {
 	}
 
 	// ### follow ###
+	// 
+	//
 
-	@PostMapping("/{followeeUserId}/{followType}/{followerUserId}")
-	public ResponseEntity<String> addFollowOrBlock(@PathVariable("followType") String type,
-			@RequestBody UserFollowDto userFollowDto) {
+	// 
+	@GetMapping("/{followeeUserId}/followersInfo")
+	public ResponseEntity<List<UserProfileInfoDto>> getFollowerProfileInfoList(@PathVariable("followeeUserId") Long followeeUserId) {
 		
-		FollowType followType;
+		List<UserProfileInfoDto> followerProfileInfoList = userService.getFollowerProfileInfoList(followeeUserId);
+		return ResponseEntity.ok(followerProfileInfoList);
+	}
+
+	@GetMapping("/{followerUserId}/{followType}/followeesInfo")
+	public ResponseEntity<List<UserProfileInfoDto>> getFolloweeProfileInfoList(@PathVariable("followerUserId") Long followerUserId,
+			@PathVariable("followType") String followType) {
+		
+		FollowType followTypeEnum;
 		
 		try {
-			followType = FollowType.fromString(type);
+			followTypeEnum = FollowType.fromString(followType);
 		} catch (IllegalArgumentException e) {
-			return ResponseEntity.badRequest().body("Invalid post type: " + type);
+			return ResponseEntity.badRequest().body(Collections.emptyList());
 		}
 		
-		userFollowDto.setFollowType(followType);
+		List<UserProfileInfoDto> followeeProfileInfoList = userService.getFolloweeProfileInfoList(followerUserId, followTypeEnum);
+		return ResponseEntity.ok(followeeProfileInfoList);
+	}
+
+	@PostMapping("/{followeeUserId}/{followType}/{followerUserId}")
+	public ResponseEntity<String> addFollowOrBlock(@PathVariable("followeeUserId") Long followeeUserId,
+	        @PathVariable("followType") String followType,
+	        @PathVariable("followerUserId") Long followerUserId) {
+		
+		FollowType followTypeEnum;
+		
+		try {
+			followTypeEnum = FollowType.fromString(followType);
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.badRequest().body("Invalid follow type: " + followType);
+		}
+		
+		UserFollowDto userFollowDto = new UserFollowDto();
+		userFollowDto.setFolloweeUserId(followeeUserId);
+		userFollowDto.setFollowType(followTypeEnum);
+		userFollowDto.setFollowerUserId(followerUserId);
 		
 		userService.addFollowOrBlock(userFollowDto);
 		
-		return ResponseEntity.ok(type + "ed successfully");
+		return ResponseEntity.ok(followType + "ed successfully");
 	}
-
-	// followerUserId를 팔로우하는 사람들의 리스트
-	// 프로필 view 페이지에서 호출
-	@GetMapping("/{followerUserId}/followees")
-	public ResponseEntity<List<Long>> getFollowerUserList(@PathVariable("followerUserId") Long followerUserId) {
-		
-		List<Long> followeeUserIdList = userService.getFolloweeUserIdList(followerUserId);
-		return ResponseEntity.ok(followeeUserIdList);
-	}
-
-	// followeeUserId가 팔로우하는 사람들의 리스트
-	// 
-	@GetMapping("/{followeeUserId}/followers")
-	public ResponseEntity<List<Long>> getFolloweeUserList(@PathVariable("followeeUserId") Long followeeUserId) {
-		
-		List<Long> followerUserIdList = userService.getFollowerUserIdList(followeeUserId);
-		return ResponseEntity.ok(followerUserIdList);
-	}
-
 	
 	@DeleteMapping("/{followeeUserId}/{followType}/{followerUserId}")
-	public ResponseEntity<String> deleteFollowOrBlock(@PathVariable("followType") String type,
-			@RequestBody UserFollowDto userFollowDto) {
+	public ResponseEntity<String> deleteFollowOrBlock(@PathVariable("followeeUserId") Long followeeUserId,
+	        @PathVariable("followType") String followType,
+	        @PathVariable("followerUserId") Long followerUserId) {
 		
-		FollowType followType;
+		FollowType followTypeEnum;
 
 		try {
-			followType = FollowType.fromString(type);
+			followTypeEnum = FollowType.fromString(followType);
 		} catch (IllegalArgumentException e) {
-			return ResponseEntity.badRequest().body("Invalid post type: " + type);
+			return ResponseEntity.badRequest().body("Invalid follow type: " + followType);
 		}
 		
-		userFollowDto.setFollowType(followType);
+		UserFollowDto userFollowDto = new UserFollowDto();
+		userFollowDto.setFolloweeUserId(followeeUserId);
+		userFollowDto.setFollowType(followTypeEnum);
+		userFollowDto.setFollowerUserId(followerUserId);
 		
 		userService.deleteFollowOrBlock(userFollowDto);
 		
-		return ResponseEntity.ok("un" + type + "ed successfully");
+		return ResponseEntity.ok("un" + followType + "ed successfully");
 	}
 
 	// ### review ###
