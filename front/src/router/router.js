@@ -4,7 +4,6 @@ import App from "../App";
 import Home from "../pages/Home";
 import Sample from "../pages/Sample";
 import HomeAbroad from "../pages/HomeAbroad";
-import HomeMate from "../pages/HomeMate";
 import Signup from "../pages/Signup";
 import Agreement from "../pages/Agreement";
 import LoginPage from "../pages/LoginPage";
@@ -49,7 +48,6 @@ const routes = [
   // ### home ###
   { path: "/", element: <Home /> },
   { path: "/home-abroad", element: <HomeAbroad /> },
-  { path: "/home-mate", element: <HomeMate /> },
 
   // ### sign up, login, logout ... ###
   { path: "/sample", element: <Sample /> },
