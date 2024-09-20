@@ -30,7 +30,7 @@ if (localStorage.token) {
     userData.id = result.payload.id
     userData.username = result.payload.username
     userData.nickname = result.payload.nickname
-    userData.profilePicture = "https://dudszofpa0onq.cloudfront.net/" + result.payload.profilePicture
+    userData.profilePicture = result.payload.profilePicture
     
     axios.defaults.headers.common["Authorization"] = localStorage.token
   } else {
