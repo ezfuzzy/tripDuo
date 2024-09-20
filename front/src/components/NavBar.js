@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
   faBell,
+  faCompass,
   faMessage,
   faPeoplePulling,
   faPersonSwimming,
@@ -245,7 +246,7 @@ function NavBar() {
               }}
               to="/extra"
             >
-              <FontAwesomeIcon/>
+              <FontAwesomeIcon icon={faCompass}/>
               &nbsp;부가기능
             </NavLink>
           </li>
