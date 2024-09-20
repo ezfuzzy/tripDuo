@@ -40,7 +40,14 @@ public class UserProfileInfoDto {
     
     @JsonIgnore
     private MultipartFile profileImgForUpload;
-
+    
+    // UserFollowRepository에서 follower/followee들의 정보를 사용하기위해서
+    public UserProfileInfoDto(Long userId, String nickname, String profilePicture, String profileMessage) {
+        this.userId = userId;
+        this.nickname = nickname;
+        this.profilePicture = profilePicture;
+        this.profileMessage = profileMessage;
+    }
     
     public static UserProfileInfoDto toDto(UserProfileInfo entity, String cloudFrontUrl) {
     	

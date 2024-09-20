@@ -261,32 +261,68 @@ public class UserServiceImpl implements UserService {
 	public void deleteUser(Long userId) {
 		userRepo.deleteById(userId);
 	}
-
+	
+	
+	
 	/**
-	 * @date : 2024. 9. 15.
+	 * @date : 2024. 9. 19.
 	 * @user : 유병한
-	 * getFolloweeUserIds: 내가 팔로우한 유저들 id 받아오기
+	 * getFollowerUserCount: followeeUser를 팔로우한 유저들의 수 받아오기
 	 * 
-	 * @param followerUserId
-	 * @return List<Long>
-	 * TODO
+	 * @param followeeUserId
+	 * @return Long
 	 */
 	@Override
-	public List<Long> getFolloweeUserIdList(Long followerUserId) {
-		return userFollowRepo.findFolloweeUserIdsByFollowerUserIdAndFollowType(followerUserId, FollowType.FOLLOW);
+	public Long getFollowerUserCount(Long followeeUserId) {
+		return userFollowRepo.countByFolloweeUserIdAndFollowType(followeeUserId, FollowType.FOLLOW);
 	}
 
 	/**
-	 * @date : 2024. 9. 15.
+	 * @date : 2024. 9. 19.
 	 * @user : 유병한
-	 * getFollowerUserIds: 나를 팔로우한 유저들 id 받아오기
+	 * getFolloweeUserCount: followerUser가 팔로우한 유저들의 수 받아오기
 	 * 
-	 * @param followeeUserId
-	 * @return List<Long>
+	 * @param followerUserId
+	 * @return Long
 	 */
 	@Override
-	public List<Long> getFollowerUserIdList(Long followeeUserId) {
-		return userFollowRepo.findFollowerUserIdsByFolloweeUserIdAndFollowType(followeeUserId, FollowType.FOLLOW);
+	public Long getFolloweeUserCount(Long followerUserId) {
+		return userFollowRepo.countByFollowerUserIdAndFollowType(followerUserId, FollowType.FOLLOW);
+	}
+
+	/**
+	 * @date : 2024. 9. 20.
+	 * @user : 유병한
+	 * getFollowerProfileInfoList: followeeUser를 팔로우한 유저들의 프로필 정보 받아오기
+	 * 
+	 * @param followeeUserId
+	 * @return List<UserProfileInfoDto>
+	 */
+	@Override
+	public List<UserProfileInfoDto> getFollowerProfileInfoList(Long followeeUserId) {
+	    // 1. Followee를 팔로우하는 특정 FollowType의 Follower들의 ID 조회
+	    List<Long> userIds = userFollowRepo.findFollowerUserIdsByFolloweeUserIdAndFollowType(followeeUserId, FollowType.FOLLOW);
+	    
+	    // 2. 조회된 Follower들의 프로필 정보 가져오기
+	    return userProfileInfoRepo.findProfilesByUserIds(userIds);
+	}
+
+	/**
+	 * @date : 2024. 9. 20.
+	 * @user : 유병한
+	 * getFolloweeProfileInfoList: followerUser가 팔로우/차단한 유저들의 프로필 정보 받아오기
+	 * 
+	 * @param followerUserId
+	 * @param followType
+	 * @return List<UserProfileInfoDto>
+	 */
+	@Override
+	public List<UserProfileInfoDto> getFolloweeProfileInfoList(Long followerUserId, FollowType followType) {
+	    // 1. Follower가 팔로우하는 특정 FollowType의 Followee들의 ID 조회
+	    List<Long> userIds = userFollowRepo.findFolloweeUserIdsByFollowerUserIdAndFollowType(followerUserId, followType);
+	    
+	    // 2. 조회된 Followee들의 프로필 정보 가져오기
+	    return userProfileInfoRepo.findProfilesByUserIds(userIds);
 	}
 
 	/**
@@ -298,7 +334,8 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public void addFollowOrBlock(UserFollowDto userFollowDto) {
-		userFollowRepo.save(UserFollow.toEntity(userFollowDto));
+	    UserFollow userFollow = UserFollow.toEntity(userFollowDto);
+	    userFollowRepo.save(userFollow);
 	}
 
 	/**
@@ -310,7 +347,10 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public void deleteFollowOrBlock(UserFollowDto userFollowDto) {
-		userFollowRepo.deleteByFolloweeUserIdAndFollowTypeAndFollowerUserId(userFollowDto.getFolloweeUserId(), userFollowDto.getFollowType(), userFollowDto.getFollowerUserId());
+	    userFollowRepo.deleteByFolloweeUserIdAndFollowTypeAndFollowerUserId(
+	            userFollowDto.getFolloweeUserId(),
+	            userFollowDto.getFollowType(),
+	            userFollowDto.getFollowerUserId());
 	}
 
 	@Override
