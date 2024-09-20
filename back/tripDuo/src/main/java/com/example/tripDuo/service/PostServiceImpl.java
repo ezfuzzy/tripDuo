@@ -63,16 +63,26 @@ public class PostServiceImpl implements PostService {
 	 * @date : 2024. 9. 13.
 	 * @user : 김민준
 	 * getPostList: 검색, 정렬, 페이징처리가 된 post list 리턴
-	 * 
+	 * 				만약 postDto에 userId가 세팅되어있으면 그건 profile view page에서 호출한 것
 	 * @param postDto
 	 * @return
-	 * TODO : pageable과 condition 적용(검색)
 	 */
 	@Override
 	public Map<String, Object> getPostList(PostDto postDto) {
-		// 검색 - 태그로 검색, 제목으로 검색, 내용으로 검색, 제목 + 내용, 나라, 도시?, 
 		
-		Sort sort = Sort.by("createdAt").descending();
+		 // 정렬 조건에 따른 Sort 설정
+	    Sort sort;
+	    if ("viewCount".equals(postDto.getSortBy())) {
+	        sort = Sort.by(Sort.Direction.DESC, "viewCount");
+	    } else if ("likeCount".equals(postDto.getSortBy())) {
+	        sort = Sort.by(Sort.Direction.DESC, "likeCount");
+	    } else if ("rating".equals(postDto.getSortBy())) {
+	        sort = Sort.by(Sort.Direction.DESC, "rating");
+	    } else {
+	        // 기본적으로 최신순 정렬
+	        sort = Sort.by(Sort.Direction.DESC, "createdAt");
+	    }
+	    
 		Pageable pageable = PageRequest.of(postDto.getPageNum() - 1, POST_PAGE_SIZE, sort);
 		
 		Page<Post> posts = postRepo.findAll(PostSpecification.searchPosts(postDto), pageable);
@@ -89,7 +99,7 @@ public class PostServiceImpl implements PostService {
 		
 		return map;
 	}
-
+	
 	/**
 	 * @date : 2024. 9. 14.
 	 * @user : 김민준
