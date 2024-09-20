@@ -38,8 +38,13 @@ public class UserProfileInfoDto {
 
     private String lastLogin; // 몇분전 접속
     
+    // ### for app ###
+    
     @JsonIgnore
     private MultipartFile profileImgForUpload;
+    
+    private Long follwerCount;
+    private Long follweeCount;
     
     // UserFollowRepository에서 follower/followee들의 정보를 사용하기위해서
     public UserProfileInfoDto(Long userId, String nickname, String profilePicture, String profileMessage) {

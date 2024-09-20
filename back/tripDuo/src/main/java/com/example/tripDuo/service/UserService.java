@@ -43,8 +43,6 @@ public interface UserService {
 	public void deleteUser(Long usreId);
 	
 	// ### follow ###
-	public Long getFollowerUserCount(Long followeeUserId);
-	public Long getFolloweeUserCount(Long followerUserId);
 	public List<UserProfileInfoDto> getFollowerProfileInfoList(Long followeeUserId);
 	public List<UserProfileInfoDto> getFolloweeProfileInfoList(Long followerUserId, FollowType followType);
 	public void addFollowOrBlock(UserFollowDto userFollowDto);
