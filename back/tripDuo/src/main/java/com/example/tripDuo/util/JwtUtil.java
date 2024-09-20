@@ -68,7 +68,10 @@ public class JwtUtil {
 		claims.put("id", user.getId());
 		claims.put("username", user.getUsername());
 		claims.put("nickname", userProfileInfo.getNickname());
-		claims.put("profilePicture", cloudFrontUrl + "/" + userProfileInfo.getProfilePicture());
+		claims.put("profilePicture", userProfileInfo.getProfilePicture() != null 
+			    ? cloudFrontUrl + "/" + userProfileInfo.getProfilePicture() 
+			    : null);
+		
 		return createToken(claims, username);
 	}
 
