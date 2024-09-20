@@ -91,7 +91,7 @@ public class PostServiceImpl implements PostService {
 		
 		// page객체는 페이징처리 전의 전체 데이터 개수를 가지고있음
 	    long totalRowCount = posts.getTotalElements();
-		int totalPostPages = (int) (postList.size()  / POST_PAGE_SIZE);
+		int totalPostPages = (int) (totalRowCount / POST_PAGE_SIZE);
 		
 		Map<String, Object> map = Map.of(
 				"list", postList, 
@@ -243,17 +243,19 @@ public class PostServiceImpl implements PostService {
 	 */
 	@Override
 	@Transactional
-	public void writeComment(PostCommentDto postCommentDto) {
+	public PostComment writeComment(PostCommentDto postCommentDto) {
 		// 댓글의 parent comment id와 to username 은 front 에서 넘어옴
 		Post existingPost = postRepo.findById(postCommentDto.getPostId())
 	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
 		UserProfileInfo userProfileInfo = userProfileInfoRepo.findByUserId(postCommentDto.getUserId());
 		
 		// 댓글 db 저장
-		postCommentRepo.save(PostComment.toEntity(postCommentDto, userProfileInfo));
+		PostComment postComment = postCommentRepo.save(PostComment.toEntity(postCommentDto, userProfileInfo));
 		
 		// post의 댓글 수 update
 		existingPost.setCommentCount(postCommentRepo.countByPostId(existingPost.getId()));
+		
+		return postComment;
 	}
 
 	/**
