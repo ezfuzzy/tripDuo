@@ -284,10 +284,13 @@ public class AuthServiceImpl implements AuthService {
 						e.printStackTrace();
 					}
 				
+				UserDto user=new UserDto();
+				user.setPhoneNumber(googleProfile.getEmail());
 				User googleUser=User.builder()
 						.username("google_"+googleProfile.getEmail())
 						.password(encoder.encode(OAUTHPASSWORD))
 						.email(googleProfile.getEmail())
+						.phoneNumber(user.getPhoneNumber())
 						.build();
 					
 				User originUser = userRepo.findByUsername(googleUser.getUsername());
@@ -309,7 +312,8 @@ public class AuthServiceImpl implements AuthService {
 					googleInfo2.put("email", googleProfile.getEmail());
 					googleInfo2.put("googleToken",googleToken.getAccess_token());
 					googleInfo2.put("kakaoRefreshToken", googleToken.getRefresh_token());
-			            
+					googleInfo2.put("phonenum", user.getPhoneNumber());
+					
 			        System.out.println("googleInfo2: " + googleInfo2.toString());  // 보기 좋게 출력
 			                 
 			        return googleInfo2.toString();
@@ -347,10 +351,14 @@ public class AuthServiceImpl implements AuthService {
 						e.printStackTrace();
 					}
 				
+				UserDto user=new UserDto();
+				user.setPhoneNumber(kakaoProfile.getKakao_account().getEmail());
 				User kakaoUser=User.builder()
-						.username(kakaoProfile.getId()+"_"+kakaoProfile.getKakao_account().getEmail())
+						.username("kakao_"+kakaoProfile.getKakao_account().getEmail())
 						.password(encoder.encode(OAUTHPASSWORD))
 						.email(kakaoProfile.getKakao_account().getEmail())
+						.phoneNumber(user.getPhoneNumber())
+
 						.build();
 					
 				User originUser = userRepo.findByUsername(kakaoUser.getUsername());
@@ -372,7 +380,8 @@ public class AuthServiceImpl implements AuthService {
 		        kakaoInfo2.put("email", kakaoProfile.getKakao_account().getEmail());
 		        kakaoInfo2.put("kakaoToken", kakaoToken.getAccess_token());
 		        kakaoInfo2.put("kakaoRefreshToken", kakaoToken.getRefresh_token());
-			            
+		        kakaoInfo2.put("phonenum", user.getPhoneNumber());
+
 		        System.out.println("kakaoInfo2: " + kakaoInfo2.toString());  // 보기 좋게 출력
 
 		        return kakaoInfo2.toString();
