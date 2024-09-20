@@ -123,11 +123,10 @@ public class PostController {
 	// ### comment ###	
 	
 	@PostMapping("/{postId:[0-9]+}/comments")
-	public ResponseEntity<String> writeComment(@RequestBody PostCommentDto postCommentDto) {
+	public ResponseEntity<?> writeComment(@RequestBody PostCommentDto postCommentDto) {
 		
 		try {
-			postService.writeComment(postCommentDto);
-			return ResponseEntity.ok("Comment is written successfully");
+			return ResponseEntity.ok(postService.writeComment(postCommentDto));
 		} catch (EntityNotFoundException e) {
 	        // 게시글이 존재하지 않는 경우에 대한 처리
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
