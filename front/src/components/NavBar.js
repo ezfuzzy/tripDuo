@@ -231,7 +231,7 @@ function NavBar() {
                 color: "black",
                 textDecoration: "none",
               }}
-              to="/home-mate"
+              to="/posts/mate"
             >
               <FontAwesomeIcon icon={faPeoplePulling} />
               &nbsp;여행 메이트
