@@ -96,8 +96,6 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public String login(UserDto userDto) throws Exception {
 
-		System.out.println(userDto.getUsername() + " " + userDto.getPassword());
-
 		try {
 			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDto.getUsername(),
 					userDto.getPassword());

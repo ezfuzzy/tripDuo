@@ -15,13 +15,13 @@ public interface UserService {
 	// ### getUser ### 
 	public List<UserDto> getUserList();
 	
-	public UserDto getUserById(Long id);
+	public UserDto getUserById(Long userId);
 	public UserDto getUserByUsername(String username);
 	public UserDto getUserByPhoneNumber(String phone_num);
 	public UserDto getUserByEmail(String email);
 
 	// ### getUserProfileInfo ###
-	public UserProfileInfoDto getUserProfileInfoById(Long id);
+	public UserProfileInfoDto getUserProfileInfoById(Long userId);
 	public UserProfileInfoDto getUserProfileInfoByUsername(String username); 
 	
 	
@@ -29,17 +29,17 @@ public interface UserService {
 	public Boolean checkExists(String checkType, String checkString);
 
 	// ### updateUserInfo ###
-	public void updateUserPrivateInfo(UserDto dto);
-	public Boolean updateUserPassword(UserDto dto);
-	public Boolean resetUserPassword(UserDto dto);
+	public void updateUserPrivateInfo(UserDto userDto);
+	public Boolean updateUserPassword(UserDto userDto);
+	public Boolean resetUserPassword(UserDto userDto);
 
 	
 	// ### updateUserProfileInfo ###
-	public void updateUserProfileInfo(UserProfileInfoDto dto, MultipartFile profileImgForUpload);
+	public void updateUserProfileInfo(UserProfileInfoDto userProfileInfoDto, MultipartFile profileImgForUpload);
 	
 	
 	// ### deleteUser ###
-	public void deleteUser(Long id);
+	public void deleteUser(Long usreId);
 	
 	// ### follow ###
 	public List<Long> getFolloweeUserIdList(Long followerUserId);
