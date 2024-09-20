@@ -159,7 +159,7 @@ function MyProfile(props) {
               {isProfileOwner ? (
                 <div>
                   <button
-                    className="px-4 py-2 text-sm font-medium rounded-md bg-gray-00 text-gray-100"
+                    className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
                     onClick={handleClick}
                   >
                     프로필 수정하기
@@ -189,11 +189,11 @@ function MyProfile(props) {
                 id="dropdownMenuIconButton"
                 onClick={handleClickToggle}
                 data-dropdown-toggle="dropdownDots"
-                class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-600 bg-white rounded-lg hover:bg-gray-100 focus:ring-1focus:outline-none focus:ring-gray-50"
+                className="inline-flex items-center p-2 text-sm font-medium text-center text-gray-600 bg-white rounded-lg hover:bg-gray-100 focus:ring-1focus:outline-none focus:ring-gray-50"
                 type="button"
               >
                 <svg
-                  class="w-5 h-5"
+                  className="w-5 h-5"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -206,9 +206,9 @@ function MyProfile(props) {
               <div
                 id="dropdownDots"
                 ref={dropdownMenuRef}
-                class="absolute left-2/3 top-2/3 z-999 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-40"
+                className="absolute left-2/3 top-2/3 z-999 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-40"
               >
-                <div class="py-2 text-sm text-gray-700" aria-labelledby="dropdownMenuIconButton">
+                <div className="py-2 text-sm text-gray-700" aria-labelledby="dropdownMenuIconButton">
                     <p className="block px-4 py-2 hover:bg-gray-100">프로필 링크</p>
                     <p className="block px-4 py-2 hover:bg-gray-100">차단</p>
                     <p className="block px-4 py-2 hover:bg-gray-100">신고</p>
