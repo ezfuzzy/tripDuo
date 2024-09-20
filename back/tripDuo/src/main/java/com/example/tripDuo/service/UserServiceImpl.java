@@ -100,9 +100,6 @@ public class UserServiceImpl implements UserService {
         UserProfileInfoDto upiDto = UserProfileInfoDto.toDto(userProfileInfo, cloudFrontUrl);
         upiDto.setFollwerCount(follwerCount);
         upiDto.setFollweeCount(follweeCount);
-
-        // review list도 같이 가겠지
-//        reviewList
         
         return upiDto;
 	}
