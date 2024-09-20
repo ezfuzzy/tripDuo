@@ -357,8 +357,84 @@ function NavBar() {
                       마이 플레이스
                     </NavLink>
                   </div>
-                  <div>체크 리스트</div>
-                  <div>예산 관리</div>
+                </div>
+              )}
+            </li>
+
+            <li className="mb-4">
+              <button className="font-bold" onClick={() => toggleSection("extra")}>
+                부가 기능
+              </button>
+              {openSections.extra && (
+                <div className="pl-4">
+                  <div>
+                    <NavLink to="/checklist" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                      체크 리스트
+                    </NavLink>
+                  </div>
+                  <div>
+                    <NavLink
+                      to="/exchangeInfo"
+                      className={offCanvasNavLinkStyle}
+                      onClick={closeOffCanvas}
+                    >
+                      환율 정보
+                    </NavLink>
+                  </div>
+                  <div>
+                    <NavLink
+                      to="/safetyInfo"
+                      className={offCanvasNavLinkStyle}
+                      onClick={closeOffCanvas}
+                    >
+                      안전 정보
+                    </NavLink>
+                  </div>
+                  <div>
+                    <NavLink
+                      to="/calculator"
+                      className={offCanvasNavLinkStyle}
+                      onClick={closeOffCanvas}
+                    >
+                      여행 경비 계산기
+                    </NavLink>
+                  </div>
+                  <div>
+                    <NavLink
+                      to="planner"
+                      className={offCanvasNavLinkStyle}
+                      onClick={closeOffCanvas}
+                    >
+                      여행 플래너
+                    </NavLink>
+                  </div>
+                  <div>
+                    <NavLink
+                      to="recommendations"
+                      className={offCanvasNavLinkStyle}
+                      onClick={closeOffCanvas}
+                    >
+                      여행 추천 장소
+                    </NavLink>
+                  </div>
+                  <div>
+                    <NavLink
+                      to="diary"
+                      className={offCanvasNavLinkStyle}
+                      onClick={closeOffCanvas}
+                    >
+                      여행 일기
+                    </NavLink>
+                  </div>
+                  <div>
+                    <NavLink
+                      to="languageTip"
+                      className={offCanvasNavLinkStyle}
+                      onClick={closeOffCanvas}
+                    >
+                      여행 대화/문화 팁
+                    </NavLink>
+                  </div>
                 </div>
               )}
             </li>
