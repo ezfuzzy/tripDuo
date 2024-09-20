@@ -100,6 +100,9 @@ public class UserController {
 	}
 
 	// ### follow ###
+	// 팔로우/차단 관련 메소드
+
+	// 어떤 유저(followeeUserId)를 팔로우한 유저들(followers)의 정보(Info) 받아오기
 	@GetMapping("/{followeeUserId}/followersInfo")
 	public ResponseEntity<List<UserProfileInfoDto>> getFollowerProfileInfoList(@PathVariable("followeeUserId") Long followeeUserId) {
 		
@@ -107,6 +110,7 @@ public class UserController {
 		return ResponseEntity.ok(followerProfileInfoList);
 	}
 
+	// 어떤 유저(followerUserId)가 팔로우/차단(followType) 한 유저들(followees)의 정보(Info) 받아오기
 	@GetMapping("/{followerUserId}/{followType}/followeesInfo")
 	public ResponseEntity<List<UserProfileInfoDto>> getFolloweeProfileInfoList(@PathVariable("followerUserId") Long followerUserId,
 			@PathVariable("followType") String followType) {
@@ -123,6 +127,7 @@ public class UserController {
 		return ResponseEntity.ok(followeeProfileInfoList);
 	}
 
+	// 어떤 유저(followerUserId)가 다른 유저(followeeUserId)를 팔로우/차단(followType) 하기
 	@PostMapping("/{followeeUserId}/{followType}/{followerUserId}")
 	public ResponseEntity<String> addFollowOrBlock(@PathVariable("followeeUserId") Long followeeUserId,
 	        @PathVariable("followType") String followType,
@@ -146,6 +151,7 @@ public class UserController {
 		return ResponseEntity.ok(followType + "ed successfully");
 	}
 	
+	// 어떤 유저(followerUserId)가 다른 유저(followeeUserId)를 팔로우/차단(followType) 해제하기
 	@DeleteMapping("/{followeeUserId}/{followType}/{followerUserId}")
 	public ResponseEntity<String> deleteFollowOrBlock(@PathVariable("followeeUserId") Long followeeUserId,
 	        @PathVariable("followType") String followType,

@@ -46,7 +46,7 @@ public class UserProfileInfoDto {
     private Long follwerCount;
     private Long follweeCount;
     
-    // UserFollowRepository에서 follower/followee들의 정보를 사용하기위해서
+    // UserProfileInfoRepository에서 follower/followee의 정보를 사용
     public UserProfileInfoDto(Long userId, String nickname, String profilePicture, String profileMessage) {
         this.userId = userId;
         this.nickname = nickname;
