@@ -40,50 +40,52 @@ function TravelPlanner() {
 
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col items-center p-6">
-            <h1 className="text-4xl font-bold mb-6 text-blue-600">Travel Planner</h1>
+            <h1 className="text-4xl font-bold mb-8 text-blue-600">Travel Planner</h1>
             
-            <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-lg">
-                <div className="flex flex-col space-y-4 mb-6">
+            <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-2xl">
+                <div className="flex flex-col space-y-6 mb-8">
                     <input 
                         type="text" 
                         value={newEvent} 
                         onChange={(e) => setNewEvent(e.target.value)} 
                         placeholder="Add a new event" 
-                        className="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                     />
-                    <input 
-                        type="date" 
-                        value={newDate} 
-                        onChange={(e) => setNewDate(e.target.value)} 
-                        className="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                    />
-                    <input 
-                        type="time" 
-                        value={newTime} 
-                        onChange={(e) => setNewTime(e.target.value)} 
-                        step="600" 
-                        className="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                    />
+                    <div className="flex space-x-4">
+                        <input 
+                            type="date" 
+                            value={newDate} 
+                            onChange={(e) => setNewDate(e.target.value)} 
+                            className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 flex-1"
+                        />
+                        <input 
+                            type="time" 
+                            value={newTime} 
+                            onChange={(e) => setNewTime(e.target.value)} 
+                            step="600" 
+                            className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 flex-1"
+                        />
+                    </div>
                     <button 
                         onClick={addEvent} 
-                        className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300"
+                        className="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300"
                     >
                         Add Event
                     </button>
                 </div>
 
-                <ul className="space-y-4">
+                <ul className="space-y-6">
                     {Object.keys(events).map((date) => (
                         <li key={date} className="bg-gray-50 border border-gray-200 rounded-lg">
                             <div 
                                 onClick={() => toggleVisibility(date)} 
-                                className="flex justify-between items-center p-4 cursor-pointer font-semibold text-gray-800 hover:bg-gray-100 rounded-t-lg"
+                                className="flex justify-between items-center p-6 cursor-pointer font-semibold text-gray-800 hover:bg-gray-100 rounded-t-lg"
                             >
                                 <span>{date}</span>
                                 <span>{visibleDates[date] ? '▲' : '▼'}</span>
                             </div>
                             {visibleDates[date] && (
-                                <ul className="bg-white p-4 space-y-2">
+                                <ul className="bg-white p-6 space-y-4">
                                     {events[date].map((event, index) => (
                                         <li key={index} className="flex justify-between">
                                             <span className="text-gray-700">{event.time}</span>
