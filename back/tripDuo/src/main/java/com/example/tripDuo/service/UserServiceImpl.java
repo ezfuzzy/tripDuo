@@ -24,6 +24,8 @@ import com.example.tripDuo.repository.UserProfileInfoRepository;
 import com.example.tripDuo.repository.UserRepository;
 import com.example.tripDuo.repository.UserReviewRepository;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -87,18 +89,22 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	public UserProfileInfoDto getUserProfileInfoById(Long userId) {
-		User user = userRepo.findById(userId).get();
-		if(user == null) {
-			return null;
-		}
+		User user = userRepo.findById(userId)
+				.orElseThrow(() -> new EntityNotFoundException("User not found"));
+		
+		Long follwerCount = userFollowRepo.countByFollowerUserIdAndFollowType(userId, FollowType.FOLLOW);
+		Long follweeCount = userFollowRepo.countByFolloweeUserIdAndFollowType(userId, FollowType.FOLLOW);
 		
         UserProfileInfo userProfileInfo = userProfileInfoRepo.findByUserId(user.getId());
-        if (userProfileInfo == null) {
-            return null;  
-        }
+        
+        UserProfileInfoDto upiDto = UserProfileInfoDto.toDto(userProfileInfo, cloudFrontUrl);
+        upiDto.setFollwerCount(follwerCount);
+        upiDto.setFollweeCount(follweeCount);
 
-        return UserProfileInfoDto.toDto(userProfileInfo, cloudFrontUrl);
-		
+        // review list도 같이 가겠지
+//        reviewList
+        
+        return upiDto;
 	}
 
 	@Override	
@@ -262,34 +268,9 @@ public class UserServiceImpl implements UserService {
 		userRepo.deleteById(userId);
 	}
 	
-	
-	
-	/**
-	 * @date : 2024. 9. 19.
-	 * @user : 유병한
-	 * getFollowerUserCount: followeeUser를 팔로우한 유저들의 수 받아오기
-	 * 
-	 * @param followeeUserId
-	 * @return Long
-	 */
-	@Override
-	public Long getFollowerUserCount(Long followeeUserId) {
-		return userFollowRepo.countByFolloweeUserIdAndFollowType(followeeUserId, FollowType.FOLLOW);
-	}
 
-	/**
-	 * @date : 2024. 9. 19.
-	 * @user : 유병한
-	 * getFolloweeUserCount: followerUser가 팔로우한 유저들의 수 받아오기
-	 * 
-	 * @param followerUserId
-	 * @return Long
-	 */
-	@Override
-	public Long getFolloweeUserCount(Long followerUserId) {
-		return userFollowRepo.countByFollowerUserIdAndFollowType(followerUserId, FollowType.FOLLOW);
-	}
-
+	// ### follow part ### 
+	
 	/**
 	 * @date : 2024. 9. 20.
 	 * @user : 유병한

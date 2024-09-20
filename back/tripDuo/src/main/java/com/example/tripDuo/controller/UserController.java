@@ -43,6 +43,7 @@ public class UserController {
 	public ResponseEntity<UserProfileInfoDto> getUserProfileInfoById(@PathVariable Long id) {
 
 		UserProfileInfoDto userProfileInfoDto = userService.getUserProfileInfoById(id);
+		
 		if (userProfileInfoDto != null) {
 			return ResponseEntity.ok(userProfileInfoDto);
 		} else {
@@ -99,10 +100,6 @@ public class UserController {
 	}
 
 	// ### follow ###
-	// 
-	//
-
-	// 
 	@GetMapping("/{followeeUserId}/followersInfo")
 	public ResponseEntity<List<UserProfileInfoDto>> getFollowerProfileInfoList(@PathVariable("followeeUserId") Long followeeUserId) {
 		
