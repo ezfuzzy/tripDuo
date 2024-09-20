@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
   faBell,
+  faMessage,
   faPeoplePulling,
   faPersonSwimming,
   faPersonThroughWindow,
@@ -174,12 +175,13 @@ function NavBar() {
         <div className="flex space-x-4">
           {isLoggedIn && (
             <>
+              <NavLink to={`/chatRoom`}><FontAwesomeIcon icon={faMessage} color="black" className="h-5 w-5 mr-2" /></NavLink>
               <FontAwesomeIcon icon={faBell} className="h-5 w-5 mr-2" />
               <NavLink className="mx-3" to={`/users/${userId}`}>
                 {profilePicture ? (
                   <img src={profilePicture} className="w-8 h-8 rounded-full" alt="Profile" />
                 ) : (
-                  <FontAwesomeIcon icon={faUser} color="black" className="h-5 w-5 mr-2" />
+                  <FontAwesomeIcon icon={faUser} color="black" className="h-5 w-5" />
                 )}
               </NavLink>
             </>
