@@ -4,6 +4,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import com.example.tripDuo.dto.PostDto;
 import com.example.tripDuo.entity.Post;
+import com.example.tripDuo.enums.PostStatus;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -23,10 +24,14 @@ public class PostSpecification {
 			predicate = criteriaBuilder.and(predicate, 
 					criteriaBuilder.equal(root.get("type"), postDto.getType()));
 
-			// UserId 검색 조건 추가
+			// userId 검색 조건 추가
 			if (postDto.getUserId() != null) {
 				predicate = criteriaBuilder.and(predicate,
 						criteriaBuilder.equal(root.get("userProfileInfo").get("id"), postDto.getUserId()));
+				
+				// 삭제된 데이터 필터링
+				predicate = criteriaBuilder.and(predicate,
+	                    criteriaBuilder.notEqual(root.get("status"), PostStatus.DELETED));
 			} else {
 
 				// 날짜를 통한 검색 
@@ -78,6 +83,11 @@ public class PostSpecification {
 					predicate = criteriaBuilder.and(predicate, 
 							root.get("tags").in((Object[]) postDto.getTags()));
 				}
+				
+				// 일반적인 검색의 경우 status값이 PRIVATE, DELETED인 데이터들 필터링  
+				predicate = criteriaBuilder.and(predicate,
+	                    criteriaBuilder.not(root.get("status").in(PostStatus.PRIVATE, PostStatus.DELETED)));
+				
 			}
 			return predicate;
 		};
