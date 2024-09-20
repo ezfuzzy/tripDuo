@@ -4,7 +4,7 @@ import axios from "axios";
 import { shallowEqual, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
-import "../../css/MyProfile.css"
+import "../../css/MyProfile.css";
 
 function MyProfile(props) {
   // to do : cur_location, rating, last_login
@@ -22,6 +22,9 @@ function MyProfile(props) {
   const [followingStatus, setFollowingStatus] = useState(false);
   // 팔로우 알림 관리
   const toastMessageRef = useRef();
+
+  //프로필 토글 관리
+  const dropdownMenuRef = useRef();
 
   // 리뷰 작성 관련
   const [userReview, setUserReview] = useState({
@@ -64,26 +67,31 @@ function MyProfile(props) {
     navigate(`/users/${id}/profile/edit`);
   };
 
-  const toastOn = ()=>{
-    toastMessageRef.current.classList.add('active');
-    setTimeout(()=>{
-        toastMessageRef.current.classList.remove('active');
-    },1500);
-  }
+  const toastOn = () => {
+    toastMessageRef.current.classList.add("active");
+    setTimeout(() => {
+      toastMessageRef.current.classList.remove("active");
+    }, 1500);
+  };
 
   //팔로우 버튼 클릭 이벤트
   // to do : 팔로우 상태 알림 ( ex) android splash )
   function handleClickFollow() {
     if (!followingStatus) {
       //팔로우 중이지 않은경우 (followingStatue = false)
-      toastOn()
+      toastOn();
       setFollowingStatus(true);
     } else {
       // 팔로우 중인 경우 (followingStatus = true)
-      window.confirm("팔로우를 취소 하시겠습니까?") && setFollowingStatus(false)
+      window.confirm("팔로우를 취소 하시겠습니까?") && setFollowingStatus(false);
     }
   }
   const handleCLickRating = () => {};
+
+  //프로필 토글 버튼 클릭
+  const handleClickToggle = (e) => {
+    dropdownMenuRef.current.classList.toggle("hidden");
+  };
 
   // 입력된 리뷰 내용 상태값으로 저장
   const handleInputReview = (e) => {
@@ -117,58 +125,97 @@ function MyProfile(props) {
   return (
     <>
       {/* 전체 div */}
-      <div className="container h-screen">
-        {/* 프로필 부분 */}
-        <div>
-          <div className="flex items-center gap-x-6 m-3">
-            {imageData ? (
-              <img src={imageData} className="w-20 h-20 rounded-full" />
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="100"
-                height="100"
-                fill="currentColor"
-                className="bi bi-person-circle"
-                viewBox="0 0 16 16"
-              >
-                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-                <path
-                  fillRule="evenodd"
-                  d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"
-                />
-              </svg>
-            )}
-            <div>
-              <h3 className="text-base font-semibold leading-7 tracking-tight text-gray-900">{profile.nickname}</h3>
-              <p className="text-sm font-semibold leading-6 text-indigo-600">
-                {profile.gender} / {profile.age}
-              </p>
-            </div>
-            {isProfileOwner ? (
+      <div className="container">
+
+          {/* 프로필 부분 */}
+          <div className="relative flex">
+
+            {/* 세로로 가운데, 아이템들 수평 간격 6px 마진 3  */}
+            <div className="flex items-center gap-x-6 m-3">
+              {imageData ? (
+                <img src={imageData} className="w-20 h-20 rounded-full" alt="" />
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="100"
+                  height="100"
+                  fill="currentColor"
+                  className="bi bi-person-circle"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+                  <path
+                    fillRule="evenodd"
+                    d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"
+                  />
+                </svg>
+              )}
               <div>
-                <button
-                  className="px-4 py-2 text-sm font-medium rounded-md bg-gray-200 text-gray-500"
-                  onClick={handleClick}
-                >
-                  프로필 수정하기
-                </button>
+                <h3 className="text-base font-semibold leading-7 tracking-tight text-gray-900">{profile.nickname}</h3>
+                <p className="text-sm font-semibold leading-6 text-indigo-600">
+                  {profile.gender} / {profile.age}
+                </p>
               </div>
-            ) : (
-              <div className="flex ">
-                <button className={followButtonClasses} onClick={handleClickFollow}>
-                  {followingStatus && <FontAwesomeIcon icon={faCheck} />}
-                  &nbsp;팔로우
-                </button>
-                <div id="toast_message" ref={toastMessageRef}>{profile.nickname}님을 팔로우하기 시작합니다</div>
-                <button
-                  className="ml-2 px-4 py-2 text-sm font-medium rounded-md bg-orange-300 text-gray-800"
-                  onClick={handleCLickRating}
+              {isProfileOwner ? (
+                <div>
+                  <button
+                    className="px-4 py-2 text-sm font-medium rounded-md bg-gray-00 text-gray-100"
+                    onClick={handleClick}
+                  >
+                    프로필 수정하기
+                  </button>
+                </div>
+              ) : (
+                <div className="flex ">
+                  <button className={followButtonClasses} onClick={handleClickFollow}>
+                    {followingStatus && <FontAwesomeIcon icon={faCheck} />}
+                    &nbsp;팔로우
+                  </button>
+                  <div id="toast_message" ref={toastMessageRef}>
+                    {profile.nickname}님을 팔로우하기 시작합니다
+                  </div>
+                  <button
+                    className="ml-2 px-4 py-2 text-sm font-medium rounded-md bg-orange-300 text-gray-800"
+                    onClick={handleCLickRating}
+                  >
+                    평가
+                  </button>
+                </div>
+              )}
+            </div>
+            {/* Toggle 버튼 (신고/차단) */}
+            <div className="relative flex items-center">
+              <button
+                id="dropdownMenuIconButton"
+                onClick={handleClickToggle}
+                data-dropdown-toggle="dropdownDots"
+                class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-600 bg-white rounded-lg hover:bg-gray-100 focus:ring-1focus:outline-none focus:ring-gray-50"
+                type="button"
+              >
+                <svg
+                  class="w-5 h-5"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 4 15"
                 >
-                  평가
-                </button>
+                  <path d="M3.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 6.041a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 5.959a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
+                </svg>
+              </button>
+
+              <div
+                id="dropdownDots"
+                ref={dropdownMenuRef}
+                class="absolute left-2/3 top-2/3 z-999 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-40"
+              >
+                <div class="py-2 text-sm text-gray-700" aria-labelledby="dropdownMenuIconButton">
+                    <p className="block px-4 py-2 hover:bg-gray-100">프로필 링크</p>
+                    <p className="block px-4 py-2 hover:bg-gray-100">차단</p>
+                    <p className="block px-4 py-2 hover:bg-gray-100">신고</p>
+                </div>
               </div>
-            )}
+            </div>
+
           </div>
 
           {/* sns 아이콘 */}
@@ -179,7 +226,7 @@ function MyProfile(props) {
               href={profile.socialLinks}
             >
               <svg
-                className="fill-current transition duration-700 ease-in-out text-gray-700 dark:text-gray-400 hover:text-pink-600 dark:hover:text-pink-600"
+                className="fill-current transition duration-700 ease-in-out text-gray-700 hover:text-pink-600"
                 role="img"
                 width="24"
                 height="24"
@@ -198,7 +245,7 @@ function MyProfile(props) {
               href={profile.socialLinks}
             >
               <svg
-                className="fill-current transition duration-700 ease-in-out text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-black"
+                className="fill-current transition duration-700 ease-in-out text-gray-700 hover:text-black"
                 role="img"
                 width="24"
                 height="24"
@@ -221,9 +268,8 @@ function MyProfile(props) {
               {profile.profileMessage}
             </div>
           </div>
-        </div>
 
-        {/* todo - 로그인 되어있지 않으면 댓글 기능 막기 */}
+        {/* to do - 로그인 되어있지 않으면 댓글 기능 막기 */}
         <div className="border-3 rounded-lg p-3 mt-6 mb-6 bg-white">
           <div className="font-bold">{nickname}</div>
           <form onSubmit={handleCommentSubmit}>
