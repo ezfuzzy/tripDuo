@@ -61,7 +61,6 @@ public class PostController {
         
         postDto.setType(postTypeEnum);
         
-        // TODO - postDto 로 list 가져오기 
 		return ResponseEntity.ok(postService.getPostList(postDto));
 	}	
 	

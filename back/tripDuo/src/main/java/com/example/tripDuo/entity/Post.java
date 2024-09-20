@@ -54,7 +54,9 @@ public class Post {
     
     private String country;
     private String city;
-
+    private String startDate;
+    private String endDate;
+    
     @Column(columnDefinition = "TEXT[]")
     private String[] tags;
 
@@ -103,6 +105,8 @@ public class Post {
                 .postData(dto.getPostData())
                 .country(dto.getCountry())
                 .city(dto.getCity())
+                .startDate(dto.getStartDate())
+                .endDate(dto.getEndDate())
                 .tags(dto.getTags())
                 .viewCount(dto.getViewCount() != null ? dto.getViewCount() : 0L)
                 .likeCount(dto.getLikeCount() != null ? dto.getLikeCount() : 0L)
