@@ -1,69 +1,89 @@
-import axios from "axios"
-import { useEffect, useState } from "react"
-import { Link, useNavigate, useSearchParams } from "react-router-dom"
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+
 
 function CourseBoard() {
-  // 글 목록 페이지 정보
+  // 글 목록 정보
   const [pageInfo, setPageInfo] = useState([])
-  //검색 조건과 키워드를 상태값으로 관리
+  //검색 조건과 키워드
   const [searchState, setSearchState] = useState({
     condition: "",
-    keyword: "",
+    keyword: ""
   })
+
   // "/posts/course?pageNum=x"에서 pageNum을 추출하기 위한 Hook
-  const [params, setParams] = useSearchParams({ pageNum: 1 })
-  //페이징 숫자를 출력할 때 사용하는 배열을 상태값으로 관리
-  const [pageArray, setPageArray] = useState([])
+  const [searchParams, setSearchParams] = useSearchParams({ pageNum: 1 })
+
+  //국내 페이지, 해외 페이지
+  const [domesticInternational, setDomesticInternational] = useState(searchParams.get("di") || "Domestic")
+  const [pageTurn, setPageTurn] = useState("해외여행 코스") //페이지 전환 버튼
+  const [desiredCountry, setDesiredCountry] = useState(null)
 
   const navigate = useNavigate()
 
+  //국내, 해외 선택 이벤트
+  const handleDesiredCountry = () => {
+    setDomesticInternational(domesticInternational === "International" ? "Domestic" : "International")
+  };
+
   //글 목록 새로 읽어오는 함수
-  const refresh = (pageNum) => {
+  const refreshPageInfo = (pageNum) => {
     //검색 기능과 관련된 query 문자열 읽어오기
     const query = new URLSearchParams(searchState).toString()
-    axios
-      .get(`/api/v1/posts/course?pageNum=${pageNum}&${query}`)
-      .then((res) => {
-        console.log(res.data)
-
+    axios.get(`/api/v1/posts/course?pageNum=${pageNum}&${query}`)//
+      .then(res => {
+        //국내코스, 해외코스 필터
+        console.log(res.data.list)
+        const filteredPageInfo = res.data.list.filter((item) => {
+          return domesticInternational === "Domestic" ? item.country === "한국" : item.country !== "한국"
+        })
         //서버로부터 응답된 데이터 state에 넣기
-        setPageInfo(res.data)
-        //페이징 처리에 관련된 배열을 state로 넣기
-        const result = range(res.data.startPageNum, res.data.endPageNum)
-        setPageArray(result)
+        setPageInfo(filteredPageInfo)
+
+        setDesiredCountry(domesticInternational === "Domestic" ? "국내여행 코스 페이지" : "해외여행 코스 페이지")
+        setPageTurn(domesticInternational === "Domestic" ? "해외로" : "국내로")
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error)
       })
   }
 
   useEffect(() => {
-    let pageNum = params.get("pageNum")
+    let pageNum = searchParams.get("pageNum")
     if (pageNum == null) pageNum = 1
-    refresh(pageNum)
-  }, [params])
+    refreshPageInfo(pageNum)
+  }, [domesticInternational, searchParams])
 
-  //페이징 UI를 만들 때 사용할 배열 리턴하는 함수
-  function range(start, end) {
-    const result = []
-    for (let i = start; i <= end; i++) {
-      result.push(i)
-    }
-    return result
-  }
 
-  //페이지를 변경하는 함수
-  const move = (pageNum = 1) => {
-    //검색조건에 맞는 query 문자열 얻어내기
+  // //페이징 UI를 만들 때 사용할 배열 리턴하는 함수
+  // function range(start, end) {
+  //   const result = []
+  //   for (let i = start; i <= end; i++) {
+  //     result.push(i)
+  //   }
+  //   return result
+  // }
+
+  // //페이지를 변경하는 함수
+  // const move = (pageNum = 1) => {
+  //   //검색조건에 맞는 query 문자열 얻어내기
+  //   const query = new URLSearchParams(searchState).toString()
+  //   navigate(`/posts/course?pageNum=${pageNum}&${query}`)
+  // }
+
+
+  //원하는 글 정보 조건검색
+  const conditionalSearch = () => {
     const query = new URLSearchParams(searchState).toString()
-    navigate(`/posts/course?pageNum=${pageNum}&${query}`)
+    navigate(`/course?${query}`)
   }
 
   //검색 조건을 변경하거나 검색어를 입력하면 호출되는 함수
   const handleSearchChange = (e) => {
     setSearchState({
       ...searchState,
-      [e.target.name]: e.target.value, //검색조건 혹은 검색 키워드가 변경된 값을 반영
+      [e.target.name]: e.target.value  //검색조건 혹은 검색 키워드가 변경된 값을 반영
     })
   }
 
@@ -72,25 +92,32 @@ function CourseBoard() {
     //검색조건과 검색어 초기화
     setSearchState({
       condition: "",
-      keyword: "",
+      keyword: ""
     })
-    //1페이지 내용이 보여지게
-    move(1)
+    // //1페이지 내용이 보여지게
+    // move(1)
   }
+
 
   return (
     <div className="container mx-auto p-4">
-      <Link to="/posts/course/new" className="text-blue-500">
-        여행코스 계획하기
+      <Link
+        to={{ pathname: "/posts/course/new", search: `?di=${domesticInternational}` }}
+        className="text-blue-500">여행코스 계획하기
       </Link>
-      <h2 className="text-2xl font-bold mb-4">국내여행 코스 게시판 입니다</h2>
+      <button
+        onClick={handleDesiredCountry}
+        className="mt-4 px-4 py-2 bg-indigo-600 text-white font-semibold rounded-md shadow-md hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all"
+      >{pageTurn}</button>
+      <h2 className="text-2xl font-bold mb-4">{desiredCountry}</h2>
       <label htmlFor="search">검색조건</label>
       <select
         onChange={handleSearchChange}
         value={searchState.condition}
         name="condition"
         id="search"
-        className="border border-gray-300 p-2 rounded-md ml-2">
+        className="border border-gray-300 p-2 rounded-md ml-2"
+      >
         <option value="">선택</option>
         <option value="title_content">제목+내용</option>
         <option value="title">제목</option>
@@ -104,35 +131,48 @@ function CourseBoard() {
         name="keyword"
         className="border border-gray-300 p-2 rounded-md ml-2"
       />
-      <button onClick={() => move()} className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md">
+      <button onClick={() => conditionalSearch()} className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md">
         검색
       </button>
       <button onClick={handleReset} className="ml-2 px-4 py-2 bg-gray-500 text-white rounded-md">
         Reset
       </button>
 
-      <table className="min-w-full bg-white border-collapse">
-        <thead>
+      <table className="table-auto w-full border divide-y divide-x divide-gray-200">
+        <thead className="text-center">
           <tr>
-            <th className="p-3 font-bold uppercase bg-gray-200 text-gray-600 border-b border-gray-300">제목</th>
-            <th className="p-3 font-bold uppercase bg-gray-200 text-gray-600 border-b border-gray-300">태그</th>
-            <th className="p-3 font-bold uppercase bg-gray-200 text-gray-600 border-b border-gray-300">나라</th>
-            <th className="p-3 font-bold uppercase bg-gray-200 text-gray-600 border-b border-gray-300">도시</th>
-            <th className="p-3 font-bold uppercase bg-gray-200 text-gray-600 border-b border-gray-300">작성자</th>
-            <th className="p-3 font-bold uppercase bg-gray-200 text-gray-600 border-b border-gray-300">조회수</th>
-            <th className="p-3 font-bold uppercase bg-gray-200 text-gray-600 border-b border-gray-300">좋아요</th>
+            <th>번호</th>
+            <th>제목</th>
+            <th>좋아요</th>
+            <th>작성자</th>
+            <th>작성일</th>
+            <th>조회수</th>
+            {/* className="p-3 font-bold uppercase bg-gray-200 text-gray-600 border-b border-gray-300" */}
           </tr>
         </thead>
-        <tbody>
+        <tbody className="text-center divide-y">
           {pageInfo.map((item) => (
-            <tr key={item.id} className="bg-white hover:bg-gray-100">
-              <td className="p-3 border-b border-gray-300">{item.title}</td>
-              <td className="p-3 border-b border-gray-300">{item.tags}</td>
-              <td className="p-3 border-b border-gray-300">{item.country}</td>
-              <td className="p-3 border-b border-gray-300">{item.city}</td>
-              <td className="p-3 border-b border-gray-300">{item.userId}</td>
-              <td className="p-3 border-b border-gray-300">{item.viewCount}</td>
-              <td className="p-3 border-b border-gray-300">{item.likeCount}</td>
+            <tr key={item.id}>
+              {/*  className="bg-white hover:bg-gray-100" */}
+              <td>{item.id}</td>
+              <td className="text-left" >
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">{`#${item.country}`}</span>
+                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">{`#${item.city}`}</span>
+                  {item.tags &&
+                    item.tags.map((tag, index) => (
+                      <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center">
+                        {tag}
+                      </span>
+                    ))}
+                </div>
+                <Link to={`/posts/course/${item.id}/detail`}>{item.title}</Link>
+              </td>
+              {/* className="p-3 border-b border-gray-300" */}
+              <td>{item.likeCount}</td>
+              <td>{item.writer}</td>
+              <td>{item.updatedAt ? item.updatedAt : item.createdAt}</td>
+              <td>{item.viewCount}</td>
             </tr>
           ))}
         </tbody>
@@ -141,39 +181,6 @@ function CourseBoard() {
       <p className="mt-4">
         <strong>{pageInfo.totalRow}</strong>개의 글이 있습니다
       </p>
-
-      <div className="flex justify-center mt-4 space-x-2">
-        <button
-          onClick={() => move(pageInfo.startPageNum - 1)}
-          className={`px-4 py-2 border rounded ${
-            pageInfo.startPageNum === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-white hover:bg-gray-100"
-          }`}
-          disabled={pageInfo.startPageNum === 1}>
-          &laquo;
-        </button>
-
-        {pageArray.map((item) => (
-          <button
-            onClick={() => move(item)}
-            key={item}
-            className={`px-4 py-2 border rounded ${
-              pageInfo.pageNum === item ? "bg-blue-500 text-white" : "bg-white hover:bg-gray-100"
-            }`}>
-            {item}
-          </button>
-        ))}
-
-        <button
-          onClick={() => move(pageInfo.endPageNum + 1)}
-          className={`px-4 py-2 border rounded ${
-            pageInfo.endPageNum >= pageInfo.totalPageCount
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-white hover:bg-gray-100"
-          }`}
-          disabled={pageInfo.endPageNum >= pageInfo.totalPageCount}>
-          &raquo;
-        </button>
-      </div>
     </div>
   )
 }
