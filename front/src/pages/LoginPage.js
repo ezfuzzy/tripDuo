@@ -24,6 +24,12 @@ function LoginPage() {
     }));
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleLogin();
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     const kakaoToken = localStorage.getItem("KakaoToken");
@@ -99,6 +105,7 @@ function LoginPage() {
             value={loginData.username}
             placeholder="User Name..."
             onChange={handleChange}
+            onKeyDown={handleKeyDown}
           />
           <label htmlFor="password">Password</label>
           <input
@@ -108,6 +115,7 @@ function LoginPage() {
             value={loginData.password}
             placeholder="Password..."
             onChange={handleChange}
+            onKeyDown={handleKeyDown}
           />
           {error && <div style={{ color: "red" }}>{error}</div>}
           <button onClick={handleLogin} className="login-button">
