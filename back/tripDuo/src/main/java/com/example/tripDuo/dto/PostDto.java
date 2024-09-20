@@ -49,15 +49,15 @@ public class PostDto {
     
     private boolean isLike;
     
-    private int startRowNum, endRowNum;
+    //private int startRowNum, endRowNum;
     private int pageNum = 1;
 
     private String condition = "";
     private String keyword = "";
     private String sortBy;
     
-    private int prevNum, nextNum;
     private String searchDateCondition; // includes : start, end 날짜를 포함하는, contained : start, end 안에 포함되는  
+    //private int prevNum, nextNum;
     
     // ### toDto ###
     
