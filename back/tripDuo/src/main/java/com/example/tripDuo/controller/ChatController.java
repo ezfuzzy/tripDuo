@@ -31,10 +31,10 @@ public class ChatController {
 	// WebSocket을 통해 메시지 전송 (클라이언트에서 /app/chat.sendMessage로 전송됨)
 	@MessageMapping("/chat.sendMessage/{roomId}")
 	@SendTo("/topic/room/{roomId}")
-	public List<ChatMessageDto> sendMessage(@DestinationVariable Long roomId, ChatMessageDto chatMessageDto) {
-	    // 메시지 저장 또는 로깅 로직
-        chatService.sendMessage(chatMessageDto);
-	    return chatService.getChatMessages(roomId);  
+	public ResponseEntity<ChatMessageDto> sendMessage(@DestinationVariable Long roomId, ChatMessageDto chatMessageDto) {
+	    System.out.println("Received message: " + chatMessageDto.getContent());
+		
+        return ResponseEntity.ok(chatService.sendMessage(chatMessageDto));
 	}
 
 	@MessageMapping("/chat.addUser/{roomId}")
@@ -59,9 +59,8 @@ public class ChatController {
 
 	 // POST로 메시지 전송을 처리하는 엔드포인트 추가
     @PostMapping("/sendMessage")
-    public ResponseEntity<List<ChatMessageDto>> sendMessage(@RequestBody ChatMessageDto chatMessageDto) {
-//        chatService.sendMessage(chatMessageDto);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ChatMessageDto> sendMessage(@RequestBody ChatMessageDto chatMessageDto) {
+        return ResponseEntity.ok(chatService.sendMessage(chatMessageDto));
     }
     
     // 채팅방 생성 API

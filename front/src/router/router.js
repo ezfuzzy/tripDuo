@@ -101,7 +101,8 @@ const routes = [
   { path: "/extra", element: <ExtraPage /> },
   { path: "/alarm", element: <Alarm />},
 
-  { path:"/chatroom", element: <ChatRoom/>}
+  { path:"/chatroom", element: <ChatRoom/>},
+  { path:"/chatroom/:id", element: <ChatRoom/>}
 ];
 
 const router = createBrowserRouter([

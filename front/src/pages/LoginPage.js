@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import axios from "axios";
@@ -6,6 +6,8 @@ import { decodeToken } from "jsontokens";
 import "../css/LoginPage.css";
 import { Nav } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
+import SockJS from "sockjs-client";
+import { Client } from "@stomp/stompjs";
 
 function LoginPage() {
   const [loginData, setLoginData] = useState({
@@ -15,6 +17,34 @@ function LoginPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const stompClient = useRef(null);  // WebSocket 연결 객체
+  const [messages, setMessages] = useState([]);  // 메시지 목록
+
+   // WebSocket 연결 함수
+   const connectWebSocket = (roomId) => {
+    const socket = new SockJS('/api/ws');
+    stompClient.current = new Client({
+      webSocketFactory: () => socket,
+      reconnectDelay: 5000,
+
+      onConnect: () => {
+        stompClient.current.subscribe(`/topic/room/${roomId}`, (messageOutput) => {
+          const newMessage = JSON.parse(messageOutput.body);
+          setMessages((prevMessages) => [...prevMessages, newMessage]);
+        });
+      },
+
+      onStompError: (error) => {
+        console.error('STOMP error:', error);
+      },
+
+      onWebSocketClose: () => {
+        console.log('WebSocket connection closed.');
+      }
+    });
+    stompClient.current.activate();
+  };
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -59,6 +89,10 @@ function LoginPage() {
 
       dispatch({ type: "LOGIN_USER", payload: { userData, loginStatus } });
       axios.defaults.headers.common["Authorization"] = token;
+
+      // WebSocket 연결
+      connectWebSocket();
+
       navigate("/");
       window.location.reload();
     }
