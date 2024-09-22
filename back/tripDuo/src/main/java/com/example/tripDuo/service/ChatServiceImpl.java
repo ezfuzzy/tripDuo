@@ -50,11 +50,10 @@ public class ChatServiceImpl implements ChatService {
 	public ChatMessageDto sendMessage(ChatMessageDto chatMessageDto) {
 		 ChatRoom chatRoom = chatRoomRepository.findById(chatMessageDto.getChatRoomId())
 		            .orElseThrow(() -> new RuntimeException("ChatRoom not found"));
-		 System.out.println("11");
 		    ChatMessage message = ChatMessage.toEntity(chatMessageDto, chatRoom);
 		    messageRepository.save(message);
 
-		    return chatMessageDto;
+		    return ChatMessageDto.toDto(message);
 		}
 
     // 추가된 부분: 특정 채팅방의 모든 메시지를 반환
