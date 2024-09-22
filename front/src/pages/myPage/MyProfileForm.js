@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router";
 
 function MyProfileForm(props) {
   const userId = useSelector((state) => state.userData.id, shallowEqual); // 접속된 사용자의 id
+  const username = useSelector((state) => state.userData.username, shallowEqual); // 접속된 사용자의 username
 
   const profileImage = useRef();
   const inputImage = useRef();
@@ -15,12 +16,10 @@ function MyProfileForm(props) {
 
   const [profile, setProfile] = useState({
     id: "",
-    username: "",
+    userId: "",
     nickname: "",
     age: "",
     gender: "",
-    phoneNumber: "",
-    email: "",
     profilePicture: "",
     profileMessage: "",
     socialLinks: {
@@ -45,7 +44,7 @@ function MyProfileForm(props) {
           alert("잘못된 접근입니다.");
           navigate(`/`);
         }
-
+        console.log(res.data)
         setProfile(res.data);
 
         setInitialNickname(res.data.nickname); // 로딩된 닉네임 초기값 저장
@@ -132,21 +131,15 @@ function MyProfileForm(props) {
 
     const formData = new FormData();
     formData.append("id", profile.id);
-    formData.append("username", profile.username);
+    formData.append("userId", profile.userId);
     formData.append("age", profile.age);
     formData.append("gender", profile.gender);
     formData.append("nickname", profile.nickname);
-    formData.append("phoneNumber", profile.phoneNumber);
-    formData.append("email", profile.email);
     formData.append("socialLinks", profile.socialLinks);
     formData.append("profileMessage", profile.profileMessage);
-
-    formData.append("password", profile.password);
+    formData.append("profilePicture", profile.profilePicture);
 
     formData.append("curLocation", profile.curLocation);
-    formData.append("verificationStatus", profile.verificationStatus);
-    formData.append("accountStatus", profile.accountStatus);
-    formData.append("role", profile.role);
     formData.append("ratings", profile.ratings);
     formData.append("lastLogin", profile.lastLogin);
 
@@ -283,15 +276,15 @@ function MyProfileForm(props) {
           {/* 로그인 정보 */}
           <div className="flex space-x-4 bg-gray-200 rounded">
             <div className="mb-3 flex-1">
-              <label htmlFor="signin_id" className="block text-sm font-medium mb-1">
+              <label htmlFor="username" className="block text-sm font-medium mb-1">
                 ID
               </label>
               <input
                 type="text"
-                name="signin_id"
-                value={profile.username}
+                name="username"
+                value={username}
                 className="block w-full p-2 border border-gray-300 rounded-md"
-                readOnly
+                disabled
               />
             </div>
             <div className="mb-3 flex-1">
@@ -318,7 +311,7 @@ function MyProfileForm(props) {
                 name="age"
                 value={profile.age}
                 className="block w-full p-2 border border-gray-300 rounded-md"
-                readOnly
+                disabled
               />
             </div>
             <div className="mb-3 flex-1">
@@ -330,35 +323,7 @@ function MyProfileForm(props) {
                 name="gender"
                 value={profile.gender}
                 className="block w-full p-2 border border-gray-300 rounded-md"
-                readOnly
-              />
-            </div>
-          </div>
-
-          {/* 전화번호, 이메일 */}
-          <div className="flex space-x-4">
-            <div className="mb-3 flex-1">
-              <label htmlFor="phoneNumber" className="block text-sm font-medium mb-1">
-                Mobile Number
-              </label>
-              <input
-                onChange={handleChange}
-                type="text"
-                name="phoneNumber"
-                value={profile.phoneNumber}
-                className="block w-full p-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div className="mb-3 flex-1">
-              <label htmlFor="email" className="block text-sm font-medium mb-1">
-                Email
-              </label>
-              <input
-                onChange={handleChange}
-                type="text"
-                name="email"
-                value={profile.email}
-                className="block w-full p-2 border border-gray-300 rounded-md"
+                disabled
               />
             </div>
           </div>
