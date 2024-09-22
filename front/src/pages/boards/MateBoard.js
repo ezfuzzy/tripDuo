@@ -99,12 +99,12 @@ function MateBoard() {
   };
 
   return (
-    <>
-      <h3>{whereAreYou}</h3>
+    <div className="container mx-auto p-4">
       <NavLink to={{ pathname: "/posts/mate/new", search: `?di=${domesticInternational}` }}>새글 작성</NavLink>
       <button className="border border-1 bg-light-green-200" onClick={handleButtonClick}>
         {pageTurn}
       </button>
+      <h4 className="font-bold mb-4">{whereAreYou}</h4>
 
       {/* 검색 조건 입력 폼 */}
       <div className="my-4">
@@ -182,7 +182,7 @@ function MateBoard() {
           ))}
         </tbody>
       </table>
-    </>
+    </div>
   );
 }
 
