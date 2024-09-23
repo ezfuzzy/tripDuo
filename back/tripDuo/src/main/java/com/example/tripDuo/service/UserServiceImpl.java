@@ -8,6 +8,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.tripDuo.dto.UserDto;
@@ -101,8 +102,8 @@ public class UserServiceImpl implements UserService {
         UserProfileInfo userProfileInfo = userProfileInfoRepo.findByUserId(user.getId());
         
         UserProfileInfoDto upiDto = UserProfileInfoDto.toDto(userProfileInfo, PROFILE_PICTURE_CLOUDFRONT_URL);
-        upiDto.setFollwerCount(follwerCount);
-        upiDto.setFollweeCount(follweeCount);
+        upiDto.setFollowerCount(follwerCount);
+        upiDto.setFolloweeCount(follweeCount);
         
         return upiDto;
 	}
@@ -337,6 +338,7 @@ public class UserServiceImpl implements UserService {
 	 * 
 	 * @param userFollowDto
 	 */
+	@Transactional
 	@Override
 	public void deleteFollowOrBlock(UserFollowDto userFollowDto) {
 	    userFollowRepo.deleteByFolloweeUserIdAndFollowTypeAndFollowerUserId(
