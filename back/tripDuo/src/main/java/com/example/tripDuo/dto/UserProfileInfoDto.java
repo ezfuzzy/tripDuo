@@ -43,8 +43,8 @@ public class UserProfileInfoDto {
     @JsonIgnore
     private MultipartFile profileImgForUpload;
     
-    private Long follwerCount;
-    private Long follweeCount;
+    private Long followerCount;
+    private Long followeeCount;
     
     private String token;
     
