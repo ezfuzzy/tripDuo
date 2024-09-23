@@ -38,6 +38,7 @@ import MyRecord from "../pages/myTripTmp/MyRecord"
 import WishMate from "../pages/myTripTmp/WishMate"
 import Alarm from "../pages/Alarm";
 import ChatRoom from "../components/ChatRoom";
+import FollowerFollowee from "../pages/myPage/FollowerFollowee";
 
 
 const routes = [
@@ -102,7 +103,8 @@ const routes = [
   { path: "/alarm", element: <Alarm />},
 
   { path:"/chatroom", element: <ChatRoom/>},
-  { path:"/chatroom/:id", element: <ChatRoom/>}
+  { path:"/chatroom/:id", element: <ChatRoom/>},
+  { path:"/users/:id/:ff", element: <FollowerFollowee/>}
 ];
 
 const router = createBrowserRouter([
