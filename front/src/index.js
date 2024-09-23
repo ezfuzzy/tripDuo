@@ -48,15 +48,15 @@ const reducer = (state = initialState, action) => {
         ...state,
         userData: {
           ...state.userData,
-          id: action.payload.id,
-          username: action.payload.username,
-          nickname: action.payload.nickname,
-          profilePicture: action.payload.profilePicture,
+          id: action.payload.userData.id,
+          username: action.payload.userData.username,
+          nickname: action.payload.userData.nickname,
+          profilePicture: action.payload.userData.profilePicture,
         },
         loginStatus: {
           ...state.loginStatus,
           isLogin: true,
-          role: action.payload.role,
+          role: action.payload.loginStatus.role,
         },
       }
       break
@@ -82,9 +82,9 @@ const reducer = (state = initialState, action) => {
         ...state,
         userData: {
           ...state.userData,
-          username: action.payload.username,
-          nickname: action.payload.nickname,
-          profilePicture: action.payload.profilePicture,
+          username: action.payload.userData.username,
+          nickname: action.payload.userData.nickname,
+          profilePicture: action.payload.userData.profilePicture,
         },
       }
       break
