@@ -4,8 +4,7 @@ import { useNavigate } from "react-router";
 import axios from "axios";
 import { decodeToken } from "jsontokens";
 import "../css/LoginPage.css";
-import { Nav } from "react-bootstrap";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 
@@ -160,9 +159,9 @@ function LoginPage() {
         <button onClick={handleGoogleLogin}>구글 로그인</button>
         <p>
           회원가입 하지 않으셨다면
-          <Nav.Link as={NavLink} to="/agreement">
+          <Link as={NavLink} to="/agreement">
             클릭
-          </Nav.Link>
+          </Link>
         </p>
       </div>
     </div>
