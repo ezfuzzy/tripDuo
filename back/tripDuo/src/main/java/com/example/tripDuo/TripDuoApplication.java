@@ -61,7 +61,7 @@ public class TripDuoApplication {
 		User u1 = User.builder().username("ezfz").password(encoder.encode("hysz")).phoneNumber("010-3456-7890").role(UserRole.ADMIN).build(); 
 		User savedUser1 = userRepo.save(u1);
 		
-		UserProfileInfo upi1 = UserProfileInfo.builder().user(savedUser1).nickname("ezfz").gender(Gender.MALE).build();
+		UserProfileInfo upi1 = UserProfileInfo.builder().user(savedUser1).nickname("ezfz").age((long) 28).profilePicture("e27424b2-88e7-49a5-9122-fca108abba31.png").gender(Gender.MALE).build();
 		userProfileInfoRepo.save(upi1);
 		
 		User u2 = User.builder().username("aaaa").password(encoder.encode("aaaa")).phoneNumber("010-3456-7890").role(UserRole.USER).build();
@@ -87,7 +87,7 @@ public class TripDuoApplication {
 
 		User u6 = User.builder().username("user1").password(encoder.encode("password1")).phoneNumber("010-1234-5678").email("user1@example.com").verificationStatus(VerificationStatus.VERIFIED).accountStatus(AccountStatus.ACTIVE).role(UserRole.USER).build();
 		User savedUser6 = userRepo.save(u6);
-		UserProfileInfo upi6 = UserProfileInfo.builder().user(savedUser6).nickname("닉네임1").age((long) 25).gender(Gender.MALE).profilePicture("b1e1f201-d99f-42df-b855-9f70b58bfbc2.png").profileMessage("안녕하세요1").curLocation("서울").socialLinks("http://social1.com").ratings(4.5f).lastLogin("5분 전").build();
+		UserProfileInfo upi6 = UserProfileInfo.builder().user(savedUser6).nickname("닉네임1").age((long) 25).gender(Gender.MALE).profilePicture("71bca972-337b-4df5-968a-6d6fe80afd74.png").profileMessage("안녕하세요1").curLocation("서울").socialLinks("http://social1.com").ratings(4.5f).lastLogin("5분 전").build();
 		userProfileInfoRepo.save(upi6);
 
 		User u7 = User.builder().username("user2").password(encoder.encode("password2")).phoneNumber("010-2345-6789").email("user2@example.com").verificationStatus(VerificationStatus.VERIFIED).accountStatus(AccountStatus.ACTIVE).role(UserRole.USER).build();
