@@ -100,12 +100,19 @@
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
 
+
+
 		<dependency>
-			<groupId>com.vladmihalcea</groupId>
-			<artifactId>hibernate-types-52</artifactId>
-			<version>2.10.4</version>
+			<groupId>io.hypersistence</groupId>
+			<artifactId>hypersistence-utils-hibernate-63</artifactId>
+			<version>3.8.2</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.hibernate.orm</groupId>
+			<artifactId>hibernate-core</artifactId>
+		 	<version>6.3.1.Final</version>
+		</dependency>
 
 		<!-- UOUtils 를 사용하기 위한 dependency -->
 		<dependency>

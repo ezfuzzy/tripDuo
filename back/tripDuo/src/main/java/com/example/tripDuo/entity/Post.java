@@ -2,6 +2,9 @@ package com.example.tripDuo.entity;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import com.example.tripDuo.dto.PostDto;
 import com.example.tripDuo.enums.PostStatus;
 import com.example.tripDuo.enums.PostType;
@@ -48,8 +51,8 @@ public class Post {
     
     private String content; // 메이트, 커뮤니티 게시글에만 있음
     
-//    @Convert(converter = JsonNodeConverter.class)  // converter
-    @Column(length = 10000)
+    @JdbcTypeCode(SqlTypes.JSON) // jsonb 타입을 명시
+    @Column(columnDefinition = "jsonb")  // DB에 jsonb 타입으로 지정
     private JsonNode postData; // 코스, 여행기 게시글에만 있음
     
     private String country;

@@ -41,8 +41,8 @@ public class PostController {
         	postTypeEnum = PostType.fromString(postType);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Invalid post type: " + postType);
-        }
-
+        }      
+        
         postDto.setType(postTypeEnum);
 		postService.writePost(postDto);
 		return ResponseEntity.ok(postDto.toString());
@@ -151,10 +151,7 @@ public class PostController {
 		try {
 			postService.updateComment(postCommentDto);
 			return ResponseEntity.ok("Comment is updated successfully");
-		} catch (EntityNotFoundException e) {
-	        // 게시글이 존재하지 않는 경우에 대한 처리
-	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-	    } catch (Exception e) {
+		} catch (Exception e) {
 	        // 기타 예외에 대한 처리
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
 	    } 
