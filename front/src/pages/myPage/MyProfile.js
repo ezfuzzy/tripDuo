@@ -79,31 +79,31 @@ function MyProfile(props) {
 
   // 차단 버튼 클릭 이벤트
   const handleBlock = () => {
-    if(!blockStatus){
+    if (!blockStatus) {
       // 차단 중이지 않은 경우 (blockStatus = false)
-      if(window.confirm(`${profile.nickname}님을 차단하시겠습니까?`)){
+      if (window.confirm(`${profile.nickname}님을 차단하시겠습니까?`)) {
         axios
-        .post(`/api/v1/users/${id}/block/${userId}`)
-        .then((res) => {
-          console.log(res.data);
-          setBlockStatue(true);
-          dropdownMenuRef.current.classList.toggle("hidden"); // dropdown 메뉴 숨김
-        })
-        .catch((error) => console.log(error));
+          .post(`/api/v1/users/${id}/block/${userId}`)
+          .then((res) => {
+            console.log(res.data);
+            setBlockStatue(true);
+            dropdownMenuRef.current.classList.toggle("hidden"); // dropdown 메뉴 숨김
+          })
+          .catch((error) => console.log(error));
       }
-    }else{
+    } else {
       // 차단 중인 경우 (blockStatus = true)
-      if(window.confirm(`차단을 해제하시겠습니까?`)){
+      if (window.confirm(`차단을 해제하시겠습니까?`)) {
         axios
-        .post(`/api/v1/users/${id}/block/${userId}`)
-        .then((res) => {
-          console.log(res.data);
-          setBlockStatue(false);
-          dropdownMenuRef.current.classList.toggle("hidden"); // dropdown 메뉴 숨김
-        })
-        .catch((error) => console.log(error));
+          .post(`/api/v1/users/${id}/block/${userId}`)
+          .then((res) => {
+            console.log(res.data);
+            setBlockStatue(false);
+            dropdownMenuRef.current.classList.toggle("hidden"); // dropdown 메뉴 숨김
+          })
+          .catch((error) => console.log(error));
       }
-      }
+    }
   };
 
   // 팔로우 버튼 클릭 이벤트
@@ -184,13 +184,15 @@ function MyProfile(props) {
     <>
       {/* 전체 div */}
       <div className="container">
-
-        {
-          blockStatus && <p className="ml-10 mb-0 text-sm text-red-600"><FontAwesomeIcon icon={faPersonCircleXmark} />&nbsp;차단된 사용자 입니다.</p>
-        }     
+        {blockStatus && (
+          <p className="ml-10 mb-0 text-sm text-red-600">
+            <FontAwesomeIcon icon={faPersonCircleXmark} />
+            &nbsp;차단된 사용자 입니다.
+          </p>
+        )}
 
         {/* 프로필 부분 */}
-        <div className="relative flex">
+        <div className="relative flex-col">
           {/* 세로로 가운데, 아이템들 수평 간격 6px 마진 3  */}
           <div className="flex items-center gap-x-6 m-3">
             {/* 프로필 이미지 핸들링 */}
@@ -219,6 +221,7 @@ function MyProfile(props) {
                 {profile.gender} / {profile.age}
               </p>
             </div>
+
             {/* 프로필 사용자 / 방문자 구분 */}
             {isProfileOwner ? (
               <div>
@@ -247,7 +250,6 @@ function MyProfile(props) {
                 </button>
               </div>
             )}
-          </div>
           {/* Toggle 버튼 (신고/차단) */}
           <div className="flex items-center dropdown-wrapper">
             <button
@@ -277,13 +279,28 @@ function MyProfile(props) {
                   프로필 링크
                 </p>
                 <p onClick={handleBlock} className="block px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  {
-                    !blockStatus ? <>차단</> : <><FontAwesomeIcon icon={faCheck}/>차단됨</>
-                  }
+                  {!blockStatus ? (
+                    <>차단</>
+                  ) : (
+                    <>
+                      <FontAwesomeIcon icon={faCheck} />
+                      차단됨
+                    </>
+                  )}
                 </p>
                 <p className="block px-4 py-2 hover:bg-gray-100 cursor-pointer">신고</p>
               </div>
             </div>
+          </div>
+          </div>
+
+          <div className="flex space-x-4">
+            <button onClick={()=>{navigate(`/users/${id}/followee`)}}>
+              <strong>{profile.followeeCount}</strong>Following
+            </button>
+            <button onClick={()=>{navigate(`/users/${id}/follower`)}}>
+              <strong>{profile.followerCount}</strong>Followers
+            </button>
           </div>
         </div>
 
