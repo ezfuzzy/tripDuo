@@ -72,12 +72,10 @@ public class UserController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<UserProfileInfoDto> updateUserInfo(@PathVariable Long id,
+	public ResponseEntity<?> updateUserInfo(@PathVariable Long id,
 			@RequestParam(required = false) MultipartFile profileImgForUpload, UserProfileInfoDto dto) {
 		// 사용자 정보 업데이트
-		userService.updateUserProfileInfo(dto, profileImgForUpload);
-
-		return ResponseEntity.ok(dto);
+		return ResponseEntity.ok(userService.updateUserProfileInfo(dto, profileImgForUpload));
 	}
 
 	@PutMapping("/{id}/change-password")

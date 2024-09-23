@@ -31,13 +31,16 @@ public class S3ServiceImpl implements S3Service{
 	@Override
 	public String uploadFile(MultipartFile multipartFile) {
 		  String fileName = createFileName(multipartFile.getOriginalFilename());
+
+		  // TODO: 파라미터 추가 + if문을 통해 어디서 호출한지 체크해서 업로드할 디렉토리 결정
+		  String tempBucket = bucket + "/users/profile_pictures";
 		  
 	      ObjectMetadata metadata = new ObjectMetadata();
 	      metadata.setContentLength(multipartFile.getSize());
 	      metadata.setContentType(multipartFile.getContentType());
 
 	      try (InputStream inputStream = multipartFile.getInputStream()) {
-	    	  amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, metadata));
+	    	  amazonS3.putObject(new PutObjectRequest(tempBucket, fileName, inputStream, metadata));
 	      } catch (IOException e) {
 	          throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 업로드에 실패했습니다.");
 	      }
