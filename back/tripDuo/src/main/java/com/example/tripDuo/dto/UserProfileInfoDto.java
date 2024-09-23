@@ -46,6 +46,8 @@ public class UserProfileInfoDto {
     private Long follwerCount;
     private Long follweeCount;
     
+    private String token;
+    
     // UserProfileInfoRepository에서 follower/followee의 정보를 사용
     public UserProfileInfoDto(Long userId, String nickname, String profilePicture, String profileMessage) {
         this.userId = userId;
@@ -58,7 +60,7 @@ public class UserProfileInfoDto {
     	
     	String profilePictureUrl = entity.getProfilePicture();
     	if(profilePictureUrl != null && !profilePictureUrl.isEmpty() && cloudFrontUrl != null && !cloudFrontUrl.isEmpty()) {
-    		profilePictureUrl = cloudFrontUrl + "/" + profilePictureUrl;
+    		profilePictureUrl = cloudFrontUrl + profilePictureUrl;
     	}
     	
         return UserProfileInfoDto.builder()

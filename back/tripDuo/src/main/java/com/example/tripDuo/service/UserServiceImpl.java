@@ -23,6 +23,7 @@ import com.example.tripDuo.repository.UserFollowRepository;
 import com.example.tripDuo.repository.UserProfileInfoRepository;
 import com.example.tripDuo.repository.UserRepository;
 import com.example.tripDuo.repository.UserReviewRepository;
+import com.example.tripDuo.util.JwtUtil;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -30,9 +31,10 @@ import jakarta.persistence.EntityNotFoundException;
 public class UserServiceImpl implements UserService {
 
 
-	@Value("${cloud.aws.cloudfront.url}")
-	private String cloudFrontUrl;
+	@Value("${cloud.aws.cloudfront.profile_picture_url}")
+	private String PROFILE_PICTURE_CLOUDFRONT_URL;
 	
+	private final JwtUtil jwtUtil;
 	private final S3Service s3Service;
 	private final UserRepository userRepo;
 	private final UserProfileInfoRepository userProfileInfoRepo;
@@ -40,10 +42,11 @@ public class UserServiceImpl implements UserService {
 	private final UserReviewRepository userReviewRepo;
 	private final PasswordEncoder passwordEncoder;
 	
-	public UserServiceImpl(S3Service s3Service, UserRepository userRepo, 
+	public UserServiceImpl(JwtUtil jwtUtil, S3Service s3Service, UserRepository userRepo, 
 			UserProfileInfoRepository userProfileInfoRepo, UserFollowRepository userFollowRepo, 
 			PasswordEncoder passwordEncoder, UserReviewRepository userReviewRepo) {
 		
+		this.jwtUtil = jwtUtil;
 		this.s3Service = s3Service;
 		this.userRepo = userRepo;
 		this.userProfileInfoRepo = userProfileInfoRepo;
@@ -97,7 +100,7 @@ public class UserServiceImpl implements UserService {
 		
         UserProfileInfo userProfileInfo = userProfileInfoRepo.findByUserId(user.getId());
         
-        UserProfileInfoDto upiDto = UserProfileInfoDto.toDto(userProfileInfo, cloudFrontUrl);
+        UserProfileInfoDto upiDto = UserProfileInfoDto.toDto(userProfileInfo, PROFILE_PICTURE_CLOUDFRONT_URL);
         upiDto.setFollwerCount(follwerCount);
         upiDto.setFollweeCount(follweeCount);
         
@@ -117,7 +120,7 @@ public class UserServiceImpl implements UserService {
             return null;  
         }
 
-        return UserProfileInfoDto.toDto(userProfileInfo, cloudFrontUrl);
+        return UserProfileInfoDto.toDto(userProfileInfo, PROFILE_PICTURE_CLOUDFRONT_URL);
 	}
 
 	/**
@@ -215,14 +218,18 @@ public class UserServiceImpl implements UserService {
 	 * @param profileImgForUpload
 	 */
 	@Override
-	public void updateUserProfileInfo(UserProfileInfoDto userProfileInfoDto, MultipartFile profileImgForUpload) {
+	public UserProfileInfoDto updateUserProfileInfo(UserProfileInfoDto userProfileInfoDto, MultipartFile profileImgForUpload) {
 
 		// 허용된 파일 확장자 목록
 	    Set<String> allowedExtensions = new HashSet<>(Arrays.asList(
 	            "jpg", "jpeg", "png", "heic", "heif"
 	    		));
 	    
-		
+	    if(userProfileInfoDto.getProfilePicture() != null) {
+	        String pictureName = userProfileInfoDto.getProfilePicture().replace(PROFILE_PICTURE_CLOUDFRONT_URL, "");
+	        userProfileInfoDto.setProfilePicture(pictureName);
+	    }
+	    
 	    // 프로필 이미지가 존재하고, 파일 크기가 0이 아닌 경우 처리
 	    if (profileImgForUpload != null && !profileImgForUpload.isEmpty()) {
 
@@ -257,7 +264,14 @@ public class UserServiceImpl implements UserService {
 	    
 	    // 변경된 정보를 저장
 	    userProfileInfoRepo.save(UserProfileInfo.toEntity(userProfileInfoDto, user));
-
+	    
+	    // 업데이트된 정보를 처리하기 위해 front로 정보 return
+	    userProfileInfoDto.setProfilePicture(PROFILE_PICTURE_CLOUDFRONT_URL + userProfileInfoDto.getProfilePicture());
+	   
+	    String token = jwtUtil.generateToken(user.getUsername());
+		
+	    userProfileInfoDto.setToken(token);
+	    return userProfileInfoDto;
 	}
 	
 	@Override

@@ -36,7 +36,7 @@ public interface UserService {
 
 	
 	// ### updateUserProfileInfo ###
-	public void updateUserProfileInfo(UserProfileInfoDto userProfileInfoDto, MultipartFile profileImgForUpload);
+	public UserProfileInfoDto updateUserProfileInfo(UserProfileInfoDto userProfileInfoDto, MultipartFile profileImgForUpload);
 	
 	
 	// ### deleteUser ###

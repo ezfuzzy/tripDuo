@@ -30,8 +30,8 @@ public class JwtUtil {
 	@Value("${jwt.expiration}")
 	private long expiration;
 
-	@Value("${cloud.aws.cloudfront.url}")
-	private String cloudFrontUrl;
+	@Value("${cloud.aws.cloudfront.profile_picture_url}")
+	private String PROFILE_PICTURE_CLOUDFRONT_URL;
 	
 	public JwtUtil(UserRepository userRepo, UserProfileInfoRepository userProfileInfoRepo) {
 		this.userRepo = userRepo;
@@ -69,7 +69,7 @@ public class JwtUtil {
 		claims.put("username", user.getUsername());
 		claims.put("nickname", userProfileInfo.getNickname());
 		claims.put("profilePicture", userProfileInfo.getProfilePicture() != null 
-			    ? cloudFrontUrl + "/" + userProfileInfo.getProfilePicture() 
+			    ? PROFILE_PICTURE_CLOUDFRONT_URL + userProfileInfo.getProfilePicture() 
 			    : null);
 		
 		return createToken(claims, username);
