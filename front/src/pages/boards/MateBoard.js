@@ -15,7 +15,9 @@ function MateBoard() {
     city: "",
     startDate: "",
     endDate: "",
-    location: ""
+    location: "",
+    title: "",
+    writer: ""
   });
 
   // searchPrams 에 di 값이 있으면 그 값으로 없다면 Domestic 으로 설정
@@ -24,6 +26,7 @@ function MateBoard() {
   const [pageTurn, setPageTurn] = useState("to International");
   // 페이지 전환 버튼
   const [whereAreYou, setWhereAreYou] = useState(null);
+  const [sortBy, setSortBy] = useState("latest"); // 정렬 기준 초기값 설정
 
   // searchParams 가 바뀔때마다 실행된다. 
   // searchParams 가 없다면 초기값 "Domestic" 있다면 di 란 key 값의 데이터를 domesticInternational에 전달한다
@@ -33,40 +36,56 @@ function MateBoard() {
     const startDate = searchParams.get("startDate") || ""; // 시작 날짜 가져오기
     const endDate = searchParams.get("endDate") || ""; // 종료 날짜 가져오기
     const location = searchParams.get("location") || ""; // 위치 가져오기
+    const title = searchParams.get("title") || ""; // 제목 가져오기
+    const writer = searchParams.get("writer") || ""; // 작성자 가져오기
+
 
     setDomesticInternational(diValue);
-    setSearchCriteria({ city, startDate, endDate, location }); // 검색 조건 설정
+    setSearchCriteria({ city, startDate, endDate, location, title, writer }); // 검색 조건 설정
   }, [searchParams]);
 
   // domesticInternational 가 바뀔때마다 실행된다.
   // to D~ I~ Button 을 누를때 or 새로운 요청이 들어왔을때
   useEffect(() => {
-    axios
-      .get("/api/v1/posts/mate")
-      .then((res) => {
-        const filtered = res.data.list.filter((item) => {
-          // 도시 일치 여부: 사용자가 입력한 도시가 존재하면, 해당 도시가 게시물의 도시에 포함되는지 확인
-          const matchesCity = searchCriteria.city ? item.city.includes(searchCriteria.city) : true; 
-          
-          // 시작 날짜 일치 여부: 사용자가 입력한 시작 날짜가 존재하면, 게시물의 시작 날짜가 그 날짜보다 크거나 같은지 확인
-          const matchesStartDate = searchCriteria.startDate ? item.startDate >= searchCriteria.startDate : true; 
-          
-          // 종료 날짜 일치 여부: 사용자가 입력한 종료 날짜가 존재하면, 게시물의 종료 날짜가 그 날짜보다 작거나 같은지 확인
-          const matchesEndDate = searchCriteria.endDate ? item.endDate <= searchCriteria.endDate : true; 
-          
-          // 국내/국제 일치 여부: 현재 선택된 상태에 따라 게시물의 국가가 한국인지 아닌지 확인
-          const matchesDomesticInternational = domesticInternational === "Domestic" ? item.country === "한국" : item.country !== "한국"; 
+    axios.get("/api/v1/posts/mate")
+    .then((res) => {
+      const filtered = res.data.list.filter((item) => {
+        
+        const matchesDomesticInternational = domesticInternational === "Domestic" ? item.country === "한국" : item.country !== "한국"; 
+        if (!matchesDomesticInternational) return false;
 
-          // 모든 필터 조건이 만족하는 경우에만 해당 게시물을 반환
-          return matchesCity && matchesStartDate && matchesEndDate && matchesDomesticInternational; 
-        });
+        const matchesCity = searchCriteria.city ? item.city.includes(searchCriteria.city) : true; 
+        if (!matchesCity) return false;
 
-        setPageData(filtered); // 필터링된 데이터를 상태에 설정
-        setWhereAreYou(domesticInternational === "Domestic" ? "국내 여행 메이트 페이지" : "해외 여행 메이트 페이지"); // 국내/국제에 따라 헤더 설정
-        setPageTurn(domesticInternational === "Domestic" ? "to International" : "to Domestic"); // 현재 상태에 따라 버튼 텍스트 변경
-      })
-      .catch((error) => console.log(error));
-  }, [domesticInternational, searchCriteria]);
+        const matchesTitle = searchCriteria.title ? item.title.includes(searchCriteria.title) : true; // 제목 필터링
+        if (!matchesTitle) return false;
+
+        const matchesWriter = searchCriteria.writer ? item.writer.includes(searchCriteria.writer) : true; // 작성자 필터링
+        if (!matchesWriter) return false;
+
+        const matchesStartDate = searchCriteria.startDate ? item.startDate >= searchCriteria.startDate : true; 
+        if (!matchesStartDate) return false;
+
+        const matchesEndDate = searchCriteria.endDate ? item.endDate <= searchCriteria.endDate : true; 
+        return matchesEndDate;
+      });
+      const sorted = filtered.sort((a, b) => {
+        if (sortBy === "latest") {
+          return new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt); // 최신순
+        } else if (sortBy === "viewCount") {
+          return b.viewCount - a.viewCount; // 조회수순
+        } else if (sortBy === "likeCount") {
+          return b.likeCount - a.likeCount; // 좋아요순
+        }
+        return 0; // 기본값
+      });
+      setPageData(filtered);
+      setWhereAreYou(domesticInternational === "Domestic" ? "국내 여행 메이트 페이지" : "해외 여행 메이트 페이지");
+      setPageTurn(domesticInternational === "Domestic" ? "to International" : "to Domestic");
+    })
+    .catch((error) => console.log(error));
+
+  }, [domesticInternational, searchCriteria, sortBy]);
 
   // -------------이벤트 관리부
 
@@ -94,8 +113,13 @@ function MateBoard() {
       city: searchCriteria.city,
       startDate: searchCriteria.startDate,
       endDate: searchCriteria.endDate,
+      title: searchCriteria.title,
+      writer: searchCriteria.writer, 
       di: domesticInternational,
     });
+  };
+  const handleSortChange = (e) => {
+    setSortBy(e.target.value); // 정렬 기준 변경
   };
 
   return (
@@ -127,6 +151,23 @@ function MateBoard() {
           className="border px-2 py-1 mx-2"
         />
         <input
+          type="text"
+          name="title"
+          value={searchCriteria.title}
+          onChange={handleSearchChange}
+          placeholder="제목"
+          className="border px-2 py-1 mx-2"
+        />
+        <input
+          type="text"
+          name="writer"
+          value={searchCriteria.writer}
+          onChange={handleSearchChange}
+          placeholder="작성자"
+          className="border px-2 py-1 mx-2"
+        />
+
+        <input
           type="date"
           name="startDate"
           value={searchCriteria.startDate}
@@ -143,6 +184,16 @@ function MateBoard() {
         <button onClick={handleSearch} className="bg-blue-500 text-white px-4 py-2">
           검색
         </button>
+      </div>
+
+      {/* 검색 정렬 기준 다운바 */}
+      <div className="my-4">
+        <label htmlFor="sortBy" className="mr-2">정렬 기준:</label>
+        <select id="sortBy" value={sortBy} onChange={handleSortChange} className="border px-2 py-1">
+          <option value="latest">최신순</option>
+          <option value="viewCount">조회수순</option>
+          <option value="likeCount">좋아요순</option>
+        </select>
       </div>
 
       {/* 메이트 게시판 테이블 */}
