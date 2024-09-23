@@ -1,5 +1,4 @@
 import { useOutlet } from "react-router-dom"
-import "bootstrap/dist/css/bootstrap.css"
 import NavBar from "./components/NavBar"
 import Footer from "./components/Footer"
 import { useEffect, useState } from "react"
