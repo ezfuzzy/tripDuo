@@ -10,35 +10,34 @@ function FollowerFollowee() {
   const [followerList, setFollowerList] = useState([]);
   const [followeeList, setFolloweeList] = useState([]);
 
-  const [ activeTab, setActiveTab ] = useState(ff);
-  
-  const [followerFollowee, setFollowerFollowee] = useState(ff)
+  const [activeTab, setActiveTab] = useState(ff);
+
+  const [followerFollowee, setFollowerFollowee] = useState(ff);
 
   useEffect(() => {
-
     if (followerFollowee === "follower") {
       axios
-        .get(`/${id}/followersInfo`)
+        .get(`/api/v1/users/${id}/followersInfo`)
         .then((res) => {
           setFollowerList(res.data);
-          setFollowerFollowee("follower")
+          setFollowerFollowee("follower");
         })
         .catch((error) => console.log(error));
     } else if (followerFollowee === "followee") {
-        axios
-        .get(`/${id}/follow/followeesInfo`)
+      axios
+        .get(`/api/v1/users/${id}/follow/followeesInfo`)
         .then((res) => {
-            setFolloweeList(res.data);
-            setFollowerFollowee("followee")
+          setFolloweeList(res.data);
+          setFollowerFollowee("followee");
         })
         .catch((error) => console.log(error));
     }
   }, [followerFollowee, id, ff]);
 
-  const handleActiveTab = (tab)=>{
-    setActiveTab(tab)
-    setFollowerFollowee(tab)
-  }
+  const handleActiveTab = (tab) => {
+    setActiveTab(tab);
+    setFollowerFollowee(tab);
+  };
 
   return (
     <>
@@ -47,7 +46,9 @@ function FollowerFollowee() {
           <li className="me-2">
             <p
               onClick={() => handleActiveTab("followee")}
-              className={`h-3 cursor-pointer text-md font-bold inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-700 hover:border-gray-400 ${activeTab === "followee" ? "text-blue-700 border-blue-400" : ""}`}
+              className={`h-3 cursor-pointer text-md font-bold inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-700 hover:border-gray-400 ${
+                activeTab === "followee" ? "text-blue-700 border-blue-400" : ""
+              }`}
             >
               팔로잉
             </p>
@@ -55,7 +56,9 @@ function FollowerFollowee() {
           <li className="">
             <p
               onClick={() => handleActiveTab("follower")}
-              className={`h-3 cursor-pointer text-md font-bold inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-700 hover:border-gray-400 ${activeTab === "follower" ? "text-blue-700 border-blue-400" : ""}`}
+              className={`h-3 cursor-pointer text-md font-bold inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-700 hover:border-gray-400 ${
+                activeTab === "follower" ? "text-blue-700 border-blue-400" : ""
+              }`}
             >
               팔로워
             </p>
