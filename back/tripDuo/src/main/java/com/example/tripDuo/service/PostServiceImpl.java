@@ -364,12 +364,12 @@ public class PostServiceImpl implements PostService {
 	 */
 	@Override
 	@Transactional
-	public void deleteLikeFromPost(Long likeId) {
+	public void deleteLikeFromPost(Long postId, Long userId) {
 		
-		Post existingPost = postRepo.findById(postLikeRepo.findById(likeId).get().getPostId())
+		Post existingPost = postRepo.findById(postId)
 	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
 		
-		postLikeRepo.deleteById(likeId);
+		postLikeRepo.deleteByPostIdAndUserId(postId, userId);
 		existingPost.setLikeCount(postLikeRepo.countByPostId(existingPost.getId()));
 	}
 

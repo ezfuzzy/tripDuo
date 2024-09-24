@@ -192,11 +192,11 @@ public class PostController {
 	    }
 	}
 	
-	@DeleteMapping("/{postId:[0-9]+}/likes/{likeId:[0-9]+}")
-	public ResponseEntity<String> deleteLikeFromPost(@PathVariable("likeId") Long likeId) {
+	@DeleteMapping("/{postId:[0-9]+}/likes/{userId:[0-9]+}")
+	public ResponseEntity<String> deleteLikeFromPost(@PathVariable("postId") Long postId, @PathVariable("userId") Long userId) {
 
 		try {
-	        postService.deleteLikeFromPost(likeId);
+	        postService.deleteLikeFromPost(postId, userId);
 	        return ResponseEntity.ok("Like is deleted successfully");
 	    } catch (EntityNotFoundException e) {
 	        // 게시글이 존재하지 않는 경우에 대한 처리
