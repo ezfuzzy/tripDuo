@@ -86,7 +86,7 @@ function MyProfile(props) {
   };
   // 팔로잉/팔로워 모달 close
   const handleCloseModal = () => {
-    setBlockModalOpen(false);
+    setModalOpen(false);
   };
 
   // 차단 목록 모달 open
