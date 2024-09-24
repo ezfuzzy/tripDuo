@@ -271,7 +271,7 @@ public class UserServiceImpl implements UserService {
 	   
 	    String token = jwtUtil.generateToken(user.getUsername());
 		
-	    userProfileInfoDto.setToken(token);
+	    userProfileInfoDto.setToken("Bearer+" + token);
 	    return userProfileInfoDto;
 	}
 	
