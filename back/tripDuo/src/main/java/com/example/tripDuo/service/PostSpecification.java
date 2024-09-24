@@ -75,6 +75,9 @@ public class PostSpecification {
 						Predicate contentPredicate = criteriaBuilder.like(root.get("content"), keyword);
 						predicate = criteriaBuilder.and(predicate,
 								criteriaBuilder.or(titlePredicate, contentPredicate));
+					} else if (postDto.getCondition().equals("writer")) {
+						predicate = criteriaBuilder.and(predicate,
+								criteriaBuilder.like(root.get("writer"), keyword));
 					}
 				}
 				
