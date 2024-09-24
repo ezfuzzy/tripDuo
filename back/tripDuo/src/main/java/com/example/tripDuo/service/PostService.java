@@ -48,7 +48,7 @@ public interface PostService {
 	
 	public void addLikeToPost(PostLikeDto postLikeDto);
 	// get
-	public void deleteLikeFromPost(Long likeId);
+	public void deleteLikeFromPost(Long postId, Long usreId);
 	
 	// ### rating ###
 	public void addRatingToPost(PostRatingDto postRatingDto);
