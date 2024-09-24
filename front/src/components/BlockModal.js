@@ -3,9 +3,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { setActive } from "@material-tailwind/react/components/Tabs/TabsContext";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useNavigate } from "react-router";
 
 function BlockModal({id, onClose}) {
+  const navigate = useNavigate();
 
   const [blockedList, setBlockedList] = useState([]);
 
@@ -52,6 +53,7 @@ function BlockModal({id, onClose}) {
                 <li
                   key={blocked.userId}
                   className="flex justify-between gap-x-6 py-4"
+                  onClick={()=>{ navigate(`/users/${blocked.userId}/profile`)}}
                 >
                   <div className="flex min-w-0 gap-x-4">
                     <img
