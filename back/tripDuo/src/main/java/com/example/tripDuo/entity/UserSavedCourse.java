@@ -29,7 +29,9 @@ public class UserSavedCourse {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_trip_info_id")
+    private UserTripInfo userTripInfo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
@@ -38,11 +40,11 @@ public class UserSavedCourse {
     private LocalDateTime createdAt;
     
     // toEntity 
-    public static UserSavedCourse toEntity(UserSavedCourseDto dto, Post course) {
+    public static UserSavedCourse toEntity(UserSavedCourseDto dto, UserTripInfo userTripInfo, Post course) {
     	
     	return UserSavedCourse.builder()
                 .id(dto.getId())
-                .userId(dto.getUserId())
+                .userTripInfo(userTripInfo)
                 .course(course)
                 .createdAt(dto.getCreatedAt())
                 .build();

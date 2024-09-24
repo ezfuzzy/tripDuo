@@ -29,7 +29,9 @@ public class UserSavedPlace {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_trip_info_id")
+    private UserTripInfo userTripInfo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_id", nullable = false)
@@ -38,11 +40,11 @@ public class UserSavedPlace {
     private LocalDateTime createdAt;
     
     // toEntity 
-    public static UserSavedPlace toEntity(UserSavedPlaceDto dto, Place place) {
+    public static UserSavedPlace toEntity(UserSavedPlaceDto dto, UserTripInfo userTripInfo, Place place) {
     	
     	return UserSavedPlace.builder()
                 .id(dto.getId())
-                .userId(dto.getUserId())
+                .userTripInfo(userTripInfo)
                 .place(place)
                 .createdAt(dto.getCreatedAt())
                 .build();
