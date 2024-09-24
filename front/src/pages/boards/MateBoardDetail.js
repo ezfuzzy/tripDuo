@@ -21,6 +21,7 @@ function MateBoardDetail(props) {
 
   //좋아요 버튼 설정
   const [isLiked, setLiked] = useState(false);
+  const [likeId, setLikeId] = useState();
 
   //덧글 관련 설정 ( to do )
   const [commentList, setCommentList] = useState([]);
@@ -70,6 +71,7 @@ function MateBoardDetail(props) {
             ...post,
             likeCount: post.likeCount + 1,
           });
+          setLikeId(res.data)
         })
         .catch((error) => {
           console.log(error);
