@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faPersonCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import "../../css/MyProfile.css";
 import FollowerFolloweeModal from "../../components/FollowerFolloweeModal";
+import BlockModal from "../../components/BlockModal";
 
 function MyProfile(props) {
   // to do : cur_location, rating, last_login
@@ -38,9 +39,11 @@ function MyProfile(props) {
     // rating : 0
   });
 
-  // 모달 상태관리
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // 팔로잉/팔로워 모달 상태관리
+  const [isModalOpen, setModalOpen] = useState(false);
   const [modalTab, setModalTab] = useState();
+  // 차단 목록 모달 상태 관리
+  const [isBlockModalOpen, setBlockModalOpen] = useState(false);
 
   // 버튼 스타일 - 신청 전/후 색상 변경
   const followButtonClasses = `px-4 py-2 text-sm font-medium rounded-md ${
@@ -76,15 +79,24 @@ function MyProfile(props) {
     navigate(`/users/${id}/profile/edit`);
   };
 
+  // 팔로잉/팔로워 모달 open
   const handleOpenModal = (tab) => {
     setModalTab(tab);
-    setIsModalOpen(true);
+    setModalOpen(true);
   };
-
+  // 팔로잉/팔로워 모달 close
   const handleCloseModal = () => {
-    setIsModalOpen(false);
+    setBlockModalOpen(false);
   };
 
+  // 차단 목록 모달 open
+  const handleOpenBlockModal = () => {
+    setBlockModalOpen(true);
+  };
+  // 차단 목록 모달 close
+  const handleCloseBlockModal = () => {
+    setBlockModalOpen(false);
+  };
   // 토스트 메세지
   const toastOn = () => {
     toastMessageRef.current.classList.add("active");
@@ -199,7 +211,10 @@ function MyProfile(props) {
 
   return (
     <>
-      <button type="button" className="mb-20 px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600">
+      <button
+        type="button"
+        className="mb-20 px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
+      >
         <Link to={`/users/${id}`}>마이 페이지</Link>
       </button>
       {/* 전체 div */}
@@ -333,7 +348,7 @@ function MyProfile(props) {
           </div>
         </div>
         {isModalOpen && <FollowerFolloweeModal id={id} ff={modalTab} onClose={handleCloseModal} />}
-
+        {isBlockModalOpen && <BlockModal id={id} onClose={handleCloseBlockModal} />}
         {/* sns 아이콘 */}
         <div className="mt-3">
           <a className="h-8 w-8 rounded-full outline-none focus:outline-none" type="button" href={profile.socialLinks}>
@@ -404,12 +419,12 @@ function MyProfile(props) {
         {/* 페이지의 정보를 가진 username 과 로그인된 username 이 같으면 ... */}
         {isProfileOwner && (
           <div className="mt-20">
-            <p>
+            <p className=" cursor-pointer" onClick={handleOpenBlockModal}>
               <strong>차단 목록</strong>
             </p>
-            <h5>
+            <p>
               <strong>보안</strong>
-            </h5>
+            </p>
             <p>로그인 기록</p>
             <p>내 활동 기록</p>
             <p>회원 탈퇴</p>
