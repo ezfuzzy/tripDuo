@@ -26,7 +26,7 @@ public class UserVisitedPlaceDto {
     	
     	return UserVisitedPlaceDto.builder()
                 .id(entity.getId())
-                .userId(entity.getUserId())
+                .userId(entity.getUserTripInfo() != null ? entity.getUserTripInfo().getUserId() : null)
                 .placeId(entity.getPlace() != null ? entity.getPlace().getId() : null)
                 .placeName(entity.getPlace() != null ? entity.getPlace().getPlaceName() : null)
                 .visitDate(entity.getVisitDate())

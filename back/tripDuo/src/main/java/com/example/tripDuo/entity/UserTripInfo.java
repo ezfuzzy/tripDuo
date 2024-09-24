@@ -48,7 +48,7 @@ public class UserTripInfo {
     private List<UserSavedCourse> savedCourses = new ArrayList<>();
 
     // toEntity
-    static public UserTripInfo toEntity(UserTripInfoDto dto, Place place, Post course) {
+    static public UserTripInfo toEntity(UserTripInfoDto dto, UserTripInfo userTripInfoDto, Place place, Post course) {
     	
         return UserTripInfo.builder()
                 .id(dto.getId())
@@ -57,13 +57,13 @@ public class UserTripInfo {
                 .languages(dto.getLanguages())
                 .smoking(dto.getSmoking())
                 .visitedPlaces(dto.getVisitedPlaces().stream()
-                        .map(dtoItem -> UserVisitedPlace.toEntity(dtoItem, place))
+                        .map(dtoItem -> UserVisitedPlace.toEntity(dtoItem, userTripInfoDto, place))
                         .toList())
                 .savedPlaces(dto.getSavedPlaces().stream()
-                        .map(dtoItem -> UserSavedPlace.toEntity(dtoItem, place))
+                        .map(dtoItem -> UserSavedPlace.toEntity(dtoItem, userTripInfoDto, place))
                         .toList())
                 .savedCourses(dto.getSavedCourses().stream()
-                        .map(dtoItem -> UserSavedCourse.toEntity(dtoItem, course))
+                        .map(dtoItem -> UserSavedCourse.toEntity(dtoItem, userTripInfoDto, course))
                         .toList())
                 .build();
     }
