@@ -218,7 +218,7 @@ function MyProfile(props) {
         <Link to={`/users/${id}`}>마이 페이지</Link>
       </button>
       {/* 전체 div */}
-      <div className="container">
+      <div className="flex-col">
         {blockStatus && (
           <p className="ml-10 mb-0 text-sm text-red-600">
             <FontAwesomeIcon icon={faPersonCircleXmark} />
@@ -226,10 +226,12 @@ function MyProfile(props) {
           </p>
         )}
 
-        {/* 프로필 부분 */}
-        <div className="relative flex-col">
+        {/* 프로필 부분 전체 */}
+        <div className="relative flex-col ">
+
           {/* 세로로 가운데, 아이템들 수평 간격 6px 마진 3  */}
-          <div className="flex items-center gap-x-6 m-3">
+          <div className="flex items-center gap-x-6 m-3 justify-center">
+
             {/* 프로필 이미지 핸들링 */}
             {imageData ? (
               <img src={imageData} className="w-20 h-20 rounded-full" alt="" />
@@ -285,14 +287,16 @@ function MyProfile(props) {
                 </button>
               </div>
             )}
-            {/* Toggle 버튼 (신고/차단) */}
-            <div className="flex items-center dropdown-wrapper">
+            {/* Toggle 버튼 (신고/차단) 프로필 주인이 아닐시에만 랜더링*/}
+            {
+              !isProfileOwner &&
+              <div className="flex items-center dropdown-wrapper">
               <button
                 onClick={handleClickToggle}
                 data-dropdown-toggle="dropdownDots"
                 className="dropdown-button inline-flex items-center p-2 text-sm font-medium text-center text-gray-600 bg-white rounded-lg hover:bg-gray-100 focus:ring-1focus:outline-none focus:ring-gray-50"
                 type="button"
-              >
+                >
                 <svg
                   className="w-5 h-5"
                   aria-hidden="true"
@@ -327,10 +331,11 @@ function MyProfile(props) {
                 </div>
               </div>
             </div>
+        }
           </div>
 
           {/* 팔로우/팔로우 카운트 뷰 + 팝업 페이지 */}
-          <div className="flex space-x-4">
+          <div className="flex space-x-4 justify-center">
             <button
               onClick={() => {
                 handleOpenModal("followee");
@@ -347,10 +352,13 @@ function MyProfile(props) {
             </button>
           </div>
         </div>
+        
+        {/* MODAL */}
         {isModalOpen && <FollowerFolloweeModal id={id} ff={modalTab} onClose={handleCloseModal} />}
         {isBlockModalOpen && <BlockModal id={id} onClose={handleCloseBlockModal} />}
+
         {/* sns 아이콘 */}
-        <div className="mt-3">
+        <div className="mt-3 flex justify-center">
           <a className="h-8 w-8 rounded-full outline-none focus:outline-none" type="button" href={profile.socialLinks}>
             <svg
               className="fill-current transition duration-700 ease-in-out text-gray-700 hover:text-pink-600"
@@ -366,9 +374,9 @@ function MyProfile(props) {
           </a>
           <span> {profile.socialLinks} </span>
 
-          <a className="h-8 w-8 rounded-full outline-none focus:outline-none" type="button" href={profile.socialLinks}>
+          <a className="ml-5 h-8 w-8 rounded-full outline-none focus:outline-none" type="button" href={profile.socialLinks}>
             <svg
-              className="fill-current transition duration-700 ease-in-out text-gray-700 hover:text-black"
+              className="fill-current transition duration-700 ease-in-out text-gray-700 hover:text-green-600"
               role="img"
               width="24"
               height="24"
@@ -384,7 +392,7 @@ function MyProfile(props) {
 
         {/* profile message */}
         <div className="my-3">
-          <label htmlFor="profileMessage" className="form-label">
+          <label htmlFor="profileMessage" className="form-label ">
             자기 소개
           </label>
           <div id="profileMessage" className="border-2 border-gray-400 rounded-md p-2 min-h-[100px] overflow-y-auto">
