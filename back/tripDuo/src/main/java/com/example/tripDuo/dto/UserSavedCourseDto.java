@@ -25,7 +25,7 @@ public class UserSavedCourseDto {
 		
     	return UserSavedCourseDto.builder()
                 .id(entity.getId())
-                .userId(entity.getUserId())
+                .userId(entity.getUserTripInfo() != null ? entity.getUserTripInfo().getUserId() : null)
                 .courseId(entity.getCourse() != null ? entity.getCourse().getId() : null)
                 .courseTitle(entity.getCourse() != null ? entity.getCourse().getTitle() : null)
                 .createdAt(entity.getCreatedAt())
