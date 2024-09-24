@@ -38,15 +38,14 @@ public class UserTripInfo {
     private String[] languages;
     private Boolean smoking;
 
-    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "userTripInfo", cascade = CascadeType.ALL)
     private List<UserVisitedPlace> visitedPlaces = new ArrayList<>();
 
-    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "userTripInfo", cascade = CascadeType.ALL)
     private List<UserSavedPlace> savedPlaces = new ArrayList<>();
 
-    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "userTripInfo", cascade = CascadeType.ALL)
     private List<UserSavedCourse> savedCourses = new ArrayList<>();
-
 
     // toEntity
     static public UserTripInfo toEntity(UserTripInfoDto dto, Place place, Post course) {
