@@ -35,8 +35,8 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class PostServiceImpl implements PostService {
 
-	@Value("${cloud.aws.cloudfront.url}")
-	private String cloudFrontUrl;
+	@Value("${cloud.aws.cloudfront.profile_picture_url}")
+	private String PROFILE_PICTURE_CLOUDFRONT_URL;
 	
 	private final PostRepository postRepo;
 	private final PostCommentRepository postCommentRepo;
@@ -157,7 +157,7 @@ public class PostServiceImpl implements PostService {
 		
 		// view count + 1
 		
-		UserProfileInfoDto upiDto = UserProfileInfoDto.toDto(post.getUserProfileInfo(), cloudFrontUrl);
+		UserProfileInfoDto upiDto = UserProfileInfoDto.toDto(post.getUserProfileInfo(), PROFILE_PICTURE_CLOUDFRONT_URL);
 		
 		existingDto.setViewCount(existingDto.getViewCount()+1);
 		postRepo.save(Post.toEntity(existingDto, userProfileInfoRepo.findById(existingDto.getUserId()).get()));
