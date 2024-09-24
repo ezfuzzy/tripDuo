@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -25,9 +26,11 @@ import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.dto.UserProfileInfoDto;
 import com.example.tripDuo.entity.User;
 import com.example.tripDuo.entity.UserProfileInfo;
+import com.example.tripDuo.entity.UserTripInfo;
 import com.example.tripDuo.enums.UserRole;
 import com.example.tripDuo.repository.UserProfileInfoRepository;
 import com.example.tripDuo.repository.UserRepository;
+import com.example.tripDuo.repository.UserTripInfoRepository;
 import com.example.tripDuo.util.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -49,6 +52,7 @@ public class AuthServiceImpl implements AuthService {
 	private final PasswordEncoder encoder;
 	private final UserRepository userRepo;
 	private final UserProfileInfoRepository userProfileInfoRepo;
+	private final UserTripInfoRepository userTripInfoRepo;
 	private final PhoneNumberVerificationService phoneNumberVerificationService;
 
 	@Value("${mailgun.key}")
@@ -84,12 +88,14 @@ public class AuthServiceImpl implements AuthService {
 	public AuthServiceImpl(JwtUtil jwtUtil, AuthenticationManager authManager, 
 			PasswordEncoder encoder, UserRepository userRepo, 
 			UserProfileInfoRepository userProfileInfoRepo,
+			UserTripInfoRepository userTripInfoRepo,
 			PhoneNumberVerificationService phoneNumberVerificationService) {
 		this.jwtUtil = jwtUtil;
 		this.authManager = authManager;
 		this.encoder = encoder;
 		this.userRepo = userRepo;
 		this.userProfileInfoRepo = userProfileInfoRepo;
+		this.userTripInfoRepo = userTripInfoRepo;
 		this.phoneNumberVerificationService = phoneNumberVerificationService;
 	}
 
@@ -110,6 +116,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
+	@Transactional
 	public String signup(UserDto userDto) {
 
 		// ### username, nickname, password 유효성 체크 ###
@@ -133,6 +140,8 @@ public class AuthServiceImpl implements AuthService {
 		
 		userProfileInfoRepo.save(UserProfileInfo.toEntity(
 				UserProfileInfoDto.builder().nickname(userDto.getNickname()).build(), savedUser));
+		
+		userTripInfoRepo.save(UserTripInfo.builder().userId(savedUser.getId()).build());
 		
 		String token = jwtUtil.generateToken(userDto.getUsername());
 
