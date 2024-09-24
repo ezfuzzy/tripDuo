@@ -153,7 +153,7 @@ public class PostServiceImpl implements PostService {
 		Page<PostComment> comments = postCommentRepo.findByPostIdOrderByParentCommentIdAscCreatedAtAsc(postDto.getId(), pageable);
 		List<PostCommentDto> commentList = comments.stream().map(PostCommentDto::toDto).toList();
 		
-		int totalCommentPages = (int) Math.ceil(existingDto.getCommentCount() / COMMENT_PAGE_SIZE);
+		int totalCommentPages = (int) Math.ceil(existingDto.getCommentCount() / (double) COMMENT_PAGE_SIZE);
 		
 		// view count + 1
 		
