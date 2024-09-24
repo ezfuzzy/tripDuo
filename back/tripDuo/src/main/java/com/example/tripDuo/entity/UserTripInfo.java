@@ -38,13 +38,13 @@ public class UserTripInfo {
     private String[] languages;
     private Boolean smoking;
 
-    @OneToMany(mappedBy = "userTravelInfo", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
     private List<UserVisitedPlace> visitedPlaces = new ArrayList<>();
 
-    @OneToMany(mappedBy = "userTravelInfo", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
     private List<UserSavedPlace> savedPlaces = new ArrayList<>();
 
-    @OneToMany(mappedBy = "userTravelInfo", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
     private List<UserSavedCourse> savedCourses = new ArrayList<>();
 
 
