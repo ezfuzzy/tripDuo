@@ -101,7 +101,7 @@
 		</dependency>
 
 
-
+		<!-- postgresql jsonb로 변환하기 위한 dependency -->
 		<dependency>
 			<groupId>io.hypersistence</groupId>
 			<artifactId>hypersistence-utils-hibernate-63</artifactId>
