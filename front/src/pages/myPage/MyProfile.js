@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { shallowEqual, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -40,7 +40,7 @@ function MyProfile(props) {
 
   // 모달 상태관리
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalTab, setModalTab] = useState()
+  const [modalTab, setModalTab] = useState();
 
   // 버튼 스타일 - 신청 전/후 색상 변경
   const followButtonClasses = `px-4 py-2 text-sm font-medium rounded-md ${
@@ -56,6 +56,7 @@ function MyProfile(props) {
       .then((res) => {
         //불러온 사용자의 정보 저장
         setProfile(res.data);
+        console.log(res.data);
         //불러온 사용자의 정보에 프로필 사진이 있다면 imageData 에 설정
         if (res.data.profilePicture) {
           setImageData(res.data.profilePicture);
@@ -76,7 +77,7 @@ function MyProfile(props) {
   };
 
   const handleOpenModal = (tab) => {
-    setModalTab(tab)
+    setModalTab(tab);
     setIsModalOpen(true);
   };
 
@@ -198,6 +199,9 @@ function MyProfile(props) {
 
   return (
     <>
+      <button type="button" className="mb-20 px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600">
+        <Link to={`/users/${id}`}>마이 페이지</Link>
+      </button>
       {/* 전체 div */}
       <div className="container">
         {blockStatus && (
@@ -326,12 +330,9 @@ function MyProfile(props) {
             >
               <strong>{profile.followerCount}</strong>Followers
             </button>
-
           </div>
         </div>
-            {isModalOpen && (
-                <FollowerFolloweeModal id={id} ff={modalTab} onClose={handleCloseModal} />
-            )}
+        {isModalOpen && <FollowerFolloweeModal id={id} ff={modalTab} onClose={handleCloseModal} />}
 
         {/* sns 아이콘 */}
         <div className="mt-3">
@@ -403,12 +404,15 @@ function MyProfile(props) {
         {/* 페이지의 정보를 가진 username 과 로그인된 username 이 같으면 ... */}
         {isProfileOwner && (
           <div className="mt-20">
+            <p>
+              <strong>차단 목록</strong>
+            </p>
             <h5>
               <strong>보안</strong>
             </h5>
-            <p>회원 탈퇴</p>
             <p>로그인 기록</p>
             <p>내 활동 기록</p>
+            <p>회원 탈퇴</p>
           </div>
         )}
       </div>
