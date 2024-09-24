@@ -65,7 +65,10 @@ function MyPage() {
             </p>
           </div>
           <div>
-            <button className="btn btn-secondary btn-sm" onClick={handleClick}>
+            <button
+              className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
+              onClick={handleClick}
+            >
               프로필 보기
             </button>
           </div>
