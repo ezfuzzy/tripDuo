@@ -48,14 +48,6 @@ public class UserProfileInfoDto {
     
     private String token;
     
-    // UserProfileInfoRepository에서 follower/followee의 정보를 사용
-    public UserProfileInfoDto(Long userId, String nickname, String profilePicture, String profileMessage) {
-        this.userId = userId;
-        this.nickname = nickname;
-        this.profilePicture = profilePicture;
-        this.profileMessage = profileMessage;
-    }
-    
     public static UserProfileInfoDto toDto(UserProfileInfo entity, String cloudFrontUrl) {
     	
     	String profilePictureUrl = entity.getProfilePicture();

@@ -11,6 +11,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -30,8 +32,13 @@ public class UserFollow {
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
-	private long followerUserId; // 팔로우 하는 사람 (팔로워)
-	private long followeeUserId; // 팔로우 당하는 사람 (팔로이)
+	@ManyToOne
+	@JoinColumn(name = "followee_user_id", nullable = false)
+	private UserProfileInfo followeeUserProfileInfo;
+	
+	@ManyToOne
+    @JoinColumn(name = "follower_user_id", nullable = false)
+    private UserProfileInfo followerUserProfileInfo;
 	
     @Enumerated(EnumType.STRING)
 	private FollowType followType;
@@ -43,11 +50,19 @@ public class UserFollow {
         createdAt = LocalDateTime.now();
     }
 	
-    public static UserFollow toEntity(UserFollowDto dto) {
+    public void updateFollowType(FollowType followType) {
+    	this.followType = followType;
+    }
+    
+    public void updateCreatedAt() {
+    	createdAt = LocalDateTime.now();
+    }
+    
+    public static UserFollow toEntity(UserFollowDto dto, UserProfileInfo followeeUpi, UserProfileInfo followerUpi) {
     	return UserFollow.builder()
     			.id(dto.getId())
-    			.followerUserId(dto.getFollowerUserId() != null ? dto.getFollowerUserId() : 0L)
-    			.followeeUserId(dto.getFolloweeUserId() != null ? dto.getFolloweeUserId() : 0L)
+    			.followeeUserProfileInfo(followeeUpi)
+    			.followerUserProfileInfo(followerUpi)
     			.followType(dto.getFollowType())
     			.createdAt(dto.getCreatedAt())
     			.build();

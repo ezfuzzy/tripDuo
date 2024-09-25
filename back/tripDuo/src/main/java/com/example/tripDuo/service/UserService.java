@@ -1,6 +1,7 @@
 package com.example.tripDuo.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -8,7 +9,7 @@ import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.dto.UserFollowDto;
 import com.example.tripDuo.dto.UserProfileInfoDto;
 import com.example.tripDuo.dto.UserReviewDto;
-import com.example.tripDuo.enums.FollowType;
+import com.example.tripDuo.entity.UserProfileInfo;
 
 public interface UserService {
 
@@ -22,9 +23,8 @@ public interface UserService {
 	public UserDto getUserByEmail(String email);
 
 	// ### getUserProfileInfo ###
-	public UserProfileInfoDto getUserProfileInfoById(Long userId);
+	public Map<String, Object> getUserProfileInfoById(Long userId);
 	public UserProfileInfoDto getUserProfileInfoByUsername(String username); 
-	
 	
 	// ### 중복체크 ###
 	public Boolean checkExists(String checkType, String checkString);
@@ -43,13 +43,14 @@ public interface UserService {
 	public void deleteUser(Long usreId);
 	
 	// ### follow ###
-	public List<UserProfileInfoDto> getFollowerProfileInfoList(Long followeeUserId);
-	public List<UserProfileInfoDto> getFolloweeProfileInfoList(Long followerUserId, FollowType followType);
+	public Map<String, Object> getFollowInfo(Long userId);
+	public List<UserProfileInfo> getBlockInfo(Long userId);
 	public void addFollowOrBlock(UserFollowDto userFollowDto);
 	public void deleteFollowOrBlock(UserFollowDto userFollowDto);
 	
 	// ### review ###
-	public void addReview(UserReviewDto dto);
-	public void deleteReview(Long id);
-	public void updateReview(UserReviewDto dto);	
+//	public List<UserReviewDto> getReviews(Long revieweeId);
+	public void writeReview(UserReviewDto userReviewDto);
+	public void updateReview(UserReviewDto userReviewDto);
+	public void deleteReview(Long revieweeId, Long reviewerId);
 }
