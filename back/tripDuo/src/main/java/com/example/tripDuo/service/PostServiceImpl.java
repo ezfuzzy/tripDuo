@@ -151,7 +151,7 @@ public class PostServiceImpl implements PostService {
 		Sort sort = Sort.by("parentCommentId").ascending().and(Sort.by("createdAt").ascending());
 		Pageable pageable = PageRequest.of(0, COMMENT_PAGE_SIZE, sort);
 		Page<PostComment> comments = postCommentRepo.findByPostIdOrderByParentCommentIdAscCreatedAtAsc(postDto.getId(), pageable);
-		List<PostCommentDto> commentList = comments.stream().map(PostCommentDto::toDto).toList();
+		List<PostCommentDto> commentList = comments.stream().map(dtoItem -> PostCommentDto.toDto(dtoItem, PROFILE_PICTURE_CLOUDFRONT_URL)).toList();
 		
 		int totalCommentPages = (int) Math.ceil(existingDto.getCommentCount() / (double) COMMENT_PAGE_SIZE);
 		
@@ -240,7 +240,7 @@ public class PostServiceImpl implements PostService {
 	 */
 	@Override
 	@Transactional
-	public PostComment writeComment(PostCommentDto postCommentDto) {
+	public PostCommentDto writeComment(PostCommentDto postCommentDto) {
 		// 댓글의 parent comment id와 to username 은 front 에서 넘어옴
 		Post existingPost = postRepo.findById(postCommentDto.getPostId())
 	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
@@ -248,11 +248,14 @@ public class PostServiceImpl implements PostService {
 		
 		// 댓글 db 저장
 		PostComment postComment = postCommentRepo.save(PostComment.toEntity(postCommentDto, userProfileInfo));
-		
+		if(postComment.getParentCommentId() == 0) {
+			postComment.setParentCommentId(postComment.getId());
+		}
+				
 		// post의 댓글 수 update
 		existingPost.setCommentCount(postCommentRepo.countByPostId(existingPost.getId()));
 		
-		return postComment;
+		return postCommentDto.toDto(postComment, PROFILE_PICTURE_CLOUDFRONT_URL);
 	}
 
 	/**
@@ -274,7 +277,7 @@ public class PostServiceImpl implements PostService {
 
 	    // 댓글 페이지 조회
 	    Page<PostComment> comments = postCommentRepo.findByPostIdOrderByParentCommentIdAscCreatedAtAsc(postCommentDto.getPostId(), pageable);
-	    List<PostCommentDto> commentList = comments.stream().map(PostCommentDto::toDto).toList();
+	    List<PostCommentDto> commentList = comments.stream().map(dtoItem -> PostCommentDto.toDto(dtoItem, PROFILE_PICTURE_CLOUDFRONT_URL)).toList();
 	    
 	    // 총 페이지 수 계산
 	    int totalCommentPages = comments.getTotalPages();

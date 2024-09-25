@@ -56,6 +56,10 @@ public class PostComment {
         createdAt = LocalDateTime.now();
     }
 
+    public void setParentCommentId(long parentCommentId) {
+    	this.parentCommentId = parentCommentId;
+    }
+    
     public void softDeletePostComment() {
     	deletedAt = LocalDateTime.now();
     	status = CommentStatus.DELETED;

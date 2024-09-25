@@ -6,7 +6,6 @@ import com.example.tripDuo.dto.PostCommentDto;
 import com.example.tripDuo.dto.PostDto;
 import com.example.tripDuo.dto.PostLikeDto;
 import com.example.tripDuo.dto.PostRatingDto;
-import com.example.tripDuo.entity.PostComment;
 
 public interface PostService {
 	
@@ -37,7 +36,7 @@ public interface PostService {
 	
 	// ### comment ###		
  
-	public PostComment writeComment(PostCommentDto postCommentDto);
+	public PostCommentDto writeComment(PostCommentDto postCommentDto);
 
 	public Map<String, Object> getCommentList(PostCommentDto postCommentDto);
 	
