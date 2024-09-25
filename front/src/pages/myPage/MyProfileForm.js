@@ -43,16 +43,16 @@ function MyProfileForm(props) {
     axios
       .get(`/api/v1/users/${id}`)
       .then((res) => {
-        if (!userId || userId !== res.data.userId) {
+        if (!userId || userId !== res.data.userProfileInfo.userId) {
           alert("잘못된 접근입니다.");
           navigate(`/`);
         }
         console.log(res.data);
-        setProfile(res.data);
+        setProfile(res.data.userProfileInfo);
 
-        setInitialNickname(res.data.nickname); // 로딩된 닉네임 초기값 저장
-        if (res.data.profilePicture) {
-          setImageData(res.data.profilePicture);
+        setInitialNickname(res.data.userProfileInfo.nickname); // 로딩된 닉네임 초기값 저장
+        if (res.data.userProfileInfo.profilePicture) {
+          setImageData(res.data.userProfileInfo.profilePicture);
         }
       })
       .catch((error) => console.log(error));

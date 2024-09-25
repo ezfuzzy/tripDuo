@@ -58,16 +58,16 @@ function MyProfile(props) {
       .get(`/api/v1/users/${id}`)
       .then((res) => {
         //불러온 사용자의 정보 저장
-        setProfile(res.data);
+        setProfile(res.data.userProfileInfo);
         console.log(res.data)
 
         //불러온 사용자의 정보에 프로필 사진이 있다면 imageData 에 설정
-        if (res.data.profilePicture) {
-          setImageData(res.data.profilePicture);
+        if (res.data.userProfileInfo.profilePicture) {
+          setImageData(res.data.userProfileInfo.profilePicture);
         }
 
         // 접속된 사용자와 프로필 사용자의 id 가 같으면 Owner = true
-        if (userId === res.data.userId) {
+        if (userId === res.data.userProfileInfo.userId) {
           setProfileOwner(true);
         }
       })
@@ -143,7 +143,7 @@ function MyProfile(props) {
       //팔로우 중이지 않은경우 (followingStatue = false)
       toastOn();
       axios
-        .post(`/api/v1/users/${userId}/follow/${id}`)
+        .post(`/api/v1/users/${id}/follow/${userId}`)
         .then((res) => {
           console.log(res.data);
           setFollowingStatus(true);
@@ -153,7 +153,7 @@ function MyProfile(props) {
       // 팔로우 중인 경우 (followingStatus = true)
       if (window.confirm("팔로우를 취소 하시겠습니까?")) {
         axios
-          .delete(`/api/v1/users/${userId}/follow/${id}`)
+          .delete(`/api/v1/users/${id}/follow/${userId}`)
           .then((res) => {
             console.log(res.data);
             setFollowingStatus(false);

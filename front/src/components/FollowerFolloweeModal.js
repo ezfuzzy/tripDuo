@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
 function FollowerFolloweeModal({id, ff, onClose}) {
+
   const navigate = useNavigate();
 
   const [followerList, setFollowerList] = useState([]);
@@ -14,24 +15,18 @@ function FollowerFolloweeModal({id, ff, onClose}) {
   const [activeTab, setActiveTab] = useState(ff);
 
   useEffect(() => {
-    if (activeTab === "follower") {
-      // id 유저를 팔로우한 유저의 정보
+
+      // id 유저를 팔로우에 대한 리스트
       axios
-        .get(`/api/v1/users/${id}/followersInfo`)
+        .get(`/api/v1/users/${id}/followInfos`)
         .then((res) => {
-          setFollowerList(res.data);
+          setFollowerList(res.data.followerList);
+          setFolloweeList(res.data.followeeList);
+          console.log(res.data.followerList);
+          console.log(res.data.followeeList);
         })
         .catch((error) => console.log(error));
-    } else if (activeTab === "followee") {
-      // id 유저가 팔로우한 유저의 정보
-      axios
-        .get(`/api/v1/users/${id}/follow/followeesInfo`)
-        .then((res) => {
-          setFolloweeList(res.data);
-        })
-        .catch((error) => console.log(error));
-    }
-  }, [activeTab, id, ff]);
+  }, [id, ff]);
 
   const handleActiveTab = (tab) => {
     setActiveTab(tab);
@@ -59,6 +54,7 @@ function FollowerFolloweeModal({id, ff, onClose}) {
                   팔로잉
                 </p>
               </li>
+
               <li>
                 <p
                   onClick={() => handleActiveTab("follower")}
@@ -91,8 +87,8 @@ function FollowerFolloweeModal({id, ff, onClose}) {
               followeeList.map((followee) => (
                 <li
                 key={followee.userId}
-                className="flex justify-between gap-x-6 py-4"
-                onClick={()=>{ navigate(`/users/${followee.userId}/profile`)}}
+                className="flex justify-between gap-x-6 py-4 cursor-pointer"
+                onClick={()=>{ navigate(`/users/${followee.id}/profile`)}}
                 >
                   <div className="flex min-w-0 gap-x-4">
                     <img
@@ -116,10 +112,10 @@ function FollowerFolloweeModal({id, ff, onClose}) {
               {activeTab === "follower" &&
                 followerList.map((follower) => (
                   <li
-                    key={follower.userId}
-                    className="flex justify-between gap-x-6 py-4"
-                    onClick={()=>{ navigate(`/users/${follower.userId}/profile`)}}
-                    >
+                  key={follower.userId}
+                  className="flex justify-between gap-x-6 py-4 cursor-pointer"
+                  onClick={()=>{ navigate(`/users/${follower.userId}/profile`)}}
+                  >
                     <div className="flex min-w-0 gap-x-4">
                       <img
                         alt=""
