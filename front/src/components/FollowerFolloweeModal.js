@@ -15,6 +15,7 @@ function FollowerFolloweeModal({id, ff, onClose}) {
 
   useEffect(() => {
     if (activeTab === "follower") {
+      // id 유저를 팔로우한 유저의 정보
       axios
         .get(`/api/v1/users/${id}/followersInfo`)
         .then((res) => {
@@ -22,6 +23,7 @@ function FollowerFolloweeModal({id, ff, onClose}) {
         })
         .catch((error) => console.log(error));
     } else if (activeTab === "followee") {
+      // id 유저가 팔로우한 유저의 정보
       axios
         .get(`/api/v1/users/${id}/follow/followeesInfo`)
         .then((res) => {
@@ -83,31 +85,8 @@ function FollowerFolloweeModal({id, ff, onClose}) {
         {/* Body */}
         <div className="p-4 overflow-y-auto max-h-[75vh]">
           <ul className="divide-y divide-gray-100">
-            {activeTab === "follower" &&
-              followerList.map((follower) => (
-                <li
-                  key={follower.userId}
-                  className="flex justify-between gap-x-6 py-4"
-                  onClick={()=>{ navigate(`/users/${follower.userId}/profile`)}}
-                  >
-                  <div className="flex min-w-0 gap-x-4">
-                    <img
-                      alt=""
-                      src={follower.profilePicture}
-                      className="h-12 w-12 flex-none rounded-full bg-gray-50"
-                      />
-                    <div className="min-w-0 flex-auto">
-                      <p className="text-sm font-semibold leading-6 text-gray-900">
-                        {follower.nickname}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="shrink-0 sm:flex sm:flex-col sm:items-end">
-                    <p className="text-sm leading-6 text-gray-900">나이/성별</p>
-                  </div>
-                </li>
-              ))}
 
+            {/* 팔로잉 */}
             {activeTab === "followee" &&
               followeeList.map((followee) => (
                 <li
@@ -132,6 +111,32 @@ function FollowerFolloweeModal({id, ff, onClose}) {
                   </div>
                 </li>
               ))}
+
+              {/* 팔로워 */}
+              {activeTab === "follower" &&
+                followerList.map((follower) => (
+                  <li
+                    key={follower.userId}
+                    className="flex justify-between gap-x-6 py-4"
+                    onClick={()=>{ navigate(`/users/${follower.userId}/profile`)}}
+                    >
+                    <div className="flex min-w-0 gap-x-4">
+                      <img
+                        alt=""
+                        src={follower.profilePicture}
+                        className="h-12 w-12 flex-none rounded-full bg-gray-50"
+                        />
+                      <div className="min-w-0 flex-auto">
+                        <p className="text-sm font-semibold leading-6 text-gray-900">
+                          {follower.nickname}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="shrink-0 sm:flex sm:flex-col sm:items-end">
+                      <p className="text-sm leading-6 text-gray-900">나이/성별</p>
+                    </div>
+                  </li>
+                ))}
           </ul>
         </div>
       </div>
