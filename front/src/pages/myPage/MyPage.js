@@ -16,15 +16,15 @@ function MyPage() {
     axios
       .get(`/api/v1/users/${id}`)
       .then((res) => {
-        if (!userId || userId !== res.data.userId) {
+        if (!userId || userId !== res.data.userProfileInfo.userId) {
           alert("잘못된 접근입니다.");
           navigate(`/`);
         }
+        
+        setProfile(res.data.userProfileInfo);
 
-        setProfile(res.data);
-
-        if (res.data.profilePicture) {
-          setImageData(res.data.profilePicture);
+        if (res.data.userProfileInfo.profilePicture) {
+          setImageData(res.data.userProfileInfo.profilePicture);
         }
       })
       .catch((error) => console.log(error));
