@@ -255,7 +255,7 @@ public class PostServiceImpl implements PostService {
 		// post의 댓글 수 update
 		existingPost.setCommentCount(postCommentRepo.countByPostId(existingPost.getId()));
 		
-		return postCommentDto.toDto(postComment, PROFILE_PICTURE_CLOUDFRONT_URL);
+		return PostCommentDto.toDto(postComment, PROFILE_PICTURE_CLOUDFRONT_URL);
 	}
 
 	/**
