@@ -170,7 +170,8 @@ function NavBar() {
           className="font-bold text-2xl absolute left-1/2 transform -translate-x-1/2"
           onClick={handleTripDuoClick}
         >
-          TripDuo
+        {/* w-25 이상 설정시 네비게이션 바 밖으로 나옴 */}
+        <img className="w-24 h-auto" src="/img/TripDuologo.png" alt="logo" />
         </button>
 
         <div className="flex space-x-4">
