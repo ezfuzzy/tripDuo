@@ -2,8 +2,8 @@ package com.example.tripDuo.controller;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,6 +21,7 @@ import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.dto.UserFollowDto;
 import com.example.tripDuo.dto.UserProfileInfoDto;
 import com.example.tripDuo.dto.UserReviewDto;
+import com.example.tripDuo.entity.UserProfileInfo;
 import com.example.tripDuo.enums.FollowType;
 import com.example.tripDuo.service.UserService;
 
@@ -40,12 +41,12 @@ public class UserController {
 	}
 
 	@GetMapping("/{id:[0-9]+}")
-	public ResponseEntity<UserProfileInfoDto> getUserProfileInfoById(@PathVariable Long id) {
+	public ResponseEntity<Map<String, Object>> getUserProfileInfoById(@PathVariable Long id) {
 
-		UserProfileInfoDto userProfileInfoDto = userService.getUserProfileInfoById(id);
+		Map<String, Object> userDatas = userService.getUserProfileInfoById(id);
 		
-		if (userProfileInfoDto != null) {
-			return ResponseEntity.ok(userProfileInfoDto);
+		if (userDatas != null) {
+			return ResponseEntity.ok(userDatas);
 		} else {
 			return ResponseEntity.notFound().build(); // 유저가 없으면 404 반환
 		}
@@ -100,29 +101,16 @@ public class UserController {
 	// ### follow ###
 	// 팔로우/차단 관련 메소드
 
-	// 어떤 유저(followeeUserId)를 팔로우한 유저들(followers)의 정보(Info) 받아오기
-	@GetMapping("/{followeeUserId}/followersInfo")
-	public ResponseEntity<List<UserProfileInfoDto>> getFollowerProfileInfoList(@PathVariable("followeeUserId") Long followeeUserId) {
-		
-		List<UserProfileInfoDto> followerProfileInfoList = userService.getFollowerProfileInfoList(followeeUserId);
-		return ResponseEntity.ok(followerProfileInfoList);
+	// userId의 팔로워/팔로이 리스트를 가져오는 메소드
+	@GetMapping("/{userId}/followInfos")
+	public ResponseEntity<Map<String, Object>> getFollowInfo(@PathVariable("userId") Long userId) {
+		return ResponseEntity.ok(userService.getFollowInfo(userId));
 	}
 
-	// 어떤 유저(followerUserId)가 팔로우/차단(followType) 한 유저들(followees)의 정보(Info) 받아오기
-	@GetMapping("/{followerUserId}/{followType}/followeesInfo")
-	public ResponseEntity<List<UserProfileInfoDto>> getFolloweeProfileInfoList(@PathVariable("followerUserId") Long followerUserId,
-			@PathVariable("followType") String followType) {
-		
-		FollowType followTypeEnum;
-		
-		try {
-			followTypeEnum = FollowType.fromString(followType);
-		} catch (IllegalArgumentException e) {
-			return ResponseEntity.badRequest().body(Collections.emptyList());
-		}
-		
-		List<UserProfileInfoDto> followeeProfileInfoList = userService.getFolloweeProfileInfoList(followerUserId, followTypeEnum);
-		return ResponseEntity.ok(followeeProfileInfoList);
+	// userId의 차단 리스트를 가져오는 메소드
+	@GetMapping("/{userId}/blockInfos")
+	public ResponseEntity<List<UserProfileInfo>> getBlockInfo(@PathVariable("userId") Long userId) {
+		return ResponseEntity.ok(userService.getBlockInfo(userId));
 	}
 
 	// 어떤 유저(followerUserId)가 다른 유저(followeeUserId)를 팔로우/차단(followType) 하기
@@ -174,25 +162,38 @@ public class UserController {
 	}
 
 	// ### review ###
+	// 리뷰 관련 메소드
 
-	@PostMapping("/{id}/reviews")
-	public ResponseEntity<String> writeReview(@PathVariable Long id, @RequestBody UserReviewDto dto) {
-		dto.setRevieweeId(id);
-		userService.addReview(dto);
-		return ResponseEntity.ok("Review added successfully");
+	// 어떤 유저(reviewerId)가 다른 유저(revieweeId)를 대상으로 리뷰(review)를 작성하기
+	@PostMapping("/{revieweeId}/review/{reviewerId}")
+	public ResponseEntity<String> writeReview(@PathVariable("revieweeId") Long revieweeId,
+			@PathVariable("reviewerId") Long reviewerId,
+			@RequestBody UserReviewDto userReviewDto) {
+		
+		userReviewDto.setRevieweeId(revieweeId);
+		userReviewDto.setReviewerId(reviewerId);
+		userService.writeReview(userReviewDto);
+		return ResponseEntity.ok("Review writed successfully");
 	}
 
-	@PutMapping("/{id}/reviews")
-	public ResponseEntity<String> updateReview(@PathVariable Long id, @RequestBody UserReviewDto dto) {
-		dto.setId(id);
-		userService.updateReview(dto);
+	// 어떤 유저(reviewerId)가 다른 유저(revieweeId)를 대상으로 작성한 리뷰(review)를 수정하기
+	@PutMapping("/{revieweeId}/review/{reviewerId}")
+	public ResponseEntity<String> updateReview(@PathVariable("revieweeId") Long revieweeId,
+			@PathVariable("reviewerId") Long reviewerId,
+			@RequestBody UserReviewDto userReviewDto) {
+		
+		userReviewDto.setRevieweeId(revieweeId);
+		userReviewDto.setReviewerId(reviewerId);
+		userService.updateReview(userReviewDto);
 		return ResponseEntity.ok("Review updated successfully");
 	}
 
-	@DeleteMapping("/{id}/reviews")
-	public ResponseEntity<String> deleteReview(@PathVariable Long id) {
-		userService.deleteReview(id);
+	// 어떤 유저(reviewerId)가 다른 유저(revieweeId)를 대상으로 작성한 리뷰(review)를 삭제하기
+	@DeleteMapping("/{revieweeId}/review/{reviewerId}")
+	public ResponseEntity<String> deleteReview(@PathVariable("revieweeId") Long revieweeId,
+			@PathVariable("reviewerId") Long reviewerId) {
+		
+		userService.deleteReview(revieweeId, reviewerId);
 		return ResponseEntity.ok("Review deleted successfully");
 	}
-
 }

@@ -29,8 +29,8 @@ public class UserReview {
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
-	private long reviewerId; // 리뷰 하는 사람 (리뷰어)
 	private long revieweeId; // 리뷰 당하는 사람 (리뷰이)
+	private long reviewerId; // 리뷰 하는 사람 (리뷰어) << 얘만 ManyToOne
 	
 	private String content;
 	
