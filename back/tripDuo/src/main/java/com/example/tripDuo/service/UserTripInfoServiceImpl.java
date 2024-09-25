@@ -1,5 +1,7 @@
 package com.example.tripDuo.service;
 
+import org.springframework.stereotype.Service;
+
 import com.example.tripDuo.dto.UserSavedCourseDto;
 import com.example.tripDuo.dto.UserSavedPlaceDto;
 import com.example.tripDuo.dto.UserTripInfoDto;
@@ -19,6 +21,7 @@ import com.example.tripDuo.repository.UserVisitedPlaceRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
+@Service
 public class UserTripInfoServiceImpl implements UserTripInfoService {
 
 	private final UserTripInfoRepository userTripInfoRepo;
