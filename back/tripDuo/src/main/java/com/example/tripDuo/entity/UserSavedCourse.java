@@ -36,7 +36,8 @@ public class UserSavedCourse {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
     private Post course;
-
+    
+	private String userMemo;
     private LocalDateTime createdAt;
     
     // toEntity 
@@ -46,6 +47,7 @@ public class UserSavedCourse {
                 .id(dto.getId())
                 .userTripInfo(userTripInfo)
                 .course(course)
+                .userMemo(dto.getUserMemo())
                 .createdAt(dto.getCreatedAt())
                 .build();
     }
