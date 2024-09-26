@@ -1,6 +1,5 @@
 package com.example.tripDuo.service;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -10,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,34 +97,51 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	public Map<String, Object> getUserProfileInfoById(Long userId) {
-		User user = userRepo.findById(userId)
-				.orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 		
-		Long follweeCount = userFollowRepo.countByFollowerUserProfileInfo_User_IdAndFollowType(userId, FollowType.FOLLOW);
-		Long follwerCount = userFollowRepo.countByFolloweeUserProfileInfo_User_IdAndFollowType(userId, FollowType.FOLLOW);
+		Long currentUserId = userRepo.findByUsername(username).getId();
 		
-        UserProfileInfo userProfileInfo = userProfileInfoRepo.findByUserId(user.getId());
-        
-        UserProfileInfoDto upiDto = UserProfileInfoDto.toDto(userProfileInfo, PROFILE_PICTURE_CLOUDFRONT_URL);
-        upiDto.setFolloweeCount(follweeCount);
-        upiDto.setFollowerCount(follwerCount);
-        
-		// 리뷰 목록을 createdAt 최신순으로 조회
-		List<UserReview> userReviews = userReviewRepo.findByRevieweeId(userId, Sort.by(Sort.Direction.DESC, "createdAt"));
+		UserFollow userFollow = userFollowRepo
+				.findByFolloweeUserProfileInfo_User_IdAndFollowerUserProfileInfo_User_Id(
+						currentUserId, userId);
 		
-		// UserReview를 UserReviewDto로 변환
-	    List<UserReviewDto> urDtoList = userReviews.stream()
-	        .map(UserReviewDto::toDto)
-	        .collect(Collectors.toList());
-	    
-	    List<Long> followerIdList = userFollowRepo.findFollowerUserIdsByFolloweeUserIdAndFollowType(userId, FollowType.FOLLOW);
-	    // 어떤 유저를 차단한 유저들 id 리스트
-	    List<Long> blockingIdList = userFollowRepo.findFollowerUserIdsByFolloweeUserIdAndFollowType(userId, FollowType.BLOCK);
-	    // 어떤 유저가 차단한 유저들 id 리스트
-	    List<Long> blockedIdList = userFollowRepo.findFolloweeUserIdsByFollowerUserIdAndFollowType(userId, FollowType.BLOCK);
-	    
-	    return Map.of("userProfileInfo", upiDto, "userReviewList", urDtoList,
-	    			  "followerIdLIst", followerIdList, "blockingIdList", blockingIdList , "blockedIdList", blockedIdList);
+		String followType;
+		if(userFollow != null) {
+			followType = userFollow.getFollowType().toString();
+		} else {
+			followType = "";
+		}
+		
+		if(followType.equals("BLOCK")) { // 차단 당하지 않았으면 정보를 불러온다
+			return Map.of("followType", followType);
+		} else { // 만약 차단당했으면 정보가 필요없으므로 불러오지 않는다
+			User user = userRepo.findById(userId)
+					.orElseThrow(() -> new EntityNotFoundException("User not found"));
+			
+			Long follweeCount = userFollowRepo.countByFollowerUserProfileInfo_User_IdAndFollowType(userId, FollowType.FOLLOW);
+			Long follwerCount = userFollowRepo.countByFolloweeUserProfileInfo_User_IdAndFollowType(userId, FollowType.FOLLOW);
+			
+	        UserProfileInfo userProfileInfo = userProfileInfoRepo.findByUserId(user.getId());
+	        
+	        UserProfileInfoDto upiDto = UserProfileInfoDto.toDto(userProfileInfo, PROFILE_PICTURE_CLOUDFRONT_URL);
+	        upiDto.setFolloweeCount(follweeCount);
+	        upiDto.setFollowerCount(follwerCount);
+	        
+			// 리뷰 목록을 createdAt 최신순으로 조회
+			List<UserReview> userReviewList = userReviewRepo.findByRevieweeId(userId, Sort.by(Sort.Direction.DESC, "createdAt"));
+			
+			// UserReview를 UserReviewDto로 변환
+		    List<UserReviewDto> userReviewDtoList = userReviewList.stream()
+		        .map(item -> UserReviewDto.toDto(item, PROFILE_PICTURE_CLOUDFRONT_URL))
+		        .collect(Collectors.toList());
+		    
+		    Map<String, Object> map = Map.of("userProfileInfo", upiDto,
+		    		"userReviewList", userReviewDtoList,
+		    		"followType", followType);
+		    
+	    	return map;
+		}
 	}
 
 	@Override	
@@ -353,11 +370,7 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public void addFollowOrBlock(UserFollowDto userFollowDto) {
 		
-		UserFollow tempUserFollow = userFollowRepo.findByFolloweeUserProfileInfo_User_IdAndFollowerUserProfileInfo_User_Id(userFollowDto.getFolloweeUserId(), userFollowDto.getFollowerUserId()); 
-		
-		System.out.println("Followee ID: " + userFollowDto.getFolloweeUserId());
-		System.out.println("Follower ID: " + userFollowDto.getFollowerUserId());
-		System.out.println("Existing Follow/Block: " + tempUserFollow);
+		UserFollow tempUserFollow = userFollowRepo.findByFolloweeUserProfileInfo_User_IdAndFollowerUserProfileInfo_User_Id(userFollowDto.getFolloweeUserId(), userFollowDto.getFollowerUserId());
 		
 		if(tempUserFollow != null) { // 기존 관계가 있으면 update - createdAt 갱신
 			tempUserFollow.updateFollowType(userFollowDto.getFollowType());
@@ -397,7 +410,9 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public void writeReview(UserReviewDto userReviewDto) {
-		UserReview userReview = UserReview.toEntity(userReviewDto);
+		UserProfileInfo reviewerProfileInfo = userProfileInfoRepo.findByUserId(userReviewDto.getReviewerId());
+		
+		UserReview userReview = UserReview.toEntity(userReviewDto, reviewerProfileInfo);
 		userReviewRepo.save(userReview);
 	}
 	
@@ -409,25 +424,16 @@ public class UserServiceImpl implements UserService {
 	 * @param userReviewDto
 	 */
 	@Override
+	@Transactional
 	public void updateReview(UserReviewDto userReviewDto) {
-	    // 리뷰가 존재하는지 확인
-	    UserReview existingReview = userReviewRepo.findByRevieweeIdAndReviewerId(
-	            userReviewDto.getRevieweeId(),
-	            userReviewDto.getReviewerId()
-	    ).orElseThrow(() -> new EntityNotFoundException("리뷰가 존재하지 않습니다"));
-
-	    UserReview updatedReview = UserReview.builder()
-	            .id(existingReview.getId())
-	            .reviewerId(existingReview.getReviewerId())
-	            .revieweeId(existingReview.getRevieweeId())
-	            .content(userReviewDto.getContent())
-	            .tags(userReviewDto.getTags())
-	            .rating(userReviewDto.getRating())
-	            .createdAt(existingReview.getCreatedAt())
-	            .updatedAt(LocalDateTime.now())
-	            .build();
-
-	    userReviewRepo.save(updatedReview);
+	    UserReview existUserReview = userReviewRepo.findByRevieweeIdAndReviewerUserProfileInfo_User_Id(userReviewDto.getRevieweeId(), userReviewDto.getReviewerId());
+	    if(existUserReview == null) {
+	    	throw new EntityNotFoundException("리뷰가 존재하지 않습니다");
+	    }
+	    
+	    existUserReview.updateContent(userReviewDto.getContent());
+	    existUserReview.updateTags(userReviewDto.getTags());
+	    existUserReview.updateRating(userReviewDto.getRating());
 	}
 	
 	/**
@@ -441,6 +447,6 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	@Override
 	public void deleteReview(Long revieweeId, Long reviewerId) {
-		userReviewRepo.deleteByRevieweeIdAndReviewerId(revieweeId, reviewerId);
+		userReviewRepo.deleteByRevieweeIdAndReviewerUserProfileInfo_User_Id(revieweeId, reviewerId);
 	}
 }
