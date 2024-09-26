@@ -47,8 +47,6 @@ const CourseBoardDetail = () => {
   const dropdownRefs = useRef([])
   // 각 답글 폼 상태를 관리하는 배열
   const [replyTexts, setReplyTexts] = useState({})
-  // 답글버튼 text관리
-  const [replyButtonText, setReplyButtonText] = useState("답글")
   // 각 수정 폼 상태를 관리하는 배열
   const [editTexts, setEditTexts] = useState({})
 
@@ -281,8 +279,6 @@ const CourseBoardDetail = () => {
         setCommentList([...commentList])
         //댓글 입력한 textarea 초기화
         e.target.content.value = ""
-        //답글 버튼 text 수정
-        setReplyButtonText("취소")
       })
       .catch((error) => {
         console.log(error)
