@@ -49,3 +49,6 @@ back/.idea/codeStyles/codeStyleConfig.xml
 .metadata/.plugins/org.eclipse.ui.intro/introstate
 .metadata/.plugins/org.eclipse.ui.workbench/workingsets.xml
 .vscode/settings.json
+front/.vscode/c_cpp_properties.json
+front/.vscode/launch.json
+front/.vscode/settings.json

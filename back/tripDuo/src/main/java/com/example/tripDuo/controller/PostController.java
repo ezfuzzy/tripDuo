@@ -32,7 +32,7 @@ public class PostController {
 		this.postService = postService;
 	}
 
-	@PostMapping("/{postType:[a-zA-Z]+}")
+	@PostMapping("/{postType:[a-zA-Z_]+}")
 	public ResponseEntity<String> writePost(@PathVariable("postType") String postType, @RequestBody PostDto postDto){
 		
 		PostType postTypeEnum;
@@ -48,7 +48,7 @@ public class PostController {
 		return ResponseEntity.ok(postDto.toString());
 	}
 	
-	@GetMapping("/{postType:[a-zA-Z]+}")
+	@GetMapping("/{postType:[a-zA-Z_]+}")
 	public ResponseEntity<Map<String, Object>> getPostList(@PathVariable("postType") String postType, PostDto postDto) {
 		
 		PostType postTypeEnum;
