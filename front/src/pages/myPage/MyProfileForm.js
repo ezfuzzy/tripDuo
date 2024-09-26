@@ -25,10 +25,7 @@ function MyProfileForm(props) {
     gender: "",
     profilePicture: "",
     profileMessage: "",
-    socialLinks: {
-      github: "",
-      instagram: "",
-    },
+    socialLinks: "",
   });
 
   const { id } = useParams();
@@ -316,7 +313,7 @@ function MyProfileForm(props) {
           </div>
 
           {/* 개인 정보 */}
-          <div className="flex space-x-4 bg-gray-200 rounded">
+          <div className="flex space-x-4">
             <div className="mb-3 flex-1">
               <label htmlFor="age" className="block text-sm font-medium mb-1">
                 age
@@ -326,20 +323,24 @@ function MyProfileForm(props) {
                 name="age"
                 value={profile.age}
                 className="block w-full p-2 border border-gray-300 rounded-md"
-                disabled
+                onChange={handleChange}
               />
             </div>
             <div className="mb-3 flex-1">
               <label htmlFor="gender" className="block text-sm font-medium mb-1">
                 gender
               </label>
-              <input
-                type="text"
-                name="gender"
+              <select
                 value={profile.gender}
+                onChange={handleChange}
                 className="block w-full p-2 border border-gray-300 rounded-md"
-                disabled
-              />
+                name="gender"
+                id="gender"
+              >
+                <option value=""></option>
+                <option value="MALE">MALE</option>
+                <option value="FEMALE">FEMALE</option>
+              </select>
             </div>
           </div>
 
@@ -352,7 +353,7 @@ function MyProfileForm(props) {
               <input
                 onChange={handleChange}
                 type="text"
-                name="github"
+                name="socialLinks"
                 value={profile.socialLinks}
                 className="block w-full p-2 border border-gray-300 rounded-md"
               />
@@ -364,7 +365,7 @@ function MyProfileForm(props) {
               <input
                 onChange={handleChange}
                 type="text"
-                name="instagram"
+                name="socialLinks"
                 value={profile.socialLinks}
                 className="block w-full p-2 border border-gray-300 rounded-md"
               />
@@ -381,7 +382,7 @@ function MyProfileForm(props) {
               name="profileMessage"
               className="form-control w-full h-auto resize-none overflow-y-auto"
               rows="5"
-              defaultValue={profile.profileMessage}
+              value={profile.profileMessage}
             />
           </div>
 
