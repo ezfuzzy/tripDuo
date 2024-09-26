@@ -101,16 +101,16 @@ public class UserController {
 	// ### follow ###
 	// 팔로우/차단 관련 메소드
 
-	// userId의 팔로워/팔로이 리스트를 가져오는 메소드
+	// 어떤 유저(userId)의 팔로워/팔로이 리스트를 가져오는 메소드
 	@GetMapping("/{userId}/followInfos")
 	public ResponseEntity<Map<String, Object>> getFollowInfo(@PathVariable("userId") Long userId) {
 		return ResponseEntity.ok(userService.getFollowInfo(userId));
 	}
 
-	// userId의 차단 리스트를 가져오는 메소드
-	@GetMapping("/{userId}/blockInfos")
-	public ResponseEntity<List<UserProfileInfo>> getBlockInfo(@PathVariable("userId") Long userId) {
-		return ResponseEntity.ok(userService.getBlockInfo(userId));
+	// 어떤 유저(userId)가 차단한 유저정보 리스트를 가져오는 메소드
+	@GetMapping("/{userId}/blockedUserInfos")
+	public ResponseEntity<List<UserProfileInfo>> getBlockedUserProfileInfo(@PathVariable("userId") Long userId) {
+		return ResponseEntity.ok(userService.getBlockedUserProfileInfo(userId));
 	}
 
 	// 어떤 유저(followerUserId)가 다른 유저(followeeUserId)를 팔로우/차단(followType) 하기

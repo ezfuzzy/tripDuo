@@ -44,7 +44,7 @@ public interface UserService {
 	
 	// ### follow ###
 	public Map<String, Object> getFollowInfo(Long userId);
-	public List<UserProfileInfo> getBlockInfo(Long userId);
+	public List<UserProfileInfo> getBlockedUserProfileInfo(Long userId);
 	public void addFollowOrBlock(UserFollowDto userFollowDto);
 	public void deleteFollowOrBlock(UserFollowDto userFollowDto);
 	
