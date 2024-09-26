@@ -1,13 +1,16 @@
 import axios from "axios"
-import React, { createRef, useEffect, useState } from "react"
+import React, { createRef, useEffect, useRef, useState } from "react"
 import { shallowEqual, useDispatch, useSelector } from "react-redux"
 import { NavLink, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import ConfirmModal from "../../components/ConfirmModal"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faEye, faHeart, faMessage } from "@fortawesome/free-solid-svg-icons"
 
+
 //새로 등록한 댓글을 추가할 인덱스
 let commentIndex = 0
+//댓글 글자수 제한
+const maxLength = 3000
 
 const CourseBoardDetail = () => {
   //"/posts/course/:id/detail" 에서 id에 해당되는 경로 파라미터 값 얻어오기
@@ -22,8 +25,9 @@ const CourseBoardDetail = () => {
   const [writerProfile, setWriterProfile] = useState({})
   //좋아요 버튼 설정
   const [isLiked, setIsLiked] = useState(false)
+  const [likeId, setLikeId] = useState()
   //글 하나의 정보 상태값으로 관리
-  const [post, setPost] = useState({ tags: [] }) //, days: [{ places: [""], dayMemo: "" }]
+  const [post, setPost] = useState({ tags: [], postData: [{ dayMemo: "", places: [""] }] })
   //게시물 작성자가 맞는지 여부
   const isWriter = loggedInUserId === post.userId
 
@@ -39,13 +43,16 @@ const CourseBoardDetail = () => {
   const [commentInnerText, setCommentInnerText] = useState("")
   //dropdown 상태 정의
   const [dropdownIndex, setDropdownIndex] = useState(null)
+  //dropdown 참조값
+  const dropdownRefs = useRef([])
   // 각 답글 폼 상태를 관리하는 배열
   const [replyTexts, setReplyTexts] = useState({})
+  // 답글버튼 text관리
+  const [replyButtonText, setReplyButtonText] = useState("답글")
   // 각 수정 폼 상태를 관리하는 배열
   const [editTexts, setEditTexts] = useState({})
-  //댓글 글자수 제한
-  const maxLength = 3000
 
+  const mapStyle = { width: "50%", height: "30%" }
   //검색 키워드 관련 처리
   const [searchParams, setSearchParams] = useSearchParams()
   //Confirm 모달을 띄울지 여부를 상태값으로 관리
@@ -55,17 +62,21 @@ const CourseBoardDetail = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
+    //id가 변경될 때 기존 게시물 데이터가 화면에 남아있는 것 방지
+    setPost({ tags: [], postData: [{ dayMemo: "", places: [""] }] }) // 초기값으로 설정
+    setCommentList([])
+    setTotalPageCount(0)
+
     //검색 키워드 정보도 같이 보내기
     const query = new URLSearchParams(searchParams).toString()
     //글 정보 가져오기
     axios
       .get(`/api/v1/posts/${id}?${query}`)
       .then((res) => {
+        console.log(res.data.dto.postData)
 
         const postData = res.data.dto
         setPost(postData)
-        console.log(postData)
-        console.log(res.data.commentList)
         //댓글 목록이 존재하는지 확인 후, 배열에 ref라는 방 추가
         const list = Array.isArray(res.data.commentList)
           ? res.data.commentList.map((item) => {
@@ -100,12 +111,15 @@ const CourseBoardDetail = () => {
       })
   }, [id, searchParams]) //경로 파라미터가 변경될 때 서버로부터 데이터 다시 받기
 
-  //id가 변경될 때 기존 게시물 데이터가 화면에 남아있는 것 방지
   useEffect(() => {
-    setPost({ tags: [], days: [{ places: [""], dayMemo: "" }] }) // 초기값으로 설정
-    setCommentList([])
-    setTotalPageCount(0)
-  }, [id])
+    // 마운트될 때 클릭 이벤트를 추가
+    document.addEventListener("mousedown", handleClickOutside)
+
+    // 언마운트될 때 이벤트 리스너 제거
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [dropdownIndex])
 
   //글 삭제를 눌렀을 때 호출되는 함수
   const deleteHandleYes = () => {
@@ -127,19 +141,38 @@ const CourseBoardDetail = () => {
 
   const handleLike = () => {
     if (loggedInUsername) {
-      axios
-        .post(`/api/v1/posts/${id}/likes`, { postId: post.id, userId: loggedInUserId })
-        .then((res) => {
-          setIsLiked(!isLiked)
-          setPost((prevPost) => ({
-            ...prevPost,
-            likeCount: prevPost.likeCount + 1,
-          }))
-        })
-        .catch((error) => {
-          console.log(error)
-          alert(error.response.data)
-        })
+      if (!isLiked) { // 좋아요를 누르지 않은 경우
+        axios
+          .post(`/api/v1/posts/${id}/likes`, { postId: post.id, userId: loggedInUserId })
+          .then((res) => {
+            setIsLiked(true)
+            //view 페이지에서만 숫자 변경
+            setPost((prevPost) => ({
+              ...prevPost,
+              likeCount: prevPost.likeCount + 1,
+            }))
+            setLikeId(res.data)
+          })
+          .catch((error) => {
+            console.log(error)
+            alert(error.response.data)
+          })
+      } else if (isLiked) { //이미 좋아요 누른 경우
+        axios
+          .delete(`/api/v1/posts/${id}/likes/${loggedInUserId}`)
+          .then((res) => {
+            setIsLiked(false)
+            //view 페이지에서만 숫자 변경
+            setPost({
+              ...post,
+              likeCount: post.likeCount - 1,
+            })
+          })
+          .catch((error) => {
+            console.log(error)
+            alert(error.response.data)
+          })
+      }
     } else {
       alert("로그인을 해주세요")
     }
@@ -162,13 +195,21 @@ const CourseBoardDetail = () => {
   }
 
   // 드롭다운 토글 함수
-  const toggleDropdown = (index) => {
+  const toggleDropdown = (e, index) => {
+    e.stopPropagation()
     if (dropdownIndex === index) {
       // 같은 인덱스를 다시 클릭하면 드롭다운을 닫음
       setDropdownIndex(null)
     } else {
       // 새로운 인덱스를 클릭하면 해당 드롭다운을 열음
       setDropdownIndex(index)
+    }
+  }
+
+  // 부모 요소에 클릭 이벤트를 추가하여 드롭다운 닫기 처리
+  const handleClickOutside = (event) => {
+    if (dropdownIndex !== null && dropdownRefs.current[dropdownIndex] && !dropdownRefs.current[dropdownIndex].contains(event.target)) {
+      setDropdownIndex(null)
     }
   }
 
@@ -240,6 +281,8 @@ const CourseBoardDetail = () => {
         setCommentList([...commentList])
         //댓글 입력한 textarea 초기화
         e.target.content.value = ""
+        //답글 버튼 text 수정
+        setReplyButtonText("취소")
       })
       .catch((error) => {
         console.log(error)
@@ -344,9 +387,9 @@ const CourseBoardDetail = () => {
   }
 
   return (
-    
-    <div className="container flex justify-center">
-      <div className="flex flex-col h-full max-w-5xl w-full bg-gray-100 p-6">
+
+    <div className="container mx-auto p-4 max-w-[900px]">
+      <div className="flex flex-col h-full bg-gray-100 p-6">
         <div className="flex flex-wrap gap-2 mt-2">
           {/* 태그s */}
           <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{post.country}</span>
@@ -394,7 +437,6 @@ const CourseBoardDetail = () => {
               className={`mx-3 ${isLiked ? "bg-pink-600" : "bg-pink-400"
                 } text-white active:bg-emerald-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
               type="button"
-              disabled={isLiked}
               onClick={handleLike}>
               <FontAwesomeIcon icon={faHeart} className="mr-2" />
               Like
@@ -452,26 +494,28 @@ const CourseBoardDetail = () => {
           </div>
         </div>
 
-        {/* post에 days가 정의되어있지 않아서 오류나서 주석처리, 추 후 postData로 처리할거라고 함
+        {/* Day 목록 */}
         <div className="space-y-6 mt-6 mb-6">
-          {post.days.map((day, dayIndex) => (
+          {(post.postData || [{ dayMemo: "", places: [{ place_name: "", placeMemo: "" }] }]).map((day, dayIndex) => (
             <div key={dayIndex} className="border p-4 rounded-lg bg-white shadow">
               <h2 className="text-xl font-semibold mb-4">Day {dayIndex + 1}</h2>
               <div className="mb-4">
                 <label className="block font-semibold">Day Memo</label>
-                <p className="border p-2 w-3/4 bg-white">{day.dayMemo}</p>
+                <p className="border p-2 w-3/4 bg-white">{day.dayMemo || "메모가 없습니다"}</p>
               </div>
-              {day.places.map((place, placeIndex) => (
+              {(day.places || [{ place_name: "", placeMemo: "" }]).map((place, placeIndex) => (
                 <div key={placeIndex} className="mb-4">
                   <h3 className="font-semibold mb-2">{placeIndex + 1}번 장소</h3>
-                  <p className="border p-2 w-full bg-white mb-2">{place.place_name}</p>
+                  {/* <SavedPlacesKakaoMapComponent savedPlaces={day.places} /> */}
+                  <p className="border p-2 w-full bg-white mb-2">{place.place_name || "장소명이 없습니다"}</p>
                   <label className="block font-semibold">장소 메모</label>
-                  <p className="border p-2 w-full bg-white">{place.placeMemo}</p>
+                  <p className="border p-2 w-full bg-white">{place.placeMemo || "메모가 없습니다"}</p>
                 </div>
               ))}
             </div>
           ))}
-        </div> */}
+        </div>
+
 
         {/* 원글의 댓글 작성 form */}
         <div className={`border-3 rounded-lg p-3 mt-4 mb-6 bg-white ${!loggedInUsername ? 'hidden' : ''}`}>
@@ -515,9 +559,9 @@ const CourseBoardDetail = () => {
                 ref={item.ref}
                 //댓글Ui수정 전 추가되어있던  bg-white shadow-md p-4 rounded-lg
                 className={`flex items-start space-x-4 ${item.id !== item.parentCommentId ? "pl-12" : ""}`}>
-                {item.status === "DELETED" ? 
+                {item.status === "DELETED" ?
                   <p>삭제된 댓글입니다</p>
-                 : 
+                  :
                   <>
                     {/* 댓글 요소들 */}
                     <div className="flex-1">
@@ -538,14 +582,16 @@ const CourseBoardDetail = () => {
                                 />
                               </svg>
                             ) : (
-                              <img src={writerProfile.profilePicture} className="w-10 h-10 rounded-full" alt="프로필" />
+                              <img src={item.profilePicture} className="w-10 h-10 rounded-full" alt="프로필" />
                             )}
                             <span className="font-bold text-gray-900">{item.writer}</span>
                           </div>
+
+
                           {/* Dropdown 메뉴 */}
-                          <div className="relative inline-block text-left">
+                          <div className="relative inline-block text-left" ref={(el) => (dropdownRefs.current[index] = el)}>
                             <button
-                              onClick={() => toggleDropdown(index)}
+                              onClick={(e) => toggleDropdown(e, index)}
                               className="flex items-center p-2 text-gray-500 rounded hover:text-gray-700">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -587,7 +633,6 @@ const CourseBoardDetail = () => {
                                         수정
                                       </button>
                                       <button
-
                                         className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
                                         onClick={() => {
                                           setDropdownIndex(null)
@@ -639,10 +684,10 @@ const CourseBoardDetail = () => {
                             {/* 원글의 작성자 */}
                             <input type="hidden" name="id" defaultValue={post.id} />
                             {/* 답글 대상자 username */}
-                            <input type="hidden" name="toUsername" defaultValue={item.writer} />
+                            <input type="hidden" name="toUsername" defaultValue={item.toUsername} />
                             <input type="hidden" name="status" />
                             {/* 댓글의 그룹번호(=답글 대상 댓글의 id) */}
-                            <input type="hidden" name="parentCommentId" defaultValue={item.id} />
+                            <input type="hidden" name="parentCommentId" defaultValue={item.parentCommentId} />
                             <textarea
                               name="content"
                               className="border border-white rounded w-full h-24 p-2"
