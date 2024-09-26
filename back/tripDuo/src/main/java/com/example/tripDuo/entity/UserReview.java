@@ -9,6 +9,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -30,7 +32,10 @@ public class UserReview {
 	private Long id;
 	
 	private long revieweeId; // 리뷰 당하는 사람 (리뷰이)
-	private long reviewerId; // 리뷰 하는 사람 (리뷰어) << 얘만 ManyToOne
+	
+	@ManyToOne
+	@JoinColumn(name = "reviewer_id", nullable = false) // 리뷰 하는 사람 (리뷰어)
+	private UserProfileInfo reviewerUserProfileInfo;
 	
 	private String content;
 	
@@ -46,16 +51,29 @@ public class UserReview {
     public void onPrePersist() {
         createdAt = LocalDateTime.now();
     }
+    
     @PreUpdate
     public void onPreUpdate() {
     	updatedAt = LocalDateTime.now();
     }
     
-    public static UserReview toEntity(UserReviewDto dto) {
+    public void updateContent(String newContent) {
+    	content = newContent;
+    }
+    
+    public void updateTags(String[] newTags) {
+    	tags = newTags;
+    }
+    
+    public void updateRating(float newRating) {
+    	rating = newRating;
+    }
+    
+    public static UserReview toEntity(UserReviewDto dto, UserProfileInfo reviewerUpi) {
     	return UserReview.builder()
     			.id(dto.getId())
-    			.reviewerId(dto.getReviewerId() != null ? dto.getReviewerId() : 0L)
     			.revieweeId(dto.getRevieweeId() != null ? dto.getRevieweeId() : 0L)
+    			.reviewerUserProfileInfo(reviewerUpi)
     			.content(dto.getContent())
     			.tags(dto.getTags())
     			.rating(dto.getRating() != null ? dto.getRating() : 0F)

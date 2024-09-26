@@ -1,7 +1,6 @@
 package com.example.tripDuo.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,9 +8,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.tripDuo.entity.UserReview;
 
 public interface UserReviewRepository extends JpaRepository<UserReview, Long>{
-	long countByReviewerId(Long followerUserId); // 해당 유저가 review 하는 사람이 몇명인지
-	long countByRevieweeId(Long followeeUserId); // 해당 유저를 review 하는 사람이 몇명인지
+	// get 할 때 리뷰들을 가져오는 메소드
 	List<UserReview> findByRevieweeId(Long revieweeId, Sort sort);
-	Optional<UserReview> findByRevieweeIdAndReviewerId(Long revieweeId, Long reviewerId);
-	void deleteByRevieweeIdAndReviewerId(Long revieweeId, Long reviewerId);
+	
+	// update 할 때 기존 리뷰가 있는지 찾는 메소드
+	UserReview findByRevieweeIdAndReviewerUserProfileInfo_User_Id(Long revieweeId, Long reviewerId);
+	
+	// 리뷰를 delete하는 메소드
+	void deleteByRevieweeIdAndReviewerUserProfileInfo_User_Id(Long revieweeId, Long reviewerId);
 }
