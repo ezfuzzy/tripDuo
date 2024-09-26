@@ -1,6 +1,7 @@
 import { faEye, faHeart, faMessage } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
+import DOMPurify from "dompurify";
 import React, { useEffect, useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
@@ -21,11 +22,14 @@ function MateBoardDetail(props) {
 
   //좋아요 버튼 설정
   const [isLiked, setLiked] = useState(false);
-  const [likeId, setLikeId] = useState();
 
   //덧글 관련 설정 ( to do )
   const [commentList, setCommentList] = useState([]);
   const [totalCommentPages, setTotalCommentPages] = useState(0);
+
+  // HTML 로 구성된 Content 관리
+  const [contentHTML, setContentHTML] = useState(); // HTML 로 구성된 Content
+  const cleanHTML = DOMPurify.sanitize(contentHTML); // HTML 클린징으로 보안처리
 
   // 버튼 스타일 - 신청 전/후 색상 변경
   const likeButtonClasses = `px-4 py-2 text-sm font-medium rounded-md ${
@@ -39,7 +43,9 @@ function MateBoardDetail(props) {
         console.log(res.data);
 
         setPost(res.data.dto);
+        setContentHTML(res.data.dto.content);
         setLiked(res.data.dto.like);
+        
         setWriterProfile(res.data.userProfileInfo);
         setCommentList(res.data.commentList);
         setTotalCommentPages(res.data.totalCommentPages);
@@ -60,39 +66,38 @@ function MateBoardDetail(props) {
   //좋아요 버튼 클릭
   const handleLike = () => {
     if (username) {
-      if(!isLiked){
+      if (!isLiked) {
         // isLiked = false 좋아요 누르지 않음
         axios
-        .post(`/api/v1/posts/${id}/likes`, { postId: post.id, userId: userId })
-        .then((res) => {
-          setLiked(true);
-          //view 페이지에서만 숫자 변경
-          setPost({
-            ...post,
-            likeCount: post.likeCount + 1,
+          .post(`/api/v1/posts/${id}/likes`, { postId: post.id, userId: userId })
+          .then((res) => {
+            setLiked(true);
+            //view 페이지에서만 숫자 변경
+            setPost({
+              ...post,
+              likeCount: post.likeCount + 1,
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+            alert(error.response.data);
           });
-          setLikeId(res.data)
-        })
-        .catch((error) => {
-          console.log(error);
-          alert(error.response.data);
-        });
-      }else if(isLiked){
+      } else if (isLiked) {
         // isLiked = true 좋아요 누름
         axios
-        .delete(`/api/v1/posts/${id}/likes/${userId}`)
-        .then((res) => {
-          setLiked(false);
-          //view 페이지에서만 숫자 변경
-          setPost({
-            ...post,
-            likeCount: post.likeCount - 1,
+          .delete(`/api/v1/posts/${id}/likes/${userId}`)
+          .then((res) => {
+            setLiked(false);
+            //view 페이지에서만 숫자 변경
+            setPost({
+              ...post,
+              likeCount: post.likeCount - 1,
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+            alert(error.response.data);
           });
-        })
-        .catch((error) => {
-          console.log(error);
-          alert(error.response.data);
-        });
       }
     } else {
       alert("로그인을 해주세요");
@@ -127,7 +132,6 @@ function MateBoardDetail(props) {
         <h5 className="m-3">
           {id}번 <strong>{post.title}</strong>
           {/* title / 좋아요 버튼 / 좋아요,조회수, 덧글수 */}
-
           {/* 내 게시물이 아닌경우에만 좋아요 버튼 보여주기 */}
           {userId !== post.userId && (
             <button
@@ -206,8 +210,7 @@ function MateBoardDetail(props) {
         <br />
 
         {/* Froala Editor 내용 */}
-        {/* to do : dangerouslySetInnterHTML 외에 다른방법 찾기 */}
-        <div dangerouslySetInnerHTML={{ __html: post.content }}></div>
+        <div dangerouslySetInnerHTML={{ __html: cleanHTML }}></div>
 
         {/* 카드 */}
         <div className="mt-20 max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow">
