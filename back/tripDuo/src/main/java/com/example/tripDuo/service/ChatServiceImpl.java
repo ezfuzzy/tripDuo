@@ -8,79 +8,91 @@ import org.springframework.stereotype.Service;
 import com.example.tripDuo.dto.ChatMessageDto;
 import com.example.tripDuo.dto.ChatRoomDto;
 import com.example.tripDuo.entity.ChatMessage;
+import com.example.tripDuo.entity.ChatParticipant;
 import com.example.tripDuo.entity.ChatRoom;
-import com.example.tripDuo.enums.ChatType;
+import com.example.tripDuo.entity.UserProfileInfo;
+import com.example.tripDuo.repository.ChatParticipantsRepository;
 import com.example.tripDuo.repository.ChatRoomRepository;
 import com.example.tripDuo.repository.MessageRepository;
+import com.example.tripDuo.repository.UserProfileInfoRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class ChatServiceImpl implements ChatService {
-	private ChatRoomRepository chatRoomRepository;
-	private MessageRepository messageRepository;
+	private ChatRoomRepository chatRoomRepo;
+	private MessageRepository messageRepo;
+	private ChatParticipantsRepository chatParticipantsRepo;
+	private UserProfileInfoRepository userProfileInfoRepo;
 
-	
-	public ChatServiceImpl(ChatRoomRepository chatRoomRepository, MessageRepository messageRepository) {
-        this.chatRoomRepository = chatRoomRepository;
-        this.messageRepository = messageRepository;
+	public ChatServiceImpl(ChatRoomRepository chatRoomRepo, MessageRepository messageRepo,
+			ChatParticipantsRepository chatParticipantsRepo, UserProfileInfoRepository userProfileInfoRepo) {
+		this.chatRoomRepo = chatRoomRepo;
+		this.messageRepo = messageRepo;
+		this.chatParticipantsRepo = chatParticipantsRepo;
+        this.userProfileInfoRepo = userProfileInfoRepo; // UserProfileInfoRepository 초기화
+
+	}
+
+	@Override
+	public List<ChatRoomDto> getAllChatRooms(Long userId) {
+		 // 사용자가 속한 채팅방 참여 정보를 가져옴
+        List<ChatParticipant> chatParticipantsList = chatParticipantsRepo.findByUserProfileInfoUserId(userId);
+        List<ChatRoomDto> chatRoomDtos = new ArrayList<>();
+        for (ChatParticipant participant : chatParticipantsList) {
+            // 참가자가 속한 채팅방을 가져옴
+            ChatRoom chatRoom = chatRoomRepo.findById(participant.getChatRoomId())
+                    .orElseThrow(() -> new RuntimeException("ChatRoom not found"));
+
+            // ChatRoomDto로 변환
+            ChatRoomDto chatRoomDto = ChatRoomDto.toDto(chatRoom);
+            chatRoomDtos.add(chatRoomDto);
+        }
+
+        System.out.println("사용자가 속한 채팅방 목록: " + chatRoomDtos);
+        return chatRoomDtos;
     }
-	
-	@Override
-	public List<ChatRoomDto> getAllChatRooms() {
-		List<ChatRoom> chatRooms = chatRoomRepository.findAll();
-	    List<ChatRoomDto> chatRoomDtos = new ArrayList<>();
-	    
-	    for (ChatRoom room : chatRooms) {
-	        ChatMessage lastMessage = messageRepository.findTopByChatRoomOrderByTimestampDesc(room);
-	        ChatRoomDto chatRoomDto = ChatRoomDto.toDto(room, lastMessage);
-	        chatRoomDtos.add(chatRoomDto);
-	    }
-	    
-	    System.out.println("채팅방 목록 : "+chatRoomDtos);
-	    return chatRoomDtos;
-	}
-	  
-	@Override
-	public ChatRoomDto getChatRoom(Long id, ChatMessage lastMessage) {
-		ChatRoom chatRoom = chatRoomRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("ChatRoom not found"));
-		return ChatRoomDto.toDto(chatRoom, lastMessage);
-	}
 
-	@Override
-	public ChatMessageDto sendMessage(ChatMessageDto chatMessageDto) {
-		 ChatRoom chatRoom = chatRoomRepository.findById(chatMessageDto.getChatRoomId())
-		            .orElseThrow(() -> new RuntimeException("ChatRoom not found"));
-		    ChatMessage message = ChatMessage.toEntity(chatMessageDto, chatRoom);
-		    messageRepository.save(message);
 
-		    return ChatMessageDto.toDto(message);
-		}
 
-    // 추가된 부분: 특정 채팅방의 모든 메시지를 반환
-	@Override
-	public List<ChatMessageDto> getChatMessages(Long roomId) {
-//		 ChatRoom chatRoom = chatRoomRepository.findById(roomId)
-//	                .orElseThrow(() -> new RuntimeException("ChatRoom not found"));
-//		 System.out.println("채팅 메세지 : "+chatRoom.getMessages().stream().map(ChatMessageDto::toDto).toList());
-//	        return chatRoom.getMessages().stream().map(ChatMessageDto::toDto).toList(); 
-		 ChatRoom chatRoom = chatRoomRepository.findById(roomId)
-	                .orElseThrow(() -> new RuntimeException("ChatRoom not found"));
-	        List<ChatMessageDto> messageDtos = chatRoom.getMessages().stream()
-	                .map(ChatMessageDto::toDto)
-	                .toList();
-	        System.out.println("채팅 메세지 : " + messageDtos);
-	        return messageDtos;
-	
-	}
+	 // 추가된 부분: 특정 채팅방의 모든 메시지를 반환
+    @Override
+    public List<ChatMessageDto> getChatMessages(Long roomId) {
+    	List<ChatMessage> messages = messageRepo.findByChatRoomId(roomId);
+        List<ChatMessageDto> messageDtos = new ArrayList<>();
 
-	@Override
-	public ChatRoomDto createChatRoom(String name, ChatType type, ChatMessage lastMessage) {
-		  ChatRoom chatRoom = ChatRoom.builder()
-		            .name(name)
-		            .type(type)
-		            .build();
-		    chatRoomRepository.save(chatRoom);
-		    return ChatRoomDto.toDto(chatRoom, lastMessage);
-	}
+        for (ChatMessage message : messages) {
+            messageDtos.add(ChatMessageDto.toDto(message));
+        }
+
+        return messageDtos;
+    }
+
+    // 채팅방 생성
+    @Override
+    public ChatRoom createChatRoom(ChatRoomDto chatRoomDto) {
+    	 
+    	ChatRoom chatRoom = chatRoomRepo.save(ChatRoom.toEntity(chatRoomDto));
+         
+         System.out.println("채팅방 생성됨: " + chatRoom.getId());
+         
+         for(Long curUserId : chatRoomDto.getParticipantsList()) {
+        	 UserProfileInfo userProfileInfo = userProfileInfoRepo.findById(curUserId)
+        			 .orElseThrow(() -> new EntityNotFoundException("UserProfileInfo  not Found"));
+        	 
+        	 boolean isOwner = curUserId  == chatRoomDto.getOwnerId();
+
+        	 ChatParticipant chatParticipant =  ChatParticipant.builder()
+        			 .chatRoomId(chatRoom.getId())
+        			 .userProfileInfo(userProfileInfo)
+        			 .isOwner(isOwner)
+        			 .build();
+
+        	 chatParticipantsRepo.save(chatParticipant);
+        	 
+         }
+
+         return chatRoom;
+    }
 
 }
