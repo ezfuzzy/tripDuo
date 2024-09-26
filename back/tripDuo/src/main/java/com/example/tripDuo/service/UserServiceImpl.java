@@ -116,8 +116,15 @@ public class UserServiceImpl implements UserService {
 	    List<UserReviewDto> urDtoList = userReviews.stream()
 	        .map(UserReviewDto::toDto)
 	        .collect(Collectors.toList());
-        
-	    return Map.of("userProfileInfo", upiDto, "userReviewList", urDtoList);
+	    
+	    List<Long> followerIdList = userFollowRepo.findFollowerUserIdsByFolloweeUserIdAndFollowType(userId, FollowType.FOLLOW);
+	    // 어떤 유저를 차단한 유저들 id 리스트
+	    List<Long> blockingIdList = userFollowRepo.findFollowerUserIdsByFolloweeUserIdAndFollowType(userId, FollowType.BLOCK);
+	    // 어떤 유저가 차단한 유저들 id 리스트
+	    List<Long> blockedIdList = userFollowRepo.findFolloweeUserIdsByFollowerUserIdAndFollowType(userId, FollowType.BLOCK);
+	    
+	    return Map.of("userProfileInfo", upiDto, "userReviewList", urDtoList,
+	    			  "followerIdLIst", followerIdList, "blockingIdList", blockingIdList , "blockedIdList", blockedIdList);
 	}
 
 	@Override	
@@ -308,8 +315,8 @@ public class UserServiceImpl implements UserService {
 		List<UserFollow> tmpFolloweeList = userFollowRepo.findByFollowerUserProfileInfo_User_IdAndFollowType(userId, FollowType.FOLLOW);
 		List<UserFollow> tmpFollowerList = userFollowRepo.findByFolloweeUserProfileInfo_User_IdAndFollowType(userId, FollowType.FOLLOW);
 		
-		List<UserProfileInfo> followeeList = tmpFolloweeList.stream().map(item -> item.getFolloweeUserProfileInfo()).toList();
-		List<UserProfileInfo> followerList = tmpFollowerList.stream().map(item -> item.getFollowerUserProfileInfo()).toList();
+		List<UserProfileInfoDto> followeeList = tmpFolloweeList.stream().map(item -> UserProfileInfoDto.toDto(item.getFolloweeUserProfileInfo(), PROFILE_PICTURE_CLOUDFRONT_URL)).toList();
+		List<UserProfileInfoDto> followerList = tmpFollowerList.stream().map(item -> UserProfileInfoDto.toDto(item.getFollowerUserProfileInfo(), PROFILE_PICTURE_CLOUDFRONT_URL)).toList();
 		
 	    Map<String, Object> map = Map.of(
 	    	"followeeList", followeeList,
@@ -322,13 +329,13 @@ public class UserServiceImpl implements UserService {
 	/**
 	 * @date : 2024. 9. 25.
 	 * @user : 유병한
-	 * getBlockInfo: 유저의 차단 리스트 받아오기
+	 * getBlockInfo: 유저가 차단한 차단 리스트 받아오기
 	 * 
 	 * @param userId
 	 * @return List<UserProfileInfoDto>
 	 */
 	@Override
-	public List<UserProfileInfo> getBlockInfo(Long userId) {
+	public List<UserProfileInfo> getBlockedUserProfileInfo(Long userId) {
 	    List<UserFollow> tmpBlockedUserList = userFollowRepo.findByFollowerUserProfileInfo_User_IdAndFollowType(userId, FollowType.BLOCK);
 	    
 	    List<UserProfileInfo> blockedUserList = tmpBlockedUserList.stream().map(item -> item.getFolloweeUserProfileInfo()).toList();
