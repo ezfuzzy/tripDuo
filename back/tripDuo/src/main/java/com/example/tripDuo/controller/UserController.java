@@ -72,12 +72,12 @@ public class UserController {
 		return ResponseEntity.ok(userService.checkExists(checkType, checkString));
 	}
 
-	@PutMapping("/{id}")
-	public ResponseEntity<?> updateUserInfo(@PathVariable Long id,
-			@RequestParam(required = false) MultipartFile profileImgForUpload, UserProfileInfoDto dto) {
+	@PutMapping("/{id}/profile-info")
+	public ResponseEntity<?> updateUserProfileInfo(@PathVariable Long id,
+			@RequestParam(required = false) MultipartFile profileImgForUpload, UserProfileInfoDto userProfileInfoDto) {
 		// 사용자 정보 업데이트
-		return ResponseEntity.ok(userService.updateUserProfileInfo(dto, profileImgForUpload));
-	}
+		return ResponseEntity.ok(userService.updateUserProfileInfo(userProfileInfoDto, profileImgForUpload));
+	}	
 
 	@PutMapping("/{id}/change-password")
 	public ResponseEntity<Boolean> updateUserPassword(@PathVariable Long id, @RequestBody UserDto userDto) {
@@ -92,6 +92,13 @@ public class UserController {
 		return ResponseEntity.ok(userService.resetUserPassword(userDto));
 	}
 
+	@PutMapping("/{id}/private-info")
+	public ResponseEntity<?> updateUserPrivateInfo(@PathVariable Long id, @RequestBody UserDto userDto) {
+		userDto.setId(id);
+		userService.updateUserPrivateInfo(userDto);
+		return ResponseEntity.ok("User private info updated successfully");
+	}
+	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deleteUser(@PathVariable Long id) {
 		userService.deleteUser(id);

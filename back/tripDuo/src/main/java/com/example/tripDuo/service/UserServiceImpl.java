@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
 	        .map(user -> UserDto.toDto(user))
 	        .toList();
 	}
-
+ 
 	@Override
 	public UserDto getUserById(Long userId) {
 		return UserDto.toDto(userRepo.findById(userId).get());
@@ -189,7 +189,7 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public void updateUserPrivateInfo(UserDto userDto) {
-		// TODO
+		userRepo.save(User.toEntity(userDto));
 	}
 
 	/**
