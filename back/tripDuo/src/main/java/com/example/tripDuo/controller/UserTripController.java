@@ -52,7 +52,7 @@ public class UserTripController {
 
 	// ### saved places ###
 
-	@PostMapping("visited-place")
+	@PostMapping("/visited-place")
 	public ResponseEntity<?> saveVisitedPlace(@RequestBody UserVisitedPlaceDto userVisitedPlaceDto) {
 		try {
 			userTripInfoService.saveVisitedPlace(userVisitedPlaceDto);
@@ -62,7 +62,7 @@ public class UserTripController {
 		}
 	}
 
-	@PutMapping("visited-place")
+	@PutMapping("/visited-place")
 	public ResponseEntity<?> updateVisitedPlace(@RequestBody UserVisitedPlaceDto userVisitedPlaceDto) {
 		try {
 			userTripInfoService.updateVisitedPlace(userVisitedPlaceDto);
@@ -72,7 +72,7 @@ public class UserTripController {
 		}
 	}
 
-	@DeleteMapping("visited-place")
+	@DeleteMapping("/visited-place")
 	public ResponseEntity<?> deleteVisitedPlace(Long userVisitedPlaceId) {
 		try {
 			userTripInfoService.deleteVisitedPlace(userVisitedPlaceId);
@@ -84,7 +84,7 @@ public class UserTripController {
 
 	// ### saved places ##
 
-	@PostMapping("saved-place")
+	@PostMapping("/saved-place")
 	public ResponseEntity<?> savePlaceToMyTripInfo(@RequestBody UserSavedPlaceDto userSavedPlaceDto) {
 		try {
 			userTripInfoService.savePlaceToMyTripInfo(userSavedPlaceDto);
@@ -94,7 +94,7 @@ public class UserTripController {
 		}
 	}
 
-	@PutMapping("saved-place")
+	@PutMapping("/saved-place")
 	public ResponseEntity<?> updatePlaceToMyTripInfo(@RequestBody UserSavedPlaceDto userSavedPlaceDto) {
 		try {
 			userTripInfoService.updatePlaceToMyTripInfo(userSavedPlaceDto);
@@ -104,7 +104,7 @@ public class UserTripController {
 		}
 	}
 
-	@DeleteMapping("saved-place")
+	@DeleteMapping("/saved-place")
 	public ResponseEntity<?> deletePlaceFromMyTripInfo(Long userSavedPlaceId) {
 		try {
 			userTripInfoService.deletePlaceFromMyTripInfo(userSavedPlaceId);
@@ -116,7 +116,7 @@ public class UserTripController {
 
 	// ### saved courses ###
 
-	@PostMapping("saved-course")
+	@PostMapping("/saved-course")
 	public ResponseEntity<?> saveCourseToMyTripInfo(@RequestBody UserSavedCourseDto userSavedCourseDto) {
 		try {
 			userTripInfoService.saveCourseToMyTripInfo(userSavedCourseDto);
@@ -126,7 +126,7 @@ public class UserTripController {
 		}
 	}
 
-	@PutMapping("saved-course")
+	@PutMapping("/saved-course")
 	public ResponseEntity<?> updateCourseToMyTripInfo(@RequestBody UserSavedCourseDto userSavedCourseDto) {
 		try {
 			userTripInfoService.updateCourseToMyTripInfo(userSavedCourseDto);
@@ -136,7 +136,7 @@ public class UserTripController {
 		}
 	}
 
-	@DeleteMapping("saved-course")
+	@DeleteMapping("/saved-course")
 	public ResponseEntity<?> deleteCourseFromMyTripInfo(Long userSavedCourseId) {
 		try {
 			userTripInfoService.deleteCourseFromMyTripInfo(userSavedCourseId);
