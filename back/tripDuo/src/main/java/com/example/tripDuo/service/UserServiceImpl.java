@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
 		
 		UserFollow userFollow = userFollowRepo
 				.findByFolloweeUserProfileInfo_User_IdAndFollowerUserProfileInfo_User_Id(
-						currentUserId, userId);
+						userId, currentUserId);
 		
 		String followType;
 		if(userFollow != null) {
