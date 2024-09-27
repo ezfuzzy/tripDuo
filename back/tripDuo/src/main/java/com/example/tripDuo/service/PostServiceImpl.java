@@ -84,19 +84,12 @@ public class PostServiceImpl implements PostService {
 	 */
 	@Override
 	public Map<String, Object> getPostList(PostDto postDto) {
-		
-		 // 정렬 조건에 따른 Sort 설정
-	    Sort sort;
-	    if ("viewCount".equals(postDto.getSortBy())) {
-	        sort = Sort.by(Sort.Direction.DESC, "viewCount");
-	    } else if ("likeCount".equals(postDto.getSortBy())) {
-	        sort = Sort.by(Sort.Direction.DESC, "likeCount");
-	    } else if ("rating".equals(postDto.getSortBy())) {
-	        sort = Sort.by(Sort.Direction.DESC, "rating");
-	    } else {
-	        // 기본적으로 최신순 정렬
-	        sort = Sort.by(Sort.Direction.DESC, "createdAt");
-	    }
+	    Sort sort = switch (postDto.getSortBy()) {
+	        case "viewCount" -> Sort.by(Sort.Direction.DESC, "viewCount");
+	        case "likeCount" -> Sort.by(Sort.Direction.DESC, "likeCount");
+	        case "rating" -> Sort.by(Sort.Direction.DESC, "rating");
+	        default -> Sort.by(Sort.Direction.DESC, "createdAt");
+	    };
 	    
 		Pageable pageable = PageRequest.of(postDto.getPageNum() - 1, POST_PAGE_SIZE, sort);
 		
@@ -105,16 +98,14 @@ public class PostServiceImpl implements PostService {
 		
 		// page객체는 페이징처리 전의 전체 데이터 개수를 가지고있음
 	    long totalRowCount = posts.getTotalElements();
-		int totalPostPages = (int) (totalRowCount / POST_PAGE_SIZE);
+		int totalPostPages = (int) Math.ceil((double) totalRowCount / POST_PAGE_SIZE);
 		
-		Map<String, Object> map = Map.of(
+		return Map.of(
 				"list", postList, 
 				"pageNum", postDto.getPageNum(), 
 				"totalRowCount", totalRowCount, 
 				"totalPostPages", totalPostPages
 		);
-		
-		return map;
 	}
 	
 	/**
@@ -172,18 +163,15 @@ public class PostServiceImpl implements PostService {
 		// view count + 1
 		
 		UserProfileInfoDto upiDto = UserProfileInfoDto.toDto(post.getUserProfileInfo(), PROFILE_PICTURE_CLOUDFRONT_URL);
-		
-		existingDto.setViewCount(existingDto.getViewCount()+1);
+		existingDto.setViewCount(existingDto.getViewCount() + 1);
 		postRepo.save(Post.toEntity(existingDto, userProfileInfoRepo.findById(existingDto.getUserId()).get()));
 		
-		Map<String, Object> map = Map.of(
+		return Map.of(
 				"dto", existingDto, 
 				"userProfileInfo", upiDto,
 				"commentList", commentList, 
 				"totalCommentPages", totalCommentPages
 		);
-		
-		return map;
 	}
 
 	/**
