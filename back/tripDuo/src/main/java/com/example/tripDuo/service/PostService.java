@@ -1,11 +1,13 @@
 package com.example.tripDuo.service;
 
+import java.util.List;
 import java.util.Map;
 
 import com.example.tripDuo.dto.PostCommentDto;
 import com.example.tripDuo.dto.PostDto;
 import com.example.tripDuo.dto.PostLikeDto;
 import com.example.tripDuo.dto.PostRatingDto;
+import com.example.tripDuo.entity.PostLike;
 
 public interface PostService {
 	
@@ -30,8 +32,8 @@ public interface PostService {
 	
 	/*
 	 * like, rating은 
-	 * write, delete 할때마다 post의 각 count와 rating을 업데이트 하므로 
-	 * get 요청은 따로 없음
+	 * write, delete 할때마다 post의 각 count와 rating을 업데이트 
+	 * get 요청은 모아보기 
 	 */
 	
 	// ### comment ###		
@@ -46,7 +48,7 @@ public interface PostService {
 	// ### like ###
 	
 	public void addLikeToPost(PostLikeDto postLikeDto);
-	// get
+	public List<PostLike> getLikedPostList(Long userId);
 	public void deleteLikeFromPost(Long postId, Long usreId);
 	
 	// ### rating ###
