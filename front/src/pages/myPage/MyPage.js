@@ -48,7 +48,7 @@ function MyPage() {
   };
 
   return (
-    <>
+    <div className="container mx-auto p-4 max-w-[900px]">
       {/* 프로필 */}
       <div className="m-3 flex justify-center">
         <div className="flex items-center gap-x-6 m-3">
@@ -143,7 +143,7 @@ function MyPage() {
         <p>내 활동 기록</p>
         <p>회원 탈퇴</p>
       </div>
-    </>
+    </div>
   );
 }
 
