@@ -9,7 +9,6 @@ import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.dto.UserFollowDto;
 import com.example.tripDuo.dto.UserProfileInfoDto;
 import com.example.tripDuo.dto.UserReviewDto;
-import com.example.tripDuo.entity.UserProfileInfo;
 
 public interface UserService {
 
@@ -44,7 +43,7 @@ public interface UserService {
 	
 	// ### follow ###
 	public Map<String, Object> getFollowInfo(Long userId);
-	public List<UserProfileInfo> getBlockedUserProfileInfo(Long userId);
+	public List<UserProfileInfoDto> getBlockInfo(Long userId);
 	public void addFollowOrBlock(UserFollowDto userFollowDto);
 	public void deleteFollowOrBlock(UserFollowDto userFollowDto);
 	

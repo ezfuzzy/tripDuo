@@ -352,10 +352,10 @@ public class UserServiceImpl implements UserService {
 	 * @return List<UserProfileInfoDto>
 	 */
 	@Override
-	public List<UserProfileInfo> getBlockedUserProfileInfo(Long userId) {
+	public List<UserProfileInfoDto> getBlockInfo(Long userId) {
 	    List<UserFollow> tmpBlockedUserList = userFollowRepo.findByFollowerUserProfileInfo_User_IdAndFollowType(userId, FollowType.BLOCK);
 	    
-	    List<UserProfileInfo> blockedUserList = tmpBlockedUserList.stream().map(item -> item.getFolloweeUserProfileInfo()).toList();
+	    List<UserProfileInfoDto> blockedUserList = tmpBlockedUserList.stream().map(item -> UserProfileInfoDto.toDto(item.getFolloweeUserProfileInfo(), PROFILE_PICTURE_CLOUDFRONT_URL)).toList();
 	    return blockedUserList;
 	}
 
