@@ -208,7 +208,7 @@ function MyProfile(props) {
   };
 
   return (
-    <>
+    <div className="container mx-auto p-4 max-w-[900px]">
       {isProfileOwner && (
         <div>
           <button
@@ -429,7 +429,7 @@ function MyProfile(props) {
           </form>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

@@ -207,7 +207,7 @@ function MyProfileForm(props) {
 
   // form 에서 전송되는 데이터 : profilePicture, profileMessage ,(email),(phoneNumber)
   return (
-    <>
+    <div className="container mx-auto p-4 max-w-[900px]">
       <h3>Profile Update Form</h3>
       <div>
         <button type="button" className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600">
@@ -410,7 +410,7 @@ function MyProfileForm(props) {
       <br />
       <br />
       <br />
-    </>
+    </div>
   );
 }
 
