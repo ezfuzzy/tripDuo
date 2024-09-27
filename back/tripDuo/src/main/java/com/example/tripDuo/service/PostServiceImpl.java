@@ -410,7 +410,7 @@ public class PostServiceImpl implements PostService {
 		
 		postLikeRepo.deleteByPostIdAndUserId(postId, userId);
 		// 추후 좋아요 / 저장 나눌 예정
-		userSavedCourseRepo.deleteByPostIdAndUserId(postId, userId);
+		userSavedCourseRepo.deleteByCourse_IdAndUserId(postId, userId);
 		existingPost.setLikeCount(postLikeRepo.countByPostId(existingPost.getId()));
 	}
 
