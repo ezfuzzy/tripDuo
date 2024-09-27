@@ -194,7 +194,7 @@ public class PostController {
 	    }
 	}
 	
-	@GetMapping("/{postId:[0-9]+}/likes/{userId:[0-9]+}")
+	@GetMapping("/{userId:[0-9]+}/likes")
 	public ResponseEntity<List<PostLike>> getLikedPostList(@PathVariable("userId") Long userId) {
 		return ResponseEntity.ok(postService.getLikedPostList(userId));
 	}
