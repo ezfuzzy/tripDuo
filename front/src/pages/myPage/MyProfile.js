@@ -18,7 +18,6 @@ function MyProfile(props) {
   const navigate = useNavigate();
 
   const [profile, setProfile] = useState({});
-  const [imageData, setImageData] = useState(null);
 
   // 팔로우 상태 관리
   const [followingStatus, setFollowingStatus] = useState(false);
@@ -56,23 +55,24 @@ function MyProfile(props) {
       .get(`/api/v1/users/${id}`)
       .then((res) => {
         console.log(res.data);
-        if (res.data.followType === "BLOCK") {
-          alert("you have been blocked");
+        if (res.data.theirFollowType === "BLOCK") {
+          alert("해당 사용자가 당신을 차단하여 더 이상 프로필을 볼 수 없습니다.");
           navigate("/");
+        }
+
+        if(res.data.myFollowType === "BLOCK"){
+          setBlockStatue(true)
+        }else if(res.data.myFollowType === "FOLLOW"){
+          setFollowingStatus(true)
         }
 
         //불러온 사용자의 정보 저장
         setProfile(res.data.userProfileInfo);
         console.log(res.data);
 
-        //불러온 사용자의 정보에 프로필 사진이 있다면 imageData 에 설정
-        if (res.data.userProfileInfo.profilePicture) {
-          setImageData(res.data.userProfileInfo.profilePicture);
-        }
-
         // 접속된 사용자와 프로필 사용자의 id 가 같으면 Owner = true
         if (userId === res.data.userProfileInfo.userId) {
-          setProfileOwner(true);
+          setProfileOwner(true);  
         }
       })
       .catch((error) => console.log(error));
@@ -109,7 +109,7 @@ function MyProfile(props) {
       // 차단 중이지 않은 경우 (blockStatus = false)
       if (window.confirm(`${profile.nickname}님을 차단하시겠습니까?`)) {
         axios
-          .post(`/api/v1/users/${userId}/block/${id}`)
+          .post(`/api/v1/users/${id}/block/${userId}`)
           .then((res) => {
             console.log(res.data);
             setBlockStatue(true);
@@ -121,7 +121,7 @@ function MyProfile(props) {
       // 차단 중인 경우 (blockStatus = true)
       if (window.confirm(`차단을 해제하시겠습니까?`)) {
         axios
-          .post(`/api/v1/users/${userId}/block/${id}`)
+          .post(`/api/v1/users/${id}/block/${userId}`)
           .then((res) => {
             console.log(res.data);
             setBlockStatue(false);
@@ -236,8 +236,8 @@ function MyProfile(props) {
           {/* 세로로 가운데, 아이템들 수평 간격 6px 마진 3  */}
           <div className="flex items-center gap-x-6 m-3 justify-center">
             {/* 프로필 이미지 핸들링 */}
-            {imageData ? (
-              <img src={imageData} className="w-20 h-20 rounded-full" alt="" />
+            {profile.profilePicture ? (
+              <img src={profile.profilePicture} width={100} height={100} className="rounded-full" alt="" />
             ) : (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
