@@ -1,8 +1,9 @@
 package com.example.tripDuo.enums;
 
 public enum FollowType {
-	FOLLOW,   // 팔로우
-	BLOCK;    // 차단
+	FOLLOW,   // 내가 상대방을 팔로우한 상태
+	BLOCK,    // 내가 차단한 상태
+	ISBLOCKED;  // 내가 차단당한 상태
 	
     public static FollowType fromString(String type) {
         try {
