@@ -113,9 +113,9 @@ public class UserServiceImpl implements UserService {
 			followType = "";
 		}
 		
-		if(followType.equals("BLOCK")) { // 차단 당하지 않았으면 정보를 불러온다
+		if(followType.equals("ISBLOCKED")) { // 만약 차단당했으면 정보가 필요없으므로 불러오지 않는다
 			return Map.of("followType", followType);
-		} else { // 만약 차단당했으면 정보가 필요없으므로 불러오지 않는다
+		} else { // 차단 당하지 않았으면 정보를 불러온다
 			User user = userRepo.findById(userId)
 					.orElseThrow(() -> new EntityNotFoundException("User not found"));
 			
