@@ -24,18 +24,12 @@ import com.example.tripDuo.enums.PostStatus;
 import com.example.tripDuo.enums.PostType;
 import com.example.tripDuo.enums.UserRole;
 import com.example.tripDuo.enums.VerificationStatus;
-import com.example.tripDuo.repository.ChatParticipantsRepository;
+import com.example.tripDuo.repository.ChatParticipantRepository;
 import com.example.tripDuo.repository.ChatRoomRepository;
 import com.example.tripDuo.repository.MessageRepository;
 import com.example.tripDuo.repository.PostRepository;
 import com.example.tripDuo.repository.UserProfileInfoRepository;
 import com.example.tripDuo.repository.UserRepository;
-
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 
 @PropertySource(value = "classpath:custom.properties")
 @SpringBootApplication
@@ -46,7 +40,7 @@ public class TripDuoApplication {
 	}
 	
 	@Autowired
-	private ChatParticipantsRepository chatParticipantsRepo;
+	private ChatParticipantRepository chatParticipantsRepo;
 	
 	@Autowired
     private ChatRoomRepository chatRoomRepo;

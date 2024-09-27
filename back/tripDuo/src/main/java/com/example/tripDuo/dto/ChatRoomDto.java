@@ -2,7 +2,6 @@ package com.example.tripDuo.dto;
 
 import java.util.List;
 
-import com.example.tripDuo.entity.ChatMessage;
 import com.example.tripDuo.entity.ChatRoom;
 import com.example.tripDuo.enums.ChatRoomType;
 
@@ -14,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Builder 
 public class ChatRoomDto {
 	private Long id;
 	private ChatRoomType type;
