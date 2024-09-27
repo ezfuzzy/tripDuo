@@ -8,6 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -27,7 +29,10 @@ public class PostLike {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private long postId;
+    @ManyToOne
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
+    
     private long userId;
 
     private LocalDateTime createdAt;
@@ -37,10 +42,10 @@ public class PostLike {
         createdAt = LocalDateTime.now();
     }
     
-    public static PostLike toEntity(PostLikeDto dto){
+    public static PostLike toEntity(PostLikeDto dto, Post post){
         return PostLike.builder()
             .id(dto.getId())
-            .postId(dto.getPostId() != null ? dto.getPostId() : 0L)
+            .post(post)
             .userId(dto.getUserId() != null ? dto.getUserId() : 0L)
             .createdAt(dto.getCreatedAt())
             .build();

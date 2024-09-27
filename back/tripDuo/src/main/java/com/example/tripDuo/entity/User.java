@@ -15,6 +15,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -61,6 +62,11 @@ public class User {
         createdAt = LocalDateTime.now();
     }
 
+    @PreUpdate
+    public void onPreUpdate() {
+    	updatedAt = LocalDateTime.now();
+    }
+    
     public static User toEntity(UserDto dto) {
                 
         return User.builder()
