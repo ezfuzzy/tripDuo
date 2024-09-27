@@ -102,19 +102,35 @@ public class UserServiceImpl implements UserService {
 		
 		Long currentUserId = userRepo.findByUsername(username).getId();
 		
-		UserFollow userFollow = userFollowRepo
+		// 상대방이 나를 follow / block했는지
+		UserFollow myUserFollow = userFollowRepo
 				.findByFolloweeUserProfileInfo_User_IdAndFollowerUserProfileInfo_User_Id(
 						userId, currentUserId);
 		
-		String followType;
-		if(userFollow != null) {
-			followType = userFollow.getFollowType().toString();
+		// 내가 상대방을 follow / block 했는지 
+		UserFollow theirUserfollow = userFollowRepo
+				.findByFolloweeUserProfileInfo_User_IdAndFollowerUserProfileInfo_User_Id(
+						currentUserId, userId);
+				
+		String myFollowType, theirFollowType;
+		if(myUserFollow != null) {
+			myFollowType = myUserFollow.getFollowType().toString();
 		} else {
-			followType = "";
+			myFollowType = "";
 		}
 		
-		if(followType.equals("ISBLOCKED")) { // 만약 차단당했으면 정보가 필요없으므로 불러오지 않는다
-			return Map.of("followType", followType);
+		if(theirUserfollow != null) {
+			theirFollowType = theirUserfollow.getFollowType().toString();
+		} else {
+			theirFollowType = "";
+		}
+		
+		
+		if(theirFollowType.equals("BLOCK")) { // 만약 차단당했으면 정보가 필요없으므로 불러오지 않는다
+			return Map.of(
+						"myFollowType", myFollowType,
+						"theirFollowType", theirFollowType
+					);
 		} else { // 차단 당하지 않았으면 정보를 불러온다
 			User user = userRepo.findById(userId)
 					.orElseThrow(() -> new EntityNotFoundException("User not found"));
@@ -136,9 +152,12 @@ public class UserServiceImpl implements UserService {
 		        .map(item -> UserReviewDto.toDto(item, PROFILE_PICTURE_CLOUDFRONT_URL))
 		        .collect(Collectors.toList());
 		    
-		    Map<String, Object> map = Map.of("userProfileInfo", upiDto,
-		    		"userReviewList", userReviewDtoList,
-		    		"followType", followType);
+		    Map<String, Object> map = Map.of(
+			    		"userProfileInfo", upiDto,
+			    		"userReviewList", userReviewDtoList,
+			    		"myFollowType", myFollowType,
+						"theirFollowType", theirFollowType
+		    		);
 		    
 	    	return map;
 		}
@@ -375,9 +394,12 @@ public class UserServiceImpl implements UserService {
 		if(tempUserFollow != null) { // 기존 관계가 있으면 update - createdAt 갱신
 			tempUserFollow.updateFollowType(userFollowDto.getFollowType());
 			tempUserFollow.updateCreatedAt();
-		} else { // 기존 관계가 없으면 새로 데이터 저장
+		} else { // 기존 관계가 없으면 새로 데이터 저장 
 			UserProfileInfo followeeProfileInfo = userProfileInfoRepo.findByUserId(userFollowDto.getFolloweeUserId());
 			UserProfileInfo followerProfileInfo = userProfileInfoRepo.findByUserId(userFollowDto.getFollowerUserId());	
+			System.out.println("6번이어야함 : " + userFollowDto.getFollowerUserId());
+			System.out.println("6번이 아니어야함 : " + userFollowDto.getFolloweeUserId());
+			
 			UserFollow userFollow = UserFollow.toEntity(userFollowDto, followeeProfileInfo, followerProfileInfo);
 			userFollowRepo.save(userFollow);
 		}
