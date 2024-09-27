@@ -1,6 +1,5 @@
 package com.example.tripDuo.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -23,12 +22,16 @@ import com.example.tripDuo.entity.PostComment;
 import com.example.tripDuo.entity.PostLike;
 import com.example.tripDuo.entity.PostRating;
 import com.example.tripDuo.entity.UserProfileInfo;
+import com.example.tripDuo.entity.UserSavedCourse;
 import com.example.tripDuo.repository.PostCommentRepository;
 import com.example.tripDuo.repository.PostLikeRepository;
 import com.example.tripDuo.repository.PostRatingRepository;
 import com.example.tripDuo.repository.PostRepository;
 import com.example.tripDuo.repository.UserProfileInfoRepository;
 import com.example.tripDuo.repository.UserRepository;
+import com.example.tripDuo.repository.UserSavedCourseRepository;
+import com.example.tripDuo.repository.UserSavedPlaceRepository;
+import com.example.tripDuo.repository.UserVisitedPlaceRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -46,18 +49,29 @@ public class PostServiceImpl implements PostService {
 	private final UserRepository userRepo;
 	private final UserProfileInfoRepository userProfileInfoRepo;
 
+	private final UserVisitedPlaceRepository userVisitedPlaceRepo;
+	private final UserSavedPlaceRepository userSavedPlaceRepo;
+	private final UserSavedCourseRepository userSavedCourseRepo;
+	
 	final int POST_PAGE_SIZE = 10;
 	final int COMMENT_PAGE_SIZE = 10;
 	
 	public PostServiceImpl(PostRepository postRepo, PostCommentRepository postCommentRepo, 
 			PostLikeRepository postLikeRepo, PostRatingRepository postRatingRepo, 
-			UserRepository userRepo, UserProfileInfoRepository userProfileInfoRepo) {
+			UserRepository userRepo, UserProfileInfoRepository userProfileInfoRepo,
+			UserVisitedPlaceRepository userVisitedPlaceRepo,
+			UserSavedPlaceRepository userSavedPlaceRepo,
+			UserSavedCourseRepository userSavedCourseRepo) {
 		this.postRepo = postRepo;
 		this.postCommentRepo = postCommentRepo;
 		this.postLikeRepo = postLikeRepo;
 		this.postRatingRepo = postRatingRepo;
 		this.userRepo = userRepo;
 		this.userProfileInfoRepo = userProfileInfoRepo;
+		
+		this.userVisitedPlaceRepo = userVisitedPlaceRepo;
+		this.userSavedPlaceRepo = userSavedPlaceRepo;
+		this.userSavedCourseRepo = userSavedCourseRepo;
 	}
 	
 	/**
@@ -202,7 +216,6 @@ public class PostServiceImpl implements PostService {
 //		PostDto existingPost = PostDto.toDto(postRepo.findById(postDto.getId()).get());
 		
 		// 1. 만약 기존의 모든 정보가 그대로 넘어오면
-		postDto.setUpdatedAt(LocalDateTime.now());
 		postRepo.save(Post.toEntity(postDto, userProfileInfo));
 		
 		// 2. 만약 기존 정보중 일부만 넘어오면 -> controller에서 setId하고 넘겨준 다음에 로직 실행
@@ -304,7 +317,6 @@ public class PostServiceImpl implements PostService {
 	public void updateComment(PostCommentDto postCommentDto) {
 		
 		UserProfileInfo userProfileInfo = userProfileInfoRepo.findByUserId(postCommentDto.getUserId());
-		postCommentDto.setUpdatedAt(LocalDateTime.now());
 		// 댓글 db 저장
 		postCommentRepo.save(PostComment.toEntity(postCommentDto, userProfileInfo));
 		
@@ -352,11 +364,35 @@ public class PostServiceImpl implements PostService {
 	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
 		
 		// 좋아요 db 저장
-		postLikeRepo.save(PostLike.toEntity(postLikeDto));
+		postLikeRepo.save(PostLike.toEntity(postLikeDto, existingPost));
 		
 		// post 좋아요 수 update
 		existingPost.setLikeCount(postLikeRepo.countByPostId(existingPost.getId()));
+		
+		
+		// 추후 좋아요 / 저장 나눌 예정
+		// 좋아요 누른 코스를 saved place에 저장
+		UserSavedCourse userSavedCourse = UserSavedCourse.builder()
+											.userId(postLikeDto.getUserId())
+											.course(existingPost)
+											.build();
+		
+		userSavedCourseRepo.save(userSavedCourse);
 	}
+	
+	/**
+	 * @date : 2024. 9. 27.
+	 * @user : 김민준
+	 * getLikedPostList: userId가 좋아요를 누른 post List 
+	 * 
+	 * @param userId
+	 * @returm
+	 */
+	public List<PostLike> getLikedPostList(Long userId) {
+		
+		return postLikeRepo.findByUserId(userId);
+	}
+
 	
 	/**
 	 * @date : 2024. 9. 13.
@@ -373,6 +409,8 @@ public class PostServiceImpl implements PostService {
 	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
 		
 		postLikeRepo.deleteByPostIdAndUserId(postId, userId);
+		// 추후 좋아요 / 저장 나눌 예정
+		userSavedCourseRepo.deleteByPostIdAndUserId(postId, userId);
 		existingPost.setLikeCount(postLikeRepo.countByPostId(existingPost.getId()));
 	}
 

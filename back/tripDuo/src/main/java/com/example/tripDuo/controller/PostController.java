@@ -1,5 +1,6 @@
 package com.example.tripDuo.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import com.example.tripDuo.dto.PostCommentDto;
 import com.example.tripDuo.dto.PostDto;
 import com.example.tripDuo.dto.PostLikeDto;
 import com.example.tripDuo.dto.PostRatingDto;
+import com.example.tripDuo.entity.PostLike;
 import com.example.tripDuo.enums.PostType;
 import com.example.tripDuo.service.PostService;
 
@@ -190,6 +192,11 @@ public class PostController {
 	        // 기타 예외에 대한 처리
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
 	    }
+	}
+	
+	@GetMapping("/{postId:[0-9]+}/likes/{userId:[0-9]+}")
+	public ResponseEntity<List<PostLike>> getLikedPostList(@PathVariable("userId") Long userId) {
+		return ResponseEntity.ok(postService.getLikedPostList(userId));
 	}
 	
 	@DeleteMapping("/{postId:[0-9]+}/likes/{userId:[0-9]+}")
