@@ -55,6 +55,12 @@ function MyProfile(props) {
     axios
       .get(`/api/v1/users/${id}`)
       .then((res) => {
+        console.log(res.data);
+        if (res.data.followType === "BLOCK") {
+          alert("you have been blocked");
+          navigate("/");
+        }
+
         //불러온 사용자의 정보 저장
         setProfile(res.data.userProfileInfo);
         console.log(res.data);
@@ -203,15 +209,19 @@ function MyProfile(props) {
 
   return (
     <>
-    {
-      isProfileOwner &&
-      <button
-        type="button"
-        className="mb-20 px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
-        onClick={()=>{navigate(`/users/${id}`)}}
-      >마이 페이지
-      </button>
-    }
+      {isProfileOwner && (
+        <div>
+          <button
+            type="button"
+            className="mb-20 px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
+            onClick={() => {
+              navigate(`/users/${id}`);
+            }}
+          >
+            마이 페이지
+          </button>
+        </div>
+      )}
       {/* 전체 div */}
       <div className="flex-col">
         {blockStatus && (
