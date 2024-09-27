@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 public class UserSavedCourseDto {
 	private Long id;
     private Long userId;
-    private Long tripId;
     private Long courseId;
 	private String courseTitle; 
 	private String userMemo;
@@ -27,8 +26,7 @@ public class UserSavedCourseDto {
 		
     	return UserSavedCourseDto.builder()
                 .id(entity.getId())
-                .userId(entity.getUserTripInfo() != null ? entity.getUserTripInfo().getUserId() : null)
-                .tripId(entity.getUserTripInfo() != null ? entity.getUserTripInfo().getId() : null)
+                .userId(entity.getUserId())
                 .courseId(entity.getCourse() != null ? entity.getCourse().getId() : null)
                 .courseTitle(entity.getCourse() != null ? entity.getCourse().getTitle() : null)
                 .userMemo(entity.getUserMemo())

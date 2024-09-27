@@ -1,17 +1,14 @@
 package com.example.tripDuo.entity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.example.tripDuo.dto.UserTripInfoDto;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,17 +35,12 @@ public class UserTripInfo {
     private String[] languages;
     private Boolean smoking;
 
-    @OneToMany(mappedBy = "userTripInfo", cascade = CascadeType.ALL)
-    private List<UserVisitedPlace> visitedPlaces = new ArrayList<>();
-
-    @OneToMany(mappedBy = "userTripInfo", cascade = CascadeType.ALL)
-    private List<UserSavedPlace> savedPlaces = new ArrayList<>();
-
-    @OneToMany(mappedBy = "userTripInfo", cascade = CascadeType.ALL)
-    private List<UserSavedCourse> savedCourses = new ArrayList<>();
+    private List<Long> visitedPlaces;
+    private List<Long> savedPlaces;
+    private List<Long> savedCourses;
 
     // toEntity
-    static public UserTripInfo toEntity(UserTripInfoDto dto, UserTripInfo userTripInfoDto, Place place, Post course) {
+    static public UserTripInfo toEntity(UserTripInfoDto dto) {
     	
         return UserTripInfo.builder()
                 .id(dto.getId())
@@ -56,15 +48,9 @@ public class UserTripInfo {
                 .tripStyle(dto.getTripStyle())
                 .languages(dto.getLanguages())
                 .smoking(dto.getSmoking())
-                .visitedPlaces(dto.getVisitedPlaces().stream()
-                        .map(dtoItem -> UserVisitedPlace.toEntity(dtoItem, userTripInfoDto, place))
-                        .toList())
-                .savedPlaces(dto.getSavedPlaces().stream()
-                        .map(dtoItem -> UserSavedPlace.toEntity(dtoItem, userTripInfoDto, place))
-                        .toList())
-                .savedCourses(dto.getSavedCourses().stream()
-                        .map(dtoItem -> UserSavedCourse.toEntity(dtoItem, userTripInfoDto, course))
-                        .toList())
+                .visitedPlaces(dto.getVisitedPlaces())
+                .savedPlaces(dto.getSavedPlaces())
+                .savedCourses(dto.getSavedCourses())
                 .build();
     }
 }

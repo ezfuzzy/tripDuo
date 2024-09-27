@@ -10,10 +10,10 @@ public interface UserTripInfoService {
 	
 	// ### trip info ###
 	public UserTripInfo getTripInfoByUserId(Long userId);
-	public void updateTripInfo(UserTripInfoDto userTripInfoDto);
-
+	public void updateTripInfo(UserTripInfoDto userTripInfoDto);	
+	
 	// ### saved places ###
-	public void saveVisitedPlace(UserVisitedPlaceDto userVisitedPlaceDto);  
+	public void saveVisitedPlace(UserVisitedPlaceDto userVisitedPlaceDto);
 	public void updateVisitedPlace(UserVisitedPlaceDto userVisitedPlaceDto);
 	public void deleteVisitedPlace(Long userVisitedPlaceId);
 	
