@@ -19,12 +19,12 @@ public class WebSocketController {
         this.messagingTemplate = messagingTemplate;
     }
 
-    // 1. 그룹 채팅 메시지 전송
-    @MessageMapping("/chat.sendMessage/group")
-    @SendTo("/topic/{roomId}")  // 그룹 채팅방
-    public ChatMessageDto sendGroupMessage(ChatMessageDto messageDto, @DestinationVariable String roomId) {
-        return messageDto;
-    }
+//    // 1. 그룹 채팅 메시지 전송
+//    @MessageMapping("/chat.sendMessage/group")
+//    @SendTo("/topic/{roomId}")  // 그룹 채팅방
+//    public ChatMessageDto sendGroupMessage(ChatMessageDto messageDto, @DestinationVariable String roomId) {
+//        return messageDto;
+//    }
     // 1. 그룹 채팅 메시지 전송
     @MessageMapping("/chat.sendMessage/{roomId}")
     @SendTo("/topic/{roomId}")  // 그룹 채팅방
@@ -33,7 +33,7 @@ public class WebSocketController {
     }
 
     // 2. 1:1 채팅 메시지 전송
-    @MessageMapping("/chat.sendMessage/private")
+    @MessageMapping("/chat.sendMessage/{userId}")
     public void sendPrivateMessage(ChatMessageDto messageDto) {
         String recipient = messageDto.getRecipient();
         messagingTemplate.convertAndSendToUser(recipient, "/users", messageDto);  // 개인 사용자에게 전송

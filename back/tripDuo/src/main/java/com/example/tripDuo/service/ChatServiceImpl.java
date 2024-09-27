@@ -2,6 +2,7 @@ package com.example.tripDuo.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -30,69 +31,63 @@ public class ChatServiceImpl implements ChatService {
 		this.chatRoomRepo = chatRoomRepo;
 		this.messageRepo = messageRepo;
 		this.chatParticipantsRepo = chatParticipantsRepo;
-        this.userProfileInfoRepo = userProfileInfoRepo; // UserProfileInfoRepository 초기화
-
+		this.userProfileInfoRepo = userProfileInfoRepo;
 	}
 
 	@Override
 	public List<ChatRoomDto> getAllChatRooms(Long userId) {
-		 // 사용자가 속한 채팅방 참여 정보를 가져옴
-        List<ChatParticipant> chatParticipantsList = chatParticipantsRepo.findByUserProfileInfoUserId(userId);
-        List<ChatRoomDto> chatRoomDtos = new ArrayList<>();
-        for (ChatParticipant participant : chatParticipantsList) {
-            // 참가자가 속한 채팅방을 가져옴
-            ChatRoom chatRoom = chatRoomRepo.findById(participant.getChatRoomId())
-                    .orElseThrow(() -> new RuntimeException("ChatRoom not found"));
+		// 사용자가 속한 채팅방 참여 정보를 모두 가져옴
+		List<ChatParticipant> chatParticipantsList = chatParticipantsRepo.findByUserProfileInfoUserId(userId);
+		System.out.println(chatParticipantsList.toString());
 
-            // ChatRoomDto로 변환
-            ChatRoomDto chatRoomDto = ChatRoomDto.toDto(chatRoom);
-            chatRoomDtos.add(chatRoomDto);
-        }
+		// 참가자가 속한 채팅방 ID 목록을 추출
+		List<Long> chatRoomIds = chatParticipantsList.stream().map(ChatParticipant::getChatRoomId).collect(Collectors.toList());
 
-        System.out.println("사용자가 속한 채팅방 목록: " + chatRoomDtos);
-        return chatRoomDtos;
-    }
+		// 한 번에 모든 채팅방 정보를 가져옴
+		List<ChatRoom> chatRooms = chatRoomRepo.findByIdIn(chatRoomIds);
 
+		// ChatRoom을 ChatRoomDto로 변환
+		List<ChatRoomDto> chatRoomDtos = chatRooms.stream().map(ChatRoomDto::toDto).collect(Collectors.toList());
 
+		System.out.println("사용자가 속한 채팅방 목록: " + chatRoomDtos);
+		return chatRoomDtos;
+	}
 
-	 // 추가된 부분: 특정 채팅방의 모든 메시지를 반환
-    @Override
-    public List<ChatMessageDto> getChatMessages(Long roomId) {
-    	List<ChatMessage> messages = messageRepo.findByChatRoomId(roomId);
-        List<ChatMessageDto> messageDtos = new ArrayList<>();
+	// 특정 채팅방의 모든 메시지를 반환
+	@Override
+	public List<ChatMessageDto> getChatMessages(Long roomId) {
+		List<ChatMessage> messages = messageRepo.findByChatRoomId(roomId);
+		List<ChatMessageDto> messageDtos = new ArrayList<>();
 
-        for (ChatMessage message : messages) {
-            messageDtos.add(ChatMessageDto.toDto(message));
-        }
+		for (ChatMessage message : messages) {
+			messageDtos.add(ChatMessageDto.toDto(message));
+		}
 
-        return messageDtos;
-    }
+		return messageDtos;
+	}
 
-    // 채팅방 생성
-    @Override
-    public ChatRoom createChatRoom(ChatRoomDto chatRoomDto) {
-    	 
-    	ChatRoom chatRoom = chatRoomRepo.save(ChatRoom.toEntity(chatRoomDto));
-         
-         System.out.println("채팅방 생성됨: " + chatRoom.getId());
-         
-         for(Long curUserId : chatRoomDto.getParticipantsList()) {
-        	 UserProfileInfo userProfileInfo = userProfileInfoRepo.findById(curUserId)
-        			 .orElseThrow(() -> new EntityNotFoundException("UserProfileInfo  not Found"));
-        	 
-        	 boolean isOwner = curUserId  == chatRoomDto.getOwnerId();
+	// 채팅방 생성
+	@Override
+	public ChatRoom createChatRoom(ChatRoomDto chatRoomDto) {
 
-        	 ChatParticipant chatParticipant =  ChatParticipant.builder()
-        			 .chatRoomId(chatRoom.getId())
-        			 .userProfileInfo(userProfileInfo)
-        			 .isOwner(isOwner)
-        			 .build();
+		ChatRoom chatRoom = chatRoomRepo.save(ChatRoom.toEntity(chatRoomDto));
 
-        	 chatParticipantsRepo.save(chatParticipant);
-        	 
-         }
+		System.out.println("채팅방 생성됨: " + chatRoom.getId());
 
-         return chatRoom;
-    }
+		for (Long curUserId : chatRoomDto.getParticipantsList()) {
+			UserProfileInfo userProfileInfo = userProfileInfoRepo.findById(curUserId)
+					.orElseThrow(() -> new EntityNotFoundException("UserProfileInfo  not Found"));
+
+			boolean isOwner = curUserId == chatRoomDto.getOwnerId();
+
+			ChatParticipant chatParticipant = ChatParticipant.builder().chatRoomId(chatRoom.getId())
+					.userProfileInfo(userProfileInfo).isOwner(isOwner).build();
+
+			chatParticipantsRepo.save(chatParticipant);
+
+		}
+
+		return chatRoom;
+	}
 
 }
