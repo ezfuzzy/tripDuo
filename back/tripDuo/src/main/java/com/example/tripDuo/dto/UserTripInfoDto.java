@@ -23,9 +23,9 @@ public class UserTripInfoDto {
     
     private Boolean smoking;
 
-    private List<UserVisitedPlaceDto> visitedPlaces;
-    private List<UserSavedPlaceDto> savedPlaces;
-    private List<UserSavedCourseDto> savedCourses;
+    private List<Long> visitedPlaces;
+    private List<Long> savedPlaces;
+    private List<Long> savedCourses;
 
     // toDto
     static public UserTripInfoDto toDto(UserTripInfo entity) {
@@ -36,15 +36,9 @@ public class UserTripInfoDto {
                 .tripStyle(entity.getTripStyle())
                 .languages(entity.getLanguages())
                 .smoking(entity.getSmoking())
-                .visitedPlaces(entity.getVisitedPlaces().stream()
-                        .map(UserVisitedPlaceDto::toDto)
-                        .toList()) // UserVisitedPlaceDto의 toDto 메서드를 사용하여 변환
-                .savedPlaces(entity.getSavedPlaces().stream()
-                        .map(UserSavedPlaceDto::toDto)
-                        .toList()) // UserSavedPlaceDto의 toDto 메서드를 사용하여 변환
-                .savedCourses(entity.getSavedCourses().stream()
-                        .map(UserSavedCourseDto::toDto)
-                        .toList()) // UserSavedCourseDto의 toDto 메서드를 사용하여 변환
+                .visitedPlaces(entity.getVisitedPlaces())
+                .savedPlaces(entity.getSavedPlaces())
+                .savedCourses(entity.getSavedCourses())
                 .build();
     }
 }

@@ -59,7 +59,7 @@ public class UserTripInfoServiceImpl implements UserTripInfoService {
 UserTripInfo.toEntity(UserTripInfoDto dto, UserTripInfo userTripInfoDto, Place place, Post course)
 		 */
 		
-		userTripInfoRepo.save(UserTripInfo.toEntity(userTripInfoDto, null, null, null));
+		userTripInfoRepo.save(UserTripInfo.toEntity(userTripInfoDto));
 	}
 
 	// ### visit place 
@@ -67,24 +67,19 @@ UserTripInfo.toEntity(UserTripInfoDto dto, UserTripInfo userTripInfoDto, Place p
 	@Override
 	public void saveVisitedPlace(UserVisitedPlaceDto userVisitedPlaceDto) {
 		
-		UserTripInfo userTripInfo = userTripInfoRepo.findById(userVisitedPlaceDto.getTripId())
-				.orElseThrow(() -> new EntityNotFoundException("UserTripInfo not found"));
-
 		Place place = placeRepo.findById(userVisitedPlaceDto.getPlaceId())
 				.orElseThrow(() -> new EntityNotFoundException("Place not found"));
 		
-		userVisitedPlaceRepo.save(UserVisitedPlace.toEntity(userVisitedPlaceDto, userTripInfo, place));
+		userVisitedPlaceRepo.save(UserVisitedPlace.toEntity(userVisitedPlaceDto, place));
 	}
 
 	@Override
 	public void updateVisitedPlace(UserVisitedPlaceDto userVisitedPlaceDto) {
-		UserTripInfo userTripInfo = userTripInfoRepo.findById(userVisitedPlaceDto.getTripId())
-				.orElseThrow(() -> new EntityNotFoundException("UserTripInfo not found"));
 
 		Place place = placeRepo.findById(userVisitedPlaceDto.getPlaceId())
 				.orElseThrow(() -> new EntityNotFoundException("Place not found"));
 		
-		userVisitedPlaceRepo.save(UserVisitedPlace.toEntity(userVisitedPlaceDto, userTripInfo, place));
+		userVisitedPlaceRepo.save(UserVisitedPlace.toEntity(userVisitedPlaceDto, place));
 	}
 
 	@Override
@@ -96,24 +91,20 @@ UserTripInfo.toEntity(UserTripInfoDto dto, UserTripInfo userTripInfoDto, Place p
 	
 	@Override
 	public void savePlaceToMyTripInfo(UserSavedPlaceDto userSavedPlaceDto) {
-		UserTripInfo userTripInfo = userTripInfoRepo.findById(userSavedPlaceDto.getTripId())
-				.orElseThrow(() -> new EntityNotFoundException("UserTripInfo not found"));
 
 		Place place = placeRepo.findById(userSavedPlaceDto.getPlaceId())
 				.orElseThrow(() -> new EntityNotFoundException("Place not found"));
 		
-		userSavedPlaceRepo.save(UserSavedPlace.toEntity(userSavedPlaceDto, userTripInfo, place));
+		userSavedPlaceRepo.save(UserSavedPlace.toEntity(userSavedPlaceDto, place));
 	}
 
 	@Override
 	public void updatePlaceToMyTripInfo(UserSavedPlaceDto userSavedPlaceDto) {
-		UserTripInfo userTripInfo = userTripInfoRepo.findById(userSavedPlaceDto.getTripId())
-				.orElseThrow(() -> new EntityNotFoundException("UserTripInfo not found"));
 
 		Place place = placeRepo.findById(userSavedPlaceDto.getPlaceId())
 				.orElseThrow(() -> new EntityNotFoundException("Place not found"));
 		
-		userSavedPlaceRepo.save(UserSavedPlace.toEntity(userSavedPlaceDto, userTripInfo, place));
+		userSavedPlaceRepo.save(UserSavedPlace.toEntity(userSavedPlaceDto, place));
 	}
 
 	@Override
@@ -125,24 +116,20 @@ UserTripInfo.toEntity(UserTripInfoDto dto, UserTripInfo userTripInfoDto, Place p
 	
 	@Override
 	public void saveCourseToMyTripInfo(UserSavedCourseDto userSavedCourseDto) {
-		UserTripInfo userTripInfo = userTripInfoRepo.findById(userSavedCourseDto.getTripId())
-				.orElseThrow(() -> new EntityNotFoundException("UserTripInfo not found"));
 
 		Post course = postRepo.findById(userSavedCourseDto.getCourseId())
 				.orElseThrow(() -> new EntityNotFoundException("Course(post) not found"));
 		
-		userSavedCourseRepo.save(UserSavedCourse.toEntity(userSavedCourseDto, userTripInfo, course));
+		userSavedCourseRepo.save(UserSavedCourse.toEntity(userSavedCourseDto, course));
 	}
 
 	@Override
 	public void updateCourseToMyTripInfo(UserSavedCourseDto userSavedCourseDto) {
-		UserTripInfo userTripInfo = userTripInfoRepo.findById(userSavedCourseDto.getTripId())
-				.orElseThrow(() -> new EntityNotFoundException("UserTripInfo not found"));
-
+		
 		Post course = postRepo.findById(userSavedCourseDto.getCourseId())
 				.orElseThrow(() -> new EntityNotFoundException("Course(post) not found"));
 		
-		userSavedCourseRepo.save(UserSavedCourse.toEntity(userSavedCourseDto, userTripInfo, course));
+		userSavedCourseRepo.save(UserSavedCourse.toEntity(userSavedCourseDto, course));
 		
 	}
 

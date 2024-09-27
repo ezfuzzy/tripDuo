@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,9 +30,7 @@ public class UserSavedCourse {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_trip_info_id")
-    private UserTripInfo userTripInfo;
+    private Long userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
@@ -40,12 +39,17 @@ public class UserSavedCourse {
 	private String userMemo;
     private LocalDateTime createdAt;
     
+    @PrePersist
+    public void onPrePersist() {
+        createdAt = LocalDateTime.now();
+    }
+    
     // toEntity 
-    public static UserSavedCourse toEntity(UserSavedCourseDto dto, UserTripInfo userTripInfo, Post course) {
+    public static UserSavedCourse toEntity(UserSavedCourseDto dto, Post course) {
     	
     	return UserSavedCourse.builder()
                 .id(dto.getId())
-                .userTripInfo(userTripInfo)
+                .userId(dto.getUserId())
                 .course(course)
                 .userMemo(dto.getUserMemo())
                 .createdAt(dto.getCreatedAt())

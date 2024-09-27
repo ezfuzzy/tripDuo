@@ -21,7 +21,6 @@ import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.dto.UserFollowDto;
 import com.example.tripDuo.dto.UserProfileInfoDto;
 import com.example.tripDuo.dto.UserReviewDto;
-import com.example.tripDuo.entity.UserProfileInfo;
 import com.example.tripDuo.enums.FollowType;
 import com.example.tripDuo.service.UserService;
 
@@ -115,9 +114,9 @@ public class UserController {
 	}
 
 	// 어떤 유저(userId)가 차단한 유저정보 리스트를 가져오는 메소드
-	@GetMapping("/{userId}/blockedUserInfos")
-	public ResponseEntity<List<UserProfileInfo>> getBlockedUserProfileInfo(@PathVariable("userId") Long userId) {
-		return ResponseEntity.ok(userService.getBlockedUserProfileInfo(userId));
+	@GetMapping("/{userId}/blockInfos")
+	public ResponseEntity<List<UserProfileInfoDto>> getBlockedUserProfileInfo(@PathVariable("userId") Long userId) {
+		return ResponseEntity.ok(userService.getBlockInfo(userId));
 	}
 
 	// 어떤 유저(followerUserId)가 다른 유저(followeeUserId)를 팔로우/차단(followType) 하기

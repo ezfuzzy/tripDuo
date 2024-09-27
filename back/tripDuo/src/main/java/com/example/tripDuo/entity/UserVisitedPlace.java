@@ -29,9 +29,7 @@ public class UserVisitedPlace {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
-    @ManyToOne
-    @JoinColumn(name = "user_trip_info_id")
-    private UserTripInfo userTripInfo;
+    private Long userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_id", nullable = false)
@@ -41,11 +39,11 @@ public class UserVisitedPlace {
     
     
     // toEntity 
-    public static UserVisitedPlace toEntity(UserVisitedPlaceDto dto, UserTripInfo userTripInfo, Place place) {
+    public static UserVisitedPlace toEntity(UserVisitedPlaceDto dto, Place place) {
     	
     	return UserVisitedPlace.builder()
                 .id(dto.getId())
-                .userTripInfo(userTripInfo)
+                .userId(dto.getUserId())
                 .place(place)
                 .visitDate(dto.getVisitDate())
                 .build();
