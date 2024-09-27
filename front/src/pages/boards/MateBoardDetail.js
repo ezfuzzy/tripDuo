@@ -193,7 +193,7 @@ function MateBoardDetail(props) {
     const data = {
       postId: id,
       userId: userId,
-      writer: userId,
+      writer: nickname,
       profilePicture: profilePicture,
       content: e.target.content.value,
       // parentCommentId: e.target.parentCommentId.value,
@@ -225,7 +225,7 @@ function MateBoardDetail(props) {
     const data = {
       postId: id,
       userId: userId,
-      writer: userId,
+      writer: nickname,
       profilePicture: profilePicture,
       content: e.target.content.value,
       toUsername: e.target.toUsername.value,
@@ -278,7 +278,7 @@ function MateBoardDetail(props) {
       id: e.target.commentId.value,
       postId: e.target.id.value,
       userId: userId,
-      writer: userId,
+      writer: nickname,
       profilePicture: profilePicture,
       content: e.target.content.value,
       parentCommentId: e.target.parentCommentId.value,
