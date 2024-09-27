@@ -11,7 +11,7 @@ import com.example.tripDuo.entity.ChatMessage;
 import com.example.tripDuo.entity.ChatParticipant;
 import com.example.tripDuo.entity.ChatRoom;
 import com.example.tripDuo.entity.UserProfileInfo;
-import com.example.tripDuo.repository.ChatParticipantsRepository;
+import com.example.tripDuo.repository.ChatParticipantRepository;
 import com.example.tripDuo.repository.ChatRoomRepository;
 import com.example.tripDuo.repository.MessageRepository;
 import com.example.tripDuo.repository.UserProfileInfoRepository;
@@ -22,11 +22,11 @@ import jakarta.persistence.EntityNotFoundException;
 public class ChatServiceImpl implements ChatService {
 	private ChatRoomRepository chatRoomRepo;
 	private MessageRepository messageRepo;
-	private ChatParticipantsRepository chatParticipantsRepo;
+	private ChatParticipantRepository chatParticipantsRepo;
 	private UserProfileInfoRepository userProfileInfoRepo;
 
 	public ChatServiceImpl(ChatRoomRepository chatRoomRepo, MessageRepository messageRepo,
-			ChatParticipantsRepository chatParticipantsRepo, UserProfileInfoRepository userProfileInfoRepo) {
+			ChatParticipantRepository chatParticipantsRepo, UserProfileInfoRepository userProfileInfoRepo) {
 		this.chatRoomRepo = chatRoomRepo;
 		this.messageRepo = messageRepo;
 		this.chatParticipantsRepo = chatParticipantsRepo;
