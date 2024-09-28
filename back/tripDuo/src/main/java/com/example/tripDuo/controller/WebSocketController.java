@@ -45,10 +45,10 @@ public class WebSocketController {
 	@SendTo("/notification")
 	public NotificationDto sendNotification(NotificationDto notification) {
 		System.out.println(notification);
-		if(notification.getType() == "CHATROOM") {
+		if (notification.getType() == "CHATROOM") {
 			// 서비스 가서 디비 저장하고
 			// 저장된 chatroom 반환 받아서
-			// notification에 넣어서 리턴 
+			// notification에 넣어서 리턴
 		}
 		return notification;
 	}
@@ -63,10 +63,19 @@ public class WebSocketController {
 		return message;
 	}
 
-	// 5. 사용자가 채팅방에 참여할 때
-	@MessageMapping("/chat.addchatroom/{roomId}")
-	@SendTo("/topic/newroom/{roomId}")
-	public ChatRoomDto addChatRoom(ChatRoomDto message, SimpMessageHeaderAccessor headerAccessor,
+	// 5. 그룹 채팅방 생성
+	@MessageMapping("/chat.addChatroom/group/{roomId}")
+	@SendTo("/topic/newroom/group/{roomId}")
+	public ChatRoomDto addChatRoomGroup(ChatRoomDto message, SimpMessageHeaderAccessor headerAccessor,
+			@DestinationVariable String roomId) {
+		// WebSocket 세션에 사용자 추가
+		return message;
+	}
+
+	// 6. 1:1 채팅방 생성
+	@MessageMapping("/chat.addChatroom/private/{roomId}")
+	@SendTo("/user/newroom/private/{roomId}")
+	public ChatRoomDto addChatRoomPrivate(ChatRoomDto message, SimpMessageHeaderAccessor headerAccessor,
 			@DestinationVariable String roomId) {
 		// WebSocket 세션에 사용자 추가
 		return message;
