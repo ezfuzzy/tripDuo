@@ -16,22 +16,22 @@ import lombok.NoArgsConstructor;
 public class ChatMessageDto {
 	private Long id;
 	private String message;
-	
+
 	private String sender;
 	private String profilePicture;
-	
+
 	private Long chatRoomId;
-    private String recipient;  // 1:1 채팅에서 사용할 수신자 필드
-    
+	private String recipient; // 1:1 채팅에서 사용할 수신자 필드
+
 	private LocalDateTime timestamp;
 
-public static ChatMessageDto toDto(ChatMessage entity) {
-    return ChatMessageDto.builder()
-    		.id(entity.getId())
-            .message(entity.getMessage())
-            .sender(entity.getUserProfileInfo().getNickname())
-            .profilePicture(entity.getUserProfileInfo().getProfilePicture())
-            .timestamp(entity.getTimestamp())
-            .build();
+	public static ChatMessageDto toDto(ChatMessage entity) {
+		return ChatMessageDto.builder()
+				.id(entity.getId())
+				.message(entity.getMessage())
+				.sender(entity.getUserProfileInfo().getNickname())
+				.profilePicture(entity.getUserProfileInfo().getProfilePicture())
+				.timestamp(entity.getTimestamp())
+				.build();
 	}
 }
