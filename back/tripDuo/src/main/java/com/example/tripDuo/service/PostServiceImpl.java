@@ -84,13 +84,16 @@ public class PostServiceImpl implements PostService {
 	 */
 	@Override
 	public Map<String, Object> getPostList(PostDto postDto) {
-	    Sort sort = switch (postDto.getSortBy()) {
+		
+		String sortBy = postDto.getSortBy() != null ? postDto.getSortBy() : "createdAt";
+		
+	    Sort sort = switch (sortBy) {
 	        case "viewCount" -> Sort.by(Sort.Direction.DESC, "viewCount");
 	        case "likeCount" -> Sort.by(Sort.Direction.DESC, "likeCount");
 	        case "rating" -> Sort.by(Sort.Direction.DESC, "rating");
 	        default -> Sort.by(Sort.Direction.DESC, "createdAt");
 	    };
-	    
+	    	    
 		Pageable pageable = PageRequest.of(postDto.getPageNum() - 1, POST_PAGE_SIZE, sort);
 		
 		Page<Post> posts = postRepo.findAll(PostSpecification.searchPosts(postDto), pageable);
