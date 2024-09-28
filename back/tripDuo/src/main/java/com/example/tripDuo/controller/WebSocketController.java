@@ -44,6 +44,12 @@ public class WebSocketController {
 	@MessageMapping("/notification")
 	@SendTo("/notification")
 	public NotificationDto sendNotification(NotificationDto notification) {
+		System.out.println(notification);
+		if(notification.getType() == "CHATROOM") {
+			// 서비스 가서 디비 저장하고
+			// 저장된 chatroom 반환 받아서
+			// notification에 넣어서 리턴 
+		}
 		return notification;
 	}
 
