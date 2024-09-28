@@ -3,9 +3,13 @@ package com.example.tripDuo.entity;
 import java.time.LocalDateTime;
 
 import com.example.tripDuo.dto.UserReviewDto;
+import com.example.tripDuo.enums.ReviewExperience;
+import com.example.tripDuo.enums.ReviewTag;
 
-import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -39,14 +43,16 @@ public class UserReview {
 	
 	private String content;
 	
-	@Column(columnDefinition = "TEXT[]")
-	private String[] tags;
+	@Enumerated(EnumType.STRING)
+	private ReviewExperience experience;
 	
-	private float rating;
+	@Enumerated(EnumType.STRING)
+	@ElementCollection(targetClass = ReviewTag.class)
+	private ReviewTag[] tags;
 	
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
-	
+    
     @PrePersist
     public void onPrePersist() {
         createdAt = LocalDateTime.now();
@@ -56,17 +62,45 @@ public class UserReview {
     public void onPreUpdate() {
     	updatedAt = LocalDateTime.now();
     }
+
+	public long getRating() {
+		long rating = 0;
+		for (ReviewTag tag : tags) {
+			switch (tag) {
+			case COMMUNICATION:
+			case TRUST:
+			case ONTIME:
+			case MANNER:
+				rating += 40;
+				break;
+
+			case FLEXIBLE:
+			case ACTIVE:
+			case FRIENDLY:
+			case PAY:
+			case CLEAN:
+				rating += 20;
+				break;
+			}
+		};
+
+		switch (experience) {
+			case BAD:
+				rating *= -2;
+				break;
+			case GOOD:
+				rating *= 1;
+				break;
+			case EXCELLENT:
+				rating *= 1.5;
+				break;
+		}
+
+		return rating;
+	}
     
     public void updateContent(String newContent) {
     	content = newContent;
-    }
-    
-    public void updateTags(String[] newTags) {
-    	tags = newTags;
-    }
-    
-    public void updateRating(float newRating) {
-    	rating = newRating;
     }
     
     public static UserReview toEntity(UserReviewDto dto, UserProfileInfo reviewerUpi) {
@@ -75,8 +109,8 @@ public class UserReview {
     			.revieweeId(dto.getRevieweeId() != null ? dto.getRevieweeId() : 0L)
     			.reviewerUserProfileInfo(reviewerUpi)
     			.content(dto.getContent())
+    			.experience(dto.getExperience())
     			.tags(dto.getTags())
-    			.rating(dto.getRating() != null ? dto.getRating() : 0F)
     			.createdAt(dto.getCreatedAt())
     			.updatedAt(dto.getUpdatedAt())
     			.build();

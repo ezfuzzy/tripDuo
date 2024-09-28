@@ -3,6 +3,8 @@ package com.example.tripDuo.dto;
 import java.time.LocalDateTime;
 
 import com.example.tripDuo.entity.UserReview;
+import com.example.tripDuo.enums.ReviewExperience;
+import com.example.tripDuo.enums.ReviewTag;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,9 +26,8 @@ public class UserReviewDto {
 	
 	private String content;
 	
-	private String[] tags;
-	
-	private Float rating;
+	private ReviewExperience experience;
+	private ReviewTag[] tags;
 	
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
@@ -44,8 +45,8 @@ public class UserReviewDto {
 				.reviewerProfilePicture(reviewerProfilePictureUrl)
 				.reviewerNickname(entity.getReviewerUserProfileInfo().getNickname())
 				.content(entity.getContent())
+				.experience(entity.getExperience())
 				.tags(entity.getTags())
-				.rating(entity.getRating())
 				.createdAt(entity.getCreatedAt())
 				.updatedAt(entity.getUpdatedAt())
 				.build();

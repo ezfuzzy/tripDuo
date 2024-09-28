@@ -34,7 +34,7 @@ public class UserProfileInfoDto {
     
     private String socialLinks; // > json 처리
     
-    private Float ratings; // 지표 설정 
+    private Long ratings; // 지표 설정 
 
     private String lastLogin; // 몇분전 접속
     
