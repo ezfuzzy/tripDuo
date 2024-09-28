@@ -154,7 +154,7 @@ function MyProfileForm(props) {
     }
 
     axios
-      .put(`/api/v1/users/${id}`, formData, {
+      .put(`/api/v1/users/${id}/profile-info`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

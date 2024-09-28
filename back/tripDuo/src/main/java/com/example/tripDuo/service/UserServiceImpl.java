@@ -94,6 +94,12 @@ public class UserServiceImpl implements UserService {
 	public UserDto getUserByEmail(String email) {
 		return UserDto.toDto(userRepo.findByEmail(email));
 	}
+
+	@Override
+	public List<UserProfileInfo> getUserProfileInfoList() {
+		return userProfileInfoRepo.findAll(); 
+	}
+
 	
 	@Override
 	public Map<String, Object> getUserProfileInfoById(Long userId) {

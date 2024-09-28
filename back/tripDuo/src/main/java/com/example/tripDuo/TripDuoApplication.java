@@ -68,53 +68,53 @@ public class TripDuoApplication {
 		User savedUser1 = userRepo.save(u1);
 		
 		UserProfileInfo upi1 = UserProfileInfo.builder().user(savedUser1).nickname("ezfz").age((long) 28).profilePicture("e27424b2-88e7-49a5-9122-fca108abba31.png").gender(Gender.MALE).build();
-		userProfileInfoRepo.save(upi1);
+		upi1 = userProfileInfoRepo.save(upi1);
 		
 		User u2 = User.builder().username("aaaa").password(encoder.encode("aaaa")).phoneNumber("010-3456-7890").role(UserRole.USER).build();
 		User savedUser2 = userRepo.save(u2);
 		
 		UserProfileInfo upi2 = UserProfileInfo.builder().user(savedUser2).nickname("a5").gender(Gender.MALE).build();
-		userProfileInfoRepo.save(upi2);
+		upi2 = userProfileInfoRepo.save(upi2);
 
 		User u3 = User.builder().username("bbbb").password(encoder.encode("bbbb")).phoneNumber("010-3456-7890").role(UserRole.USER).build();
 		User savedUser3 = userRepo.save(u3);
 		UserProfileInfo upi3 = UserProfileInfo.builder().user(savedUser3).nickname("b5").gender(Gender.FEMALE).build();
-		userProfileInfoRepo.save(upi3);
+		upi3 = userProfileInfoRepo.save(upi3);
 
 		User u4 = User.builder().username("cccc").password(encoder.encode("cccc")).phoneNumber("010-3456-7890").role(UserRole.USER).build();
 		User savedUser4 = userRepo.save(u4);
 		UserProfileInfo upi4 = UserProfileInfo.builder().user(savedUser4).nickname("c5").gender(Gender.FEMALE).build();
-		userProfileInfoRepo.save(upi4);
+		upi4 = userProfileInfoRepo.save(upi4);
 
 		User u5 = User.builder().username("dddd").password(encoder.encode("dddd")).phoneNumber("010-3456-7890").role(UserRole.USER).build();
 		User savedUser5 = userRepo.save(u5);
 		UserProfileInfo upi5 = UserProfileInfo.builder().user(savedUser5).nickname("d5").gender(Gender.MALE).build();
-		userProfileInfoRepo.save(upi5);
+		upi5 = userProfileInfoRepo.save(upi5);
 
 		User u6 = User.builder().username("user1").password(encoder.encode("password1")).phoneNumber("010-1234-5678").email("user1@example.com").verificationStatus(VerificationStatus.VERIFIED).accountStatus(AccountStatus.ACTIVE).role(UserRole.USER).build();
 		User savedUser6 = userRepo.save(u6);
 		UserProfileInfo upi6 = UserProfileInfo.builder().user(savedUser6).nickname("닉네임1").age((long) 25).gender(Gender.MALE).profilePicture("71bca972-337b-4df5-968a-6d6fe80afd74.png").profileMessage("안녕하세요1").curLocation("서울").socialLinks("http://social1.com").ratings(4.5f).lastLogin("5분 전").build();
-		userProfileInfoRepo.save(upi6);
+		upi6 = userProfileInfoRepo.save(upi6);
 
 		User u7 = User.builder().username("user2").password(encoder.encode("password2")).phoneNumber("010-2345-6789").email("user2@example.com").verificationStatus(VerificationStatus.VERIFIED).accountStatus(AccountStatus.ACTIVE).role(UserRole.USER).build();
 		User savedUser7 = userRepo.save(u7);
 		UserProfileInfo upi7 = UserProfileInfo.builder().user(savedUser7).nickname("닉네임2").age((long) 30).gender(Gender.MALE).profileMessage("안녕하세요2").curLocation("부산").socialLinks("http://social2.com").ratings(3.8f).lastLogin("10분 전").build();
-		userProfileInfoRepo.save(upi7);
+		upi7 = userProfileInfoRepo.save(upi7);
 
 		User u8 = User.builder().username("user3").password(encoder.encode("password3")).phoneNumber("010-3456-7890").email("user3@example.com").verificationStatus(VerificationStatus.VERIFIED).accountStatus(AccountStatus.ACTIVE).role(UserRole.USER).build();
 		User savedUser8 = userRepo.save(u8);
 		UserProfileInfo upi8 = UserProfileInfo.builder().user(savedUser8).nickname("닉네임3").age((long) 22).gender(Gender.FEMALE).profileMessage("안녕하세요3").curLocation("대구").socialLinks("http://social3.com").ratings(4.2f).lastLogin("15분 전").build();
-		userProfileInfoRepo.save(upi8);
+		upi8 = userProfileInfoRepo.save(upi8);
 
 		User u9 = User.builder().username("user4").password(encoder.encode("password4")).phoneNumber("010-4567-8901").email("user4@example.com").verificationStatus(VerificationStatus.VERIFIED).accountStatus(AccountStatus.ACTIVE).role(UserRole.USER).build();
 		User savedUser9 = userRepo.save(u9);
 		UserProfileInfo upi9 = UserProfileInfo.builder().user(savedUser9).nickname("닉네임4").age((long) 28).gender(Gender.MALE).profileMessage("안녕하세요4").curLocation("인천").socialLinks("http://social4.com").ratings(4.0f).lastLogin("20분 전").build();
-		userProfileInfoRepo.save(upi9);
+		upi9 = userProfileInfoRepo.save(upi9);
 
 		User u10 = User.builder().username("user5").password(encoder.encode("password5")).phoneNumber("010-5678-9012").email("user5@example.com").verificationStatus(VerificationStatus.VERIFIED).accountStatus(AccountStatus.ACTIVE).role(UserRole.USER).build();
 		User savedUser10 = userRepo.save(u10);
 		UserProfileInfo upi10 = UserProfileInfo.builder().user(savedUser10).nickname("닉네임5").age((long) 35).gender(Gender.MALE).profileMessage("안녕하세요5").curLocation("광주").socialLinks("http://social5.com").ratings(4.1f).lastLogin("20분 전").build();
-		userProfileInfoRepo.save(upi10);
+		upi10 = userProfileInfoRepo.save(upi10);
 
 		
 		Post p1 = Post.builder().userProfileInfo(upi6).type(PostType.MATE).title("제목입니다 111").content("내용입니다 111").country("한국").city("강릉").viewCount(123L).likeCount(18L).rating(81F).status(PostStatus.OPEN).build();
@@ -150,6 +150,7 @@ public class TripDuoApplication {
         ChatRoom groupChatRoom = ChatRoom.builder().title("Group Chat Room").type(ChatRoomType.GROUP).build();
         ChatParticipant chatParticipants = ChatParticipant.builder().userProfileInfo(upi3).isOwner(true).build();
 
+                
         chatRoomRepo.save(chatRoom1);  // 첫 번째 1대1 채팅방 저장
         chatRoomRepo.save(chatRoom2);  // 두 번째 1대1 채팅방 저장
         chatRoomRepo.save(groupChatRoom);      // 그룹 채팅방 저장
