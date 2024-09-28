@@ -10,7 +10,7 @@ const useWebSocket = () => {
   
   // WebSocket 연결
   useEffect(() => {
-    const socket = new SockJS('/api/ws');
+    const socket = new SockJS('httP://localhost:8888/api/ws');
     const client = Stomp.over(socket);
 
     client.connect({}, () => {
