@@ -311,8 +311,8 @@ function ChatRoom() {
               key={room.id}
               onClick={() => selectRoom(room.id)}
               className={`cursor-pointer p-2 ${
-                subscribedRoomIds.includes(room.id) ? "bg-gray-200" : "bg-transparent"
-              } ${currentRoomId === room.id ? "bg-blue-200" : ""}`}>
+                currentRoomId === room.id ? "bg-blue-200" : subscribedRoomIds.includes(room.id) ? "bg-gray-200" : "bg-transparent"
+              }`}>
               {room.title}
             </li>
           ))}
