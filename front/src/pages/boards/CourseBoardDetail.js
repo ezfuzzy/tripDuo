@@ -5,6 +5,8 @@ import { NavLink, useNavigate, useParams, useSearchParams } from "react-router-d
 import ConfirmModal from "../../components/ConfirmModal"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faEye, faHeart, faMessage } from "@fortawesome/free-solid-svg-icons"
+import SavedPlacesKakaoMapComponent from "../../components/SavedPlacesKakaoMapComponent"
+import SavedPlacesGoogleMapComponent from "../../components/SavedPlacesGoogleMapComponent"
 
 
 //새로 등록한 댓글을 추가할 인덱스
@@ -31,6 +33,12 @@ const CourseBoardDetail = () => {
   //게시물 작성자가 맞는지 여부
   const isWriter = loggedInUserId === post.userId
 
+  //맵에 전달할 장소 정보 상태값으로 관리
+  const [allPlaces, setAllPlaces] = useState([])
+  //카카오 지도의 중심 좌표를 저장하는 상태값
+  const [kakaoMapCenterLocation, setKakaoMapCenterLocation] = useState(null)
+  //구글 지도의 중심 좌표를 저장하는 상태값
+  const [googleMapCenterLocation, setGoogleMapCenterLocation] = useState(null)
   //댓글 목록을 상태값으로 관리
   const [commentList, setCommentList] = useState([])
   //댓글의 현재 페이지 번호
@@ -50,13 +58,12 @@ const CourseBoardDetail = () => {
   // 각 수정 폼 상태를 관리하는 배열
   const [editTexts, setEditTexts] = useState({})
 
-  const mapStyle = { width: "50%", height: "30%" }
-  //검색 키워드 관련 처리
-  const [searchParams, setSearchParams] = useSearchParams()
+  //검색 키워드, 국내외 관련 처리
+  const [searchParams] = useSearchParams()
+  const domesticInternational = searchParams.get("di")
   //Confirm 모달을 띄울지 여부를 상태값으로 관리
   const [confirmShow, setConfirmShow] = useState(false)
   //action 발행하기 위해
-  const dispatch = useDispatch()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -71,10 +78,20 @@ const CourseBoardDetail = () => {
     axios
       .get(`/api/v1/posts/${id}?${query}`)
       .then((res) => {
-        console.log(res.data.dto.postData)
-
         const postData = res.data.dto
         setPost(postData)
+
+        //장소 정보
+        const places = postData.postData.reduce((acc, day) => acc.concat(day.places), []);
+        setAllPlaces(places);
+        // 첫 번째 장소로 지도 중심 설정
+        if (places.length > 0 && places[0].position) {
+          setKakaoMapCenterLocation({ Ma: places[0].position.Ma, La: places[0].position.La });
+        }
+        if (places.length > 0 && places[0]) {
+          setGoogleMapCenterLocation({ Ma: places[0].Ma, La: places[0].La });
+        }
+
         //댓글 목록이 존재하는지 확인 후, 배열에 ref라는 방 추가
         const list = Array.isArray(res.data.commentList)
           ? res.data.commentList.map((item) => {
@@ -92,16 +109,19 @@ const CourseBoardDetail = () => {
           throw new Error("게시물 작성자의 정보가 없습니다.")
         }
 
+
         return axios
           .get(`/api/v1/users/${resUserId}`)
           .then((res) => {
-            const writerData = res.data
+            const writerData = res.data.userProfileInfo
             setWriterProfile(writerData)
           })
           .catch((error) => {
             console.log("작성자 정보를 불러오지 못했습니다.", error)
             alert("작성자 정보를 불러오는 중 문제가 발생했습니다.")
           })
+
+
       })
       .catch((error) => {
         console.log("데이터를 가져오지 못했습니다.", error)
@@ -134,7 +154,8 @@ const CourseBoardDetail = () => {
 
   //작성자 프로필 보기
   const handleViewProfile = () => {
-    navigate(`/users/${writerProfile.id}`)
+    console.log(writerProfile)
+    navigate(`/users/${writerProfile.id}/profile`)
   }
 
   const handleLike = () => {
@@ -175,6 +196,16 @@ const CourseBoardDetail = () => {
       alert("로그인을 해주세요")
     }
   }
+
+  //장소명 눌렀을 때 실행되는 함수
+  const handlePlaceClick = (place) => {
+    console.log(place)
+    if (place.position && place.position.Ma !== undefined && place.position.La !== undefined) {
+      setKakaoMapCenterLocation({ Ma: place.position.Ma, La: place.position.La })
+    } else {
+      setGoogleMapCenterLocation({ Ma: place.Ma, La: place.La })
+    }
+  };
 
   // 답글 텍스트 상태 업데이트
   const handleReplyTextChange = (index, value) => {
@@ -221,12 +252,11 @@ const CourseBoardDetail = () => {
   //댓글 등록
   const handleCommentSubmit = (e) => {
     e.preventDefault()
-
     //댓글 정보
     const data = {
       postId: id,
       userId: loggedInUserId,
-      writer: loggedInUserId,
+      writer: loggedInNickname,
       profilePicture: loggedInProfilePicture,
       content: e.target.content.value,
       // parentCommentId: e.target.parentCommentId.value,
@@ -255,6 +285,8 @@ const CourseBoardDetail = () => {
   //답글 등록
   const handleReplySubmit = (e) => {
     e.preventDefault()
+
+    console.log(writerProfile)
     const data = {
       postId: id,
       userId: loggedInUserId,
@@ -384,20 +416,62 @@ const CourseBoardDetail = () => {
 
   return (
 
-    <div className="container mx-auto p-4 max-w-[900px]">
+    <div className="container mx-auto p-4 max-w-[1024px]">
       <div className="flex flex-col h-full bg-gray-100 p-6">
-        <div className="flex flex-wrap gap-2 mt-2">
-          {/* 태그s */}
-          <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{post.country}</span>
-          <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{post.city}</span>
-          {post.tags &&
-            post.tags.map((tag, index) => (
-              <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center">
-                {tag}
+        <div className="flex flex-wrap justify-between items-center gap-2 mt-2">
+          <div className="flex gap-2">
+            {/* 태그s */}
+            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{post.country}</span>
+            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{post.city}</span>
+            {post.tags &&
+              post.tags.map((tag, index) => (
+                <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center">
+                  {tag}
+                </span>
+              ))}
+          </div>
+
+          {/* 버튼 */}
+          <button
+            onClick={() => navigate("/posts/course")}
+            className="text-white bg-gray-600 hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
+            목록으로 돌아가기
+          </button>
+        </div>
+
+        <div className="flex justify-between items-center m-3">
+          <div>
+            <strong>{post.title}</strong>
+            {/* title / 좋아요 버튼 / 좋아요, 조회수 */}
+            {!isWriter && (
+              <button
+                className={`mx-3 ${isLiked ? "bg-pink-600" : "bg-pink-400"
+                  } text-white active:bg-emerald-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
+                type="button"
+                onClick={handleLike}>
+                <FontAwesomeIcon icon={faHeart} className="mr-2" />
+                Like
+              </button>
+            )}
+            <span className="text-sm text-gray-500">
+              <span className="mx-3">
+                <FontAwesomeIcon icon={faEye} className="h-5 w-5 mr-2" />
+                {post.viewCount}
               </span>
-            ))}
-          {loggedInUsername === post.writer && (
-            <>
+              <span className="mr-3">
+                <FontAwesomeIcon icon={faHeart} className="h-4 w-4 mr-2" />
+                {post.likeCount}
+              </span>
+              <span className="mr-3">
+                <FontAwesomeIcon icon={faMessage} className="h-4 w-4 mr-2" />
+                {post.likeCount}
+              </span>
+            </span>
+          </div>
+
+          {/* 수정, 삭제 버튼 */}
+          {loggedInNickname === post.writer && (
+            <div className="flex gap-2">
               <button
                 onClick={() => navigate(`/posts/course/${id}/edit`)}
                 className="text-white bg-gray-600 hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
@@ -408,7 +482,7 @@ const CourseBoardDetail = () => {
                 className="text-white bg-red-600 hover:bg-red-500 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
                 삭제
               </button>
-            </>
+            </div>
           )}
           <ConfirmModal
             show={confirmShow}
@@ -416,42 +490,6 @@ const CourseBoardDetail = () => {
             yes={deleteHandleYes}
             no={() => setConfirmShow(false)}
           />
-
-          <button
-            onClick={() => navigate("/posts/course")}
-            className="text-white bg-gray-600 hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
-            목록으로 돌아가기
-          </button>
-        </div>
-        {/* title */}
-        <div className="m-3">
-          <strong>{post.title}</strong>
-          {/* title / 좋아요 버튼 / 좋아요,조회수 */}
-          {/* 내 게시물이 아닌경우에만 좋아요 버튼 보여주기 */}
-          {!isWriter && (
-            <button
-              className={`mx-3 ${isLiked ? "bg-pink-600" : "bg-pink-400"
-                } text-white active:bg-emerald-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
-              type="button"
-              onClick={handleLike}>
-              <FontAwesomeIcon icon={faHeart} className="mr-2" />
-              Like
-            </button>
-          )}
-          <span className="text-sm text-gray-500">
-            <span className="mx-3">
-              <FontAwesomeIcon icon={faEye} className="h-5 w-5 mr-2" />
-              {post.viewCount}
-            </span>
-            <span className="mr-3">
-              <FontAwesomeIcon icon={faHeart} className="h-4 w-4 mr-2" />
-              {post.likeCount}
-            </span>
-            <span className="mr-3">
-              <FontAwesomeIcon icon={faMessage} className="h-4 w-4 mr-2" />
-              {post.likeCount}
-            </span>
-          </span>
         </div>
 
         {/* 프로필 */}
@@ -483,7 +521,10 @@ const CourseBoardDetail = () => {
               </p>
             </div>
             <div>
-              <button className="btn btn-secondary btn-sm" onClick={handleViewProfile}>
+              <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              onClick={handleViewProfile}>
                 프로필 보기
               </button>
             </div>
@@ -491,25 +532,43 @@ const CourseBoardDetail = () => {
         </div>
 
         {/* Day 목록 */}
-        <div className="space-y-6 mt-6 mb-6">
-          {(post.postData || [{ dayMemo: "", places: [{ place_name: "", placeMemo: "" }] }]).map((day, dayIndex) => (
-            <div key={dayIndex} className="border p-4 rounded-lg bg-white shadow">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 mb-6">
+          {(post.postData || [{ dayMemo: "", places: [] }]).map((day, dayIndex) => (
+            <div key={dayIndex} className="bg-white rounded-lg shadow-md p-4">
               <h2 className="text-xl font-semibold mb-4">Day {dayIndex + 1}</h2>
               <div className="mb-4">
                 <label className="block font-semibold">Day Memo</label>
-                <p className="border p-2 w-3/4 bg-white">{day.dayMemo || "메모가 없습니다"}</p>
+                <p className="border p-2 w-3/4 bg-gray-100">{day.dayMemo || "메모가 없습니다"}</p>
               </div>
-              {(day.places || [{ place_name: "", placeMemo: "" }]).map((place, placeIndex) => (
-                <div key={placeIndex} className="mb-4">
-                  <h3 className="font-semibold mb-2">{placeIndex + 1}번 장소</h3>
-                  {/* <SavedPlacesKakaoMapComponent savedPlaces={day.places} /> */}
-                  <p className="border p-2 w-full bg-white mb-2">{place.place_name || "장소명이 없습니다"}</p>
-                  <label className="block font-semibold">장소 메모</label>
-                  <p className="border p-2 w-full bg-white">{place.placeMemo || "메모가 없습니다"}</p>
-                </div>
-              ))}
+              {day.places && day.places.length > 0 ? (
+                day.places.map((place, placeIndex) => (
+                  <div key={placeIndex} className="mb-4 border rounded-lg p-2 bg-gray-50">
+                    <h3 className="font-semibold mb-2">{placeIndex + 1}번 장소</h3>
+                    <button
+                      className="text-blue-500 hover:underline"
+                      onClick={() => {
+
+                        handlePlaceClick(place)
+                      }}>
+                      {place.place_name || "장소명이 없습니다"}
+                    </button>
+                    <label className="block font-semibold">장소 메모</label>
+                    <p className="border p-2 w-full bg-white">{place.placeMemo || "메모가 없습니다"}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500">장소가 없습니다.</p>
+              )}
             </div>
           ))}
+        </div>
+        <div>
+          {
+            domesticInternational === "Domestic" ?
+              <SavedPlacesKakaoMapComponent savedPlaces={allPlaces} centerLocation={kakaoMapCenterLocation} />
+              :
+              <SavedPlacesGoogleMapComponent savedPlaces={allPlaces} centerLocation={googleMapCenterLocation} />
+          }
         </div>
 
 
