@@ -48,10 +48,22 @@ public class UserProfileInfo {
     
     private String socialLinks; // > json 처리
     
-    private float ratings; // 지표 설정 
+    // 0 ~ 10000점
+    @Builder.Default
+    private Long ratings = (long)1300; // 점수 설정 
 
     private String lastLogin; // 몇분전 접속  
-    
+
+    public void updateRatings(long addRating) {
+        if (ratings + addRating > 10000) {
+            ratings = 10000L;
+        } else if (ratings + addRating < 0) {
+            ratings = 0L;
+        } else {
+            ratings += addRating;
+        }
+    }
+
     public static UserProfileInfo toEntity(UserProfileInfoDto dto, User user) {
     	return UserProfileInfo.builder()
     			.id(dto.getId())
@@ -63,7 +75,7 @@ public class UserProfileInfo {
     			.profileMessage(dto.getProfileMessage())
     			.curLocation(dto.getCurLocation())
     			.socialLinks(dto.getSocialLinks())
-    			.ratings(dto.getRatings() != null ? dto.getRatings() : 0.0f)
+    			.ratings(dto.getRatings() != null ? dto.getRatings() : 0L)
     			.build();
     }
 }

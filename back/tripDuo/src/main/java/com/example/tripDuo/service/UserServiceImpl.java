@@ -402,8 +402,6 @@ public class UserServiceImpl implements UserService {
 		} else { // 기존 관계가 없으면 새로 데이터 저장 
 			UserProfileInfo followeeProfileInfo = userProfileInfoRepo.findByUserId(userFollowDto.getFolloweeUserId());
 			UserProfileInfo followerProfileInfo = userProfileInfoRepo.findByUserId(userFollowDto.getFollowerUserId());	
-			System.out.println("6번이어야함 : " + userFollowDto.getFollowerUserId());
-			System.out.println("6번이 아니어야함 : " + userFollowDto.getFolloweeUserId());
 			
 			UserFollow userFollow = UserFollow.toEntity(userFollowDto, followeeProfileInfo, followerProfileInfo);
 			userFollowRepo.save(userFollow);
@@ -435,11 +433,29 @@ public class UserServiceImpl implements UserService {
 	 * 
 	 * @param userReviewDto
 	 */
+	@Transactional
 	@Override
 	public void writeReview(UserReviewDto userReviewDto) {
 		UserProfileInfo reviewerProfileInfo = userProfileInfoRepo.findByUserId(userReviewDto.getReviewerId());
+		if (reviewerProfileInfo == null) {
+			throw new EntityNotFoundException("리뷰 작성자를 찾을 수 없습니다.");
+		}
+
+		UserProfileInfo revieweeProfileInfo = userProfileInfoRepo.findByUserId(userReviewDto.getRevieweeId());
+		if (revieweeProfileInfo == null) {
+			throw new EntityNotFoundException("리뷰 대상 사용자를 찾을 수 없습니다.");
+		}
 		
+		// entity로 변환
 		UserReview userReview = UserReview.toEntity(userReviewDto, reviewerProfileInfo);
+
+		// 리뷰 점수 계산
+		long rating = userReview.getRating();
+
+		// 리뷰 당한 유저 점수에 반영
+		revieweeProfileInfo.updateRatings(rating);
+
+		// 리뷰 저장
 		userReviewRepo.save(userReview);
 	}
 	
@@ -459,8 +475,8 @@ public class UserServiceImpl implements UserService {
 	    }
 	    
 	    existUserReview.updateContent(userReviewDto.getContent());
-	    existUserReview.updateTags(userReviewDto.getTags());
-	    existUserReview.updateRating(userReviewDto.getRating());
+	    // existUserReview.updateTags(userReviewDto.getTags());
+	    // existUserReview.updateRating(userReviewDto.getRating());
 	}
 	
 	/**
