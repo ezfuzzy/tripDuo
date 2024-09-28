@@ -1,5 +1,6 @@
 package com.example.tripDuo.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -205,7 +206,7 @@ public class PostServiceImpl implements PostService {
 		
 		// put mapping이니까 정보 삭제 안되게 ... 
 //		PostDto existingPost = PostDto.toDto(postRepo.findById(postDto.getId()).get());
-		
+		postDto.setUpdatedAt(LocalDateTime.now());
 		// 1. 만약 기존의 모든 정보가 그대로 넘어오면
 		postRepo.save(Post.toEntity(postDto, userProfileInfo));
 		
