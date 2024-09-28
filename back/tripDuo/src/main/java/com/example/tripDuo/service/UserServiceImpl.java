@@ -393,7 +393,6 @@ public class UserServiceImpl implements UserService {
 		
 		if(tempUserFollow != null) { // 기존 관계가 있으면 update - createdAt 갱신
 			tempUserFollow.updateFollowType(userFollowDto.getFollowType());
-			tempUserFollow.updateCreatedAt();
 		} else { // 기존 관계가 없으면 새로 데이터 저장 
 			UserProfileInfo followeeProfileInfo = userProfileInfoRepo.findByUserId(userFollowDto.getFolloweeUserId());
 			UserProfileInfo followerProfileInfo = userProfileInfoRepo.findByUserId(userFollowDto.getFollowerUserId());	
