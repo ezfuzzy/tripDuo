@@ -67,7 +67,7 @@ public class TripDuoApplication {
 		User u1 = User.builder().username("ezfz").password(encoder.encode("hysz")).phoneNumber("010-3456-7890").role(UserRole.ADMIN).build(); 
 		User savedUser1 = userRepo.save(u1);
 		
-		UserProfileInfo upi1 = UserProfileInfo.builder().user(savedUser1).nickname("ezfz").age((long) 28).profilePicture("e27424b2-88e7-49a5-9122-fca108abba31.png").gender(Gender.MALE).build();
+		UserProfileInfo upi1 = UserProfileInfo.builder().user(savedUser1).nickname("ezfz").age((long) 28).profilePicture("6d0f0f67-468f-44e9-9e30-192d9f4ea310.png").gender(Gender.MALE).build();
 		upi1 = userProfileInfoRepo.save(upi1);
 		
 		User u2 = User.builder().username("aaaa").password(encoder.encode("aaaa")).phoneNumber("010-3456-7890").role(UserRole.USER).build();
