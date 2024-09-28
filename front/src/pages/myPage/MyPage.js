@@ -61,8 +61,7 @@ function MyPage() {
               height="100"
               fill="currentColor"
               className="bi bi-person-circle"
-              viewBox="0 0 16 16"
-            >
+              viewBox="0 0 16 16">
               <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
               <path
                 fillRule="evenodd"
@@ -79,8 +78,7 @@ function MyPage() {
           <div>
             <button
               className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
-              onClick={handleClick}
-            >
+              onClick={handleClick}>
               프로필 보기
             </button>
           </div>
@@ -139,7 +137,6 @@ function MyPage() {
         <p>
           <strong>보안</strong>
         </p>
-        <p>로그인 기록</p>
         <p>내 활동 기록</p>
         <p>회원 탈퇴</p>
       </div>
