@@ -35,6 +35,7 @@ function ChatRoom() {
   const [subscribedRoomIds, setSubscribedRoomIds] = useState([]) // 내가 구독한 목록
   const username = useSelector((state) => state.userData.username, shallowEqual) // 유저네임 불러오기
   const currentUserId = useSelector((state) => state.userData.id, shallowEqual)
+  const userProfilePicture = useSelector((state) => state.userData.profilePicture, shallowEqual)
 
   // 채팅방 생성 상태를 초기화하는 함수
   const initializeChatRoom = () => ({
@@ -66,6 +67,20 @@ function ChatRoom() {
       })
   }, [currentUserId])
 
+  // // 메시지 구독
+  // useEffect(() => {
+  //   if (stompClient) {
+  //     stompClient.subscribe(`/user/private/${currentRoomId}`, (message) => {
+  //       const parsedMessage = JSON.parse(message.body)
+  //       console.log("#####message#####")
+  //       console.log(message)
+  //       console.log(message.body)
+  //       console.log("######################")
+  //       setMessages((prevMessages) => [...prevMessages, parsedMessage])
+  //     })
+  //   }
+  // }, [stompClient, currentRoomId])
+
   // 알림 구독
   useEffect(() => {
     if (stompClient) {
@@ -76,62 +91,70 @@ function ChatRoom() {
     }
   }, [stompClient])
 
-//   // 채팅방 메세지 전송 구독 설정
-//   useEffect(() => {
-//   if (stompClient) {
-//     chatRooms.forEach((room) => {
-//       if (!subscribedRoomIds.includes(room.id)) {
-//         const topic = room.type === "ONE_ON_ONE" ? `/user/private/${room.id}` : `/topic/group/${room.id}`
-//         stompClient.subscribe(topic, (message) => {
-//           const parsedMessage = JSON.parse(message.body)
-//           setMessages((prevMessages) => [...prevMessages, parsedMessage])
-//         })
-//         setSubscribedRoomIds((prevIds) => [...prevIds, room.id])
-//         subscribedRoomIds.push(roomId) // 구독한 방 ID를 기록
-//       }
-//     })
-//   }
-// }, [stompClient, chatRooms, subscribedRoomIds])
+  // 채팅방 메세지 전송 구독 설정
+  useEffect(() => {
+    if (stompClient) {
+      chatRooms.forEach((room) => {
+        if (!subscribedRoomIds.includes(room.id)) {
+          const topic = room.type === "ONE_ON_ONE" ? `/user/private/${room.id}` : `/topic/group/${room.id}`
+          stompClient.subscribe(topic, (message) => {
+            const parsedMessage = JSON.parse(message.body)
+
+            console.log("#####message#####")
+            console.log(parsedMessage)
+            console.log("######################")
+
+            console.log(message.body)
+            console.log("######################")
+
+            setMessages((prevMessages) => [...prevMessages, parsedMessage])
+          })
+          setSubscribedRoomIds((prevIds) => [...prevIds, room.id])
+          subscribedRoomIds.push(roomId) // 구독한 방 ID를 기록
+        }
+      })
+    }
+  }, [stompClient, chatRooms, subscribedRoomIds])
 
   // 새로운 채팅방을 생성하는 함수
   const createChatRoom = (chatRoom) => {
     if (stompClient) {
-    axios.post("/api/chat/rooms", chatRoom)
-      .then((response) => {
-        const newRoom = response.data
+      axios
+        .post("/api/chat/rooms", chatRoom)
+        .then((response) => {
+          const newRoom = response.data
 
-        // 새로운 방이 생성되었음을 알리는 알림 추가
-        const notification = {
-          message: `${username}님이 "${newRoom.title}" 방을 생성했습니다.`,
-          timestamp: new Date().toLocaleString(),
-        }
-        // setNotifications((prevNotifications) => [...prevNotifications, notification])
+          // 새로운 방이 생성되었음을 알리는 알림 추가
+          const notification = {
+            message: `${username}님이 "${newRoom.title}" 방을 생성했습니다.`,
+            timestamp: new Date().toLocaleString(),
+          }
+          // setNotifications((prevNotifications) => [...prevNotifications, notification])
 
-        stompClient.send(`/app/chat.addchatroom/${newRoom.id}`, {}, JSON.stringify(newRoom))
+          stompClient.send(`/app/chat.addchatroom/${newRoom.id}`, {}, JSON.stringify(newRoom))
 
-        // 채팅방 목록에 새로운 방 추가
-        setChatRooms((prevRooms) => [...prevRooms, newRoom])
-
-        // 생성된 채팅방 구독
-        stompClient.subscribe(`/topic/newroom/${newRoom.id}`, (newRoom) => {
+          // 채팅방 목록에 새로운 방 추가
           setChatRooms((prevRooms) => [...prevRooms, newRoom])
-        })
-        // 생성된 채팅방에 메세지 전송할 수 있게 구독 설정
-        const topic = newRoom.type === "ONE_ON_ONE" ? `/user/private/${newRoom.id}` : `/topic/group/${newRoom.id}`
-        stompClient.subscribe(topic, (message) => {
-          const parsedMessage = JSON.parse(message.body)
-          setMessages((prevMessages) => [...prevMessages, parsedMessage])
-        })
-        setSubscribedRoomIds((prevIds) => [...prevIds, newRoom.id])
 
-        // 생성된 채팅방으로 이동
-        navigate(`/chatroom/${newRoom.id}`)
-        selectRoom(newRoom.id) // 방 선택
+          // 생성된 채팅방 구독
+          stompClient.subscribe(`/topic/newroom/${newRoom.id}`, (newRoom) => {
+            setChatRooms((prevRooms) => [...prevRooms, newRoom])
+          })
+          // 생성된 채팅방에 메세지 전송할 수 있게 구독 설정
+          const topic = newRoom.type === "ONE_ON_ONE" ? `/user/private/${newRoom.id}` : `/topic/group/${newRoom.id}`
+          stompClient.subscribe(topic, (message) => {
+            const parsedMessage = JSON.parse(message.body)
+            setMessages((prevMessages) => [...prevMessages, parsedMessage])
+          })
+          setSubscribedRoomIds((prevIds) => [...prevIds, newRoom.id])
 
-      })
-      .catch((error) => {
-        console.error("Error creating chat room:", error)
-      })
+          // 생성된 채팅방으로 이동
+          navigate(`/chatroom/${newRoom.id}`)
+          selectRoom(newRoom.id) // 방 선택
+        })
+        .catch((error) => {
+          console.error("Error creating chat room:", error)
+        })
     }
   }
 
@@ -142,20 +165,18 @@ function ChatRoom() {
 
     // 구독이 이미 추가된 방인지 확인 후, 중복 구독 방지
     if (!subscribedRoomIds.includes(roomId)) {
-    setSubscribedRoomIds((prevIds) => [...prevIds, roomId]); // subscribedRoomIds에 roomId 추가
-    }
+      setSubscribedRoomIds((prevIds) => [...prevIds, roomId]) // subscribedRoomIds에 roomId 추가
 
-    // 새로운 방에 구독 추가
-    if (stompClient) {
-      const room = chatRooms.find((room) => room.id === roomId)
-      const topic = room.type === "ONE_OR_ONE" ? `/user/private/${roomId}` : `/topic/group/${roomId}`
-      stompClient.subscribe(topic, (message) => {
-        const parsedMessage = JSON.parse(message.body)
-        setMessages((prevMessages) => [...prevMessages, parsedMessage]) // 다른 사용자 메시지 추가
-      })
+      // 새로운 방에 구독 추가
+      if (stompClient) {
+        const room = chatRooms.find((room) => room.id === roomId)
+        const topic = room.type === "ONE_OR_ONE" ? `/user/private/${roomId}` : `/topic/group/${roomId}`
+        stompClient.subscribe(topic, (message) => {
+          const parsedMessage = JSON.parse(message.body)
+          setMessages((prevMessages) => [...prevMessages, parsedMessage]) // 다른 사용자 메시지 추가
+        })
+      }
     }
-  
-
     // 이전 채팅 메시지를 가져옵니다
     axios
       .get(`/api/chat/rooms/${roomId}/messages`)
@@ -174,10 +195,18 @@ function ChatRoom() {
     console.log("New Message:", newMessage)
     if (newMessage.trim() && currentRoomId) {
       const message = {
-        sender: username, // 현재 사용자 정보
-        content: newMessage,
+        id: null,
+        message: newMessage,
+        sender: username,
+        profilePicture: userProfilePicture,
+        chatRoomId: currentRoomId,
+        recipient: recipient,
         timestamp: new Date().toISOString(),
       }
+      console.log("#####message#####")
+      console.log(message)
+      console.log(JSON.stringify(message))
+      console.log("######################")
       // 메시지를 즉시 메시지 목록에 추가
       // setMessages((prevMessages) => [...prevMessages, message])
 
@@ -192,7 +221,8 @@ function ChatRoom() {
         message: `${username}님이 메시지를 보냈습니다.`,
         timestamp: new Date().toLocaleString(),
       }
-      setNotifications((prevNotifications) => [...prevNotifications, notification])
+
+      stompClient.send(`/app/notification`, {}, JSON.stringify(notification))
 
       setNewMessage("")
     }
@@ -208,6 +238,11 @@ function ChatRoom() {
       stompClient.send(`/app/notification`, {}, JSON.stringify(notification))
       setNotification("")
     }
+  }
+
+  // 알림 삭제
+  const clearNotification = () => {
+    setNotifications([])
   }
 
   // 모달 열기
@@ -246,7 +281,6 @@ function ChatRoom() {
     alert(`구독한 채팅방 ID: ${subscribedRoomIds.join(", ")}`)
   }
 
-
   return (
     <div style={{ display: "flex", flexDirection: "row" }}>
       <div style={{ width: "30%", padding: "10px", borderRight: "1px solid #ccc" }}>
@@ -283,7 +317,8 @@ function ChatRoom() {
         <div style={{ height: "700px", overflowY: "scroll", border: "1px solid #ddd", padding: "10px" }}>
           {messages.map((message, index) => (
             <div key={index}>
-              <strong>{message.sender}:</strong> {message.content}
+              <img src={message.profilePicture} alt="profile" style={{ width: "50px", height: "50px" }} />
+              <strong>{message.sender}:</strong> {message.message}
               <br />
               {new Date(message.timestamp).toLocaleString()}
             </div>
@@ -312,6 +347,10 @@ function ChatRoom() {
           ))}
         </ul>
         <button onClick={sendNotification}>알림 보내기</button>
+        <br />
+        <button onClick={clearNotification}>clear</button>
+        <br />
+        <button onClick={() => console.log(messages)}>test</button>
       </div>
 
       {/* 모달 */}
