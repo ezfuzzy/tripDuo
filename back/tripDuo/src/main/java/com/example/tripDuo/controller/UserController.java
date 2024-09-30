@@ -179,26 +179,26 @@ public class UserController {
 
 	// 어떤 유저(reviewerId)가 다른 유저(revieweeId)를 대상으로 리뷰(review)를 작성하기
 	@PostMapping("/{revieweeId}/review/{reviewerId}")
-	public ResponseEntity<String> writeReview(@PathVariable("revieweeId") Long revieweeId,
+	public ResponseEntity<UserReviewDto> writeReview(@PathVariable("revieweeId") Long revieweeId,
 			@PathVariable("reviewerId") Long reviewerId,
 			@RequestBody UserReviewDto userReviewDto) {
 		
 		userReviewDto.setRevieweeId(revieweeId);
 		userReviewDto.setReviewerId(reviewerId);
-		userService.writeReview(userReviewDto);
-		return ResponseEntity.ok("Review writed successfully");
+		UserReviewDto insertedUserReviewDto = userService.writeReview(userReviewDto);
+		return ResponseEntity.ok(insertedUserReviewDto);
 	}
 
 	// 어떤 유저(reviewerId)가 다른 유저(revieweeId)를 대상으로 작성한 리뷰(review)를 수정하기
 	@PutMapping("/{revieweeId}/review/{reviewerId}")
-	public ResponseEntity<String> updateReview(@PathVariable("revieweeId") Long revieweeId,
+	public ResponseEntity<UserReviewDto> updateReview(@PathVariable("revieweeId") Long revieweeId,
 			@PathVariable("reviewerId") Long reviewerId,
 			@RequestBody UserReviewDto userReviewDto) {
 		
 		userReviewDto.setRevieweeId(revieweeId);
 		userReviewDto.setReviewerId(reviewerId);
-		userService.updateReview(userReviewDto);
-		return ResponseEntity.ok("Review updated successfully");
+		UserReviewDto updatedUserReivewDto = userService.updateReview(userReviewDto);
+		return ResponseEntity.ok(updatedUserReivewDto);
 	}
 
 	// 어떤 유저(reviewerId)가 다른 유저(revieweeId)를 대상으로 작성한 리뷰(review)를 삭제하기

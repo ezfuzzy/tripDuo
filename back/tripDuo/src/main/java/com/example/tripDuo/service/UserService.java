@@ -50,8 +50,7 @@ public interface UserService {
 	public void deleteFollowOrBlock(UserFollowDto userFollowDto);
 	
 	// ### review ###
-//	public List<UserReviewDto> getReviews(Long revieweeId);
-	public void writeReview(UserReviewDto userReviewDto);
-	public void updateReview(UserReviewDto userReviewDto);
+	public UserReviewDto writeReview(UserReviewDto userReviewDto);
+	public UserReviewDto updateReview(UserReviewDto userReviewDto);
 	public void deleteReview(Long revieweeId, Long reviewerId);
 }

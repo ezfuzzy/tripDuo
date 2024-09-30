@@ -434,7 +434,7 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Transactional
 	@Override
-	public void writeReview(UserReviewDto userReviewDto) {
+	public UserReviewDto writeReview(UserReviewDto userReviewDto) {
 		UserProfileInfo reviewerProfileInfo = userProfileInfoRepo.findByUserId(userReviewDto.getReviewerId());
 		if (reviewerProfileInfo == null) {
 			throw new EntityNotFoundException("리뷰 작성자를 찾을 수 없습니다.");
@@ -450,7 +450,7 @@ public class UserServiceImpl implements UserService {
 		
 		// 기존 리뷰가 있으면 update
 		if (existingReview != null) {
-			updateReview(userReviewDto);
+			userReviewDto = updateReview(userReviewDto);
 		} else { // 기존 리뷰가 없으면 insert
 			// entity로 변환
 			UserReview userReview = UserReview.toEntity(userReviewDto, reviewerProfileInfo);
@@ -464,6 +464,9 @@ public class UserServiceImpl implements UserService {
 			// 리뷰 저장
 			userReviewRepo.save(userReview);
 		}
+
+		// 리뷰 반환
+		return userReviewDto;
 	}
 	
 	/**
@@ -475,7 +478,7 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Transactional
 	@Override
-	public void updateReview(UserReviewDto userReviewDto) {
+	public UserReviewDto updateReview(UserReviewDto userReviewDto) {
 	    UserReview existUserReview = userReviewRepo.findByRevieweeIdAndReviewerUserProfileInfo_User_Id(userReviewDto.getRevieweeId(), userReviewDto.getReviewerId());
 	    if(existUserReview == null) {
 	    	throw new EntityNotFoundException("리뷰가 존재하지 않습니다");
@@ -501,6 +504,9 @@ public class UserServiceImpl implements UserService {
 		existUserReview.updateExperience(userReviewDto.getExperience());
 		existUserReview.updateTags(userReviewDto.getTags());
 		revieweeProfileInfo.addRatings(updatedRating - existReviewRating);
+
+		// 수정된 리뷰 반환
+		return userReviewDto.toDto(userReview, PROFILE_PICTURE_CLOUDFRONT_URL);
 	}
 	
 	/**
