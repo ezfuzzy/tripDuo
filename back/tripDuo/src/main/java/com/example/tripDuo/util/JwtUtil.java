@@ -41,6 +41,10 @@ public class JwtUtil {
 	public String extractUsername(String token) {
 		return extractClaim(token, Claims::getSubject);
 	}
+	
+	public String extractIssuer(String token) {
+		return extractClaim(token, Claims::getIssuer);
+	}
 
 	public Date extractExpiration(String token) {
 		return extractClaim(token, Claims::getExpiration);
@@ -80,6 +84,7 @@ public class JwtUtil {
 		return Jwts.builder().
 				setClaims(claims)
 				.setSubject(subject)
+		        .setIssuer("tripDuo.com")            
 				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + expiration))
 				.signWith(SignatureAlgorithm.HS256, secret)
@@ -88,7 +93,10 @@ public class JwtUtil {
 
 	public Boolean validateToken(String token, UserDetails userDetails) {
 		final String username = extractUsername(token);
-
-		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+		final String issuer = extractIssuer(token);
+		
+		return (username.equals(userDetails.getUsername()) 
+				&& !isTokenExpired(token)
+				&& issuer.equals(issuer));
 	}
 }
