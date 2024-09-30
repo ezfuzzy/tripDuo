@@ -3,10 +3,12 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import Calendar from "react-calendar"; 
 import 'react-calendar/dist/Calendar.css';
+import moment from "moment";
 
 function MateBoard() {
    //배열 안에서 객체로 관리
   const [pageData, setPageData] = useState([]);
+  const [mark, setMark] = useState([]);
  
   //파라미터 값 관리
   // URL에서 검색 매개변수를 가져오기 위한 상태
@@ -66,7 +68,16 @@ const handleConditionChange = (e) => {
       endDate: "",   // 종료 날짜 초기화
     });
   };
-
+  // 현재 날짜로 돌아오는 함수 추가
+  const handleTodayClick = () => {
+    const today = new Date();
+    setSelectedDateRange([today, today]); // 현재 날짜로 설정
+    setSearchCriteria({
+      ...searchCriteria,
+      startDate: today.toLocaleDateString('ko-KR'),
+      endDate: today.toLocaleDateString('ko-KR'),
+    });
+  };
   // 달력에서 날짜를 선택할 때 호출되는 함수
   const handleDateChange = (dateRange) => {
     setSelectedDateRange(dateRange);
@@ -253,16 +264,6 @@ const handleConditionChange = (e) => {
               : "날짜 선택"}  {/* 날짜가 선택되지 않았을 때 */}
           </button>
 
-          {/* 날짜 초기화 버튼 */}
-          <button onClick={handleDateReset} className="bg-red-500 text-white px-4 py-2 ml-2">
-            날짜 초기화
-          </button>
-          <button onClick={() => {
-            console.log(searchCriteria)
-          }}>
-              test 
-
-          </button>
           {/* 캘린더 표시 여부에 따라 렌더링 */}
           {isCalendarOpen && (
             <div className="absolute z-50 bg-white shadow-lg p-2">
@@ -270,7 +271,19 @@ const handleConditionChange = (e) => {
                 selectRange={true}
                 onChange={handleDateChange}
                 value={selectedDateRange || [new Date(), new Date()]}  // 초기값 또는 선택된 날짜 범위
+                formatDay={(locale, date) => moment(date).format("DD")}
+                minDetail="month" // 상단 네비게이션에서 '월' 단위만 보이게 설정
+                maxDetail="month" // 상단 네비게이션에서 '월' 단위만 보이게 설정
+                navigationLabel={null}
+                showNeighboringMonth={false} //  이전, 이후 달의 날짜는 보이지 않도록 설정
+                calendarType="hebrew" //일요일부터 보이도록 설정
               />
+              <button onClick={handleDateReset} className="bg-red-500 text-white px-4 py-2 ml-2">
+                날짜 초기화
+              </button>
+              <button onClick={handleTodayClick} className="bg-green-500 text-white px-4 py-2 ml-2">
+                오늘로 돌아가기
+              </button>
             </div>
           )}
         </div>
