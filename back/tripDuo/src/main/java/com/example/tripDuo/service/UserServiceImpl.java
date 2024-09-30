@@ -444,18 +444,26 @@ public class UserServiceImpl implements UserService {
 		if (revieweeProfileInfo == null) {
 			throw new EntityNotFoundException("리뷰 대상 사용자를 찾을 수 없습니다.");
 		}
+
+		// 기존 리뷰 확인
+		UserReview existingReview = userReviewRepo.findByRevieweeIdAndReviewerUserProfileInfo_User_Id(userReviewDto.getRevieweeId(), userReviewDto.getReviewerId());
 		
-		// entity로 변환
-		UserReview userReview = UserReview.toEntity(userReviewDto, reviewerProfileInfo);
+		// 기존 리뷰가 있으면 update
+		if (existingReview != null) {
+			updateReview(userReviewDto);
+		} else { // 기존 리뷰가 없으면 insert
+			// entity로 변환
+			UserReview userReview = UserReview.toEntity(userReviewDto, reviewerProfileInfo);
 
-		// 리뷰 점수 계산
-		long rating = userReview.getRating();
+			// 리뷰 점수 계산
+			long rating = userReview.getRating();
 
-		// 리뷰 당한 유저 점수에 반영
-		revieweeProfileInfo.addRatings(rating);
+			// 리뷰 당한 유저 점수에 반영
+			revieweeProfileInfo.addRatings(rating);
 
-		// 리뷰 저장
-		userReviewRepo.save(userReview);
+			// 리뷰 저장
+			userReviewRepo.save(userReview);
+		}
 	}
 	
 	/**
