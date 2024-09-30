@@ -2,7 +2,6 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import styled from "styled-components";
 import BlockModal from "../../components/BlockModal";
 
 function MyPage() {
