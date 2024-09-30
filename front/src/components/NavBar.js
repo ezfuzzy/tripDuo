@@ -161,23 +161,23 @@ function NavBar() {
         <button
           type="button"
           className="text-gray-600 pl-20"
-          onClick={() => offcanvasRef.current.classList.toggle("hidden")}
-        >
+          onClick={() => offcanvasRef.current.classList.toggle("hidden")}>
           <FontAwesomeIcon icon={faBars} className="h-5 w-5 mr-2" />
         </button>
 
         <button
           className="font-bold text-2xl absolute left-1/2 transform -translate-x-1/2"
-          onClick={handleTripDuoClick}
-        >
-        {/* w-25 이상 설정시 네비게이션 바 밖으로 나옴 */}
-        <img className="w-24 h-auto" src="/img/TripDuologo.png" alt="logo" />
+          onClick={handleTripDuoClick}>
+          {/* w-25 이상 설정시 네비게이션 바 밖으로 나옴 */}
+          <img className="w-24 h-auto" src="/img/TripDuologo.png" alt="logo" />
         </button>
 
         <div className="flex space-x-4">
           {isLoggedIn && (
             <>
-              <NavLink to={`/chatRoom`}><FontAwesomeIcon icon={faMessage} color="black" className="h-5 w-5 mr-2" /></NavLink>
+              <NavLink to={`/chatRoom`}>
+                <FontAwesomeIcon icon={faMessage} color="black" className="h-5 w-5 mr-2" />
+              </NavLink>
               <FontAwesomeIcon icon={faBell} className="h-5 w-5 mr-2" />
               <NavLink className="mx-3" to={`/users/${userId}`}>
                 {profilePicture ? (
@@ -205,8 +205,7 @@ function NavBar() {
                 textDecoration: "none",
               }}
               to="/"
-              onClick={() => setLastVisited("/")}
-            >
+              onClick={() => setLastVisited("/")}>
               <FontAwesomeIcon icon={faPersonThroughWindow} />
               &nbsp;국내 여행
             </NavLink>
@@ -219,8 +218,7 @@ function NavBar() {
                 textDecoration: "none",
               }}
               to="/home-abroad"
-              onClick={() => setLastVisited("/home-abroad")}
-            >
+              onClick={() => setLastVisited("/home-abroad")}>
               <FontAwesomeIcon icon={faPersonSwimming} />
               &nbsp;해외 여행
             </NavLink>
@@ -232,8 +230,7 @@ function NavBar() {
                 color: "black",
                 textDecoration: "none",
               }}
-              to="/posts/mate"
-            >
+              to="/posts/mate">
               <FontAwesomeIcon icon={faPeoplePulling} />
               &nbsp;여행 메이트
             </NavLink>
@@ -245,9 +242,8 @@ function NavBar() {
                 color: "black",
                 textDecoration: "none",
               }}
-              to="/extra"
-            >
-              <FontAwesomeIcon icon={faCompass}/>
+              to="/extra">
+              <FontAwesomeIcon icon={faCompass} />
               &nbsp;부가기능
             </NavLink>
           </li>
@@ -303,8 +299,7 @@ function NavBar() {
                     <NavLink
                       to={"/posts/mate?di=International"}
                       className={offCanvasNavLinkStyle}
-                      onClick={closeOffCanvas}
-                    >
+                      onClick={closeOffCanvas}>
                       해외 메이트 게시판
                     </NavLink>
                   </div>
@@ -324,38 +319,22 @@ function NavBar() {
                     </NavLink>
                   </div>
                   <div>
-                    <NavLink
-                      to={`/myPlan/${userId}`}
-                      className={offCanvasNavLinkStyle}
-                      onClick={closeOffCanvas}
-                    >
+                    <NavLink to={`/myPlan/${userId}`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                       여행 계획
                     </NavLink>
                   </div>
                   <div>
-                    <NavLink
-                      to={`/myRecord/${userId}`}
-                      className={offCanvasNavLinkStyle}
-                      onClick={closeOffCanvas}
-                    >
+                    <NavLink to={`/myRecord/${userId}`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                       여행 기록
                     </NavLink>
                   </div>
                   <div>
-                    <NavLink
-                      to={`/wishMate/${userId}`}
-                      className={offCanvasNavLinkStyle}
-                      onClick={closeOffCanvas}
-                    >
+                    <NavLink to={`/wishMate/${userId}`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                       관심 메이트
                     </NavLink>
                   </div>
                   <div>
-                    <NavLink
-                      to={`/myPlace/${userId}`}
-                      className={offCanvasNavLinkStyle}
-                      onClick={closeOffCanvas}
-                    >
+                    <NavLink to={`/myPlace/${userId}`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                       마이 플레이스
                     </NavLink>
                   </div>
@@ -375,65 +354,37 @@ function NavBar() {
                     </NavLink>
                   </div>
                   <div>
-                    <NavLink
-                      to="/exchangeInfo"
-                      className={offCanvasNavLinkStyle}
-                      onClick={closeOffCanvas}
-                    >
+                    <NavLink to="/exchangeInfo" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                       환율 정보
                     </NavLink>
                   </div>
                   <div>
-                    <NavLink
-                      to="/safetyInfo"
-                      className={offCanvasNavLinkStyle}
-                      onClick={closeOffCanvas}
-                    >
+                    <NavLink to="/safetyInfo" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                       안전 정보
                     </NavLink>
                   </div>
                   <div>
-                    <NavLink
-                      to="/calculator"
-                      className={offCanvasNavLinkStyle}
-                      onClick={closeOffCanvas}
-                    >
+                    <NavLink to="/calculator" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                       여행 경비 계산기
                     </NavLink>
                   </div>
                   <div>
-                    <NavLink
-                      to="planner"
-                      className={offCanvasNavLinkStyle}
-                      onClick={closeOffCanvas}
-                    >
+                    <NavLink to="planner" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                       여행 플래너
                     </NavLink>
                   </div>
                   <div>
-                    <NavLink
-                      to="recommendations"
-                      className={offCanvasNavLinkStyle}
-                      onClick={closeOffCanvas}
-                    >
+                    <NavLink to="recommendations" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                       여행 추천 장소
                     </NavLink>
                   </div>
                   <div>
-                    <NavLink
-                      to="diary"
-                      className={offCanvasNavLinkStyle}
-                      onClick={closeOffCanvas}
-                    >
+                    <NavLink to="diary" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                       여행 일기
                     </NavLink>
                   </div>
                   <div>
-                    <NavLink
-                      to="languageTip"
-                      className={offCanvasNavLinkStyle}
-                      onClick={closeOffCanvas}
-                    >
+                    <NavLink to="languageTip" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                       여행 대화/문화 팁
                     </NavLink>
                   </div>
