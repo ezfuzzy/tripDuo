@@ -281,7 +281,6 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public UserProfileInfoDto updateUserProfileInfo(UserProfileInfoDto userProfileInfoDto, MultipartFile profileImgForUpload) {
-
 		// 허용된 파일 확장자 목록
 	    Set<String> allowedExtensions = new HashSet<>(Arrays.asList(
 	            "jpg", "jpeg", "png", "heic", "heif"
@@ -391,8 +390,8 @@ public class UserServiceImpl implements UserService {
 	 * 
 	 * @param userFollowDto
 	 */
-	@Override
 	@Transactional
+	@Override
 	public void addFollowOrBlock(UserFollowDto userFollowDto) {
 		
 		UserFollow tempUserFollow = userFollowRepo.findByFolloweeUserProfileInfo_User_IdAndFollowerUserProfileInfo_User_Id(userFollowDto.getFolloweeUserId(), userFollowDto.getFollowerUserId());
@@ -453,7 +452,7 @@ public class UserServiceImpl implements UserService {
 		long rating = userReview.getRating();
 
 		// 리뷰 당한 유저 점수에 반영
-		revieweeProfileInfo.updateRatings(rating);
+		revieweeProfileInfo.addRatings(rating);
 
 		// 리뷰 저장
 		userReviewRepo.save(userReview);
@@ -466,17 +465,34 @@ public class UserServiceImpl implements UserService {
 	 * 
 	 * @param userReviewDto
 	 */
-	@Override
 	@Transactional
+	@Override
 	public void updateReview(UserReviewDto userReviewDto) {
 	    UserReview existUserReview = userReviewRepo.findByRevieweeIdAndReviewerUserProfileInfo_User_Id(userReviewDto.getRevieweeId(), userReviewDto.getReviewerId());
 	    if(existUserReview == null) {
 	    	throw new EntityNotFoundException("리뷰가 존재하지 않습니다");
 	    }
-	    
-	    existUserReview.updateContent(userReviewDto.getContent());
-	    // existUserReview.updateTags(userReviewDto.getTags());
-	    // existUserReview.updateRating(userReviewDto.getRating());
+
+		UserProfileInfo revieweeProfileInfo = userProfileInfoRepo.findByUserId(userReviewDto.getRevieweeId());
+		if (revieweeProfileInfo == null) {
+			throw new EntityNotFoundException("리뷰 대상 사용자를 찾을 수 없습니다.");
+		}
+
+		// 존재하는 리뷰 점수 계산
+		long existReviewRating = existUserReview.getRating();
+
+		// 수정된 리뷰 엔티티 생성
+		UserProfileInfo reviewerProfileInfo = userProfileInfoRepo.findByUserId(userReviewDto.getReviewerId());
+		UserReview userReview = UserReview.toEntity(userReviewDto, reviewerProfileInfo);
+
+		// 수정된 리뷰 점수 계산
+		long updatedRating = userReview.getRating();
+
+		// 리뷰 엔티티 수정
+		existUserReview.updateContent(userReviewDto.getContent());
+		existUserReview.updateExperience(userReviewDto.getExperience());
+		existUserReview.updateTags(userReviewDto.getTags());
+		revieweeProfileInfo.addRatings(updatedRating - existReviewRating);
 	}
 	
 	/**
@@ -490,6 +506,18 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	@Override
 	public void deleteReview(Long revieweeId, Long reviewerId) {
-		userReviewRepo.deleteByRevieweeIdAndReviewerUserProfileInfo_User_Id(revieweeId, reviewerId);
+		UserReview userReview = userReviewRepo.findByRevieweeIdAndReviewerUserProfileInfo_User_Id(revieweeId, reviewerId);
+		if(userReview == null) {
+			throw new EntityNotFoundException("리뷰가 존재하지 않습니다");
+		}
+
+		// 리뷰 점수 계산
+		long rating = userReview.getRating();
+
+		// 리뷰 당한 유저 점수에 반영
+		UserProfileInfo revieweeProfileInfo = userProfileInfoRepo.findByUserId(revieweeId);
+		revieweeProfileInfo.addRatings(-rating);
+
+		userReviewRepo.delete(userReview);
 	}
 }

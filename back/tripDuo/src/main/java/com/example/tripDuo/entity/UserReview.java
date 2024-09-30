@@ -102,6 +102,14 @@ public class UserReview {
     public void updateContent(String newContent) {
     	content = newContent;
     }
+
+    public void updateExperience(ReviewExperience newExperience) {
+    	experience = newExperience;
+    }
+    
+    public void updateTags(ReviewTag[] newTags) {
+    	tags = newTags;
+    }
     
     public static UserReview toEntity(UserReviewDto dto, UserProfileInfo reviewerUpi) {
     	return UserReview.builder()
