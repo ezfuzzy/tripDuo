@@ -54,13 +54,13 @@ public class UserProfileInfo {
 
     private String lastLogin; // 몇분전 접속  
 
-    public void updateRatings(long addRating) {
-        if (ratings + addRating > 10000) {
+    public void addRatings(long addedRating) {
+        if (ratings + addedRating > 10000) {
             ratings = 10000L;
-        } else if (ratings + addRating < 0) {
+        } else if (ratings + addedRating < 0) {
             ratings = 0L;
         } else {
-            ratings += addRating;
+            ratings += addedRating;
         }
     }
 
