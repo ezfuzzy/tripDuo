@@ -282,6 +282,27 @@ function MyProfile(props) {
       .catch((error) => console.log(error));
   };
 
+    // 리뷰 신고 처리 함수
+    const handleReportReview = (commentId) => {
+      // 신고 기능 구현
+      alert(`댓글 ID ${commentId}가 신고되었습니다.`);
+      // 추가로 서버에 신고 요청을 보내는 로직을 여기에 추가
+    };
+
+    // 리뷰 수정 함수
+    const handleUpdateRiview = () =>{
+      
+    }
+
+    // 리뷰 삭제 함수
+    const handleDeleteReview = ()=>{
+      axios.delete(`/api/v1/users/${id}/review/${userId}`)
+      .then(res=>{
+          console.log(res.data)
+        })
+      .catch(error=>console.log(error))
+    }
+
   return (
     <div className="container mx-auto p-4 max-w-[900px]">
       {isProfileOwner && (
@@ -459,9 +480,11 @@ function MyProfile(props) {
             {profile.profileMessage}
           </div>
         </div>
+
+        {/* -------------------------------------------------------------------------------------- */}
         {/* 리뷰 작성 */}
         {/* 두 조건 모두 거짓(리뷰 하지않음, 프로필 사용자가 아님)이어야 true 를 반환 => 리뷰 작성 랜더링 */}
-        {(!isReviewed && !isProfileOwner) && (
+        {!isReviewed && !isProfileOwner && (
           <form className="border-3 rounded-lg p-3 mb-6 bg-gray-100" onSubmit={handleReviewSubmit}>
             <div className="mt-10 text-center space-x-20">
               <FontAwesomeIcon
@@ -558,7 +581,6 @@ function MyProfile(props) {
         )}
 
         {/* REVIEW */}
-
         <div>
           <ul className="space-y-4">
             {reviewList.map((item) => (
@@ -592,6 +614,17 @@ function MyProfile(props) {
                       <FontAwesomeIcon className="w-7 h-7 text-cyan-600 ml-10" icon={faFaceLaughSquint} />
                     ) : (
                       ""
+                    )}
+
+                    {/* 리뷰 수정/삭제 신고 */}
+                    {/* 리뷰어와 현재 접속자가 같을때만 수정/삭제 랜더링 */}
+                    {item.reviewerId === userId ? (
+                      <p className="text-xs text-gray-500 ml-auto mr-4 space-x-3">
+                        <span onClick={handleUpdateRiview} className="cursor-pointer">수정</span>
+                        <span onClick={handleDeleteReview} className="cursor-pointer">삭제</span>
+                      </p>
+                    ) : (
+                      <p onClick={()=> handleReportReview(item.id)} className="text-xs text-gray-500 ml-auto mr-4 cursor-pointer">신고</p>
                     )}
                   </div>
 
