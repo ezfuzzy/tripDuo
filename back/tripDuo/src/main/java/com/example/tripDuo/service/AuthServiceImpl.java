@@ -139,12 +139,16 @@ public class AuthServiceImpl implements AuthService {
 		userDto.setRole(UserRole.USER);
 		String encodedPwd = encoder.encode(userDto.getPassword());
 		userDto.setPassword(encodedPwd);
-
-		
+				
 		User savedUser = userRepo.save(User.toEntity(userDto));
 		
-		userProfileInfoRepo.save(UserProfileInfo.toEntity(
-				UserProfileInfoDto.builder().nickname(userDto.getNickname()).build(), savedUser));
+		UserProfileInfoDto upiDto = UserProfileInfoDto.builder()
+												.nickname(userDto.getNickname())
+												.age(userDto.getAge())
+												.gender(userDto.getGender())
+												.build();
+		
+		userProfileInfoRepo.save(UserProfileInfo.toEntity(upiDto, savedUser));
 		
 		userTripInfoRepo.save(UserTripInfo.builder().userId(savedUser.getId()).build());
 		
