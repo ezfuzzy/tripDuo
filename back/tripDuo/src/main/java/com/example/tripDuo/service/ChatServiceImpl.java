@@ -1,9 +1,12 @@
 package com.example.tripDuo.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.example.tripDuo.dto.ChatMessageDto;
@@ -11,6 +14,7 @@ import com.example.tripDuo.dto.ChatRoomDto;
 import com.example.tripDuo.entity.ChatMessage;
 import com.example.tripDuo.entity.ChatParticipant;
 import com.example.tripDuo.entity.ChatRoom;
+import com.example.tripDuo.entity.Post;
 import com.example.tripDuo.entity.UserProfileInfo;
 import com.example.tripDuo.repository.ChatParticipantRepository;
 import com.example.tripDuo.repository.ChatRoomRepository;
@@ -35,7 +39,7 @@ public class ChatServiceImpl implements ChatService {
 	}
 
 	@Override
-	public List<ChatRoomDto> getAllChatRooms(Long userId) {
+	public List<ChatRoomDto> getSelectAllChatRooms(Long userId) {
 		// 사용자가 속한 채팅방 참여 정보를 모두 가져옴
 		List<ChatParticipant> chatParticipantsList = chatParticipantsRepo.findByUserProfileInfoUserId(userId);
 		System.out.println(chatParticipantsList.toString());
@@ -62,7 +66,7 @@ public class ChatServiceImpl implements ChatService {
 		for (ChatMessage message : messages) {
 			messageDtos.add(ChatMessageDto.toDto(message));
 		}
-
+		
 		return messageDtos;
 	}
 
@@ -88,6 +92,24 @@ public class ChatServiceImpl implements ChatService {
 		}
 
 		return chatRoom;
+	}
+
+	// 메세지 저장
+	@Override
+	public List<ChatMessageDto> saveMesages(Long roomId, ChatMessageDto chatMessageDto) {
+		// 1. 추가 할 메세지 내용을 DB에서 비교해서 없는 내용들만 추출 
+		// 2. 추출한 메세지 내용을 DB 저장
+//		List<ChatMessage> savedMessages=messageRepo.save(roomId);
+//
+//		// 저장된 엔티티 -> DTO 리스트 변환
+//	    List<ChatMessageDto> savemessageDtos = new ArrayList<>();
+//	    for (ChatMessage message : savedMessages) {
+//	        savemessageDtos.add(ChatMessageDto.toDto(message));  // 클래스 이름을 통해 정적 메서드 호출
+//	    }
+//	    
+//		messageRepo.save(ChatMessage.toEntity(chatMessageDto, userProfileInfoRepo.findById(chatMessageDto.getChatRoomId()).get()))
+		    
+		return null;
 	}
 
 }
