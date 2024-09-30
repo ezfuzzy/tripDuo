@@ -450,7 +450,7 @@ public class UserServiceImpl implements UserService {
 		
 		// 기존 리뷰가 있으면 update
 		if (existingReview != null) {
-			userReviewDto = updateReview(userReviewDto);
+			return updateReview(userReviewDto);
 		} else { // 기존 리뷰가 없으면 insert
 			// entity로 변환
 			UserReview userReview = UserReview.toEntity(userReviewDto, reviewerProfileInfo);
@@ -463,10 +463,12 @@ public class UserServiceImpl implements UserService {
 
 			// 리뷰 저장
 			userReviewRepo.save(userReview);
-		}
 
-		// 리뷰 반환
-		return userReviewDto;
+			UserReview insertedUserReview = userReviewRepo.findByRevieweeIdAndReviewerUserProfileInfo_User_Id(userReviewDto.getRevieweeId(), userReviewDto.getReviewerId());
+
+			// 리뷰 반환
+			return UserReviewDto.toDto(insertedUserReview, PROFILE_PICTURE_CLOUDFRONT_URL);
+		}
 	}
 	
 	/**
@@ -504,9 +506,11 @@ public class UserServiceImpl implements UserService {
 		existUserReview.updateExperience(userReviewDto.getExperience());
 		existUserReview.updateTags(userReviewDto.getTags());
 		revieweeProfileInfo.addRatings(updatedRating - existReviewRating);
+		
+		UserReview updatedUserReview = userReviewRepo.findByRevieweeIdAndReviewerUserProfileInfo_User_Id(userReviewDto.getRevieweeId(), userReviewDto.getReviewerId());
 
 		// 수정된 리뷰 반환
-		return userReviewDto.toDto(userReview, PROFILE_PICTURE_CLOUDFRONT_URL);
+		return userReviewDto.toDto(updatedUserReview, PROFILE_PICTURE_CLOUDFRONT_URL);
 	}
 	
 	/**
