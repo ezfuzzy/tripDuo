@@ -5,7 +5,7 @@ import { shallowEqual, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
-  faFaceGrinStars,
+  faFaceLaugh,
   faFaceLaughSquint,
   faFaceMeh,
   faFaceSmile,
@@ -15,32 +15,36 @@ import "../../css/MyProfile.css";
 import FollowerFolloweeModal from "../../components/FollowerFolloweeModal";
 
 function MyProfile(props) {
-  // to do : cur_location, rating, last_login
+  // to do : cur_location, last_login
+
   const { id } = useParams(); // 프로필 사용자의 id
   const userId = useSelector((state) => state.userData.id, shallowEqual); // 접속된 사용자의 id
   const nickname = useSelector((state) => state.userData.nickname, shallowEqual); // 접속된 사용자의 nickname
+
   // 접족된 사용자와 profile 의 사용자가 같은지
   const [isProfileOwner, setProfileOwner] = useState(false);
-
-  const navigate = useNavigate();
-
+  // 프로필 정보
   const [profile, setProfile] = useState({});
+  // 리뷰 정보
+  const [reviewList, setReviewList] = useState([]);
+
+  // BAD or GOOD or EXCELLENT
+  const [experience, setExperience] = useState();
 
   // 팔로우 상태 관리
   const [followingStatus, setFollowingStatus] = useState(false);
   // 팔로우 알림 관리
   const toastMessageRef = useRef();
 
+  const navigate = useNavigate();
+
   //프로필 토글 관리
   const dropdownMenuRef = useRef();
 
   // 리뷰 작성 관련
-  const [userReview, setUserReview] = useState({
-    reviewerId: id,
-    content: "",
-    // tags : [],
-    // rating : 0
-  });
+  const [userReview, setUserReview] = useState("");
+  //리뷰 체크박스 상태 설정
+  const [selectedTags, setSelectedTags] = useState([]);
 
   // 팔로잉/팔로워 모달 상태관리
   const [isModalOpen, setModalOpen] = useState(false);
@@ -54,6 +58,30 @@ function MyProfile(props) {
     followingStatus ? "bg-gray-200 text-gray-800" : "bg-blue-500 text-white"
   }`;
 
+  const reviewPositiveTagList = [
+    { key: 1, keyword: "COMMUNICATION", text: "메시지에 항상 빠르게 답변해주어 소통이 원활했어요." },
+    { key: 2, keyword: "TRUST", text: "계획된 일정을 철저히 지켜 믿음직했어요." },
+    { key: 3, keyword: "ONTIME", text: "약속 시간을 잘 지켜 여유로운 여행을 즐길 수 있었어요." },
+    { key: 4, keyword: "MANNER", text: "친절하고 배려심 넘치는 태도로 편안하게 여행했어요." },
+    { key: 5, keyword: "FLEXIBLE", text: "변경된 계획에도 유연하게 대처하여 즐거운 여행이 되었어요." },
+    { key: 6, keyword: "ACTIVE", text: "적극적인 태도로 다양한 경험을 할 수 있도록 이끌어주었어요." },
+    { key: 7, keyword: "FRIENDLY", text: "함께 시간을 보내는 내내 즐거웠고, 좋은 친구를 얻은 기분이었어요." },
+    { key: 8, keyword: "PAY", text: "비용 분담에 있어 투명하고 공정하게 처리하여 신뢰가 갔어요." },
+    { key: 9, keyword: "CLEAN", text: "깔끔한 여행 스타일로 쾌적한 환경을 유지해주었어요." },
+  ];
+
+  const reviewNegativeTagList = [
+    { key: 1, keyword: "COMMUNICATION", text: "메시지 답변이 느려 소통에 어려움을 느꼈어요." },
+    { key: 2, keyword: "TRUST", text: "계획된 일정을 자주 변경하여 불안했어요." },
+    { key: 3, keyword: "ONTIME", text: "약속 시간에 자주 늦어 불편했어요." },
+    { key: 4, keyword: "MANNER", text: "무례한 언행으로 불쾌한 경험을 했어요." },
+    { key: 5, keyword: "FLEXIBLE", text: "변경된 상황에 대한 대처가 미흡하여 아쉬웠어요." },
+    { key: 6, keyword: "ACTIVE", text: "소극적인 태도로 여행에 대한 적극적인 참여가 부족했어요." },
+    { key: 7, keyword: "FRIENDLY", text: "함께 시간을 보내는 것이 불편했어요." },
+    { key: 8, keyword: "PAY", text: "비용 분담에 있어 불투명하고 불공정하여 신뢰가 떨어졌어요." },
+    { key: 9, keyword: "CLEAN", text: "개인 위생 관리가 부족하여 함께 여행하는 것이 불편했어요." },
+  ];
+
   // 리뷰 최대 글자수
   const maxLength = 3000;
 
@@ -62,11 +90,14 @@ function MyProfile(props) {
       .get(`/api/v1/users/${id}`)
       .then((res) => {
         console.log(res.data);
+
+        // is Blocked?
         if (res.data.theirFollowType === "BLOCK") {
           alert("해당 사용자가 당신을 차단하여 더 이상 프로필을 볼 수 없습니다.");
           navigate("/");
         }
 
+        // BLOCK or FOLLOW
         if (res.data.myFollowType === "BLOCK") {
           setBlockStatue(true);
         } else if (res.data.myFollowType === "FOLLOW") {
@@ -75,6 +106,9 @@ function MyProfile(props) {
 
         //불러온 사용자의 정보 저장
         setProfile(res.data.userProfileInfo);
+        //불러온 사용자에게 달린 리뷰 저장
+        setReviewList(res.data.userReviewList);
+
         console.log(res.data);
 
         // 접속된 사용자와 프로필 사용자의 id 가 같으면 Owner = true
@@ -163,7 +197,7 @@ function MyProfile(props) {
           })
           .catch((error) => console.log(error));
       }
-    }
+    } 
   };
 
   //프로필 토글 버튼 클릭
@@ -173,17 +207,32 @@ function MyProfile(props) {
 
   // 입력된 리뷰 내용 상태값으로 저장
   const handleInputReview = (e) => {
-    setUserReview({
-      ...userReview,
-      content: e.target.value,
-    });
+    setUserReview(e.target.value);
   };
 
   // 리뷰 드롭다운 태그 메뉴 관련
   const handleReviewDropDown = (e) => {
     if (e === "BAD") {
+      setExperience("BAD");
+      setSelectedTags([]);
     } else if (e === "GOOD") {
-    } else if (e === "GREAT") {
+      setExperience("GOOD");
+      setSelectedTags([]);
+    } else if (e === "EXCELLENT") {
+      setExperience("EXCELLENT");
+      setSelectedTags([]);
+    }
+  };
+  
+  // 체크박스 데이터 핸들링
+  const handleCheckboxChange = (e) => {
+    const checked = e.target.checked;
+    const value = e.target.value;
+
+    if (checked) {
+      setSelectedTags([...selectedTags, value]);
+    } else {
+      setSelectedTags(selectedTags.filter((tag) => tag !== value));
     }
   };
 
@@ -199,25 +248,29 @@ function MyProfile(props) {
       .catch((error) => console.log(error));
   };
 
-  //덧글 작성 요청시 사용자 정보가 없으면 로그인 페이지로 리다일렉트
-  const handleCommentSubmit = (e) => {
-    e.preventDefault();
+  // 리뷰 작성 
+  const handleReviewSubmit = () => {
+    if(selectedTags.length === 0){
+      alert("1개 이상의 태그를 선택해주세요")
+      return;
+    }
+    const reviewData = {
+      content: userReview,
+      experience: experience,
+      tags: selectedTags,
+    };
 
-    userId
-      ? axios
-          .post(`/api/v1/users/${id}/reviews`, userReview)
-          .then((res) => {
-            console.log(res.data);
+    console.log(reviewData);
 
-            // 초기화
-            setUserReview({
-              ...userReview,
-              content: "",
-            });
-          })
-          .catch((error) => console.log(error))
-      : alert("로그인 페이지로 이동됩니다.");
-    navigate("/login");
+    axios
+      .post(`/api/v1/users/${id}/review/${userId}`, reviewData)
+      .then((res) => {
+        console.log(res.data);
+        reviewList.unshift(reviewData)
+        // 초기화
+        setUserReview("");
+      })
+      .catch((error) => console.log(error));
   };
 
   return (
@@ -401,73 +454,149 @@ function MyProfile(props) {
           </div>
         </div>
 
-        {/* 리뷰 */}
-        <div className="mt-10 text-center space-x-20">
-          <FontAwesomeIcon
-            className="w-12 h-12 fill-current transition duration-700 ease-in-out text-gray-700 hover:text-orange-600"
-            onClick={() => handleReviewDropDown("BAD")}
-            icon={faFaceMeh}
-          />
-          <FontAwesomeIcon
-            className="w-12 h-12 fill-current transition duration-700 ease-in-out text-gray-700 hover:text-green-600"
-            onClick={() => handleReviewDropDown("GOOD")}
-            icon={faFaceSmile}
-          />
-          <FontAwesomeIcon
-            className="w-12 h-12 fill-current transition duration-700 ease-in-out text-gray-700 hover:text-cyan-600"
-            onClick={() => handleReviewDropDown("GREAT")}
-            icon={faFaceLaughSquint}
-          />
-          {/* BAD */}
-          <div>
-            <div class="flex items-center mb-4">
-              <input
-                id="checkbox"
-                type="checkbox"
-                value=""
-                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500  focus:ring-2"
-              />
-              <label for="default-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                checkbox
-              </label>
-            </div>
-            <div class="flex items-center mb-4">
-              <input
-                id="checked"
-                type="checkbox"
-                value=""
-                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 "
-              />
-              <label for="checked-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                Checked
-              </label>
-            </div>
+        <form className="border-3 rounded-lg p-3 mb-6 bg-gray-100" onSubmit={handleReviewSubmit}>
+          {/* 리뷰 */}
+          <div className="mt-10 text-center space-x-20">
+            <FontAwesomeIcon
+              className={`w-12 h-12 fill-current transition duration-700 ease-in-out ${
+                experience === "BAD" ? "text-orange-600" : "text-gray-700"
+              } hover:text-orange-600`}
+              onClick={() => handleReviewDropDown("BAD")}
+              icon={faFaceMeh}
+            />
+            <FontAwesomeIcon
+              className={`w-12 h-12 fill-current transition duration-700 ease-in-out ${
+                experience === "GOOD" ? "text-green-600" : "text-gray-700"
+              } hover:text-green-600`}
+              onClick={() => handleReviewDropDown("GOOD")}
+              icon={faFaceSmile}
+            />
+            <FontAwesomeIcon
+              className={`w-12 h-12 fill-current transition duration-700 ease-in-out ${
+                experience === "EXCELLENT" ? "text-cyan-600" : "text-gray-700"
+              } hover:text-cyan-600`}
+              onClick={() => handleReviewDropDown("EXCELLENT")}
+              icon={faFaceLaughSquint}
+            />
 
+            {/* to do : index 값 설정 */}
+            <ul className="pb-10">
+              {experience === "BAD" ? (
+                <p className="py-5 text-orange-600 font-bold">별로에요 :(</p>
+              ) : experience === "GOOD" ? (
+                <p className="py-5 text-green-600 font-bold">좋아요 :)</p>
+              ) : experience === "EXCELLENT" ? (
+                <p className="py-5 text-cyan-600 font-bold">최고에요 :D</p>
+              ) : (
+                ""
+              )}
+              {experience === "BAD"
+                ? reviewNegativeTagList.map((item) => (
+                    <li key={item.key}>
+                      <input
+                        id={item.keyword}
+                        type="checkbox"
+                        value={item.keyword}
+                        checked={selectedTags.includes(item.keyword)} // selectedTags 에 포함된 요소만 체크
+                        onChange={handleCheckboxChange}
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                      />
+                      <label htmlFor="default-checkbox" className="ms-2 text-sm font-medium text-gray-900 ">
+                        {item.text}
+                      </label>
+                    </li>
+                  ))
+                : experience === "GOOD" || experience === "EXCELLENT"
+                ? reviewPositiveTagList.map((item) => (
+                    <li key={item.key}>
+                      <input
+                        id={item.keyword}
+                        type="checkbox"
+                        value={item.keyword}
+                        checked={selectedTags.includes(item.keyword)} // selectedTags 에 포함된 요소만 체크
+                        onChange={handleCheckboxChange}
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                      />
+                      <label htmlFor="default-checkbox" className="ms-2 text-sm font-medium text-gray-900 ">
+                        {item.text}
+                      </label>
+                    </li>
+                  ))
+                : ""}
+            </ul>
           </div>
-          
-        </div>
 
-        <div className="border-3 rounded-lg p-3 mb-6 bg-white">
           <div className="font-bold">{nickname}</div>
-          <form onSubmit={handleCommentSubmit}>
-            <div className="relative">
-              <textarea
-                className="border border-white rounded w-full h-24 p-2"
-                placeholder={userId ? "리뷰를 남겨보세요" : "리뷰를 작성하시려면 로그인이 필요합니다."}
-                value={userReview.content}
-                maxLength={maxLength}
-                onChange={handleInputReview}
-              />
-              <div className="absolute top-2 right-2 text-gray-500 text-sm">
-                {userReview.content.length}/{maxLength}
-              </div>
-              <div className="flex items-center justify-between">
-                <button type="submit" className="text-gray-500 hover:text-gray-700 font-semibold">
-                  등록
-                </button>
-              </div>
+          <div className="relative">
+            <textarea
+              className="border border-white rounded w-full h-24 p-2"
+              placeholder={userId ? "리뷰를 남겨보세요" : "리뷰를 작성하시려면 로그인이 필요합니다."}
+              value={userReview}
+              maxLength={maxLength}
+              onChange={handleInputReview}
+            />
+            <div className="absolute top-2 right-2 text-gray-500 text-sm">
+              {userReview.length}/{maxLength}
             </div>
-          </form>
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={handleReviewSubmit}
+                className="p-4 text-gray-500 hover:text-gray-700 font-semibold">
+                등록
+              </button>
+            </div>
+          </div>
+        </form>
+
+        {/* REVIEW */}
+        <div>
+          <ul className="space-y-4">
+            {reviewList.map((item) => (
+              <li key={item.id}>
+                <div className="flex-1">
+                  {/* 유저 정보 */}
+                  <div className="flex items-end">
+                    {/* 프로필 사진 또는 기본 아이콘 */}
+                    {item.reviewerProfilePicture === null ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-10 h-10 text-gray-400 mx-2"
+                        viewBox="0 0 16 16"
+                        fill="currentColor">
+                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+                        <path
+                          fillRule="evenodd"
+                          d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.206 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"
+                        />
+                      </svg>
+                    ) : (
+                      <img src={item.reviewerProfilePicture} className="w-10 h-10 rounded-full" alt="프로필" />
+                    )}
+                    <span className="font-bold text-gray-900">{item.reviewerNickname}</span>
+
+                    {item.experience === "BAD" ? (
+                      <FontAwesomeIcon className="w-7 h-7 text-orange-600 ml-10" icon={faFaceMeh} />
+                    ) : item.experience === "GOOD" ? (
+                      <FontAwesomeIcon className="w-7 h-7 text-green-600 ml-10" icon={faFaceLaugh} />
+                    ) : item.experience === "EXCELLENT" ? (
+                      <FontAwesomeIcon className="w-7 h-7 text-cyan-600 ml-10" icon={faFaceLaughSquint} />
+                    ) : (
+                      ""
+                    )}
+                  </div>
+
+                  {/* 리뷰 내용 */}
+                  <p className="whitespace-pre-wrap text-gray-700 mt-1">{item.content}</p>
+
+                  {/* 작성 시간 */}
+                  <div className="mt-2 text-sm text-gray-500">
+                    <small className="ml-4 text-gray-400">{item.createdAt}</small>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>
