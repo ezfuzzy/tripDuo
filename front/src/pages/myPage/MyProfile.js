@@ -280,6 +280,7 @@ function MyProfile(props) {
         setReviewList([...reviewList, newReview]);
         // textArea 초기화
         setUserReview("");
+        setSelectedTags([]);
       })
       .catch((error) => console.log(error));
   };
@@ -292,16 +293,22 @@ function MyProfile(props) {
   };
 
   // 리뷰 수정 함수
-  const handleUpdateRiview = () => {};
+  const handleUpdateRiview = () => {
+
+  };
 
   // 리뷰 삭제 함수
   const handleDeleteReview = () => {
-    axios
+    if(window.confirm("리뷰를 삭제하시겠습니까?")){ 
+      axios
       .delete(`/api/v1/users/${id}/review/${userId}`)
       .then((res) => {
         console.log(res.data);
+        // 사용자당 한개의 리뷰를 작성하기때문에 삭제가 가능한 reviewerId = userId 이다
+        setReviewList(reviewList.filter((item) => item.reviewerId !== userId));
       })
       .catch((error) => console.log(error));
+    }
   };
 
   return (
