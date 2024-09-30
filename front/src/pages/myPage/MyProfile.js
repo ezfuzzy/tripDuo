@@ -215,8 +215,6 @@ function MyProfile(props) {
   // 입력된 리뷰 내용 상태값으로 저장
   const handleInputReview = (e) => {
     setUserReview(e.target.value);
-    console.log(isProfileOwner);
-    console.log(isReviewed);
   };
 
   // 리뷰 드롭다운 태그 메뉴 관련
@@ -275,7 +273,7 @@ function MyProfile(props) {
       .post(`/api/v1/users/${id}/review/${userId}`, reviewData)
       .then((res) => {
         console.log(res.data);
-        reviewList.unshift(reviewData);
+        reviewList.unshift(res.data);
         // 초기화
         setUserReview("");
       })
