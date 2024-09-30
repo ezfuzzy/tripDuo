@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { createRef, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { shallowEqual, useSelector } from "react-redux";
@@ -85,6 +85,8 @@ function MyProfile(props) {
     { key: 9, keyword: "CLEAN", text: "개인 위생 관리가 부족하여 함께 여행하는 것이 불편했어요." },
   ];
 
+  //새로 등록한 댓글을 추가할 인덱스
+  let commentIndex = 0;
   // 리뷰 최대 글자수
   const maxLength = 3000;
 
@@ -273,33 +275,34 @@ function MyProfile(props) {
       .post(`/api/v1/users/${id}/review/${userId}`, reviewData)
       .then((res) => {
         console.log(res.data);
-        reviewList.unshift(res.data);
-        // 초기화
+        const newReview = res.data;
+        newReview.ref = createRef();
+        setReviewList([...reviewList, newReview]);
+        // textArea 초기화
         setUserReview("");
       })
       .catch((error) => console.log(error));
   };
 
-    // 리뷰 신고 처리 함수
-    const handleReportReview = (commentId) => {
-      // 신고 기능 구현
-      alert(`댓글 ID ${commentId}가 신고되었습니다.`);
-      // 추가로 서버에 신고 요청을 보내는 로직을 여기에 추가
-    };
+  // 리뷰 신고 처리 함수
+  const handleReportReview = (commentId) => {
+    // 신고 기능 구현
+    alert(`댓글 ID ${commentId}가 신고되었습니다.`);
+    // 추가로 서버에 신고 요청을 보내는 로직을 여기에 추가
+  };
 
-    // 리뷰 수정 함수
-    const handleUpdateRiview = () =>{
-      
-    }
+  // 리뷰 수정 함수
+  const handleUpdateRiview = () => {};
 
-    // 리뷰 삭제 함수
-    const handleDeleteReview = ()=>{
-      axios.delete(`/api/v1/users/${id}/review/${userId}`)
-      .then(res=>{
-          console.log(res.data)
-        })
-      .catch(error=>console.log(error))
-    }
+  // 리뷰 삭제 함수
+  const handleDeleteReview = () => {
+    axios
+      .delete(`/api/v1/users/${id}/review/${userId}`)
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((error) => console.log(error));
+  };
 
   return (
     <div className="container mx-auto p-4 max-w-[900px]">
@@ -618,11 +621,19 @@ function MyProfile(props) {
                     {/* 리뷰어와 현재 접속자가 같을때만 수정/삭제 랜더링 */}
                     {item.reviewerId === userId ? (
                       <p className="text-xs text-gray-500 ml-auto mr-4 space-x-3">
-                        <span onClick={handleUpdateRiview} className="cursor-pointer">수정</span>
-                        <span onClick={handleDeleteReview} className="cursor-pointer">삭제</span>
+                        <span onClick={handleUpdateRiview} className="cursor-pointer">
+                          수정
+                        </span>
+                        <span onClick={handleDeleteReview} className="cursor-pointer">
+                          삭제
+                        </span>
                       </p>
                     ) : (
-                      <p onClick={()=> handleReportReview(item.id)} className="text-xs text-gray-500 ml-auto mr-4 cursor-pointer">신고</p>
+                      <p
+                        onClick={() => handleReportReview(item.id)}
+                        className="text-xs text-gray-500 ml-auto mr-4 cursor-pointer">
+                        신고
+                      </p>
                     )}
                   </div>
 
