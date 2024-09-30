@@ -236,17 +236,17 @@ function MateBoardDetail(props) {
     axios
       .post(`/api/v1/posts/${post.id}/comments`, data)
       .then((res) => {
-        console.log(res.data);
+        console.log(res.data)
         //방금 저장한 댓글의 정보
-        const newComment = res.data;
+        const newComment = res.data
         //댓글의 정보에 ref라는 방을 추가하고 거기에 참조값을 담을 object넣어준다
-        newComment.ref = createRef();
+        newComment.ref = createRef()
         //이 댓글을 commentIndex에 끼워 넣기
-        commentList.splice(commentIndex, 0, res.data);
+        commentList.splice(commentIndex, 0, res.data)
         //새로운 배열을 만들면서 기존 배열에 저장된 아이템을 펼쳐 놓아서 상태값을 변경
-        setCommentList([...commentList]);
+        setCommentList([...commentList])
         //댓글 입력한 textarea 초기화
-        e.target.content.value = "";
+        e.target.content.value = ""
       })
       .catch((error) => {
         console.log(error);
