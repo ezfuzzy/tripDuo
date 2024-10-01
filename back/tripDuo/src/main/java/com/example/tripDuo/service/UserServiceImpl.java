@@ -169,6 +169,13 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
+	public UserProfileInfo getUserProfileInfoByIdForPostDetailPage(Long userId) {
+		return userProfileInfoRepo.findById(userId)
+				.orElseThrow(() -> new EntityNotFoundException("User not found"));
+	}
+	
+	
 	@Override	
 	public UserProfileInfoDto getUserProfileInfoByUsername(String username) {
 		
