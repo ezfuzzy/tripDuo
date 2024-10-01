@@ -165,7 +165,7 @@ function MateBoard() {
         });
         const sorted = filtered.sort((a, b) => {
           if (sortBy === "latest") {
-            return new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt); // 최신순
+            return new Date(b.createdAt) - new Date(a.createdAt); // 최신순
           } else if (sortBy === "viewCount") {
             return b.viewCount - a.viewCount; // 조회수순
           } else if (sortBy === "likeCount") {
