@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import BlockModal from "../../components/BlockModal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCrown, faDove, faFeather, faPlane, faUser } from "@fortawesome/free-solid-svg-icons";
 
 function MyPage() {
   const userId = useSelector((state) => state.userData.id, shallowEqual); // 접속된 사용자의 id
@@ -10,6 +12,8 @@ function MyPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [imageData, setImageData] = useState(null);
+  const [ratingIcon, setRatingIcon] = useState("");
+  const [ratingColor, setRatingColor] = useState("")
 
   // 차단 목록 모달 상태 관리
   const [isBlockModalOpen, setBlockModalOpen] = useState(false);
@@ -28,9 +32,53 @@ function MyPage() {
         if (res.data.userProfileInfo.profilePicture) {
           setImageData(res.data.userProfileInfo.profilePicture);
         }
+
+        const ratings = res.data.userProfileInfo.ratings;
+
+        switch (true) {
+          // 이코노미
+          case ratings >= 0 && ratings <= 1499:
+            setRatingIcon(faFeather);
+            setRatingColor("gray")
+            break;
+          //프리미엄 이코노미
+          case ratings >= 1500 && ratings <= 2999:
+            setRatingIcon(faFeather);
+            setRatingColor("blue")
+            break;
+          //비지니스
+          case ratings >= 3000 && ratings <= 4499:
+            setRatingIcon(faDove);
+            setRatingColor("gray")
+            break;
+          //프리미엄 비지니스
+          case ratings >= 4500 && ratings <= 5999:
+            setRatingIcon(faDove);
+            setRatingColor("blue")
+            break;
+          //퍼스트
+          case ratings >= 6000 && ratings <= 7499:
+            setRatingIcon(faPlane);
+            setRatingColor("gray")
+            break;
+          //프리미엄 퍼스트
+          case ratings >= 7500 && ratings <= 8999:
+            setRatingIcon(faPlane);
+            setRatingColor("blue")
+            break;
+          // 로얄
+          case ratings >= 9000 && ratings <= 10000:
+            setRatingIcon(faCrown);
+            setRatingColor("yellow")
+            break;
+
+          default:
+            setRatingIcon(faUser);
+            break;
+        }
       })
       .catch((error) => console.log(error));
-  }, [id, userId, navigate]);
+  }, [id, userId, navigate, ratingIcon]);
 
   // 프로필 보기 클릭
   const handleClick = () => {
@@ -69,8 +117,11 @@ function MyPage() {
             </svg>
           )}
           <div>
-            <h3 className="text-base font-semibold leading-7 tracking-tight text-gray-900">{profile.nickname}</h3>
-            <p className="text-sm font-semibold leading-6 text-indigo-600">
+            <h3 className="text-base font-semibold leading-7 tracking-tight text-gray-900">
+              <FontAwesomeIcon icon={ratingIcon} color={ratingColor}></FontAwesomeIcon>
+              {profile.nickname}
+            </h3>
+            <p className="text-sm font-semibold leading-6 text-green-600">
               {profile.gender} / {profile.age}
             </p>
           </div>
