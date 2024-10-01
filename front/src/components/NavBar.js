@@ -235,18 +235,6 @@ function NavBar() {
               &nbsp;여행 메이트
             </NavLink>
           </li>
-          <li className="mx-2">
-            <NavLink
-              className="font-bold text-lg inline-flex items-center justify-center p-3 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 group"
-              style={{
-                color: "black",
-                textDecoration: "none",
-              }}
-              to="/extra">
-              <FontAwesomeIcon icon={faCompass} />
-              &nbsp;부가기능
-            </NavLink>
-          </li>
         </ul>
       </div>
 

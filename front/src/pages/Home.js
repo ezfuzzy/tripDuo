@@ -38,23 +38,29 @@ function Home() {
     const isLoggedIn = localStorage.getItem("token") !== null; // 토큰이 존재하는지 확인
 
     return (
-        <div className="container mx-auto px-8 bg-white min-h-screen">
-            <div className="flex justify-end pt-4 relative">
-                <button
-                    className="inline-flex justify-center w-24 rounded-md border border-gray-300 shadow-md px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-100"
-                    onClick={() => setDropdownOpen(!dropdownOpen)}
-                >
-                    {selectedOption}
-                </button>
-                {dropdownOpen && (
-                    <div className="absolute right-0 z-10 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                        <div className="py-1" role="menu" aria-orientation="vertical">
-                            <button onClick={() => handleSelect("Home")} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">국내</button>
-                            <button onClick={() => handleSelect("international")} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">해외</button>
-                        </div>
+    <div className="container mx-auto px-8 bg-white min-h-screen">
+        <div className="flex justify-end pt-4 relative">
+            <button
+                className="inline-flex justify-center w-24 rounded-md border border-gray-300 shadow-md px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-100"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+            >
+                {selectedOption}
+            </button>
+            {dropdownOpen && (
+                <div className="absolute right-0 top-full mt-2 w-24 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                    {/* 드롭다운 메뉴 전체를 flex로 변경하여 중앙 정렬 */}
+                    <div className="py-1 flex flex-col items-center" role="menu" aria-orientation="vertical">
+                        {/* 버튼들을 flex와 justify-center로 정렬 */}
+                        <button onClick={() => handleSelect("Home")} className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex justify-center" role="menuitem">
+                            국내
+                        </button>
+                        <button onClick={() => handleSelect("international")} className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex justify-center" role="menuitem">
+                            해외
+                        </button>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
+        </div>
             <div className="my-12">
                 <header className="py-8 text-center">
                     <h1 className="text-3xl font-bold text-green-600">국내 여행</h1>
@@ -93,10 +99,31 @@ function Home() {
                 </div>
             </div>
 
+
+            <div className="flex items-center justify-between mb-8 p-4 bg-green-300 rounded-lg shadow-lg">
+                <h3 className="text-xl font-semibold text-white">여행 코스 검색</h3>
+                <div className="flex space-x-4">
+                    <div
+                        className="relative min-w-[80px] cursor-pointer"
+                        onClick={() => navigateToMate("Domestic")}
+                    >
+                        <img src="https://picsum.photos/80/80?random=1" alt="국내" className="rounded-full border-2 border-white shadow-md" />
+                        <span className="absolute inset-0 flex items-center justify-center text-white text-lg font-bold">국내</span>
+                    </div>
+                    <div
+                        className="relative min-w-[80px] cursor-pointer"
+                        onClick={() => navigateToMate("International")}
+                    >
+                        <img src="https://picsum.photos/80/80?random=2" alt="해외" className="rounded-full border-2 border-white shadow-md" />
+                        <span className="absolute inset-0 flex items-center justify-center text-white text-lg font-bold">해외</span>
+                    </div>
+                </div>
+            </div>
+
             <div className="my-12 h-16" />
 
             <div className="my-12">
-                <h3 className="text-xl font-semibold mb-4 text-green-600">국내 인기 메이트</h3>
+                <h3 className="text-xl font-semibold mb-4 text-green-600">국내 인기 게시물</h3>
                 {!isLoggedIn && ( // 로그인하지 않은 경우에만 보이도록 수정
                     <p className="text-gray-600 text-sm text-left mb-4">
                         <span className='cursor-pointer' onClick={navigateToLogin}>로그인</span> 하시면 고객님에게 알맞는 메이트를 추천해드립니다.
