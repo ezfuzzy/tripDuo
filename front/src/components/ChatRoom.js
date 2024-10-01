@@ -236,7 +236,7 @@ function ChatRoom() {
     }
     // 이전 채팅 메시지를 가져옵니다
     axios
-      .get(`/api/chat/rooms/${roomId}/messages`)
+      .get(`/api/chat/rooms/${roomId}/getMessages`)
       .then((response) => {
         setMessages(response.data);
       })

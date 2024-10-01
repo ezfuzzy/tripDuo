@@ -7,9 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.tripDuo.entity.ChatRoom;
 
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
-
 	List<ChatRoom> findAllById(Long userId);
-
 	List<ChatRoom> findByIdIn(List<Long> chatRoomIds);
 
 }

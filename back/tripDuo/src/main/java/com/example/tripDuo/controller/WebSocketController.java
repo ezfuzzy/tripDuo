@@ -18,40 +18,39 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RestController
 public class WebSocketController {
 
-
 	private final SimpMessagingTemplate messagingTemplate;
 	private final ChatService chatService;
-	
+
 	public WebSocketController(SimpMessagingTemplate messagingTemplate, ChatService chatService) {
 		this.messagingTemplate = messagingTemplate;
 		this.chatService = chatService;
 	}
 
 	// 1. 그룹 채팅 메시지 전송
-		@MessageMapping("/chat.sendMessage/group/{roomId}")
-		@SendTo("/topic/group/{roomId}") // 그룹 채팅방
-		public ChatMessageDto sendGroupMessage2(ChatMessageDto messageDto, @DestinationVariable String roomId) throws JsonProcessingException {
-			// 1. 메시지를 JSON 문자열로 변환하여 TextMessage 객체로 생성
-		    ObjectMapper objectMapper = new ObjectMapper();
-		    String payload = objectMapper.writeValueAsString(messageDto);
-		    TextMessage textMessage = new TextMessage(payload);
-		    // 2. 메시지를 redis에 저장하는 서비스 호출
-		    chatService.saveMessageToRedis(textMessage); 
-			return messageDto;
-		}
+	@MessageMapping("/chat.sendMessage/group/{roomId}")
+	@SendTo("/topic/group/{roomId}") // 그룹 채팅방
+	public ChatMessageDto sendGroupMessage2(ChatMessageDto messageDto, @DestinationVariable String roomId) throws JsonProcessingException {
+		// 1. 메시지를 JSON 문자열로 변환하여 TextMessage 객체로 생성
+		ObjectMapper objectMapper = new ObjectMapper();
+		String payload = objectMapper.writeValueAsString(messageDto);
+		TextMessage textMessage = new TextMessage(payload);
+		// 2. 메시지를 redis에 저장하는 서비스 호출
+		chatService.saveMessageToRedis(textMessage);
+		return messageDto;
+	}
 
-		// 2. 1:1 채팅 메시지 전송
-		@MessageMapping("/chat.sendMessage/private/{roomId}")
-		@SendTo("/user/private/{roomId}") // 1:1 채팅방
-		public ChatMessageDto sendPrivateMessage(ChatMessageDto messageDto, @DestinationVariable String roomId)throws JsonProcessingException {
-			// 1. 메시지를 JSON 문자열로 변환하여 TextMessage 객체로 생성
-		    ObjectMapper objectMapper = new ObjectMapper();
-		    String payload = objectMapper.writeValueAsString(messageDto);
-		    TextMessage textMessage = new TextMessage(payload);
-		    // 2. 메시지를 redis에 저장하는 서비스 호출
-		    chatService.saveMessageToRedis(textMessage); 
-			return messageDto;
-		}
+	// 2. 1:1 채팅 메시지 전송
+	@MessageMapping("/chat.sendMessage/private/{roomId}")
+	@SendTo("/user/private/{roomId}") // 1:1 채팅방
+	public ChatMessageDto sendPrivateMessage(ChatMessageDto messageDto, @DestinationVariable String roomId) throws JsonProcessingException {
+		// 1. 메시지를 JSON 문자열로 변환하여 TextMessage 객체로 생성
+		ObjectMapper objectMapper = new ObjectMapper();
+		String payload = objectMapper.writeValueAsString(messageDto);
+		TextMessage textMessage = new TextMessage(payload);
+		// 2. 메시지를 redis에 저장하는 서비스 호출
+		chatService.saveMessageToRedis(textMessage);
+		return messageDto;
+	}
 
 	// 3. 알림 전송
 	@MessageMapping("/notification")
@@ -71,7 +70,6 @@ public class WebSocketController {
 	@SendTo("/topic/adduser/{roomId}")
 	public ChatMessageDto addUser(ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor,
 			@DestinationVariable String roomId) {
-		// WebSocket 세션에 사용자 추가
 		headerAccessor.getSessionAttributes().put("username", message.getUserProfileInfo().getNickname());
 		return message;
 	}
@@ -81,7 +79,6 @@ public class WebSocketController {
 	@SendTo("/topic/newroom/group/{roomId}")
 	public ChatRoomDto addChatRoomGroup(ChatRoomDto message, SimpMessageHeaderAccessor headerAccessor,
 			@DestinationVariable String roomId) {
-		// WebSocket 세션에 사용자 추가
 		return message;
 	}
 
@@ -90,7 +87,6 @@ public class WebSocketController {
 	@SendTo("/user/newroom/private/{roomId}")
 	public ChatRoomDto addChatRoomPrivate(ChatRoomDto message, SimpMessageHeaderAccessor headerAccessor,
 			@DestinationVariable String roomId) {
-		// WebSocket 세션에 사용자 추가
 		return message;
 	}
 }

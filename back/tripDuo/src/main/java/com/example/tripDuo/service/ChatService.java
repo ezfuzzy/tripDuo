@@ -10,15 +10,16 @@ import com.example.tripDuo.entity.ChatRoom;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 public interface ChatService  {
-    // 사용자가 속한 채팅방 번호 조회
+	// 사용자가 속한 채팅방 번호 조회
 	public List<ChatRoomDto> getSelectAllChatRooms(Long userId);
-    // 특정 채팅방의 모든 메시지를 반환
+	// 특정 채팅방의 모든 메시지를 반환
 	public List<ChatMessageDto> getChatMessages(Long roomId);
 	// 채팅방 생성 추가
-	public ChatRoom createChatRoom(ChatRoomDto chatRoomDto); 
+	public ChatRoom createChatRoom(ChatRoomDto chatRoomDto);
 	// 메세지 캐싱
-	public ChatMessageDto saveMessageToRedis(TextMessage message) throws JsonProcessingException; 
-    // 메세지 DB 저장 스케줄러 
-    public void saveMessagesToDatabase();
+	public ChatMessageDto saveMessageToRedis(TextMessage message) throws JsonProcessingException;
+	// 메세지 DB 저장 스케줄러
+	public void saveMessagesToDatabase();
+	public void clearRedisCacheOnShutdown();
 
 }
