@@ -8,8 +8,10 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.dto.UserFollowDto;
 import com.example.tripDuo.dto.UserProfileInfoDto;
+import com.example.tripDuo.dto.UserReportDto;
 import com.example.tripDuo.dto.UserReviewDto;
 import com.example.tripDuo.entity.UserProfileInfo;
+import com.example.tripDuo.enums.ReportTarget;
 
 public interface UserService {
 
@@ -54,4 +56,7 @@ public interface UserService {
 	public UserReviewDto writeReview(UserReviewDto userReviewDto);
 	public UserReviewDto updateReview(UserReviewDto userReviewDto);
 	public void deleteReview(Long revieweeId, Long reviewerId);
+
+	// ### report ###
+	public UserReportDto report(UserReportDto userReportDto, ReportTarget targetType, Long reportedTargetId);
 }

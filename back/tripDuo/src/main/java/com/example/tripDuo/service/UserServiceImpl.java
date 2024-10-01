@@ -18,14 +18,20 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.dto.UserFollowDto;
 import com.example.tripDuo.dto.UserProfileInfoDto;
+import com.example.tripDuo.dto.UserReportDto;
+import com.example.tripDuo.dto.UserReportToUserDto;
 import com.example.tripDuo.dto.UserReviewDto;
 import com.example.tripDuo.entity.User;
 import com.example.tripDuo.entity.UserFollow;
 import com.example.tripDuo.entity.UserProfileInfo;
+import com.example.tripDuo.entity.UserReportToUser;
 import com.example.tripDuo.entity.UserReview;
 import com.example.tripDuo.enums.FollowType;
+import com.example.tripDuo.enums.ReportStatus;
+import com.example.tripDuo.enums.ReportTarget;
 import com.example.tripDuo.repository.UserFollowRepository;
 import com.example.tripDuo.repository.UserProfileInfoRepository;
+import com.example.tripDuo.repository.UserReportRepository;
 import com.example.tripDuo.repository.UserRepository;
 import com.example.tripDuo.repository.UserReviewRepository;
 import com.example.tripDuo.util.JwtUtil;
@@ -45,11 +51,12 @@ public class UserServiceImpl implements UserService {
 	private final UserProfileInfoRepository userProfileInfoRepo;
 	private final UserFollowRepository userFollowRepo;
 	private final UserReviewRepository userReviewRepo;
+	private final UserReportRepository userReportRepo;
 	private final PasswordEncoder passwordEncoder;
 	
 	public UserServiceImpl(JwtUtil jwtUtil, S3Service s3Service, UserRepository userRepo, 
 			UserProfileInfoRepository userProfileInfoRepo, UserFollowRepository userFollowRepo, 
-			PasswordEncoder passwordEncoder, UserReviewRepository userReviewRepo) {
+			PasswordEncoder passwordEncoder, UserReportRepository userReportRepo, UserReviewRepository userReviewRepo) {
 		
 		this.jwtUtil = jwtUtil;
 		this.s3Service = s3Service;
@@ -57,6 +64,7 @@ public class UserServiceImpl implements UserService {
 		this.userProfileInfoRepo = userProfileInfoRepo;
 		this.userFollowRepo = userFollowRepo;
 		this.userReviewRepo = userReviewRepo;
+		this.userReportRepo = userReportRepo;
 		this.passwordEncoder = passwordEncoder;
 	}
 
@@ -544,5 +552,31 @@ public class UserServiceImpl implements UserService {
 		revieweeProfileInfo.addRatings(-rating);
 
 		userReviewRepo.delete(userReview);
+	}
+
+	// ### report ###
+
+	/**
+	 * @date : 2024. 10. 01.
+	 * @user : 유병한
+	 * report: 신고하기
+	 * 
+	 * @param userReportDto
+	 * @param reportedTargetId
+	 */
+	@Transactional
+	@Override
+	public UserReportDto report(UserReportDto userReportDto, ReportTarget targetType, Long targetId) {
+		userReportDto.setStatus(ReportStatus.UNPROCESSED);
+
+		switch (targetType) {
+			case USER:
+				User reportedUser = userRepo.findById(targetId).get();
+				UserReportToUser userReportToUser = UserReportToUser.toEntity(userReportDto, reportedUser);
+				userReportRepo.save(userReportToUser);
+				userReportDto = UserReportToUserDto.toDto(userReportToUser);
+				break;
+		}
+		return userReportDto;
 	}
 }
