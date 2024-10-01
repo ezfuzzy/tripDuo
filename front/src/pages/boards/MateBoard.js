@@ -339,7 +339,10 @@ function MateBoard() {
               <td>
                 {item.startDate} ~ {item.endDate}
               </td>
-              <td className="text-sm">
+              <td className="text-xs ">
+                {
+                  item.updatedAt ? <span className="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded">update</span> : <span className="px-8"></span>
+                }
                 {new Date(item.updatedAt ? item.updatedAt : item.createdAt).toLocaleDateString("ko-KR", {
                   year: "numeric",
                   month: "long",
@@ -347,7 +350,7 @@ function MateBoard() {
                   hour: "numeric",
                   minute: "numeric",
                   second: "numeric",
-                })}{" "}
+                })}
               </td>
               {/* 조회수, 좋아요, 덧글 수 */}
               <td>
