@@ -1,8 +1,9 @@
 package com.example.tripDuo.dto;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 import com.example.tripDuo.entity.ChatMessage;
+import com.example.tripDuo.entity.UserProfileInfo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,21 +18,18 @@ public class ChatMessageDto {
 	private Long id;
 	private String message;
 
-	private String sender;
-	private String profilePicture;
+	private UserProfileInfo userProfileInfo;
 
 	private Long chatRoomId;
-	private String recipient; // 1:1 채팅에서 사용할 수신자 필드
 
-	private LocalDateTime timestamp;
+	private Date timestamp;
 
 	public static ChatMessageDto toDto(ChatMessage entity) {
 		return ChatMessageDto.builder()
-				.id(entity.getId())
-				.message(entity.getMessage())
-				.sender(entity.getUserProfileInfo().getNickname())
-				.profilePicture(entity.getUserProfileInfo().getProfilePicture())
-				.timestamp(entity.getTimestamp())
-				.build();
+								.id(entity.getId())
+								.message(entity.getMessage())
+								.userProfileInfo(entity.getUserProfileInfo())
+								.chatRoomId(entity.getChatRoomId())
+								.timestamp(entity.getTimestamp()).build();
 	}
 }

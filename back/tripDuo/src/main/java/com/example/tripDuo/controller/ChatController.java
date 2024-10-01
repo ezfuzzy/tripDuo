@@ -47,11 +47,4 @@ public class ChatController {
 
 		return ResponseEntity.ok(chatService.createChatRoom(chatRoomDto));
 	}
-
-	// 메세지 저장 API 
-	@PostMapping("/{roomId}/saveMessages")
-	public ResponseEntity<List<ChatMessageDto>> sendMessage(@PathVariable Long roomId, @RequestBody ChatMessageDto chatMessageDto){
-		
-		return ResponseEntity.ok(chatService.saveMesages(roomId, chatMessageDto));
-	}
 }
