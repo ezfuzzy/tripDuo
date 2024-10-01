@@ -54,7 +54,7 @@ public class PostServiceImpl implements PostService {
 	private final UserSavedPlaceRepository userSavedPlaceRepo;
 	private final UserSavedCourseRepository userSavedCourseRepo;
 	
-	final int POST_PAGE_SIZE = 10;
+	final int POST_PAGE_SIZE = 12;
 	final int COMMENT_PAGE_SIZE = 10;
 	
 	public PostServiceImpl(PostRepository postRepo, PostCommentRepository postCommentRepo, 
