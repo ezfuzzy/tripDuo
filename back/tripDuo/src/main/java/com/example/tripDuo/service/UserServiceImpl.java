@@ -170,9 +170,14 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserProfileInfo getUserProfileInfoByIdForPostDetailPage(Long userId) {
-		return userProfileInfoRepo.findById(userId)
-				.orElseThrow(() -> new EntityNotFoundException("User not found"));
+	public UserProfileInfoDto getUserProfileInfoByIdForPostDetailPage(Long userId) {
+		
+		UserProfileInfo userProfileInfo = userProfileInfoRepo.findById(userId)
+					.orElseThrow(() -> new EntityNotFoundException("User not found"));
+		
+		UserProfileInfoDto upiDto = UserProfileInfoDto.toDto(userProfileInfo, PROFILE_PICTURE_CLOUDFRONT_URL);
+		
+		return upiDto;
 	}
 	
 	
