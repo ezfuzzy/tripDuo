@@ -1,6 +1,7 @@
 package com.example.tripDuo;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -26,7 +27,7 @@ import com.example.tripDuo.enums.UserRole;
 import com.example.tripDuo.enums.VerificationStatus;
 import com.example.tripDuo.repository.ChatParticipantRepository;
 import com.example.tripDuo.repository.ChatRoomRepository;
-import com.example.tripDuo.repository.MessageRepository;
+import com.example.tripDuo.repository.ChatMessageRepository;
 import com.example.tripDuo.repository.PostRepository;
 import com.example.tripDuo.repository.UserProfileInfoRepository;
 import com.example.tripDuo.repository.UserRepository;
@@ -46,7 +47,7 @@ public class TripDuoApplication {
     private ChatRoomRepository chatRoomRepo;
 
     @Autowired
-    private MessageRepository messageRepo;
+    private ChatMessageRepository messageRepo;
     
 	@Autowired
 	private UserRepository userRepo;
@@ -163,11 +164,11 @@ public class TripDuoApplication {
         Long groupChatRoomId = groupChatRoom.getId(); // 그룹 채팅방 ID
         
         // 3. 채팅 메시지(ChatMessage) 미리 생성
-        ChatMessage message1 = ChatMessage.builder().message("안녕하세요! 첫 번째 메시지입니다.").chatRoomId(chatRoomId1).userProfileInfo(upi5).timestamp(LocalDateTime.now()).build();
-        ChatMessage message2 = ChatMessage.builder().message("안녕하세요! 두 번째 메시지입니다.").chatRoomId(chatRoomId2).userProfileInfo(upi6).timestamp(LocalDateTime.now()).build();
-        ChatMessage message3 = ChatMessage.builder().message("안녕하세요! 세 번째 메시지입니다.").chatRoomId(groupChatRoomId).userProfileInfo(upi7).timestamp(LocalDateTime.now()).build();
-        ChatMessage message4 = ChatMessage.builder().message("안녕하세요! 네 번째 메시지입니다.").chatRoomId(groupChatRoomId).userProfileInfo(upi9).timestamp(LocalDateTime.now()).build();
-        ChatMessage message5 = ChatMessage.builder().message("안녕하세요! 다섯 번째 메시지입니다.").chatRoomId(groupChatRoomId).userProfileInfo(upi10).timestamp(LocalDateTime.now()).build();
+        ChatMessage message1 = ChatMessage.builder().message("안녕하세요! 첫 번째 메시지입니다.").chatRoomId(chatRoomId1).userProfileInfo(upi5).timestamp(new Date()).build();
+        ChatMessage message2 = ChatMessage.builder().message("안녕하세요! 두 번째 메시지입니다.").chatRoomId(chatRoomId2).userProfileInfo(upi6).timestamp(new Date()).build();
+        ChatMessage message3 = ChatMessage.builder().message("안녕하세요! 세 번째 메시지입니다.").chatRoomId(groupChatRoomId).userProfileInfo(upi7).timestamp(new Date()).build();
+        ChatMessage message4 = ChatMessage.builder().message("안녕하세요! 네 번째 메시지입니다.").chatRoomId(groupChatRoomId).userProfileInfo(upi9).timestamp(new Date()).build();
+        ChatMessage message5 = ChatMessage.builder().message("안녕하세요! 다섯 번째 메시지입니다.").chatRoomId(groupChatRoomId).userProfileInfo(upi10).timestamp(new Date()).build();
 
         // 메시지 저장
         messageRepo.save(message1);

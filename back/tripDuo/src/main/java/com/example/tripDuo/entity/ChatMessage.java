@@ -1,6 +1,7 @@
 package com.example.tripDuo.entity;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import com.example.tripDuo.dto.ChatMessageDto;
 
@@ -21,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor  // 기본 생성자
 @AllArgsConstructor // 모든 필드를 포함한 생성자
-@Table(name="chatmessage") // 인덱스 추가 
+@Table(name="chat_message") // 인덱스 추가 
 public class ChatMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,15 +34,15 @@ public class ChatMessage {
     @JoinColumn(name = "user_id", nullable = false)
     private UserProfileInfo userProfileInfo;
     
-    private LocalDateTime timestamp;
+    private Date timestamp;
 
     // toEntity 메서드
     public static ChatMessage toEntity(ChatMessageDto dto, UserProfileInfo userProfileInfo) {
         return ChatMessage.builder()
-                .id(dto.getId())
+        		.id(dto.getId())
                 .message(dto.getMessage())
-                .chatRoomId(dto.getChatRoomId())  // 필드 이름 수정
                 .userProfileInfo(userProfileInfo)
+                .chatRoomId(dto.getChatRoomId())  // 필드 이름 수정
                 .timestamp(dto.getTimestamp())
                 .build();
     }
