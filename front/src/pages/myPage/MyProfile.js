@@ -42,8 +42,10 @@ function MyProfile(props) {
   const dropdownMenuRef = useRef();
 
   // 리뷰 작성 관련
-  // 리뷰 Content
+  // 새로 작성하는 리뷰 Content // to do : 변수명 수정하기
   const [userReview, setUserReview] = useState("");
+  // 작성된 리뷰들의 수정 content
+  const [editTexts, setEditTexts] = useState({});
   //리뷰 체크박스 상태 설정
   const [selectedTags, setSelectedTags] = useState([]);
   //리뷰 이미 작성한 사용자인지 체크
@@ -85,8 +87,6 @@ function MyProfile(props) {
     { key: 9, keyword: "CLEAN", text: "개인 위생 관리가 부족하여 함께 여행하는 것이 불편했어요." },
   ];
 
-  //새로 등록한 댓글을 추가할 인덱스
-  let commentIndex = 0;
   // 리뷰 최대 글자수
   const maxLength = 3000;
 
@@ -111,8 +111,15 @@ function MyProfile(props) {
 
         //불러온 사용자의 정보 저장
         setProfile(res.data.userProfileInfo);
-        //불러온 사용자에게 달린 리뷰 저장
-        setReviewList(res.data.userReviewList);
+        //리뷰 목록이 존재하는지 확인하고, 존재한다면 ref 라는 방 추가
+        const list = Array.isArray(res.data.userReviewList)
+          ? res.data.userReviewList.map((item) => {
+              item.ref = createRef();
+              return item;
+            })
+          : [];
+
+        setReviewList(list);
 
         console.log(res.data);
 
@@ -281,34 +288,64 @@ function MyProfile(props) {
         // textArea 초기화
         setUserReview("");
         setSelectedTags([]);
+        setExperience("");
       })
       .catch((error) => console.log(error));
   };
 
   // 리뷰 신고 처리 함수
-  const handleReportReview = (commentId) => {
+  const handleReportReview = (reviewerId) => {
     // 신고 기능 구현
-    alert(`댓글 ID ${commentId}가 신고되었습니다.`);
+    alert(`댓글 ID ${reviewerId}가 신고되었습니다.`);
     // 추가로 서버에 신고 요청을 보내는 로직을 여기에 추가
   };
 
   // 리뷰 수정 함수
-  const handleUpdateRiview = () => {
+  const handleUpdateReview = (item, editIndex) => {
+    const editReviewData = {
+      content: editTexts[editIndex],
+      experience: item.experience,
+      tags: item.tags
+    };
+    axios
+      .put(`/api/v1/users/${id}/review/${userId}`, editReviewData)
+      .then((res) => {
+        console.log(res.data);
+        const newReviewList = reviewList.map((tmp)=>{
+          if(tmp.id === parseInt(item.id)){
+            return {
+              ...tmp,
+              content: editTexts[editIndex]
+            }
+          }
+          return tmp
+        })
+        setReviewList(newReviewList)
 
+      })
+      .catch((error) => console.log(error));
   };
 
   // 리뷰 삭제 함수
   const handleDeleteReview = () => {
-    if(window.confirm("리뷰를 삭제하시겠습니까?")){ 
+    if (window.confirm("리뷰를 삭제하시겠습니까?")) {
       axios
-      .delete(`/api/v1/users/${id}/review/${userId}`)
-      .then((res) => {
-        console.log(res.data);
-        // 사용자당 한개의 리뷰를 작성하기때문에 삭제가 가능한 reviewerId = userId 이다
-        setReviewList(reviewList.filter((item) => item.reviewerId !== userId));
-      })
-      .catch((error) => console.log(error));
+        .delete(`/api/v1/users/${id}/review/${userId}`)
+        .then((res) => {
+          console.log(res.data);
+          // 사용자당 한개의 리뷰를 작성하기때문에 삭제가 가능한 reviewerId = userId 이다
+          setReviewList(reviewList.filter((item) => item.reviewerId !== userId));
+        })
+        .catch((error) => console.log(error));
     }
+  };
+
+  // 수정 텍스트 상태 업데이트
+  const handleEditTextChange = (index, value) => {
+    setEditTexts((prev) => ({
+      ...prev,
+      [index]: value,
+    }));
   };
 
   return (
@@ -591,8 +628,8 @@ function MyProfile(props) {
         {/* REVIEW */}
         <div>
           <ul className="space-y-4">
-            {reviewList.map((item) => (
-              <li key={item.id}>
+            {reviewList.map((item, index) => (
+              <li key={item.id} ref={item.ref}>
                 <div className="flex-1">
                   {/* 유저 정보 */}
                   <div className="flex items-end">
@@ -628,7 +665,11 @@ function MyProfile(props) {
                     {/* 리뷰어와 현재 접속자가 같을때만 수정/삭제 랜더링 */}
                     {item.reviewerId === userId ? (
                       <p className="text-xs text-gray-500 ml-auto mr-4 space-x-3">
-                        <span onClick={handleUpdateRiview} className="cursor-pointer">
+                        <span
+                          className="cursor-pointer"
+                          onClick={() => {
+                            item.ref.current.querySelector(".updateReviewForm").classList.remove("hidden");
+                          }}>
                           수정
                         </span>
                         <span onClick={handleDeleteReview} className="cursor-pointer">
@@ -650,6 +691,34 @@ function MyProfile(props) {
                   {/* 작성 시간 */}
                   <div className="mt-2 text-sm text-gray-500">
                     <small className="ml-4 text-gray-400">{item.createdAt}</small>
+                  </div>
+
+                  {/* 리뷰 수정 폼 */}
+                  <div className="updateReviewForm border-3 rounded-lg p-3 mt-4 mb-6 bg-white hidden">
+                    <div className="font-bold text-lg">{item.nickname}</div>
+                    <div className="relative">
+                      <textarea
+                        name="content"
+                        className="border border-white rounded w-full h-24 p-2"
+                        defaultValue={item.content}
+                        maxLength={maxLength}
+                        onChange={(e) => handleEditTextChange(index, e.target.value)}
+                      />
+                      <div className="absolute top-2 right-2 text-gray-500 text-sm">
+                        {editTexts[index]?.length || 0}/{maxLength}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <button
+                        type="button"
+                        className="text-blue-500 hover:text-blue-700 font-semibold"
+                        onClick={() => {
+                          item.ref.current.querySelector(".updateReviewForm").classList.add("hidden");
+                          handleUpdateReview(item, index);
+                        }}>
+                        수정 확인
+                      </button>
+                    </div>
                   </div>
                 </div>
               </li>
