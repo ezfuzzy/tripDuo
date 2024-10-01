@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +25,8 @@ import com.example.tripDuo.dto.UserReviewDto;
 import com.example.tripDuo.entity.UserProfileInfo;
 import com.example.tripDuo.enums.FollowType;
 import com.example.tripDuo.service.UserService;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -46,10 +49,10 @@ public class UserController {
 	}
 	
 
-	@GetMapping("/{id:[0-9]+}")
-	public ResponseEntity<Map<String, Object>> getUserProfileInfoById(@PathVariable Long id) {
+	@GetMapping("/{userId:[0-9]+}")
+	public ResponseEntity<Map<String, Object>> getUserProfileInfoById(@PathVariable Long userId) {
 
-		Map<String, Object> userDatas = userService.getUserProfileInfoById(id);
+		Map<String, Object> userDatas = userService.getUserProfileInfoById(userId);
 		
 		if (userDatas != null) {
 			return ResponseEntity.ok(userDatas);
@@ -58,6 +61,20 @@ public class UserController {
 		}
 	}
 
+	@GetMapping("/{userId:[0-9]+}/author")
+	public ResponseEntity<?> getUserProfileInfoByIdForPostDetailPage(@PathVariable Long userId) {
+		
+		try {
+			return ResponseEntity.ok(userService.getUserProfileInfoByIdForPostDetailPage(userId));
+		} catch (EntityNotFoundException e) {
+	        // 게시글이 존재하지 않는 경우에 대한 처리
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+	    } catch (Exception e) {
+	        // 기타 예외에 대한 처리
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	    } 
+	}
+	
 	@GetMapping("/username/{username:[a-z0-9]+}")
 	public ResponseEntity<UserProfileInfoDto> getUserProfileInfoByUsername(@PathVariable("username") String username) {
 		UserProfileInfoDto userProfileInfoDto = userService.getUserProfileInfoByUsername(username);
@@ -78,37 +95,38 @@ public class UserController {
 		return ResponseEntity.ok(userService.checkExists(checkType, checkString));
 	}
 
-	@PutMapping("/{id}/profile-info")
-	public ResponseEntity<?> updateUserProfileInfo(@PathVariable Long id,
+	@PutMapping("/{userId}/profile-info")
+	public ResponseEntity<?> updateUserProfileInfo(@PathVariable Long userId,
 			@RequestParam(required = false) MultipartFile profileImgForUpload, UserProfileInfoDto userProfileInfoDto) {
+		userProfileInfoDto.setUserId(userId);
 		// 사용자 정보 업데이트
 		return ResponseEntity.ok(userService.updateUserProfileInfo(userProfileInfoDto, profileImgForUpload));
 	}	
 
-	@PutMapping("/{id}/change-password")
-	public ResponseEntity<Boolean> updateUserPassword(@PathVariable Long id, @RequestBody UserDto userDto) {
-		userDto.setId(id);
+	@PutMapping("/{userId}/change-password")
+	public ResponseEntity<Boolean> updateUserPassword(@PathVariable Long userId, @RequestBody UserDto userDto) {
+		userDto.setId(userId);
 		// 사용자 비밀번호 업데이트
 		return ResponseEntity.ok(userService.updateUserPassword(userDto));
 	}
 
-	@PostMapping("/{id}/reset-password")
-	public ResponseEntity<Boolean> resetUserPassword(@PathVariable Long id, @RequestBody UserDto userDto) {
-		userDto.setId(id);
+	@PostMapping("/{userId}/reset-password")
+	public ResponseEntity<Boolean> resetUserPassword(@PathVariable Long userId, @RequestBody UserDto userDto) {
+		userDto.setId(userId);
 		return ResponseEntity.ok(userService.resetUserPassword(userDto));
 	}
 
-	@PutMapping("/{id}/private-info")
-	public ResponseEntity<?> updateUserPrivateInfo(@PathVariable Long id, @RequestBody UserDto userDto) {
-		userDto.setId(id);
+	@PutMapping("/{userId}/private-info")
+	public ResponseEntity<?> updateUserPrivateInfo(@PathVariable Long userId, @RequestBody UserDto userDto) {
+		userDto.setId(userId);
 		userService.updateUserPrivateInfo(userDto);
 		return ResponseEntity.ok("User private info updated successfully");
 	}
 	
-	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deleteUser(@PathVariable Long id) {
-		userService.deleteUser(id);
-		return ResponseEntity.ok(id + " user is deleted");
+	@DeleteMapping("/{userId}")
+	public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
+		userService.deleteUser(userId);
+		return ResponseEntity.ok(userId + " user is deleted");
 	}
 
 	// ### follow ###

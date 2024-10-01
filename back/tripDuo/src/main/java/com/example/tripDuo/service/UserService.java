@@ -25,6 +25,7 @@ public interface UserService {
 	// ### getUserProfileInfo ###
 	public List<UserProfileInfo> getUserProfileInfoList();
 	public Map<String, Object> getUserProfileInfoById(Long userId);
+	public UserProfileInfo getUserProfileInfoByIdForPostDetailPage(Long userId);
 	public UserProfileInfoDto getUserProfileInfoByUsername(String username); 
 	
 	// ### 중복체크 ###
