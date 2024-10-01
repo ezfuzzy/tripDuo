@@ -40,20 +40,26 @@ function HomeAbroad() {
 
     return (
         <div className="container mx-auto px-8 bg-white min-h-screen">
-            <div className="flex justify-end pt-4 relative">
-                <button
-                    className="inline-flex justify-center w-24 rounded-md border border-gray-300 shadow-md px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-100"
-                    onClick={() => setDropdownOpen(!dropdownOpen)}
-                >
-                    {selectedOption}
-                </button>
-                {dropdownOpen && (
-                    <div className="absolute right-0 z-10 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                        <div className="py-1" role="menu" aria-orientation="vertical">
-                            <button onClick={() => handleSelect("Home")} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">국내</button>
-                            <button onClick={() => handleSelect("international")} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">해외</button>
-                        </div>
+        <div className="flex justify-end pt-4 relative">
+            <button
+                className="inline-flex justify-center w-24 rounded-md border border-gray-300 shadow-md px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-100"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+            >
+                {selectedOption}
+            </button>
+            {dropdownOpen && (
+                <div className="absolute right-0 top-full mt-2 w-24 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                    {/* 드롭다운 메뉴 전체를 flex로 변경하여 중앙 정렬 */}
+                    <div className="py-1 flex flex-col items-center" role="menu" aria-orientation="vertical">
+                        {/* 버튼들을 flex와 justify-center로 정렬 */}
+                        <button onClick={() => handleSelect("Home")} className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex justify-center" role="menuitem">
+                            국내
+                        </button>
+                        <button onClick={() => handleSelect("international")} className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex justify-center" role="menuitem">
+                            해외
+                        </button>
                     </div>
+                </div>
                 )}
             </div>
 
@@ -98,10 +104,10 @@ function HomeAbroad() {
             <div className="my-12 h-16" />
 
             <div className="my-12">
-                <h3 className="text-xl font-semibold mb-4 text-green-600">해외 여행 인기 메이트</h3>
+                <h3 className="text-xl font-semibold mb-4 text-green-600">해외 여행 인기 게시물</h3>
                 {!token && (
                     <p className="text-gray-600 text-sm text-left mb-4">
-                        <span className='cursor-pointer' onClick={navigateToLogin}>로그인</span> 하시면 고객님에게 알맞는 메이트를 추천해드립니다.
+                        <span className='cursor-pointer' onClick={navigateToLogin}>로그인</span> 하시면 고객님에게 알맞는 게시물을 추천해드립니다.
                     </p>
                 )}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
