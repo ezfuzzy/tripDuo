@@ -233,23 +233,23 @@ public class UserController {
 	// ### report ###
 	// 신고 관련 메소드
 
-	// 어떤 유저(reporterId)가  다른 타겟(targetId)을 대상으로 신고(report)하기
-	@PostMapping("/{targetId}/report/{targetType}/{reporterId}")
+	// 어떤 유저(reporterId)가 다른 대상(targetId, targetType)을 신고(report)하기
+	@PostMapping("/{targetId}/report/{reportTarget}/{reporterId}")
 	public ResponseEntity<UserReportDto> report(@PathVariable("targetId") Long targetId,
-			@PathVariable("targetType") String targetType,		
+			@PathVariable("reportTarget") String target,		
 			@PathVariable("reporterId") Long reporterId,
 			@RequestBody UserReportDto userReportDto) {
 
-		ReportTarget targetTypeEnum;
+		ReportTarget targetEnum;
 
 		try {
-			targetTypeEnum = ReportTarget.fromString(targetType);
+			targetEnum = ReportTarget.fromString(target);
 		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException("Invalid target type: " + targetType, e);
+			throw new IllegalArgumentException("Invalid target type: " + target, e);
 		}
 		
 		userReportDto.setReporterId(reporterId);
-		UserReportDto insertedUserReportDto = userService.report(userReportDto, targetTypeEnum, targetId);
+		UserReportDto insertedUserReportDto = userService.report(userReportDto, targetEnum, targetId);
 		return ResponseEntity.ok(insertedUserReportDto);
 	}
 }
