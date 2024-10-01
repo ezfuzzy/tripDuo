@@ -21,9 +21,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.dto.UserFollowDto;
 import com.example.tripDuo.dto.UserProfileInfoDto;
+import com.example.tripDuo.dto.UserReportDto;
 import com.example.tripDuo.dto.UserReviewDto;
 import com.example.tripDuo.entity.UserProfileInfo;
 import com.example.tripDuo.enums.FollowType;
+import com.example.tripDuo.enums.ReportTarget;
 import com.example.tripDuo.service.UserService;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -226,5 +228,28 @@ public class UserController {
 		
 		userService.deleteReview(revieweeId, reviewerId);
 		return ResponseEntity.ok("Review deleted successfully");
+	}
+
+	// ### report ###
+	// 신고 관련 메소드
+
+	// 어떤 유저(reporterId)가  다른 타겟(targetId)을 대상으로 신고(report)하기
+	@PostMapping("/{targetId}/report/{targetType}/{reporterId}")
+	public ResponseEntity<UserReportDto> report(@PathVariable("targetId") Long targetId,
+			@PathVariable("targetType") String targetType,		
+			@PathVariable("reporterId") Long reporterId,
+			@RequestBody UserReportDto userReportDto) {
+
+		ReportTarget targetTypeEnum;
+
+		try {
+			targetTypeEnum = ReportTarget.fromString(targetType);
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("Invalid target type: " + targetType, e);
+		}
+		
+		userReportDto.setReporterId(reporterId);
+		UserReportDto insertedUserReportDto = userService.report(userReportDto, targetTypeEnum, targetId);
+		return ResponseEntity.ok(insertedUserReportDto);
 	}
 }
