@@ -25,10 +25,14 @@ function NavBar() {
   const location = useLocation();
 
   const [alertShow, setAlertShow] = useState(false);
+  // off-canvas 메뉴 관리
   const [openSections, setOpenSections] = useState({});
   const [lastVisited, setLastVisited] = useState("/");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [kakaoId, setKakaoId] = useState(null);
+
+  // md 사이즈 이하에서 dropdown menu 관리
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
 
   // off-canvas ref
   const offcanvasRef = useRef(null);
@@ -131,8 +135,10 @@ function NavBar() {
   const handleLoginLogoutClick = () => {
     if (isLoggedIn) {
       handleLogout();
+      setDropdownOpen(!isDropdownOpen);
     } else {
       handleLogin();
+      setDropdownOpen(!isDropdownOpen);
     }
 
     if (offcanvasRef.current) {
@@ -156,7 +162,7 @@ function NavBar() {
       <AlertModal show={alertShow} message={"로그아웃 되었습니다"} yes={handleYes} />
 
       {/* 글로벌 네비게이션 바 */}
-      <nav className="bg-white p-4 shadow-md flex justify-between items-center">
+      <nav className="bg-white p-4 shadow-md flex justify-between items-center relative">
         {/* Off-canvas toggle button */}
         <button
           type="button"
@@ -172,7 +178,8 @@ function NavBar() {
           <img className="w-24 h-auto" src="/img/TripDuologo.png" alt="logo" />
         </button>
 
-        <div className="flex space-x-4">
+        {/* md 이상에서만 보여주는 icon */}
+        <div className="hidden md:flex space-x-4">
           {isLoggedIn && (
             <>
               <NavLink to={`/chatRoom`}>
@@ -192,6 +199,44 @@ function NavBar() {
             {isLoggedIn ? "로그아웃" : "로그인/회원가입"}
           </button>
         </div>
+        {/* md 이하에서만 보여주는 icon */}
+        <div className="md:hidden pr-20">
+          <FontAwesomeIcon
+            onClick={() => setDropdownOpen(!isDropdownOpen)}
+            icon={faUser}
+            color="black"
+            className="h-5 w-5 cursor-pointer"
+          />
+        </div>
+        {isDropdownOpen && (
+          <div className="absolute right-20 top-10 mt-2 w-42 bg-white shadow divide-y divide-gray-100 rounded-lg py-2 z-10">
+            <p className="block px-4 py-2 hover:bg-gray-100 ">
+              <button className="font-bold text-gray-800" onClick={handleLoginLogoutClick}>
+                {isLoggedIn ? "로그아웃" : "로그인/회원가입"}
+              </button>
+            </p>
+            {isLoggedIn && (
+              <p className="block px-4 py-2 hover:bg-gray-100">
+                <button
+                  onClick={() => {
+                    navigate(`/users/${userId}`);
+                    setDropdownOpen(!isDropdownOpen);
+                  }}>
+                  마이 페이지
+                </button>
+              </p>
+            )}
+            <p className="block px-4 py-2 hover:bg-gray-100">
+              <button
+                onClick={() => {
+                  navigate("/chatRoom");
+                  setDropdownOpen(!isDropdownOpen);
+                }}>
+                채팅
+              </button>
+            </p>
+          </div>
+        )}
       </nav>
 
       {/* Tabs */}
