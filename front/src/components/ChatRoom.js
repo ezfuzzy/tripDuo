@@ -236,7 +236,7 @@ function ChatRoom() {
     }
     // 이전 채팅 메시지를 가져옵니다
     axios
-      .get(`/api/chat/rooms/${roomId}/messages`)
+      .get(`/api/chat/rooms/${roomId}/getMessages`)
       .then((response) => {
         setMessages(response.data);
       })
@@ -286,15 +286,6 @@ function ChatRoom() {
       });
 
       setNewMessage("");
-
-      axios
-        .post(`/api/chat/rooms/${currentRoomId}/saveMessages`, { message })
-        .then((response) => {
-          console.log("Messages saved successfully");
-        })
-        .catch((error) => {
-          console.error("Error saving messages:", error);
-        });
     }
   };
 
@@ -409,7 +400,12 @@ function ChatRoom() {
           {messages
             .filter((message) => message.chatRoomId === currentRoomId)
             .map((message, index) => (
-              <div key={index} className="mb-2">
+              <div
+                key={index}
+                className={`mb-2 ${
+                  message.nickname === username ? "text-right" : "text-left"
+                }`}
+              >
                 <img
                   src={message.profilePicture}
                   alt="profile"

@@ -19,18 +19,17 @@ public class ChatMessageDto {
 	private String message;
 
 	private UserProfileInfo userProfileInfo;
-	
+
 	private Long chatRoomId;
 
 	private Date timestamp;
 
 	public static ChatMessageDto toDto(ChatMessage entity) {
 		return ChatMessageDto.builder()
-				.id(entity.getId())
-				.message(entity.getMessage())
-				.userProfileInfo(entity.getUserProfileInfo())
-				.chatRoomId(entity.getChatRoomId())
-				.timestamp(entity.getTimestamp())
-				.build();
+								.id(entity.getId())
+								.message(entity.getMessage())
+								.userProfileInfo(entity.getUserProfileInfo())
+								.chatRoomId(entity.getChatRoomId())
+								.timestamp(entity.getTimestamp()).build();
 	}
 }

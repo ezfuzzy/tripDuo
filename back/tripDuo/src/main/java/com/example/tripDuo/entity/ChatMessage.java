@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor  // 기본 생성자
 @AllArgsConstructor // 모든 필드를 포함한 생성자
-@Table(name="chatmessage") // 인덱스 추가 
+@Table(name="chat_message") // 인덱스 추가 
 public class ChatMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -34,7 +34,7 @@ public class ChatController {
 	}
 
 	// 특정 채팅방의 모든 메시지를 반환하는 API
-	@GetMapping("/{roomId}/messages")
+	@GetMapping("/{roomId}/getMessages")
 	public ResponseEntity<List<ChatMessageDto>> getChatMessages(@PathVariable Long roomId) {
 		
 		return ResponseEntity.ok(chatService.getChatMessages(roomId));

@@ -71,7 +71,7 @@ public class ChatServiceImpl implements ChatService {
 		for (ChatMessage message : messages) {
 			messageDtos.add(ChatMessageDto.toDto(message));
 		}
-		
+
 		return messageDtos;
 	}
 
@@ -100,44 +100,63 @@ public class ChatServiceImpl implements ChatService {
 	}
 	
 	@Override
-	public ChatMessageDto saveMessageToRedis(TextMessage message)throws JsonProcessingException{
+	public ChatMessageDto saveMessageToRedis(TextMessage message) throws JsonProcessingException {
 		// 1. 클라이언트로부터 들어온 메시지 수신
-	    String payload = message.getPayload();
-	    // 2. 메시지를 ChatMessage 객체로 변환
-	    ChatMessage chatMessage = new ObjectMapper().readValue(payload, ChatMessage.class);
-	    // 3. Dto 변환
-	    ChatMessageDto chatMessageDto=ChatMessageDto.toDto(chatMessage);
-		 // 4. Redis에 메시지 저장 (캐싱)
-	    String redisKey = "chatRoomId:" + chatMessageDto.getChatRoomId();
-	    redisTemplate.opsForList().rightPush(redisKey, chatMessageDto);
-	    System.out.println("Message saved to Redis with key " + redisKey + ": " + chatMessageDto);
-	        
-	    return chatMessageDto;
+		String payload = message.getPayload();
+		// 2. 메시지를 ChatMessage 객체로 변환
+		ChatMessage chatMessage = new ObjectMapper().readValue(payload, ChatMessage.class);
+		// 3. Dto 변환
+		ChatMessageDto chatMessageDto = ChatMessageDto.toDto(chatMessage);
+		// 4. Redis에 메시지 저장 (캐싱)
+		String redisKey = "chatRoomId:" + chatMessageDto.getChatRoomId();
+		redisTemplate.opsForList().rightPush(redisKey, chatMessageDto);
+		System.out.println("Message saved to Redis with key " + redisKey + ": " + chatMessageDto);
+
+		return chatMessageDto;
 	}
 	
 	@Override
-	@Scheduled(fixedRate = 600000) // 1분마다 실행
+	@Scheduled(fixedRate = 6000) // 1분마다 실행
 	public void saveMessagesToDatabase() {
 		// Redis에서 모든 채팅방의 메시지를 가져와 DB에 저장
 		Set<String> chatRooms = redisTemplate.keys("chatRoomId:*"); // 모든 채팅방 키 가져오기
-	    System.out.println("Scheduled task running. Found chat rooms: " + chatRooms);
+		System.out.println("Scheduled task running. Found chat rooms: " + chatRooms);
 
 		for (String redisKey : chatRooms) {
 			List<ChatMessageDto> messages = redisTemplate.opsForList().range(redisKey, 0, -1); // 메시지 가져오기
-
 			if (messages != null && !messages.isEmpty()) {
 				for (ChatMessageDto message : messages) {
-					
-					UserProfileInfo userProfileInfo = new UserProfileInfo();
-					ChatMessage toEntityChatMessage =ChatMessage.toEntity(message, userProfileInfo);
+
+					UserProfileInfo userProfileInfo = userProfileInfoRepo.findById(message.getChatRoomId())
+							.orElseThrow(() -> new RuntimeException("User not found"));
+					ChatMessageDto chatMessageDto = new ChatMessageDto();
+					chatMessageDto.setUserProfileInfo(userProfileInfo);
+
+					ChatMessage toEntityChatMessage = ChatMessage.toEntity(message, userProfileInfo);
+					System.out.println("5555");
+
 					chatMessageRepo.save(toEntityChatMessage); // DB에 메시지 저장
+					System.out.println("3333");
+
 				}
 				// 메시지를 DB에 저장한 후 Redis에서 삭제할 경우
 				redisTemplate.opsForList().trim(redisKey, messages.size(), -1); // 저장한 메시지 제거
 			}
-			
 		}
+	}
 
+	@Override
+	public void clearRedisCacheOnShutdown() {
+		// redis에 저장된 모든 채팅방 키 가져오기
+		Set<String> chatRooms = redisTemplate.keys("chatRoomId:*");
+
+		if (chatRooms != null && !chatRooms.isEmpty()) {
+			// 각 채팅방 키에 해당하는 데이터를 삭제
+			for (String redisKey : chatRooms) {
+				redisTemplate.delete(redisKey);
+				System.out.println("Deleted Redis cache for: " + redisKey);
+			}
+		}
 	}
 
 }

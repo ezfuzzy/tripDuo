@@ -35,7 +35,7 @@ public class WebSocketController {
 	    String payload = objectMapper.writeValueAsString(messageDto);
 	    TextMessage textMessage = new TextMessage(payload);
 	    // 2. 메시지를 redis에 저장하는 서비스 호출
-	    chatService.saveMessageToRedis(textMessage); 
+	    chatService.saveMessageToRedis(textMessage);
 		return messageDto;
 	}
 
