@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.tripDuo.dto.ChatMessageDto;
 import com.example.tripDuo.dto.ChatRoomDto;
-import com.example.tripDuo.entity.ChatMessage;
 import com.example.tripDuo.entity.ChatRoom;
 import com.example.tripDuo.service.ChatService;
 
@@ -30,14 +29,14 @@ public class ChatController {
 	// 현재 사용자가 속한 채팅방 목록을 반환하는 API
 	@GetMapping
 	public ResponseEntity<List<ChatRoomDto>> getAllChatRooms(@RequestParam Long userId) {
-		
+
 		return ResponseEntity.ok(chatService.getSelectAllChatRooms(userId));
 	}
 
 	// 특정 채팅방의 모든 메시지를 반환하는 API
-	@GetMapping("/{roomId}/messages")
+	@GetMapping("/{roomId}/getMessages")
 	public ResponseEntity<List<ChatMessageDto>> getChatMessages(@PathVariable Long roomId) {
-		
+
 		return ResponseEntity.ok(chatService.getChatMessages(roomId));
 	}
 
@@ -47,4 +46,5 @@ public class ChatController {
 
 		return ResponseEntity.ok(chatService.createChatRoom(chatRoomDto));
 	}
+
 }

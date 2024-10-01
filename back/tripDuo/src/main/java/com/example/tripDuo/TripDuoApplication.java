@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.tripDuo.dto.ChatRoomDto;
@@ -34,6 +35,7 @@ import com.example.tripDuo.repository.UserRepository;
 
 @PropertySource(value = "classpath:custom.properties")
 @SpringBootApplication
+@EnableScheduling
 public class TripDuoApplication {
 
 	public static void main(String[] args) {
@@ -145,37 +147,120 @@ public class TripDuoApplication {
 		postRepo.save(p10);
 		postRepo.save(p11);
 		
-        // 2. 채팅방(ChatRoom) 생성
-		ChatRoomDto chatroom = new ChatRoomDto();
-        ChatRoom chatRoom1 = ChatRoom.builder().title("private Chat Room").type(ChatRoomType.ONE_ON_ONE).build();
-        ChatRoom chatRoom2 = ChatRoom.builder().title("private Chat Room222").type(ChatRoomType.ONE_ON_ONE).build();
-        ChatRoom groupChatRoom = ChatRoom.builder().title("Group Chat Room").type(ChatRoomType.GROUP).build();
-        ChatParticipant chatParticipants = ChatParticipant.builder().userProfileInfo(upi3).isOwner(true).build();
+		// 1. 채팅방(ChatRoom) 생성
+		ChatRoom chatRoom1 = ChatRoom.builder().title("private Chat Room").type(ChatRoomType.ONE_ON_ONE).build();
+		ChatRoom chatRoom2 = ChatRoom.builder().title("private Chat Room222").type(ChatRoomType.ONE_ON_ONE).build();
+		ChatRoom groupChatRoom = ChatRoom.builder().title("Group Chat Room").type(ChatRoomType.GROUP).build();
 
-                
-        chatRoomRepo.save(chatRoom1);  // 첫 번째 1대1 채팅방 저장
-        chatRoomRepo.save(chatRoom2);  // 두 번째 1대1 채팅방 저장
-        chatRoomRepo.save(groupChatRoom);      // 그룹 채팅방 저장
-        chatParticipantsRepo.save(chatParticipants);
-        
-     // 채팅방 ID를 가져오기
-        Long chatRoomId1 = chatRoom1.getId(); // 첫 번째 채팅방 ID
-        Long chatRoomId2 = chatRoom2.getId(); // 두 번째 채팅방 ID
-        Long groupChatRoomId = groupChatRoom.getId(); // 그룹 채팅방 ID
-        
-        // 3. 채팅 메시지(ChatMessage) 미리 생성
-        ChatMessage message1 = ChatMessage.builder().message("안녕하세요! 첫 번째 메시지입니다.").chatRoomId(chatRoomId1).userProfileInfo(upi5).timestamp(new Date()).build();
-        ChatMessage message2 = ChatMessage.builder().message("안녕하세요! 두 번째 메시지입니다.").chatRoomId(chatRoomId2).userProfileInfo(upi6).timestamp(new Date()).build();
-        ChatMessage message3 = ChatMessage.builder().message("안녕하세요! 세 번째 메시지입니다.").chatRoomId(groupChatRoomId).userProfileInfo(upi7).timestamp(new Date()).build();
-        ChatMessage message4 = ChatMessage.builder().message("안녕하세요! 네 번째 메시지입니다.").chatRoomId(groupChatRoomId).userProfileInfo(upi9).timestamp(new Date()).build();
-        ChatMessage message5 = ChatMessage.builder().message("안녕하세요! 다섯 번째 메시지입니다.").chatRoomId(groupChatRoomId).userProfileInfo(upi10).timestamp(new Date()).build();
+		// 채팅방 저장
+		chatRoomRepo.save(chatRoom1);  // 첫 번째 1:1 채팅방 저장
+		chatRoomRepo.save(chatRoom2);  // 두 번째 1:1 채팅방 저장
+		chatRoomRepo.save(groupChatRoom);  // 그룹 채팅방 저장
 
-        // 메시지 저장
-        messageRepo.save(message1);
-        messageRepo.save(message2);
-        messageRepo.save(message3);
-        messageRepo.save(message4);
-        messageRepo.save(message5);
+		// 채팅방 ID를 가져오기
+		Long chatRoomId1 = chatRoom1.getId(); // 첫 번째 채팅방 ID
+		Long chatRoomId2 = chatRoom2.getId(); // 두 번째 채팅방 ID
+		Long groupChatRoomId = groupChatRoom.getId(); // 그룹 채팅방 ID
+
+		// 2. 사용자 정보와 ChatParticipant 설정
+		UserProfileInfo user1 = upi2; // 예시 사용자 1
+		UserProfileInfo user2 = upi3; // 예시 사용자 2
+		UserProfileInfo groupOwner = upi2; // 그룹 채팅방 소유자
+		UserProfileInfo groupOwner2 = upi3; // 그룹 채팅방 소유자
+		UserProfileInfo groupOwner3 = upi4; // 그룹 채팅방 소유자
+
+		// 첫 번째 1:1 채팅방 참가자 (소유자)
+		ChatParticipant participant1 = ChatParticipant.builder()
+		        .userProfileInfo(upi2)
+		        .chatRoomId(chatRoomId1)
+		        .isOwner(true)  // 채팅방 소유자
+		        .build();
+		ChatParticipant participant2 = ChatParticipant.builder()
+		        .userProfileInfo(upi3)
+		        .chatRoomId(chatRoomId1)
+		        .isOwner(false)  // 채팅방 소유자
+		        .build();
+		chatParticipantsRepo.save(participant1);  // 저장
+		chatParticipantsRepo.save(participant2);  // 저장
+
+		// 두 번째 1:1 채팅방 참가자
+		ChatParticipant participant3 = ChatParticipant.builder()
+		        .userProfileInfo(upi3)
+		        .chatRoomId(chatRoomId2)
+		        .isOwner(true)  // 일반 참가자
+		        .build();
+		ChatParticipant participant4 = ChatParticipant.builder()
+		        .userProfileInfo(upi4)
+		        .chatRoomId(chatRoomId2)
+		        .isOwner(false)  // 채팅방 소유자
+		        .build();
+		chatParticipantsRepo.save(participant3);  // 저장
+		chatParticipantsRepo.save(participant4);  // 저장
+
+		// 그룹 채팅방 소유자 추가
+		ChatParticipant groupOwnerParticipant = ChatParticipant.builder()
+		        .userProfileInfo(groupOwner)
+		        .chatRoomId(groupChatRoomId)
+		        .isOwner(false)  // 그룹 채팅방 소유자
+		        .build();
+		ChatParticipant groupOwnerParticipant2 = ChatParticipant.builder()
+		        .userProfileInfo(groupOwner2)
+		        .chatRoomId(groupChatRoomId)
+		        .isOwner(false)  // 그룹 채팅방 소유자
+		        .build();
+		ChatParticipant groupOwnerParticipant3 = ChatParticipant.builder()
+		        .userProfileInfo(groupOwner3)
+		        .chatRoomId(groupChatRoomId)
+		        .isOwner(true)  // 그룹 채팅방 소유자
+		        .build();
+		
+		chatParticipantsRepo.save(groupOwnerParticipant);  // 저장
+		chatParticipantsRepo.save(groupOwnerParticipant2);  // 저장
+		chatParticipantsRepo.save(groupOwnerParticipant3);  // 저장
+
+		// 3. 채팅 메시지(ChatMessage) 미리 생성 및 저장
+		ChatMessage message1 = ChatMessage.builder()
+		        .message("안녕하세요! 첫 번째 메시지입니다.")
+		        .chatRoomId(chatRoomId1)
+		        .userProfileInfo(upi2)
+		        .timestamp(new Date())
+		        .build();
+
+		ChatMessage message2 = ChatMessage.builder()
+		        .message("안녕하세요! 두 번째 메시지입니다.")
+		        .chatRoomId(chatRoomId2)
+		        .userProfileInfo(upi3)
+		        .timestamp(new Date())
+		        .build();
+
+		ChatMessage message3 = ChatMessage.builder()
+		        .message("안녕하세요! 세 번째 메시지입니다.")
+		        .chatRoomId(groupChatRoomId)
+		        .userProfileInfo(upi2)
+		        .timestamp(new Date())
+		        .build();
+
+		ChatMessage message4 = ChatMessage.builder()
+		        .message("안녕하세요! 네 번째 메시지입니다.")
+		        .chatRoomId(groupChatRoomId)
+		        .userProfileInfo(upi3)
+		        .timestamp(new Date())
+		        .build();
+
+		ChatMessage message5 = ChatMessage.builder()
+		        .message("안녕하세요! 다섯 번째 메시지입니다.")
+		        .chatRoomId(groupChatRoomId)
+		        .userProfileInfo(upi4)
+		        .timestamp(new Date())
+		        .build();
+
+		// 메시지 저장
+		messageRepo.save(message1);
+		messageRepo.save(message2);
+		messageRepo.save(message3);
+		messageRepo.save(message4);
+		messageRepo.save(message5);
+
         
         // 확인용 출력
         System.out.println("초기 데이터 저장 완료!");
