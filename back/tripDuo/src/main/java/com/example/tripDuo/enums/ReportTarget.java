@@ -8,11 +8,11 @@ public enum ReportTarget {
     CHAT_ROOM,
     CHAT_MESSAGE;
 
-    public static ReportTarget fromString(String type) {
+    public static ReportTarget fromString(String target) {
         try {
-            return ReportTarget.valueOf(type.toUpperCase());
+            return ReportTarget.valueOf(target.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid target type: " + type, e);
+            throw new IllegalArgumentException("Invalid target type: " + target, e);
         }
     }
 }

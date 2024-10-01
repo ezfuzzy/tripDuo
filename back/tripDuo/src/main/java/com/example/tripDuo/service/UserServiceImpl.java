@@ -446,6 +446,7 @@ public class UserServiceImpl implements UserService {
 	 * writeReview: 리뷰 작성하기
 	 * 
 	 * @param userReviewDto
+	 * @return UserReviewDto
 	 */
 	@Transactional
 	@Override
@@ -492,6 +493,7 @@ public class UserServiceImpl implements UserService {
 	 * updateReview: 리뷰 수정하기
 	 * 
 	 * @param userReviewDto
+	 * @return UserReviewDto
 	 */
 	@Transactional
 	@Override
@@ -562,14 +564,17 @@ public class UserServiceImpl implements UserService {
 	 * report: 신고하기
 	 * 
 	 * @param userReportDto
-	 * @param reportedTargetId
+	 * @param targetType
+	 * @param targetId
+	 * 
+	 * @return UserReportDto
 	 */
 	@Transactional
 	@Override
-	public UserReportDto report(UserReportDto userReportDto, ReportTarget targetType, Long targetId) {
+	public UserReportDto report(UserReportDto userReportDto, ReportTarget targetEnum, Long targetId) {
 		userReportDto.setStatus(ReportStatus.UNPROCESSED);
 
-		switch (targetType) {
+		switch (targetEnum) {
 			case USER:
 				User reportedUser = userRepo.findById(targetId).get();
 				UserReportToUser userReportToUser = UserReportToUser.toEntity(userReportDto, reportedUser);
