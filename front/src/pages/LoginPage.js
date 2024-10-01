@@ -18,10 +18,11 @@ function LoginPage() {
   const [error, setError] = useState("");
   const stompClient = useRef(null);  // WebSocket 연결 객체
   const [messages, setMessages] = useState([]);  // 메시지 목록
+  const [isWebSocketConnected, setIsWebSocketConnected] = useState(false);  // WebSocket 연결 상태
 
-   // WebSocket 연결 함수
-   const connectWebSocket = (roomId) => {
-    const socket = new SockJS('/api/ws');
+  // WebSocket 연결 함수
+  const connectWebSocket = (roomId, callback) => {
+    const socket = new SockJS('http://localhost:8888/api/ws');
     stompClient.current = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
@@ -31,6 +32,9 @@ function LoginPage() {
           const newMessage = JSON.parse(messageOutput.body);
           setMessages((prevMessages) => [...prevMessages, newMessage]);
         });
+        console.log("WebSocket connected");
+        setIsWebSocketConnected(true);  // WebSocket 연결 상태 업데이트
+        if (callback) callback();  // WebSocket 연결 후 콜백 함수 호출
       },
 
       onStompError: (error) => {
@@ -39,11 +43,11 @@ function LoginPage() {
 
       onWebSocketClose: () => {
         console.log('WebSocket connection closed.');
+        setIsWebSocketConnected(false);  // WebSocket 연결 상태 업데이트
       }
     });
     stompClient.current.activate();
   };
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -90,10 +94,11 @@ function LoginPage() {
       axios.defaults.headers.common["Authorization"] = token;
 
       // WebSocket 연결
-      connectWebSocket();
-
-      navigate("/");
-      window.location.reload();
+      connectWebSocket(result.payload.roomId, () => {
+        // WebSocket 연결 후 경로 이동
+        navigate("/");
+        window.location.reload();
+      });
     }
   };
 
@@ -178,6 +183,10 @@ function LoginPage() {
             클릭
           </Link>
         </p>
+        {/* WebSocket 연결 상태 표시 */}
+        <div>
+          WebSocket 연결 상태: {isWebSocketConnected ? "연결됨" : "연결되지 않음"}
+        </div>
       </div>
     </div>
   );

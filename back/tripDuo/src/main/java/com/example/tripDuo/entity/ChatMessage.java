@@ -1,6 +1,7 @@
 package com.example.tripDuo.entity;
 
-import java.time.LocalDateTime;
+
+import java.util.Date;
 
 import com.example.tripDuo.dto.ChatMessageDto;
 
@@ -33,15 +34,15 @@ public class ChatMessage {
     @JoinColumn(name = "user_id", nullable = false)
     private UserProfileInfo userProfileInfo;
     
-    private LocalDateTime timestamp;
+    private Date timestamp;
 
     // toEntity 메서드
     public static ChatMessage toEntity(ChatMessageDto dto, UserProfileInfo userProfileInfo) {
         return ChatMessage.builder()
                 .id(dto.getId())
                 .message(dto.getMessage())
-                .chatRoomId(dto.getChatRoomId())  // 필드 이름 수정
                 .userProfileInfo(userProfileInfo)
+                .chatRoomId(dto.getChatRoomId())  // 필드 이름 수정
                 .timestamp(dto.getTimestamp())
                 .build();
     }

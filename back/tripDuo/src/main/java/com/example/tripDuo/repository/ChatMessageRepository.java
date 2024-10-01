@@ -8,7 +8,7 @@ import com.example.tripDuo.dto.ChatMessageDto;
 import com.example.tripDuo.entity.ChatMessage;
 import com.example.tripDuo.entity.ChatRoom;
 
-public interface MessageRepository extends JpaRepository<ChatMessage, Long> {
+public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
 	List<ChatMessage> findByChatRoomId(Long roomId);
 	List<ChatMessage> save(Long roomId);
 

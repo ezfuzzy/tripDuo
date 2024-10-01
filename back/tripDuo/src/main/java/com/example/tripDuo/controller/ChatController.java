@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.tripDuo.dto.ChatMessageDto;
 import com.example.tripDuo.dto.ChatRoomDto;
-import com.example.tripDuo.entity.ChatMessage;
 import com.example.tripDuo.entity.ChatRoom;
 import com.example.tripDuo.service.ChatService;
 
@@ -48,10 +47,4 @@ public class ChatController {
 		return ResponseEntity.ok(chatService.createChatRoom(chatRoomDto));
 	}
 
-	// 메세지 저장 API 
-	@PostMapping("/{roomId}/saveMessages")
-	public ResponseEntity<List<ChatMessageDto>> sendMessage(@PathVariable Long roomId, @RequestBody ChatMessageDto chatMessageDto){
-		
-		return ResponseEntity.ok(chatService.saveMesages(roomId, chatMessageDto));
-	}
 }

@@ -19,4 +19,6 @@ public class NotificationDto {
 	private String message;
 	private ChatRoom chatRoom;
 	private String timestamp;
+    private Long roomId; // 추가된 필드
+
 }
