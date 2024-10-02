@@ -325,7 +325,7 @@ function NavBar() {
               {openSections.domestic && (
                 <div className="pl-4">
                   <div>
-                    <NavLink to={"/posts/triplog"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                    <NavLink to={"/posts/trip_log"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                       여행 기록
                     </NavLink>
                   </div>

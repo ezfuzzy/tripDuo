@@ -72,8 +72,8 @@ const routes = [
   { path: "/posts/course/:id/detail", element: <CourseBoardDetail /> },
 
   //      ### triplog ###
-  { path: "/posts/triplog", element: <TripLogBoard />},
-  // { path: "/posts/triplog/:id/detail", element: <TripLogDetail />},
+  { path: "/posts/trip_log", element: <TripLogBoard />},
+  // { path: "/posts/trip_log/:id/detail", element: <TripLogDetail />},
 
   // ### 부가 기능 ###
   { path: "/checklist", element: <TravelChecklist /> },
@@ -100,8 +100,8 @@ const protectedRoutes = [
   { path: "/posts/course/:id/edit", element: <CourseBoardEditForm /> },
 
   //      ### triplog ###
-  { path: "posts/triplog/new", element: <TripLogBoardForm />},
-  // { path: "posts/triplog/:id/edit", element: <TripLogBoardEditForm />},
+  { path: "posts/trip_log/new", element: <TripLogBoardForm />},
+  // { path: "posts/trip_log/:id/edit", element: <TripLogBoardEditForm />},
 
   // ### profile setting(보여지는 정보) ###
   { path: "/users/:id", element: <MyPage /> },
