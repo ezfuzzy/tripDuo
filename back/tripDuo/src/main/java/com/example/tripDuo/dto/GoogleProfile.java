@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GoogleProfile {
-	private Long id;
+	private String id;
 	private String name;
 	@JsonProperty("given_name")
 	private String givenName;
