@@ -5,11 +5,16 @@ import { shallowEqual, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
+  faCrown,
+  faDove,
   faFaceLaugh,
   faFaceLaughSquint,
   faFaceMeh,
   faFaceSmile,
+  faFeather,
   faPersonCircleXmark,
+  faPlane,
+  faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import "../../css/MyProfile.css";
 import FollowerFolloweeModal from "../../components/FollowerFolloweeModal";
@@ -90,6 +95,28 @@ function MyProfile(props) {
   // 리뷰 최대 글자수
   const maxLength = 3000;
 
+  //--------------------------------------------------------------------------------------------------------------rating 관리 부
+  // rating 비교 조건 데이터
+  const ratingConfig = [
+    { min: 0, max: 1499, icon: faFeather, color: "gray" }, // 이코노미
+    { min: 1500, max: 2999, icon: faFeather, color: "blue" }, // 프리미엄 이코노미
+    { min: 3000, max: 4499, icon: faDove, color: "gray" }, // 비지니스
+    { min: 4500, max: 5999, icon: faDove, color: "blue" }, // 프리미엄 비지니스
+    { min: 6000, max: 7499, icon: faPlane, color: "gray" }, // 퍼스트
+    { min: 7500, max: 8999, icon: faPlane, color: "blue" }, // 프리미엄 퍼스트
+    { min: 9000, max: 10000, icon: faCrown, color: "yellow" }, // 로얄
+    { min: -Infinity, max: Infinity, icon: faUser, color: "black" }, // 기본값
+  ];
+
+  // rating 값에 따른 아이콘과 색상 계산 //
+  const getRatingDetails = (ratings) => {
+    return (
+      ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { icon: faUser, color: "black" }
+    ); // 기본값
+  };
+
+  const { icon: ratingIcon, color: ratingColor } = getRatingDetails(profile.ratings || 0);
+  //---------------------------------------------------------------------------------------------------------------rating 관리부
   useEffect(() => {
     axios
       .get(`/api/v1/users/${id}`)
@@ -305,23 +332,22 @@ function MyProfile(props) {
     const editReviewData = {
       content: editTexts[editIndex],
       experience: item.experience,
-      tags: item.tags
+      tags: item.tags,
     };
     axios
       .put(`/api/v1/users/${id}/review/${userId}`, editReviewData)
       .then((res) => {
         console.log(res.data);
-        const newReviewList = reviewList.map((tmp)=>{
-          if(tmp.id === parseInt(item.id)){
+        const newReviewList = reviewList.map((tmp) => {
+          if (tmp.id === parseInt(item.id)) {
             return {
               ...tmp,
-              content: editTexts[editIndex]
-            }
+              content: editTexts[editIndex],
+            };
           }
-          return tmp
-        })
-        setReviewList(newReviewList)
-
+          return tmp;
+        });
+        setReviewList(newReviewList);
       })
       .catch((error) => console.log(error));
   };
@@ -395,7 +421,10 @@ function MyProfile(props) {
             )}
 
             <div>
-              <h3 className="text-base font-semibold leading-7 tracking-tight text-gray-900">{profile.nickname}</h3>
+              <h3 className="text-base font-semibold leading-7 tracking-tight text-gray-900">
+                <FontAwesomeIcon icon={ratingIcon} color={ratingColor}></FontAwesomeIcon>
+                {profile.nickname}
+              </h3>
               <p className="text-sm font-semibold leading-6 text-indigo-600">
                 {profile.gender} / {profile.age}
               </p>

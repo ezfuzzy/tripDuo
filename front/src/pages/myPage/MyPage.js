@@ -12,11 +12,33 @@ function MyPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [imageData, setImageData] = useState(null);
-  const [ratingIcon, setRatingIcon] = useState("");
-  const [ratingColor, setRatingColor] = useState("")
 
   // 차단 목록 모달 상태 관리
   const [isBlockModalOpen, setBlockModalOpen] = useState(false);
+
+  //--------------------------------------------------------------------------------------------------------------rating 관리 부
+  // rating 비교 조건 데이터
+  const ratingConfig = [
+    { min: 0, max: 1499, icon: faFeather, color: "gray" }, // 이코노미
+    { min: 1500, max: 2999, icon: faFeather, color: "blue" }, // 프리미엄 이코노미
+    { min: 3000, max: 4499, icon: faDove, color: "gray" }, // 비지니스
+    { min: 4500, max: 5999, icon: faDove, color: "blue" }, // 프리미엄 비지니스
+    { min: 6000, max: 7499, icon: faPlane, color: "gray" }, // 퍼스트
+    { min: 7500, max: 8999, icon: faPlane, color: "blue" }, // 프리미엄 퍼스트
+    { min: 9000, max: 10000, icon: faCrown, color: "yellow" }, // 로얄
+    { min: -Infinity, max: Infinity, icon: faUser, color: "black" }, // 기본값
+  ];
+  
+  // rating 값에 따른 아이콘과 색상 계산 // 
+  const getRatingDetails = (ratings) => {   
+    return (
+      ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { icon: faUser, color: "black" }
+    ); // 기본값
+  };
+  
+  const {icon : ratingIcon, color : ratingColor} = getRatingDetails(profile.ratings || 0);
+  //---------------------------------------------------------------------------------------------------------------rating 관리부 
+
   // 접속된 사용자가 없거나 본인이 아니라면 home 으로 리다일렉트
   useEffect(() => {
     axios
@@ -32,54 +54,11 @@ function MyPage() {
         if (res.data.userProfileInfo.profilePicture) {
           setImageData(res.data.userProfileInfo.profilePicture);
         }
-
-        const ratings = res.data.userProfileInfo.ratings;
-
-        switch (true) {
-          // 이코노미
-          case ratings >= 0 && ratings <= 1499:
-            setRatingIcon(faFeather);
-            setRatingColor("gray")
-            break;
-          //프리미엄 이코노미
-          case ratings >= 1500 && ratings <= 2999:
-            setRatingIcon(faFeather);
-            setRatingColor("blue")
-            break;
-          //비지니스
-          case ratings >= 3000 && ratings <= 4499:
-            setRatingIcon(faDove);
-            setRatingColor("gray")
-            break;
-          //프리미엄 비지니스
-          case ratings >= 4500 && ratings <= 5999:
-            setRatingIcon(faDove);
-            setRatingColor("blue")
-            break;
-          //퍼스트
-          case ratings >= 6000 && ratings <= 7499:
-            setRatingIcon(faPlane);
-            setRatingColor("gray")
-            break;
-          //프리미엄 퍼스트
-          case ratings >= 7500 && ratings <= 8999:
-            setRatingIcon(faPlane);
-            setRatingColor("blue")
-            break;
-          // 로얄
-          case ratings >= 9000 && ratings <= 10000:
-            setRatingIcon(faCrown);
-            setRatingColor("yellow")
-            break;
-
-          default:
-            setRatingIcon(faUser);
-            break;
-        }
       })
       .catch((error) => console.log(error));
   }, [id, userId, navigate, ratingIcon]);
 
+  //------------------------------------------------------------------------ 이벤트 관리부
   // 프로필 보기 클릭
   const handleClick = () => {
     navigate(`/users/${id}/profile`);
