@@ -443,7 +443,7 @@ function MyProfile(props) {
                 <FontAwesomeIcon icon={ratingIcon} color={ratingColor}></FontAwesomeIcon>
                 {profile.nickname}
               </h3>
-              <p className="text-sm font-semibold leading-6 text-indigo-600">
+              <p className="text-sm font-semibold leading-6 text-green-600">
                 {profile.gender} / {profile.age}
               </p>
             </div>
