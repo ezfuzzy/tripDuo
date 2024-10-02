@@ -48,16 +48,12 @@ public class ChatServiceImpl implements ChatService {
 		// 사용자가 속한 채팅방 참여 정보를 모두 가져옴
 		List<ChatParticipant> chatParticipantsList = chatParticipantsRepo.findByUserProfileInfoUserId(userId);
 		System.out.println(chatParticipantsList.toString());
-
 		// 참가자가 속한 채팅방 ID 목록을 추출
 		List<Long> chatRoomIds = chatParticipantsList.stream().map(ChatParticipant::getChatRoomId).collect(Collectors.toList());
-
 		// 한 번에 모든 채팅방 정보를 가져옴
 		List<ChatRoom> chatRooms = chatRoomRepo.findByIdIn(chatRoomIds);
-
 		// ChatRoom을 ChatRoomDto로 변환
 		List<ChatRoomDto> chatRoomDtos = chatRooms.stream().map(ChatRoomDto::toDto).collect(Collectors.toList());
-
 		System.out.println("사용자가 속한 채팅방 목록: " + chatRoomDtos);
 		return chatRoomDtos;
 	}
@@ -80,7 +76,6 @@ public class ChatServiceImpl implements ChatService {
 	public ChatRoom createChatRoom(ChatRoomDto chatRoomDto) {
 
 		ChatRoom chatRoom = chatRoomRepo.save(ChatRoom.toEntity(chatRoomDto));
-
 		System.out.println("채팅방 생성됨: " + chatRoom.getId());
 
 		for (Long curUserId : chatRoomDto.getParticipantsList()) {
@@ -91,11 +86,8 @@ public class ChatServiceImpl implements ChatService {
 
 			ChatParticipant chatParticipant = ChatParticipant.builder().chatRoomId(chatRoom.getId())
 					.userProfileInfo(userProfileInfo).isOwner(isOwner).build();
-
 			chatParticipantsRepo.save(chatParticipant);
-
 		}
-
 		return chatRoom;
 	}
 
@@ -116,7 +108,7 @@ public class ChatServiceImpl implements ChatService {
 	}
 
 	@Override
-	@Scheduled(fixedRate = 6000) // 1분마다 실행
+	@Scheduled(fixedRate = 6000000) // 100분마다 실행
 	public void saveMessagesToDatabase() {
 		// Redis에서 모든 채팅방의 메시지를 가져와 DB에 저장
 		Set<String> chatRooms = redisTemplate.keys("chatRoomId:*"); // 모든 채팅방 키 가져오기
