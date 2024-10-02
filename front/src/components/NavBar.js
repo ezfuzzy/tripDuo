@@ -36,6 +36,8 @@ function NavBar() {
 
   // off-canvas ref
   const offcanvasRef = useRef(null);
+  // drop-down ref
+  const dropdownRef = useRef(null);
 
   // NavLink 공통 css
   // to do : 모듈 사용으로 컴포넌트별 css 설정  || 글로벌 css 관리로 요소별 css 통일 || styled 기능 활용
@@ -63,7 +65,7 @@ function NavBar() {
 
   // off-canvas 바깥 클릭 감지
   useEffect(() => {
-    const handleOutsideClick = (event) => {
+    const handleOutsideCanvasClick = (event) => {
       if (
         offcanvasRef.current &&
         !offcanvasRef.current.contains(event.target) &&
@@ -73,9 +75,21 @@ function NavBar() {
       }
     };
 
-    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("mousedown", handleOutsideCanvasClick);
 
-    return () => document.removeEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideCanvasClick);
+  }, []);
+  // drop-down 바깥 클릭 감지
+  useEffect(() => {
+    const handleOutsideDropdownClick = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideDropdownClick);
+
+    return () => document.removeEventListener("mousedown", handleOutsideDropdownClick);
   }, []);
 
   const toggleSection = (section) => {
@@ -200,43 +214,49 @@ function NavBar() {
           </button>
         </div>
         {/* md 이하에서만 보여주는 icon */}
-        <div className="md:hidden pr-20">
-          <FontAwesomeIcon
-            onClick={() => setDropdownOpen(!isDropdownOpen)}
-            icon={faUser}
-            color="black"
-            className="h-5 w-5 cursor-pointer"
-          />
-        </div>
-        {isDropdownOpen && (
-          <div className="absolute right-20 top-10 mt-2 w-42 bg-white shadow divide-y divide-gray-100 rounded-lg py-2 z-10">
-            <p className="block px-4 py-2 hover:bg-gray-100 ">
-              <button className="font-bold text-gray-800" onClick={handleLoginLogoutClick}>
-                {isLoggedIn ? "로그아웃" : "로그인/회원가입"}
-              </button>
-            </p>
-            {isLoggedIn && (
+        <div ref={dropdownRef} className="md:hidden">
+          <div className="pr-20">
+            <FontAwesomeIcon
+              onClick={(e) => {
+                e.stopPropagation();
+                setDropdownOpen(!isDropdownOpen);
+              }}
+              icon={faUser}
+              color="black"
+              className="h-5 w-5 cursor-pointer"
+            />
+          </div>
+          {isDropdownOpen && (
+            <div
+              className="absolute right-20 top-10 mt-2 w-42 bg-white shadow divide-y divide-gray-100 rounded-lg py-2 z-10">
+              <p className="block px-4 py-2 hover:bg-gray-100 ">
+                <button className="font-bold text-gray-800" onClick={handleLoginLogoutClick}>
+                  {isLoggedIn ? "로그아웃" : "로그인/회원가입"}
+                </button>
+              </p>
+              {isLoggedIn && (
+                <p className="block px-4 py-2 hover:bg-gray-100">
+                  <button
+                    onClick={() => {
+                      navigate(`/users/${userId}`);
+                      setDropdownOpen(!isDropdownOpen);
+                    }}>
+                    마이 페이지
+                  </button>
+                </p>
+              )}
               <p className="block px-4 py-2 hover:bg-gray-100">
                 <button
                   onClick={() => {
-                    navigate(`/users/${userId}`);
+                    navigate("/chatRoom");
                     setDropdownOpen(!isDropdownOpen);
                   }}>
-                  마이 페이지
+                  채팅
                 </button>
               </p>
-            )}
-            <p className="block px-4 py-2 hover:bg-gray-100">
-              <button
-                onClick={() => {
-                  navigate("/chatRoom");
-                  setDropdownOpen(!isDropdownOpen);
-                }}>
-                채팅
-              </button>
-            </p>
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </nav>
 
       {/* Tabs */}
