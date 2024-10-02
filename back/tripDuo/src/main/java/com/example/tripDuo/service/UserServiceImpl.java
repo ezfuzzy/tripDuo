@@ -243,17 +243,21 @@ public class UserServiceImpl implements UserService {
 		if(!userDto.getNewPassword().equals(userDto.getConfirmPassword())) {
 			return false;
 		}
-
-		UserDto existingUser = UserDto.toDto(userRepo.findByUsername(userDto.getUsername()));
+		
+		User user = userRepo.findById(userDto.getId())
+				.orElseThrow(() -> new EntityNotFoundException("User not found"));
+		
+		UserDto existingUser = UserDto.toDto(user);
+		
 		// 입력된 비밀번호(userDto.getPassword())와 기존 비밀번호(existingUser.getPassword()) 비교
-		if (!passwordEncoder.matches(existingUser.getPassword(), userDto.getPassword())) {
+		if (!passwordEncoder.matches(userDto.getPassword(), existingUser.getPassword())) {
 			return false;
 			//throw new Exception("기존 비밀번호가 일치하지 않습니다.");
 		}
 
 		String encodedNewPassword = passwordEncoder.encode(userDto.getNewPassword());
-		userDto.setPassword(encodedNewPassword);
-		userRepo.save(User.toEntity(userDto));
+		existingUser.setPassword(encodedNewPassword);
+		userRepo.save(User.toEntity(existingUser));
 
 		return true;
 	}
@@ -265,10 +269,14 @@ public class UserServiceImpl implements UserService {
 	 *
 	 * @param userDto
 	 * @return
+	 * TODO : sms 인증을 거친 뒤 수행
 	 */
 	@Override
 	public Boolean resetUserPassword(UserDto userDto) {
 
+		
+		
+		
 		UserDto userInfo = UserDto.toDto(userRepo.findById(userDto.getId()).get());
 
 		// 새 비밀번호와 새 비밀번호 확인이 일치하는지 확인
