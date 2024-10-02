@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 @Data
-public class UserReportDto {
+public class ReportDto {
     private Long id;
     private Long reporterId;
     private String content;
