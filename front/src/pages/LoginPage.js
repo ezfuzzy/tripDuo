@@ -94,6 +94,8 @@ function LoginPage() {
 
       navigate("/");
       window.location.reload();
+    }else{
+      setError("아이디 또는 비밀번호가 틀렸습니다")
     }
   };
 
