@@ -1,6 +1,6 @@
 package com.example.tripDuo.dto;
 
-import com.example.tripDuo.entity.UserReportToUser;
+import com.example.tripDuo.entity.ReportToUser;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,11 +11,11 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 @Data
-public class UserReportToUserDto extends UserReportDto {
+public class ReportToUserDto extends ReportDto {
     private Long reportedUserId;
 
-    public static UserReportToUserDto toDto(UserReportToUser entity) {
-        return UserReportToUserDto.builder()
+    public static ReportToUserDto toDto(ReportToUser entity) {
+        return ReportToUserDto.builder()
                 .id(entity.getId())
                 .reporterId(entity.getReporterId())
                 .content(entity.getContent())
