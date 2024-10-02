@@ -291,6 +291,18 @@ function MyProfile(props) {
       .catch((error) => console.log(error));
   };
 
+  // 프로필 사용자 신고
+  const handleReportUser = () => {
+    const data = { content: "신고 테스트" };
+
+    axios
+      .post(`/api/v1/users/${id}/report/user/${userId}`, data)
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((error) => console.log(error));
+  };
+
   // 리뷰 작성
   const handleReviewSubmit = () => {
     if (selectedTags.length === 0) {
@@ -321,10 +333,16 @@ function MyProfile(props) {
   };
 
   // 리뷰 신고 처리 함수
-  const handleReportReview = (reviewerId) => {
-    // 신고 기능 구현
-    alert(`댓글 ID ${reviewerId}가 신고되었습니다.`);
-    // 추가로 서버에 신고 요청을 보내는 로직을 여기에 추가
+  const handleReportReview = (reviewId) => {
+    const data = {
+      content: "신고 테스트",
+    };
+    axios
+      .post(`/api/v1/users/${reviewId}/report/user_review/${userId}`, data)
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((error) => console.log(error));
   };
 
   // 리뷰 수정 함수
@@ -487,7 +505,10 @@ function MyProfile(props) {
                         </>
                       )}
                     </p>
-                    <p className="block px-4 py-2 hover:bg-gray-100 cursor-pointer">신고</p>
+                    {/* 유저 신고 */}
+                    <p onClick={handleReportUser} className="block px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                      신고
+                    </p>
                   </div>
                 </div>
               </div>
@@ -706,9 +727,8 @@ function MyProfile(props) {
                         </span>
                       </p>
                     ) : (
-                      <p
-                        onClick={() => handleReportReview(item.id)}
-                        className="text-xs text-gray-500 ml-auto mr-4 cursor-pointer">
+                      // 리뷰 신고
+                      <p onClick={()=>handleReportReview(item.id)} className="text-xs text-gray-500 ml-auto mr-4 cursor-pointer">
                         신고
                       </p>
                     )}
