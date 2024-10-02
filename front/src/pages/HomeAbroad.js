@@ -6,8 +6,6 @@ import '../css/Home.css';
 
 function HomeAbroad() {
     const navigate = useNavigate();
-    const [selectedOption, setSelectedOption] = useState("해외");
-    const [dropdownOpen, setDropdownOpen] = useState(false);
     const [currentSlide, setCurrentSlide] = useState(0); // 현재 슬라이드 상태 추가
     const [sliderRef, slider] = useKeenSlider({
         loop: true,
@@ -42,12 +40,6 @@ function HomeAbroad() {
         if (slider.current) slider.current.moveToIdx(index);
     };
 
-    const handleSelect = (eventKey) => {
-        setSelectedOption(eventKey === "Home" ? "국내" : "해외");
-        navigate(eventKey === "Home" ? "/" : "/home-abroad");
-        setDropdownOpen(false);
-    };
-
     const navigateToMate = (destination) => {
         navigate(`/posts/mate?di=${destination}`);
     };
@@ -65,29 +57,6 @@ function HomeAbroad() {
 
     return (
         <div className="container mx-auto px-8 bg-white min-h-screen">
-        <div className="flex justify-end pt-4 relative">
-            <button
-                className="inline-flex justify-center w-24 rounded-md border border-gray-300 shadow-md px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-100"
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-            >
-                {selectedOption}
-            </button>
-            {dropdownOpen && (
-                <div className="absolute right-0 top-full mt-2 w-24 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-                    {/* 드롭다운 메뉴 전체를 flex로 변경하여 중앙 정렬 */}
-                    <div className="py-1 flex flex-col items-center" role="menu" aria-orientation="vertical">
-                        {/* 버튼들을 flex와 justify-center로 정렬 */}
-                        <button onClick={() => handleSelect("Home")} className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex justify-center" role="menuitem">
-                            국내
-                        </button>
-                        <button onClick={() => handleSelect("international")} className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex justify-center" role="menuitem">
-                            해외
-                        </button>
-                    </div>
-                </div>
-                )}
-            </div>
-
             <div className="my-12 relative">
                 <header className="py-8 text-center">
                     <h1 className="text-3xl font-bold text-green-600">해외 여행</h1>

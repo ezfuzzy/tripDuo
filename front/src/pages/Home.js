@@ -6,8 +6,6 @@ import '../css/Home.css';
 
 function Home() {
     const navigate = useNavigate();
-    const [selectedOption, setSelectedOption] = useState("국내");
-    const [dropdownOpen, setDropdownOpen] = useState(false);
     const [currentSlide, setCurrentSlide] = useState(0); // 현재 슬라이드 상태 추가
     const [sliderRef, slider] = useKeenSlider({
         loop: true,
@@ -42,14 +40,13 @@ function Home() {
         if (slider.current) slider.current.moveToIdx(index);
     };
 
-    const handleSelect = (eventKey) => {
-        setSelectedOption(eventKey === "Home" ? "국내" : "해외");
-        navigate(eventKey === "Home" ? "/" : "/home-abroad");
-        setDropdownOpen(false);
-    };
 
     const navigateToMate = (destination) => {
         navigate(`/posts/mate?di=${destination}`);
+    };
+
+    const navigateToCourse = (destination) => {
+        navigate(`/posts/course?di=${destination}`);
     };
 
     const navigateToPage = (path) => {
@@ -63,81 +60,59 @@ function Home() {
     const isLoggedIn = localStorage.getItem("token") !== null; // 토큰이 존재하는지 확인
 
     return (
-    <div className="container mx-auto px-8 bg-white min-h-screen">
-        <div className="flex justify-end pt-4 relative">
-            <button
-                className="inline-flex justify-center w-24 rounded-md border border-gray-300 shadow-md px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-100"
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-            >
-                {selectedOption}
-            </button>
-            {dropdownOpen && (
-                <div className="absolute right-0 top-full mt-2 w-24 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-                    {/* 드롭다운 메뉴 전체를 flex로 변경하여 중앙 정렬 */}
-                    <div className="py-1 flex flex-col items-center" role="menu" aria-orientation="vertical">
-                        {/* 버튼들을 flex와 justify-center로 정렬 */}
-                        <button onClick={() => handleSelect("Home")} className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex justify-center" role="menuitem">
-                            국내
-                        </button>
-                        <button onClick={() => handleSelect("international")} className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex justify-center" role="menuitem">
-                            해외
-                        </button>
+        <div className="container mx-auto px-8 bg-white min-h-screen">
+            <div className="my-12 relative">
+                <header className="py-8 text-center">
+                    <h1 className="text-3xl font-bold text-green-600">국내 여행</h1>
+                    <p className="mt-2 text-gray-600">다양한 국내 여행 정보를 만나보세요!</p>
+                </header>
+                <div className="relative">
+                 {/* 슬라이더 */}
+                    <div ref={sliderRef} className="keen-slider w-full my-6">
+                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
+                            <div key={item} className="keen-slider__slide flex justify-center">
+                                <div className="w-[90vw] max-w-[350px] h-[450px] bg-white shadow-lg rounded-lg overflow-hidden">
+                                    <img
+                                        src={`https://picsum.photos/350/450?random=${item}`}
+                                        alt={`여행지 ${item}`}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* 왼쪽(이전) 버튼 */}
+                    <button
+                        onClick={handlePrev}
+                        className="absolute left-[-40px] top-1/2 transform -translate-y-1/2 bg-transparent text-green-600 rounded-none p-0 text-3xl z-10 transition-transform duration-200 hover:scale-150"
+                        style={{ width: '50px', height: '50px' }} // 버튼 크기 설정
+                    >
+                        &#8592; {/* 왼쪽 화살표 */}
+                    </button>
+
+                    {/* 오른쪽(다음) 버튼 */}
+                    <button
+                        onClick={handleNext}
+                        className="absolute right-[-40px] top-1/2 transform -translate-y-1/2 bg-transparent text-green-600 rounded-none p-0 text-3xl z-10 transition-transform duration-200 hover:scale-150"
+                        style={{ width: '50px', height: '50px' }} // 버튼 크기 설정
+                    >
+                        &#8594; {/* 오른쪽 화살표 */}
+                    </button>
+                    {/* 슬라이드 점들 */}
+                    <div className="flex justify-center mt-4">
+                        {[...Array(10)].map((_, index) => (
+                            <div
+                                key={index}
+                                onClick={() => handleDotClick(index)} // 점 클릭 시 해당 슬라이드로 이동
+                                className={`w-3 h-3 mx-1 rounded-full cursor-pointer transition-all duration-200 ${
+                                    currentSlide === index ? "bg-green-600 scale-125" : "bg-gray-300"
+                                }`}
+                            />
+                        ))}
                     </div>
                 </div>
-            )}
-        </div>
-        <div className="my-12 relative">
-            <header className="py-8 text-center">
-                <h1 className="text-3xl font-bold text-green-600">국내 여행</h1>
-                <p className="mt-2 text-gray-600">다양한 국내 여행 정보를 만나보세요!</p>
-            </header>
-            <div className="relative">
-                 {/* 슬라이더 */}
-                 <div ref={sliderRef} className="keen-slider w-full my-6">
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
-                        <div key={item} className="keen-slider__slide flex justify-center">
-                            <div className="w-[90vw] max-w-[350px] h-[450px] bg-white shadow-lg rounded-lg overflow-hidden">
-                                <img
-                                    src={`https://picsum.photos/350/450?random=${item}`}
-                                    alt={`여행지 ${item}`}
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                 {/* 왼쪽(이전) 버튼 */}
-                <button
-                    onClick={handlePrev}
-                    className="absolute left-[-40px] top-1/2 transform -translate-y-1/2 bg-transparent text-green-600 rounded-none p-0 text-3xl z-10 transition-transform duration-200 hover:scale-150"
-                    style={{ width: '50px', height: '50px' }} // 버튼 크기 설정
-                >
-                    &#8592; {/* 왼쪽 화살표 */}
-                </button>
-
-                {/* 오른쪽(다음) 버튼 */}
-                <button
-                    onClick={handleNext}
-                    className="absolute right-[-40px] top-1/2 transform -translate-y-1/2 bg-transparent text-green-600 rounded-none p-0 text-3xl z-10 transition-transform duration-200 hover:scale-150"
-                    style={{ width: '50px', height: '50px' }} // 버튼 크기 설정
-                >
-                    &#8594; {/* 오른쪽 화살표 */}
-                </button>
-                {/* 슬라이드 점들 */}
-                <div className="flex justify-center mt-4">
-                    {[...Array(10)].map((_, index) => (
-                        <div
-                            key={index}
-                            onClick={() => handleDotClick(index)} // 점 클릭 시 해당 슬라이드로 이동
-                            className={`w-3 h-3 mx-1 rounded-full cursor-pointer transition-all duration-200 ${
-                                currentSlide === index ? "bg-green-600 scale-125" : "bg-gray-300"
-                            }`}
-                        />
-                    ))}
-                </div>
             </div>
-        </div>
 
             <div className="my-12 h-16" />
 
@@ -167,14 +142,14 @@ function Home() {
                 <div className="flex space-x-4">
                     <div
                         className="relative min-w-[80px] cursor-pointer"
-                        onClick={() => navigateToMate("Domestic")}
+                        onClick={() => navigateToCourse("Domestic")}
                     >
                         <img src="https://picsum.photos/80/80?random=1" alt="국내" className="rounded-full border-2 border-white shadow-md" />
                         <span className="absolute inset-0 flex items-center justify-center text-white text-lg font-bold">국내</span>
                     </div>
                     <div
                         className="relative min-w-[80px] cursor-pointer"
-                        onClick={() => navigateToMate("International")}
+                        onClick={() => navigateToCourse("International")}
                     >
                         <img src="https://picsum.photos/80/80?random=2" alt="해외" className="rounded-full border-2 border-white shadow-md" />
                         <span className="absolute inset-0 flex items-center justify-center text-white text-lg font-bold">해외</span>
