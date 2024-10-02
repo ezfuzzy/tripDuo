@@ -310,7 +310,7 @@ public class AuthServiceImpl implements AuthService {
 		}
 
 		User user = User.builder()
-						.username("kakao_" + kakaoProfile.getKakao_account().getEmail())
+						.username("kakao_" + kakaoProfile.getKakao_account().getEmail().split("@")[0])
 						.password(encoder.encode(OAUTHPASSWORD))
 						.phoneNumber(kakaoProfile.getKakao_account().getEmail())
 						.email(kakaoProfile.getKakao_account().getEmail())
@@ -325,23 +325,25 @@ public class AuthServiceImpl implements AuthService {
 			user = userRepo.save(user);
 			System.out.println("새로운 유저가 저장되었습니다.");
 
+			String oauthIdTypeChange=kakaoProfile.getId().toString();
 			Oauth kakaoUser = Oauth.builder()
 									.user(user)
 									.oauth_provider("KAKAO")
-									.oauth_id(kakaoProfile.getId())
+									.oauth_id(oauthIdTypeChange)
 									.build();
-			oauthRepo.save(kakaoUser);
+			Oauth OauthUser=oauthRepo.save(kakaoUser);
 
 			userProfileInfoRepo.save(UserProfileInfo.toEntity(
 					UserProfileInfoDto.builder().nickname(kakaoProfile.getProperties().getNickname()).build(), user));
 
 			userTripInfoRepo.save(UserTripInfo.builder().userId(user.getId()).build());
-		}
+
 
 		Authentication authentication = authManager
 				.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), OAUTHPASSWORD));
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-
+		}
+		
 		JSONObject kakaoInfo2 = new JSONObject();
 		kakaoInfo2.put("id", kakaoProfile.id);
 		kakaoInfo2.put("nickname", kakaoProfile.getKakao_account().getProfile().getNickname());
@@ -352,8 +354,8 @@ public class AuthServiceImpl implements AuthService {
 		kakaoInfo2.put("phonenum", user.getPhoneNumber());
 
 		System.out.println("kakaoInfo2: " + kakaoInfo2.toString()); // 보기 좋게 출력
-
-		return kakaoInfo2.toString();
+		String token = jwtUtil.generateToken(user.getUsername());
+		return "Bearer+" + token;
 	}
 
 	// 카카오 로그아웃
@@ -457,8 +459,8 @@ public class AuthServiceImpl implements AuthService {
 
 		HttpEntity<MultiValueMap<String, String>> googleProfileRequest = new HttpEntity<>(headers2);
 
-		ResponseEntity<String> response2 =
-				rt2.exchange("https://www.googleapis.com/userinfo/v2/me",
+		ResponseEntity<String> response2 = rt2
+				.exchange("https://www.googleapis.com/userinfo/v2/me",
 				HttpMethod.GET,
 				googleProfileRequest,
 				String.class);
@@ -478,8 +480,9 @@ public class AuthServiceImpl implements AuthService {
 			e.printStackTrace();
 		}
 
+
 		User user = User.builder()
-						.username("google_" + googleProfile.getEmail())
+						.username("google_" + googleProfile.getEmail().split("@")[0])
 						.password(encoder.encode(OAUTHPASSWORD))
 						.phoneNumber(googleProfile.getEmail())
 						.email(googleProfile.getEmail())
@@ -501,12 +504,13 @@ public class AuthServiceImpl implements AuthService {
 					.toEntity(UserProfileInfoDto.builder().nickname(googleProfile.getName()).build(), user));
 
 			userTripInfoRepo.save(UserTripInfo.builder().userId(user.getId()).build());
-		}
+		
 
 		Authentication authentication = authManager
 				.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), OAUTHPASSWORD));
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-
+		}
+		
 		JSONObject googleInfo2 = new JSONObject();
 		googleInfo2.put("id", googleProfile.getId());
 		googleInfo2.put("name", googleProfile.getName());
@@ -514,12 +518,12 @@ public class AuthServiceImpl implements AuthService {
 		googleInfo2.put("picture", googleProfile.getPicture());
 		googleInfo2.put("email", googleProfile.getEmail());
 		googleInfo2.put("googleToken", googleToken.getAccess_token());
-		googleInfo2.put("kakaoRefreshToken", googleToken.getRefresh_token());
+		googleInfo2.put("googleRefreshToken", googleToken.getRefresh_token());
 		googleInfo2.put("phonenum", user.getPhoneNumber());
 
 		System.out.println("googleInfo2: " + googleInfo2.toString()); // 보기 좋게 출력
-
-		return googleInfo2.toString();
+		String token = jwtUtil.generateToken(user.getUsername());
+		return "Bearer+" + token;
 	}
 
 }

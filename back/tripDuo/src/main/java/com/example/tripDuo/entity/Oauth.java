@@ -26,6 +26,6 @@ public class Oauth {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 	private String oauth_provider;
-	private Long oauth_id;
+	private String oauth_id;
 	
 }

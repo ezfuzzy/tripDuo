@@ -1,6 +1,5 @@
 package com.example.tripDuo;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.example.tripDuo.dto.ChatRoomDto;
 import com.example.tripDuo.entity.ChatMessage;
 import com.example.tripDuo.entity.ChatParticipant;
 import com.example.tripDuo.entity.ChatRoom;
@@ -26,9 +24,9 @@ import com.example.tripDuo.enums.PostStatus;
 import com.example.tripDuo.enums.PostType;
 import com.example.tripDuo.enums.UserRole;
 import com.example.tripDuo.enums.VerificationStatus;
+import com.example.tripDuo.repository.ChatMessageRepository;
 import com.example.tripDuo.repository.ChatParticipantRepository;
 import com.example.tripDuo.repository.ChatRoomRepository;
-import com.example.tripDuo.repository.ChatMessageRepository;
 import com.example.tripDuo.repository.PostRepository;
 import com.example.tripDuo.repository.UserProfileInfoRepository;
 import com.example.tripDuo.repository.UserRepository;
@@ -70,13 +68,13 @@ public class TripDuoApplication {
 		User u1 = User.builder().username("ezfz").password(encoder.encode("hysz")).phoneNumber("010-3456-7890").role(UserRole.ADMIN).build(); 
 		User savedUser1 = userRepo.save(u1);
 		
-		UserProfileInfo upi1 = UserProfileInfo.builder().user(savedUser1).nickname("ezfz").age((long) 28).profilePicture("6d0f0f67-468f-44e9-9e30-192d9f4ea310.png").gender(Gender.MALE).build();
+		UserProfileInfo upi1 = UserProfileInfo.builder().user(savedUser1).nickname("ezfz").age((long) 28).profilePicture("9a926641-7e7f-4d23-8a78-1fe301813ccd.jpg").gender(Gender.MALE).build();
 		upi1 = userProfileInfoRepo.save(upi1);
 		
 		User u2 = User.builder().username("aaaa").password(encoder.encode("aaaa")).phoneNumber("010-3456-7890").role(UserRole.USER).build();
 		User savedUser2 = userRepo.save(u2);
 		
-		UserProfileInfo upi2 = UserProfileInfo.builder().user(savedUser2).nickname("a5").gender(Gender.MALE).build();
+		UserProfileInfo upi2 = UserProfileInfo.builder().user(savedUser2).nickname("a5").profilePicture("e68b541e-8fb9-4d13-8358-6d2111303fa6.png").gender(Gender.MALE).build();
 		upi2 = userProfileInfoRepo.save(upi2);
 
 		User u3 = User.builder().username("bbbb").password(encoder.encode("bbbb")).phoneNumber("010-3456-7890").role(UserRole.USER).build();
@@ -97,7 +95,7 @@ public class TripDuoApplication {
 		User u6 = User.builder().username("user1").password(encoder.encode("password1")).phoneNumber("010-1234-5678").email("user1@example.com").verificationStatus(VerificationStatus.VERIFIED).accountStatus(AccountStatus.ACTIVE).role(UserRole.USER).build();
 		User savedUser6 = userRepo.save(u6);
 
-		UserProfileInfo upi6 = UserProfileInfo.builder().user(savedUser6).nickname("닉네임1").age((long) 25).ratings((long) 1300).gender(Gender.MALE).profilePicture("76659d01-7450-4f8f-8724-6e6ea73bba1c.png").profileMessage("안녕하세요1").curLocation("서울").socialLinks("http://social1.com").lastLogin("5분 전").build();
+		UserProfileInfo upi6 = UserProfileInfo.builder().user(savedUser6).nickname("닉네임1").age((long) 25).ratings((long) 1300).gender(Gender.MALE).profilePicture("e68b541e-8fb9-4d13-8358-6d2111303fa6.png").profileMessage("안녕하세요1").curLocation("서울").socialLinks("http://social1.com").lastLogin("5분 전").build();
 		upi6 = userProfileInfoRepo.save(upi6);
 
 		User u7 = User.builder().username("user2").password(encoder.encode("password2")).phoneNumber("010-2345-6789").email("user2@example.com").verificationStatus(VerificationStatus.VERIFIED).accountStatus(AccountStatus.ACTIVE).role(UserRole.USER).build();
