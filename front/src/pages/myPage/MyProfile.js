@@ -294,13 +294,15 @@ function MyProfile(props) {
   // 프로필 사용자 신고
   const handleReportUser = () => {
     const data = { content: "신고 테스트" };
-
-    axios
-      .post(`/api/v1/users/${id}/report/user/${userId}`, data)
-      .then((res) => {
-        console.log(res.data);
-      })
-      .catch((error) => console.log(error));
+    if(window.confirm("사용자를 신고하시겠습니까")){
+      axios
+        .post(`/api/v1/reports/${id}/user/${userId}`, data)
+        .then((res) => {
+          console.log(res.data);
+          alert("해당 사용자에 대한 신고가 접수되었습니다.")
+        })
+        .catch((error) => console.log(error));
+    }
   };
 
   // 리뷰 작성
@@ -337,12 +339,15 @@ function MyProfile(props) {
     const data = {
       content: "신고 테스트",
     };
-    axios
-      .post(`/api/v1/users/${reviewId}/report/user_review/${userId}`, data)
-      .then((res) => {
-        console.log(res.data);
-      })
-      .catch((error) => console.log(error));
+    if(window.confirm("해당 리뷰를 신고하시겠습니까")){
+      axios
+        .post(`/api/v1/reports/${reviewId}/user_review/${userId}`, data)
+        .then((res) => {
+          console.log(res.data);
+          alert("해당 리뷰에 대한 신고가 접수되었습니다.")
+        })
+        .catch((error) => console.log(error));
+    }
   };
 
   // 리뷰 수정 함수
