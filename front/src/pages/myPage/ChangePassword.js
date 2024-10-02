@@ -39,7 +39,7 @@ function PasswordUpdate(props) {
   const handleCurrentPassword = (e)=>{
     setProfile({
       ...profile,
-      passowrd : e.target.value
+      password : e.target.value
     })
 
   }
@@ -67,10 +67,11 @@ function PasswordUpdate(props) {
   //수정 버튼 핸들러
   const handleChangePassword = async () => {
 
-    axios.put(`/api/v1/users/${id}/password`, profile)
+    axios.put(`/api/v1/users/${id}/change-password`, profile)
     .then(res=>{
       console.log(res.data)
       alert("비밀번호 수정 완료")
+      
       navigate(`/users/${id}/profile/edit`);
     })
     .catch(error=>console.log(error))
