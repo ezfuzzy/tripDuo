@@ -8,14 +8,39 @@ function Home() {
     const navigate = useNavigate();
     const [selectedOption, setSelectedOption] = useState("국내");
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [sliderRef] = useKeenSlider({
+    const [currentSlide, setCurrentSlide] = useState(0); // 현재 슬라이드 상태 추가
+    const [sliderRef, slider] = useKeenSlider({
         loop: true,
         slides: {
             perView: 3,
-            spacing: 0, // 간격을 0으로 설정
+            spacing: 10, // 간격을 0으로 설정
+        },
+        breakpoints: {
+            '(max-width: 1024px)': {
+                slides: { perView: 2 },
+            },
+            '(max-width: 768px)': {
+                slides: { perView: 1 },
+            },
         },
         dragSpeed: 0.5,
+        slideChanged(s) {
+            setCurrentSlide(s.track.details.rel); // 슬라이드가 변경될 때 현재 슬라이드 업데이트
+        },
     });
+   // 버튼을 클릭했을 때 실행할 함수 정의
+    const handlePrev = () => {
+        if (slider.current) slider.current.prev();
+    };
+
+    const handleNext = () => {
+        if (slider.current) slider.current.next();
+    };
+
+    // 점 클릭 시 해당 슬라이드로 이동
+    const handleDotClick = (index) => {
+        if (slider.current) slider.current.moveToIdx(index);
+    };
 
     const handleSelect = (eventKey) => {
         setSelectedOption(eventKey === "Home" ? "국내" : "해외");
@@ -61,21 +86,58 @@ function Home() {
                 </div>
             )}
         </div>
-            <div className="my-12">
-                <header className="py-8 text-center">
-                    <h1 className="text-3xl font-bold text-green-600">국내 여행</h1>
-                    <p className="mt-2 text-gray-600">다양한 국내 여행 정보를 만나보세요!</p>
-                </header>
-                <div ref={sliderRef} className="keen-slider w-full my-6">
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, index) => (
+        <div className="my-12 relative">
+            <header className="py-8 text-center">
+                <h1 className="text-3xl font-bold text-green-600">국내 여행</h1>
+                <p className="mt-2 text-gray-600">다양한 국내 여행 정보를 만나보세요!</p>
+            </header>
+            <div className="relative">
+                 {/* 슬라이더 */}
+                 <div ref={sliderRef} className="keen-slider w-full my-6">
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
                         <div key={item} className="keen-slider__slide flex justify-center">
-                            <div className="min-w-[350px] h-[450px] bg-white shadow-lg rounded-lg overflow-hidden"> {/* 카드 너비를 더 늘림 */}
-                                <img src={`https://picsum.photos/350/450?random=${item}`} alt={`여행지 ${item}`} className="w-full h-full object-cover" />
+                            <div className="w-[90vw] max-w-[350px] h-[450px] bg-white shadow-lg rounded-lg overflow-hidden">
+                                <img
+                                    src={`https://picsum.photos/350/450?random=${item}`}
+                                    alt={`여행지 ${item}`}
+                                    className="w-full h-full object-cover"
+                                />
                             </div>
                         </div>
                     ))}
                 </div>
+
+                 {/* 왼쪽(이전) 버튼 */}
+                <button
+                    onClick={handlePrev}
+                    className="absolute left-[-40px] top-1/2 transform -translate-y-1/2 bg-transparent text-green-600 rounded-none p-0 text-3xl z-10 transition-transform duration-200 hover:scale-150"
+                    style={{ width: '50px', height: '50px' }} // 버튼 크기 설정
+                >
+                    &#8592; {/* 왼쪽 화살표 */}
+                </button>
+
+                {/* 오른쪽(다음) 버튼 */}
+                <button
+                    onClick={handleNext}
+                    className="absolute right-[-40px] top-1/2 transform -translate-y-1/2 bg-transparent text-green-600 rounded-none p-0 text-3xl z-10 transition-transform duration-200 hover:scale-150"
+                    style={{ width: '50px', height: '50px' }} // 버튼 크기 설정
+                >
+                    &#8594; {/* 오른쪽 화살표 */}
+                </button>
+                {/* 슬라이드 점들 */}
+                <div className="flex justify-center mt-4">
+                    {[...Array(10)].map((_, index) => (
+                        <div
+                            key={index}
+                            onClick={() => handleDotClick(index)} // 점 클릭 시 해당 슬라이드로 이동
+                            className={`w-3 h-3 mx-1 rounded-full cursor-pointer transition-all duration-200 ${
+                                currentSlide === index ? "bg-green-600 scale-125" : "bg-gray-300"
+                            }`}
+                        />
+                    ))}
+                </div>
             </div>
+        </div>
 
             <div className="my-12 h-16" />
 
