@@ -1,4 +1,13 @@
-import { faEye, faHeart, faMessage } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCrown,
+  faDove,
+  faEye,
+  faFeather,
+  faHeart,
+  faMessage,
+  faPlane,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import DOMPurify from "dompurify";
@@ -65,6 +74,29 @@ function MateBoardDetail(props) {
     isRecruited ? "bg-gray-200 text-gray-800" : "bg-green-500 text-white"
   }`;
 
+  //--------------------------------------------------------------------------------------------------------------rating 관리 부
+  // rating 비교 조건 데이터
+  const ratingConfig = [
+    { min: 0, max: 1499, icon: faFeather, color: "gray" }, // 이코노미
+    { min: 1500, max: 2999, icon: faFeather, color: "blue" }, // 프리미엄 이코노미
+    { min: 3000, max: 4499, icon: faDove, color: "gray" }, // 비지니스
+    { min: 4500, max: 5999, icon: faDove, color: "blue" }, // 프리미엄 비지니스
+    { min: 6000, max: 7499, icon: faPlane, color: "gray" }, // 퍼스트
+    { min: 7500, max: 8999, icon: faPlane, color: "blue" }, // 프리미엄 퍼스트
+    { min: 9000, max: 10000, icon: faCrown, color: "yellow" }, // 로얄
+    { min: -Infinity, max: Infinity, icon: faUser, color: "black" }, // 기본값
+  ];
+
+  // rating 값에 따른 아이콘과 색상 계산 //
+  const getRatingDetails = (ratings) => {
+    return (
+      ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { icon: faUser, color: "black" }
+    ); // 기본값
+  };
+
+  const { icon: ratingIcon, color: ratingColor } = getRatingDetails(writerProfile.ratings || 0);
+  //---------------------------------------------------------------------------------------------------------------rating 관리부
+
   useEffect(() => {
     axios
       .get(`/api/v1/posts/${id}`)
@@ -77,7 +109,7 @@ function MateBoardDetail(props) {
 
         setWriterProfile(res.data.userProfileInfo);
 
-        setSelectedDateRange([res.data.dto.startDate, res.data.dto.endDate])
+        setSelectedDateRange([res.data.dto.startDate, res.data.dto.endDate]);
 
         //댓글 목록이 존재하는지 확인 후, 배열에 ref라는 방 추가
         const list = Array.isArray(res.data.commentList)
@@ -431,6 +463,7 @@ function MateBoardDetail(props) {
               )}
               <div>
                 <h3 className="text-base font-semibold leading-7 tracking-tight text-gray-900">
+                  <FontAwesomeIcon icon={ratingIcon} color={ratingColor}></FontAwesomeIcon>
                   {writerProfile.nickname}
                 </h3>
                 <p className="text-sm font-semibold leading-6 text-indigo-600">
