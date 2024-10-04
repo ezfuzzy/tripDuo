@@ -33,6 +33,13 @@ public class ChatController {
 		return ResponseEntity.ok(chatService.getSelectAllChatRooms(userId));
 	}
 
+	// 선택된 채팅방 목록을 반환하는 API 
+	@GetMapping("/{roomId}")
+	public ResponseEntity<ChatRoomDto> getUserChatRoom(@PathVariable  Long roomId){
+		
+		return ResponseEntity.ok(chatService.getSelectUserChatRoom(roomId));
+		
+	}
 	// 특정 채팅방의 모든 메시지를 반환하는 API
 	@GetMapping("/{roomId}/getMessages")
 	public ResponseEntity<List<ChatMessageDto>> getChatMessages(@PathVariable Long roomId) {

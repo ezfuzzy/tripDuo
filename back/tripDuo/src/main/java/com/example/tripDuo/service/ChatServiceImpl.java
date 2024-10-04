@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 
@@ -58,6 +59,21 @@ public class ChatServiceImpl implements ChatService {
 		return chatRoomDtos;
 	}
 
+	@Override
+	public ChatRoomDto getSelectUserChatRoom(Long roomId) {
+		// roomId로 채팅방 정보를 조회
+		ChatRoom getUserChatroom = chatRoomRepo.findById(roomId)
+				.orElseThrow(() -> new RuntimeException("ChatRoom not found"));
+		
+		// ChatRoomDto로 변환
+		ChatRoomDto getUserChatroomDto = ChatRoomDto.toDto(getUserChatroom);
+
+		// 참여자 정보 조회
+				List<ChatParticipant> participants = chatParticipantsRepo.findByChatRoomId(roomId);
+	    
+		return getUserChatroomDto;
+	}
+	
 	// 특정 채팅방의 모든 메시지를 반환
 	@Override
 	public List<ChatMessageDto> getChatMessages(Long roomId) {
@@ -148,5 +164,4 @@ public class ChatServiceImpl implements ChatService {
 			}
 		}
 	}
-
 }

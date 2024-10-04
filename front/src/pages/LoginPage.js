@@ -5,8 +5,7 @@ import axios from "axios";
 import { decodeToken } from "jsontokens";
 import "../css/LoginPage.css";
 import { Link, NavLink } from "react-router-dom";
-import SockJS from "sockjs-client";
-import { Client } from "@stomp/stompjs";
+import useWebSocket from "../components/useWebSocket";
 
 function LoginPage() {
   const [loginData, setLoginData] = useState({
@@ -16,34 +15,7 @@ function LoginPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [error, setError] = useState("");
-  const stompClient = useRef(null);  // WebSocket 연결 객체
-  const [messages, setMessages] = useState([]);  // 메시지 목록
-
-   // WebSocket 연결 함수
-   const connectWebSocket = (roomId) => {
-    const socket = new SockJS('/api/ws');
-    stompClient.current = new Client({
-      webSocketFactory: () => socket,
-      reconnectDelay: 5000,
-
-      onConnect: () => {
-        stompClient.current.subscribe(`/topic/room/${roomId}`, (messageOutput) => {
-          const newMessage = JSON.parse(messageOutput.body);
-          setMessages((prevMessages) => [...prevMessages, newMessage]);
-        });
-      },
-
-      onStompError: (error) => {
-        console.error('STOMP error:', error);
-      },
-
-      onWebSocketClose: () => {
-        console.log('WebSocket connection closed.');
-      }
-    });
-    stompClient.current.activate();
-  };
-
+  const { stompClient, isConnected } = useWebSocket(); // useWebSocket 훅 사용
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -89,13 +61,15 @@ function LoginPage() {
       dispatch({ type: "LOGIN_USER", payload: { userData, loginStatus } });
       axios.defaults.headers.common["Authorization"] = token;
 
-      // WebSocket 연결
-      connectWebSocket();
-
-      navigate("/");
-      window.location.reload();
-    }else{
-      setError("아이디 또는 비밀번호가 틀렸습니다")
+      // WebSocket이 성공적으로 연결된 후, navigate를 수행
+      if (isConnected) {
+        navigate("/");
+        window.location.reload();
+      } else {
+        console.error("WebSocket not connected yet"); // 연결 상태가 아닐 때 에러 로그
+      }
+    } else {
+      setError("아이디 또는 비밀번호가 틀렸습니다");
     }
   };
 
@@ -131,7 +105,11 @@ function LoginPage() {
     <div className="login-page">
       <div className="login-container">
         <div>
-          <img className="w-48 h-auto mx-auto mb-5" src="/img/TripDuologo.png" alt="logo" />
+          <img
+            className="w-48 h-auto mx-auto mb-5"
+            src="/img/TripDuologo.png"
+            alt="logo"
+          />
         </div>
         <h2>로그인</h2>
         <div className="login-form">
@@ -161,22 +139,26 @@ function LoginPage() {
           </button>
         </div>
         <div className="flex flex-col items-center space-y-4">
-          <img 
-            className="w-48 h-auto cursor-pointer mt-5" 
-            src="/img/KakaoLogin.png" 
-            alt="Kakao Login" 
+          <img
+            className="w-48 h-auto cursor-pointer mt-5"
+            src="/img/KakaoLogin.png"
+            alt="Kakao Login"
             onClick={handleKakaoLogin}
           />
-          <img 
-            className="w-48 h-auto cursor-pointer" 
-            src="/img/GoogleLogin.png" 
-            alt="Google Login" 
+          <img
+            className="w-48 h-auto cursor-pointer"
+            src="/img/GoogleLogin.png"
+            alt="Google Login"
             onClick={handleGoogleLogin}
           />
         </div>
         <p className="mt-6 text-center">
           회원가입 하지 않으셨다면{" "}
-          <Link as={NavLink} to="/agreement" className="text-blue-500 hover:underline font-semibold">
+          <Link
+            as={NavLink}
+            to="/agreement"
+            className="text-blue-500 hover:underline font-semibold"
+          >
             클릭
           </Link>
         </p>
