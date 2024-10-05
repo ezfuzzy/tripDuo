@@ -10,7 +10,6 @@ import { faEye, faHeart, faMessage } from "@fortawesome/free-solid-svg-icons";
 function MateBoard() {
   //배열 안에서 객체로 관리
   const [pageData, setPageData] = useState([]);
-  const [mark, setMark] = useState([]);
 
   //파라미터 값 관리
   // URL에서 검색 매개변수를 가져오기 위한 상태
