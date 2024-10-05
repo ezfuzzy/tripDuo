@@ -1,115 +1,115 @@
-import axios from "axios"
-import React, { useEffect, useState } from "react"
-import { useDispatch } from "react-redux"
-import { useNavigate, useParams } from "react-router"
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate, useParams } from "react-router";
 
 function PasswordUpdate(props) {
-  const { id } = useParams()
+  const { id } = useParams();
 
   // const [currentPassword, setCurrentPassword] = useState("");
   // const [newPassword, setNewPassword] = useState("");
   // const [confirmPassword, setNewConfirmPassword] = useState("");
 
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const [isValidNewPassword, setIsValidNewPassword] = useState(true)
-  const [isPasswordMatched, setIsPasswordMatched] = useState(true)
+  const [isValidNewPassword, setIsValidNewPassword] = useState(true);
+  const [isPasswordMatched, setIsPasswordMatched] = useState(true);
 
-  const [hasLowerCase, setHasLowerCase] = useState(false)
-  const [hasUpperCase, setHasUpperCase] = useState(false)
-  const [hasNumber, setHasNumber] = useState(false)
-  const [hasSpecialChar, setHasSpecialChar] = useState(false)
-  const [isValidLength, setIsValidLength] = useState(false)
+  const [hasLowerCase, setHasLowerCase] = useState(false);
+  const [hasUpperCase, setHasUpperCase] = useState(false);
+  const [hasNumber, setHasNumber] = useState(false);
+  const [hasSpecialChar, setHasSpecialChar] = useState(false);
+  const [isValidLength, setIsValidLength] = useState(false);
 
-  const [showValidationMessage, setShowValidationMessage] = useState(false)
+  const [showValidationMessage, setShowValidationMessage] = useState(false);
 
-  const [isAllChecked, setIsAllChecked] = useState(false)
+  const [isAllChecked, setIsAllChecked] = useState(false);
 
   //유저의 모든 정보
-  const [profile, setProfile] = useState({})
+  const [profile, setProfile] = useState({});
 
   const validatePassword = (value) => {
     // 비밀번호 : 영어 대소문자, 숫자, 특수문자를 포함한 8~15자리
-    setHasLowerCase(/[a-z]/.test(value))
-    setHasUpperCase(/[A-Z]/.test(value))
-    setHasNumber(/\d/.test(value))
-    setHasSpecialChar(/[!@#$%^&*]/.test(value))
-    setIsValidLength(value.length >= 8 && value.length <= 15)
-  }
+    setHasLowerCase(/[a-z]/.test(value));
+    setHasUpperCase(/[A-Z]/.test(value));
+    setHasNumber(/\d/.test(value));
+    setHasSpecialChar(/[!@#$%^&*]/.test(value));
+    setIsValidLength(value.length >= 8 && value.length <= 15);
+  };
   //기존 비밀번호 핸들러
   const handleCurrentPassword = (e) => {
     setProfile({
       ...profile,
       password: e.target.value,
-    })
-  }
+    });
+  };
   //새 비밀번호 핸들러
   const handleNewPasswordChange = (e) => {
-    const value = e.target.value
+    const value = e.target.value;
     setProfile({
       ...profile,
       newPassword: value,
-    })
+    });
 
-    validatePassword(value)
-    setShowValidationMessage(true)
-  }
+    validatePassword(value);
+    setShowValidationMessage(true);
+  };
 
   //새 비밀번호 확인 핸들러
   const handleConfirmPasswordChange = (e) => {
     setProfile({
       ...profile,
       confirmPassword: e.target.value,
-    })
-  }
+    });
+  };
 
   //수정 버튼 핸들러
   const handleChangePassword = async (e) => {
-    e.preventDefault() // 폼 제출 기본 동작 방지
+    e.preventDefault(); // 폼 제출 기본 동작 방지
     try {
-      const res = await axios.put(`/api/v1/users/${id}/change-password`, profile)
-      console.log(res.data)
-      alert("비밀번호 수정 완료")
+      const res = await axios.put(`/api/v1/users/${id}/change-password`, profile);
+      console.log(res.data);
+      alert("비밀번호 수정 완료");
 
       // 홈으로 이동하면서 로그아웃 필요 상태를 전달
-      navigate("/", { state: { needLogout: true } })
+      navigate("/", { state: { needLogout: true } });
     } catch (error) {
-      console.log(error)
-      alert("비밀번호 변경 중 오류가 발생했습니다.")
+      console.log(error);
+      alert("비밀번호 변경 중 오류가 발생했습니다.");
     }
-  }
+  };
 
   //처음 유저 정보를 불러와 상태값에 저장
   useEffect(() => {
     axios
       .get(`/api/v1/users/${id}`)
       .then((res) => {
-        setProfile(res.data)
+        setProfile(res.data);
       })
-      .catch((error) => console.log(error))
-  }, [id])
+      .catch((error) => console.log(error));
+  }, [id]);
 
   useEffect(() => {
     if (hasLowerCase && hasUpperCase && hasNumber && hasSpecialChar && isValidLength) {
-      setIsValidNewPassword(true)
-      setShowValidationMessage(false)
+      setIsValidNewPassword(true);
+      setShowValidationMessage(false);
     } else {
-      setIsValidNewPassword(false)
+      setIsValidNewPassword(false);
     }
-  }, [hasLowerCase, hasUpperCase, hasNumber, hasSpecialChar, isValidLength])
+  }, [hasLowerCase, hasUpperCase, hasNumber, hasSpecialChar, isValidLength]);
 
   useEffect(() => {
-    setIsPasswordMatched(profile.newPassword === profile.confirmPassword)
-  }, [profile.newPassword, profile.confirmPassword])
+    setIsPasswordMatched(profile.newPassword === profile.confirmPassword);
+  }, [profile.newPassword, profile.confirmPassword]);
 
   useEffect(() => {
     if (isValidNewPassword && isPasswordMatched) {
-      setIsAllChecked(true)
+      setIsAllChecked(true);
     } else {
-      setIsAllChecked(false)
+      setIsAllChecked(false);
     }
-  }, [isValidNewPassword, isPasswordMatched])
+  }, [isValidNewPassword, isPasswordMatched]);
 
   return (
     <div className="isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
@@ -178,7 +178,7 @@ function PasswordUpdate(props) {
         </div>
       </form>
     </div>
-  )
+  );
 }
 
-export default PasswordUpdate
+export default PasswordUpdate;
