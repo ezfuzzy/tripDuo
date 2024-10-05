@@ -401,7 +401,7 @@ function MateBoardDetail(props) {
         });
     }
   };
-
+// ---------------------------------------------------- 채팅 관련
   const { stompClient, isConnected, messages, setMessages } = useWebSocket();
   const [subscribedRoomIds, setSubscribedRoomIds] = useState([]); // 내가 구독한 목록
 
