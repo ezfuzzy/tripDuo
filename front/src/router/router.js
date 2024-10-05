@@ -43,6 +43,9 @@ import TripLogBoardForm from "../pages/boards/TripLogBoardForm";
 import TripLogBoard from "../pages/boards/TripLogBoard";
 import CommunityBoard from "../pages/boards/CommunityBoard";
 import CommunityBoardForm from "../pages/boards/CommunityBoardForm";
+import TripLogBoardDetail from "../pages/boards/TripLogBoardDetail";
+import TripLogBoardEditForm from "../pages/boards/TripLogBoardEditForm";
+import TripLogBoardFormNew from "../pages/boards/TripLogBoardFormNew";
 
 // /users/:id
 // /users/:id/setting
@@ -73,9 +76,9 @@ const routes = [
   { path: "/posts/course", element: <CourseBoard /> },
   { path: "/posts/course/:id/detail", element: <CourseBoardDetail /> },
 
-  //      ### triplog ###
+  //      ### trip_log ###
   { path: "/posts/trip_log", element: <TripLogBoard /> },
-  // { path: "/posts/trip_log/:id/detail", element: <TripLogDetail />},
+  { path: "/posts/trip_log/:id/detail", element: <TripLogBoardDetail />},
 
   //      ### Community ###
   { path: "/posts/community", element: <CommunityBoard /> },
@@ -104,9 +107,10 @@ const protectedRoutes = [
   { path: "/posts/course/new", element: <CourseBoardForm /> },
   { path: "/posts/course/:id/edit", element: <CourseBoardEditForm /> },
 
-  //      ### triplog ###
-  { path: "posts/trip_log/new", element: <TripLogBoardForm /> },
-  // { path: "posts/trip_log/:id/edit", element: <TripLogBoardEditForm />},
+  //      ### trip_log ###
+  { path: "posts/trip_log/new", element: <TripLogBoardFormNew /> },
+  { path: "posts/trip_log/:id/new", element: <TripLogBoardForm />},
+  { path: "posts/trip_log/:id/edit", element: <TripLogBoardEditForm />},
 
   //      ### Community ###
   { path: "/posts/community/new", element: <CommunityBoardForm /> },
