@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import 'keen-slider/keen-slider.min.css';
 import { useKeenSlider } from 'keen-slider/react';
 import '../css/Home.css';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
 
 function Home() {
+    const location = useLocation();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
     const [currentSlide, setCurrentSlide] = useState(0); // 현재 슬라이드 상태 추가
     const [matePosts, setMatePosts] = useState([]); // 메이트 게시물 상태
     const [sortBy, setSortBy] = useState("viewCount"); // 정렬 기준 초기값 설정
@@ -98,6 +102,18 @@ function Home() {
 
         MatePosts();
     }, [sortBy]);
+
+    useEffect(() => {
+        if (location.state && location.state.needLogout) {
+          // 로그아웃 처리
+          dispatch({ type: "LOGOUT_USER", payload: null })
+          localStorage.clear()
+          
+          // 상태 초기화 (새로고침 효과)
+          navigate("/", { replace: true })
+        }
+      }, [location, dispatch, navigate])
+
 
     if (isLoading) {
         return <p>로딩 중...</p>;
