@@ -47,6 +47,7 @@ import TripLogBoardDetail from "../pages/boards/TripLogBoardDetail";
 import TripLogBoardEditForm from "../pages/boards/TripLogBoardEditForm";
 import TripLogBoardFormNew from "../pages/boards/TripLogBoardFormNew";
 import CommunityBoardDetail from "../pages/boards/CommunityBoardDetail";
+import CommunityBoardEditForm from "../pages/boards/CommunityBoardEditForm";
 
 // /users/:id
 // /users/:id/setting
@@ -77,13 +78,12 @@ const routes = [
   { path: "/posts/course", element: <CourseBoard /> },
   { path: "/posts/course/:id/detail", element: <CourseBoardDetail /> },
 
-
   //      ### trip_log ###
   { path: "/posts/trip_log", element: <TripLogBoard /> },
-  { path: "/posts/trip_log/:id/detail", element: <TripLogBoardDetail />},
+  { path: "/posts/trip_log/:id/detail", element: <TripLogBoardDetail /> },
 
   // { path: "/posts/trip_log/:id/detail", element: <TripLogDetail />},
-  
+
   //      ### Community ###
   { path: "/posts/community", element: <CommunityBoard /> },
   { path: "/posts/community/:id/detail", element: <CommunityBoardDetail /> },
@@ -114,12 +114,12 @@ const protectedRoutes = [
 
   //      ### trip_log ###
   { path: "posts/trip_log/new", element: <TripLogBoardFormNew /> },
-  { path: "posts/trip_log/:id/new", element: <TripLogBoardForm />},
-  { path: "posts/trip_log/:id/edit", element: <TripLogBoardEditForm />},
+  { path: "posts/trip_log/:id/new", element: <TripLogBoardForm /> },
+  { path: "posts/trip_log/:id/edit", element: <TripLogBoardEditForm /> },
 
   //      ### Community ###
   { path: "/posts/community/new", element: <CommunityBoardForm /> },
-  
+  { path: "/posts/community/:id/edit", element: <CommunityBoardEditForm /> },
 
   // ### profile setting(보여지는 정보) ###
   { path: "/users/:id", element: <MyPage /> },
