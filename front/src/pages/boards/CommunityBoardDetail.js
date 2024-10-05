@@ -24,7 +24,7 @@ let commentIndex = 0;
 //댓글 글자수 제한
 const maxLength = 3000;
 
-function MateBoardDetail(props) {
+function CommunityBoardDetail(props) {
   const { id } = useParams(); // 게시물 번호
   // 로그인된 유저 정보
   const userId = useSelector((state) => state.userData.id, shallowEqual); // 로그인된 user의 id
@@ -472,10 +472,10 @@ function MateBoardDetail(props) {
           <NavLink
             className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
             to={{
-              pathname: "/posts/mate",
+              pathname: "/posts/community",
               search: post.country === "한국" ? "?di=Domestic" : "?di=International",
             }}>
-            Mate
+            Community
           </NavLink>
 
           {/* 태그s */}
@@ -578,20 +578,6 @@ function MateBoardDetail(props) {
 
           {/* Froala Editor 내용 */}
           <div dangerouslySetInnerHTML={{ __html: cleanHTML }}></div>
-
-          {/* 캘린더 */}
-          <div className="p-4">
-            <Calendar
-              value={selectedDateRange} // 초기값 또는 선택된 날짜 범위
-              formatDay={(locale, date) => moment(date).format("DD")}
-              minDetail="month" // 상단 네비게이션에서 '월' 단위만 보이게 설정
-              maxDetail="month" // 상단 네비게이션에서 '월' 단위만 보이게 설정
-              navigationLabel={null}
-              showNeighboringMonth={false} //  이전, 이후 달의 날짜는 보이지 않도록 설정
-              calendarType="hebrew" //일요일부터 보이도록 설정
-              readOnly={true}
-            />
-          </div>
         </div>
         {
           // 로그인된 username 과 post의 userId 로 불러온 작성자 아이디가 동일하면 랜더링
@@ -600,7 +586,7 @@ function MateBoardDetail(props) {
               <button
                 type="button"
                 className="m-1 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                onClick={() => navigate(`/posts/mate/${id}/edit`)}>
+                onClick={() => navigate(`/posts/community/${id}/edit`)}>
                 수정
               </button>
               <button
@@ -613,8 +599,8 @@ function MateBoardDetail(props) {
                       alert("글 삭제 성공");
                       // 국/해외 페이지 별 리다일렉트
                       post.country === "한국"
-                        ? navigate(`/posts/mate?di=Domestic`)
-                        : navigate(`/posts/mate?di=International`);
+                        ? navigate(`/posts/community?di=Domestic`)
+                        : navigate(`/posts/community?di=International`);
                     })
                     .catch((error) => console.log(error));
                 }}>
@@ -875,7 +861,7 @@ function MateBoardDetail(props) {
             disabled={isLoading}
             onClick={handleMoreComment}>
             {isLoading ? (
-              <span className="animate-spin inline-block w-5 h-5 border-2 border-t-2 border-white rounded-full"></span>
+              <span className="animation-spin inline-block w-5 h-5 border-2 border-t-2 border-white rounded-full"></span>
             ) : (
               <span>댓글 더보기</span>
             )}
@@ -886,4 +872,4 @@ function MateBoardDetail(props) {
   );
 }
 
-export default MateBoardDetail;
+export default CommunityBoardDetail;
