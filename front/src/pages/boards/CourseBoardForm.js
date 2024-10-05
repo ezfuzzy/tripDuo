@@ -49,11 +49,9 @@ const CourseBoardForm = () => {
 
   //검색 키워드, 국내외 관련 처리
   const [searchParams] = useSearchParams()
-  const domesticInternational = searchParams.get("di")
+  const domesticInternational = searchParams.get("di") || "Domestic"
   const status = searchParams.get("status") //"PUBLIC"이거나 "PRIVATE"인 경우 처리
   const navigate = useNavigate()
-
-  useEffect(() => { }, [])
 
   // 날짜 초기화
   const handleDateReset = () => {
@@ -63,12 +61,8 @@ const CourseBoardForm = () => {
   // 달력에서 날짜를 선택할 때 호출되는 함수
   const handleDateChange = (dateRange) => {
     setSelectedDateRange(dateRange)
-    setIsCalendarOpen(false) // 날짜 선택 후 캘린더 닫기
-    // setSearchCriteria({
-    //   ...searchCriteria,
-    //   startDate: dateRange[0] ? dateRange[0].toLocaleDateString('ko-KR') : "", 
-    //   endDate: dateRange[1] ? dateRange[1].toLocaleDateString('ko-KR') : "",   
-    // })
+    // 날짜 선택 후 캘린더 닫기
+    setIsCalendarOpen(false)
   }
 
   const handleTagInput = (e) => {
@@ -169,7 +163,7 @@ const CourseBoardForm = () => {
     axios
       .post("/api/v1/posts/course", post)
       .then((res) => {
-        navigate("/posts/course")
+        navigate(`/posts/course?di=${domesticInternational}`)
       })
       .catch((error) => console.log(error))
   }
