@@ -234,11 +234,11 @@ function CommunityBoard() {
               <td>{item.id}</td>
               <td className="text-left">
                 <div className="flex flex-wrap gap-2 mt-2">
-                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">{`#${item.country}`}</span>
-                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">{`#${item.city}`}</span>
+                  <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">{`#${item.country}`}</span>
+                  <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">{`#${item.city}`}</span>
                   {item.tags &&
                     item.tags.map((tag, index) => (
-                      <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center">
+                      <span key={index} className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center">
                         {tag}
                       </span>
                     ))}
@@ -246,7 +246,7 @@ function CommunityBoard() {
                 <Link to={`/posts/community/${item.id}/detail`}>{item.title}</Link>
               </td>
               <td>{item.writer}</td>
-              <td className="text-xs ">
+              <td className="text-xs">
                 {item.updatedAt ? (
                   <span className="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded">
                     update
