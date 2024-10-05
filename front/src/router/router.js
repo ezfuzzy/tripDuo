@@ -1,47 +1,48 @@
-import { createBrowserRouter } from "react-router-dom"
-import App from "../App"
-import Home from "../pages/Home"
-import Sample from "../pages/Sample"
-import HomeAbroad from "../pages/HomeAbroad"
-import Signup from "../pages/Signup"
-import Agreement from "../pages/Agreement"
-import LoginPage from "../pages/LoginPage"
-import LogoutPage from "../pages/LogoutPage"
-import MyProfile from "../pages/myPage/MyProfile"
-import MyProfileForm from "../pages/myPage/MyProfileForm"
-import CompletedSignup from "../pages/CompletedSignup"
-import KakaoRedirect from "../components/KakaoRedirect"
-import GoogleRedirect from "../components/GoogleRedirect"
-import ChangePassword from "../pages/myPage/ChangePassword"
-import MateBoard from "../pages/boards/MateBoard"
-import MateBoardForm from "../pages/boards/MateBoardForm"
-import MateBoardEditForm from "../pages/boards/MateBoardEditForm"
-import MateBoardDetail from "../pages/boards/MateBoardDetail"
-import TravelChecklist from "../pages/Utilities/TravelChecklist"
-import TravelSafetyInfo from "../pages/Utilities/TravelSafetyInfo"
-import TravelCostCalculator from "../pages/Utilities/TravelCostCalculator"
-import TravelPlanner from "../pages/Utilities/TravelPlaner"
-import LocationRecommendations from "../pages/Utilities/LocationRecommendations"
-import ExchangeInfo from "../pages/Utilities/ExchangeInfo"
-import TravelDiary from "../pages/Utilities/TravelDiary"
-import LanguageCultureTips from "../pages/Utilities/LanguageCultureTips"
-import ExtraPage from "../pages/Utilities/ExtraPage"
-import CourseBoard from "../pages/boards/CourseBoard"
-import CourseBoardForm from "../pages/boards/CourseBoardForm"
-import CourseBoardDetail from "../pages/boards/CourseBoardDetail"
-import CourseBoardEditForm from "../pages/boards/CourseBoardEditForm"
-import MyPlace from "../pages/myTripTmp/MyPlace"
-import MyPlan from "../pages/myTripTmp/MyPlan"
-import MyRecord from "../pages/myTripTmp/MyRecord"
-import WishMate from "../pages/myTripTmp/WishMate"
-import Alarm from "../pages/Alarm"
-import ChatRoom from "../components/ChatRoom"
-import MyPage from "../pages/myPage/MyPage"
+import { createBrowserRouter } from "react-router-dom";
+import App from "../App";
+import Home from "../pages/Home";
+import Sample from "../pages/Sample";
+import HomeAbroad from "../pages/HomeAbroad";
+import Signup from "../pages/Signup";
+import Agreement from "../pages/Agreement";
+import LoginPage from "../pages/LoginPage";
+import LogoutPage from "../pages/LogoutPage";
+import MyProfile from "../pages/myPage/MyProfile";
+import MyProfileForm from "../pages/myPage/MyProfileForm";
+import CompletedSignup from "../pages/CompletedSignup";
+import KakaoRedirect from "../components/KakaoRedirect";
+import GoogleRedirect from "../components/GoogleRedirect";
+import ChangePassword from "../pages/myPage/ChangePassword";
+import MateBoard from "../pages/boards/MateBoard";
+import MateBoardForm from "../pages/boards/MateBoardForm";
+import MateBoardEditForm from "../pages/boards/MateBoardEditForm";
+import MateBoardDetail from "../pages/boards/MateBoardDetail";
+import TravelChecklist from "../pages/Utilities/TravelChecklist";
+import TravelSafetyInfo from "../pages/Utilities/TravelSafetyInfo";
+import TravelCostCalculator from "../pages/Utilities/TravelCostCalculator";
+import TravelPlanner from "../pages/Utilities/TravelPlaner";
+import LocationRecommendations from "../pages/Utilities/LocationRecommendations";
+import ExchangeInfo from "../pages/Utilities/ExchangeInfo";
+import TravelDiary from "../pages/Utilities/TravelDiary";
+import LanguageCultureTips from "../pages/Utilities/LanguageCultureTips";
+import ExtraPage from "../pages/Utilities/ExtraPage";
+import CourseBoard from "../pages/boards/CourseBoard";
+import CourseBoardForm from "../pages/boards/CourseBoardForm";
+import CourseBoardDetail from "../pages/boards/CourseBoardDetail";
+import CourseBoardEditForm from "../pages/boards/CourseBoardEditForm";
+import MyPlace from "../pages/myTripTmp/MyPlace";
+import MyPlan from "../pages/myTripTmp/MyPlan";
+import MyRecord from "../pages/myTripTmp/MyRecord";
+import WishMate from "../pages/myTripTmp/WishMate";
+import Alarm from "../pages/Alarm";
+import ChatRoom from "../components/ChatRoom";
+import MyPage from "../pages/myPage/MyPage";
 
-import ProtectedRoute from "../components/ProtectedRoute"
-import TripLogBoardForm from "../pages/boards/TripLogBoardForm"
-import TripLogBoard from "../pages/boards/TripLogBoard"
-import CommunityBoard from "../pages/boards/CommunityBoard"
+import ProtectedRoute from "../components/ProtectedRoute";
+import TripLogBoardForm from "../pages/boards/TripLogBoardForm";
+import TripLogBoard from "../pages/boards/TripLogBoard";
+import CommunityBoard from "../pages/boards/CommunityBoard";
+import CommunityBoardForm from "../pages/boards/CommunityBoardForm";
 
 // /users/:id
 // /users/:id/setting
@@ -73,11 +74,11 @@ const routes = [
   { path: "/posts/course/:id/detail", element: <CourseBoardDetail /> },
 
   //      ### triplog ###
-  { path: "/posts/trip_log", element: <TripLogBoard />},
+  { path: "/posts/trip_log", element: <TripLogBoard /> },
   // { path: "/posts/trip_log/:id/detail", element: <TripLogDetail />},
 
-    //      ### Community ###
-    { path: "/posts/community", element: <CommunityBoard/>},
+  //      ### Community ###
+  { path: "/posts/community", element: <CommunityBoard /> },
 
   // ### 부가 기능 ###
   { path: "/checklist", element: <TravelChecklist /> },
@@ -90,7 +91,7 @@ const routes = [
   { path: "/languageTip", element: <LanguageCultureTips /> },
   { path: "/extra", element: <ExtraPage /> },
   { path: "/alarm", element: <Alarm /> },
-]
+];
 
 const protectedRoutes = [
   // ### board ###
@@ -104,9 +105,12 @@ const protectedRoutes = [
   { path: "/posts/course/:id/edit", element: <CourseBoardEditForm /> },
 
   //      ### triplog ###
-  { path: "posts/trip_log/new", element: <TripLogBoardForm />},
+  { path: "posts/trip_log/new", element: <TripLogBoardForm /> },
   // { path: "posts/trip_log/:id/edit", element: <TripLogBoardEditForm />},
 
+  //      ### Community ###
+  { path: "/posts/community/new", element: <CommunityBoardForm /> },
+  
 
   // ### profile setting(보여지는 정보) ###
   { path: "/users/:id", element: <MyPage /> },
@@ -125,7 +129,7 @@ const protectedRoutes = [
   // ### chat ###
   { path: "/chatroom", element: <ChatRoom /> },
   { path: "/chatroom/:id", element: <ChatRoom /> },
-]
+];
 
 const router = createBrowserRouter([
   {
@@ -147,6 +151,6 @@ const router = createBrowserRouter([
       },
     ],
   },
-])
+]);
 
-export default router
+export default router;

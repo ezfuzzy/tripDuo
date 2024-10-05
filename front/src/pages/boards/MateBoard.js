@@ -208,9 +208,9 @@ function MateBoard() {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <Link to={{ pathname: "/posts/mate/new", search: `?di=${domesticInternational}` }}>새글 작성</Link>
-      <button className="border border-1 bg-light-green-200" onClick={handleButtonClick}>
+    <div className="container mx-auto m-4">
+      <Link className="px-4 py-2 text-sm font-medium rounded-md bg-green-600 text-gray-100 mr-3" to={{ pathname: "/posts/mate/new", search: `?di=${domesticInternational}` }}>새글 작성</Link>
+      <button className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100" onClick={handleButtonClick}>
         {pageTurn}
       </button>
       <h4 className="font-bold mb-4">{whereAreYou}</h4>
@@ -339,9 +339,13 @@ function MateBoard() {
                 {item.startDate} ~ {item.endDate}
               </td>
               <td className="text-xs ">
-                {
-                  item.updatedAt ? <span className="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded">update</span> : <span className="px-8"></span>
-                }
+                {item.updatedAt ? (
+                  <span className="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded">
+                    update
+                  </span>
+                ) : (
+                  <span className="px-8"></span>
+                )}
                 {new Date(item.updatedAt ? item.updatedAt : item.createdAt).toLocaleDateString("ko-KR", {
                   year: "numeric",
                   month: "long",
