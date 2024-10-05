@@ -41,6 +41,7 @@ import MyPage from "../pages/myPage/MyPage"
 import ProtectedRoute from "../components/ProtectedRoute"
 import TripLogBoardForm from "../pages/boards/TripLogBoardForm"
 import TripLogBoard from "../pages/boards/TripLogBoard"
+import CommunityBoard from "../pages/boards/CommunityBoard"
 
 // /users/:id
 // /users/:id/setting
@@ -75,6 +76,9 @@ const routes = [
   { path: "/posts/trip_log", element: <TripLogBoard />},
   // { path: "/posts/trip_log/:id/detail", element: <TripLogDetail />},
 
+    //      ### Community ###
+    { path: "/posts/community", element: <CommunityBoard/>},
+
   // ### 부가 기능 ###
   { path: "/checklist", element: <TravelChecklist /> },
   { path: "/exchange", element: <ExchangeInfo /> },
@@ -102,6 +106,7 @@ const protectedRoutes = [
   //      ### triplog ###
   { path: "posts/trip_log/new", element: <TripLogBoardForm />},
   // { path: "posts/trip_log/:id/edit", element: <TripLogBoardEditForm />},
+
 
   // ### profile setting(보여지는 정보) ###
   { path: "/users/:id", element: <MyPage /> },
