@@ -216,7 +216,7 @@ function CommunityBoardForm() {
             model={post.content}
             onModelChange={handleModelChange}
             config={{
-              placeholderText: "정확한 장소 혹은 주소, 시간, 인원을 필수로 입력해 주세요.",
+              placeholderText: "과도한 욕설, 비방, 개인정보 노출 등은 제재될 수 있습니다.",
               height: 200,
             }}></FroalaEditor>
         </div>
