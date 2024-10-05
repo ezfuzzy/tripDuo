@@ -191,7 +191,7 @@ function MateBoardForm(props) {
           )}
         </div>
 
-        <div className="flex flex-wrap gap-2 mt-2">
+        <div className="flex flex-wrap gap-2 my-2">
           {post.country ? (
             <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{post.country}</span>
           ) : (
@@ -220,7 +220,7 @@ function MateBoardForm(props) {
             placeholder="#태그 입력 후 스페이스바"
             className="border p-2 w-1/3"
           />
-          <div className="flex flex-wrap gap-2 mt-2">
+          <div className="flex flex-wrap gap-2 my-2">
             {postTags.map((tag, index) => (
               <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center">
                 {tag}
@@ -237,7 +237,7 @@ function MateBoardForm(props) {
           <label htmlFor="title" className="mt-3">
             제목
           </label>
-          <input onChange={handleChange} type="text" id="title" name="title" />
+          <input className="w-full" onChange={handleChange} type="text" id="title" name="title" />
         </div>
 
         <div className="bg-white p-4">
