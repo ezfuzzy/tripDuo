@@ -149,8 +149,14 @@ function CommunityBoard() {
 
   return (
     <div className="container mx-auto m-4">
-      <Link className="px-4 py-2 text-sm font-medium rounded-md bg-green-600 text-gray-100 mr-3" to={{ pathname: "/posts/community/new", search: `?di=${domesticInternational}` }}>새글 작성</Link>
-      <button className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100" onClick={handleButtonClick}>
+      <Link
+        className="px-4 py-2 text-sm font-medium rounded-md bg-green-600 text-gray-100 mr-3"
+        to={{ pathname: "/posts/community/new", search: `?di=${domesticInternational}` }}>
+        새글 작성
+      </Link>
+      <button
+        className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
+        onClick={handleButtonClick}>
         {pageTurn}
       </button>
       <h4 className="font-bold mb-4">{whereAreYou}</h4>
