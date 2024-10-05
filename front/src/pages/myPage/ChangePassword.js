@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 
 function PasswordUpdate(props) {
@@ -8,6 +9,8 @@ function PasswordUpdate(props) {
   // const [currentPassword, setCurrentPassword] = useState("");
   // const [newPassword, setNewPassword] = useState("");
   // const [confirmPassword, setNewConfirmPassword] = useState("");
+
+  const dispatch = useDispatch();
 
   const [isValidNewPassword, setIsValidNewPassword] = useState(true);
   const [isPasswordMatched, setIsPasswordMatched] = useState(true);
@@ -72,7 +75,10 @@ function PasswordUpdate(props) {
       console.log(res.data)
       alert("비밀번호 수정 완료")
       
-      navigate(`/users/${id}/profile/edit`);
+      localStorage.clear();
+      dispatch({ type: "LOGOUT_USER", payload: null });
+      navigate("/");
+      window.location.reload();
     })
     .catch(error=>console.log(error))
   };
