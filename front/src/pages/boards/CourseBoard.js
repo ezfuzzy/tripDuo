@@ -51,7 +51,7 @@ function CourseBoard() {
 
     setCurrentPage(Number(pageNum))
     setDomesticInternational(diValue)
-    console.log("첫 번째 체크:", diValue)
+    
     setSearchCriteria((prev) => ({
       ...prev,
       city,
@@ -136,7 +136,6 @@ function CourseBoard() {
           }
           return 0 // 기본값
         })
-        console.log("두 번째 체크:", diValue)
 
         //서버로부터 응답된 데이터 state에 넣기
         setDesiredCountry(diValue === "Domestic" ? "국내여행 코스 페이지" : "해외여행 코스 페이지")
@@ -437,7 +436,7 @@ function CourseBoard() {
                     {post.tags &&
                       post.tags.map((tag, index) => (
                         <span key={index} className="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded">
-                          #{tag}
+                          {tag}
                         </span>
                       ))}
                   </div>

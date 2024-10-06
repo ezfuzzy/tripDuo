@@ -1,72 +1,77 @@
-import axios from "axios"
-import React, { createRef, useEffect, useRef, useState } from "react"
-import { shallowEqual, useDispatch, useSelector } from "react-redux"
-import { NavLink, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom"
-import ConfirmModal from "../../components/ConfirmModal"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faCrown, faDove, faEye, faFeather, faHeart, faMessage, faPlane, faUser } from "@fortawesome/free-solid-svg-icons"
-import SavedPlacesKakaoMapComponent from "../../components/SavedPlacesKakaoMapComponent"
-import SavedPlacesGoogleMapComponent from "../../components/SavedPlacesGoogleMapComponent"
-
+import {
+  faCrown,
+  faDove,
+  faEye,
+  faFeather,
+  faHeart,
+  faMessage,
+  faPlane,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from "axios";
+import DOMPurify from "dompurify";
+import React, { createRef, useEffect, useRef, useState } from "react";
+import { shallowEqual, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router";
+import { NavLink } from "react-router-dom";
+import useWebSocket from "../../components/useWebSocket";
 
 //새로 등록한 댓글을 추가할 인덱스
-let commentIndex = 0
+let commentIndex = 0;
 //댓글 글자수 제한
-const maxLength = 3000
+const maxLength = 3000;
 
-const CourseBoardDetail = () => {
-  //"/posts/course/:id/detail" 에서 id에 해당되는 경로 파라미터 값 얻어오기
-  const { id } = useParams()
-  //로그인된 user정보
-  const loggedInUserId = useSelector((state) => state.userData.id, shallowEqual) // 로그인된 user의 id
-  const loggedInUsername = useSelector((state) => state.userData.username, shallowEqual) // 로그인된 username
-  const loggedInNickname = useSelector((state) => state.userData.nickname, shallowEqual) // 로그인된 nickname
-  const loggedInProfilePicture = useSelector((state) => state.userData.profilePicture, shallowEqual) // 로그인된 user의 프로필사진
+function CommunityBoardDetail(props) {
+  const { id } = useParams(); // 게시물 번호
+  // 로그인된 유저 정보
+  const userId = useSelector((state) => state.userData.id, shallowEqual); // 로그인된 user의 id
+  const username = useSelector((state) => state.userData.username, shallowEqual); // 로그인된 username
+  const nickname = useSelector((state) => state.userData.nickname, shallowEqual); // 로그인된 유저의 nickname
+  const profilePicture = useSelector((state) => state.userData.profilePicture, shallowEqual); // 로그인된 유저의 profilePicture
 
-  //게시물 작성자 정보
-  const [writerProfile, setWriterProfile] = useState({})
+  const navigate = useNavigate();
+
+  const [post, setPost] = useState({ tags: [] });
+  const [isRecruited, setIsRecruited] = useState(false);
+
+  // 작성자 프로필 설정
+  const [writerProfile, setWriterProfile] = useState({});
+
   //좋아요 버튼 설정
-  const [isLiked, setIsLiked] = useState(false)
-  const [likeId, setLikeId] = useState()
-  //글 하나의 정보 상태값으로 관리
-  const [post, setPost] = useState({ tags: [], postData: [{ dayMemo: "", places: [""] }] })
-  //게시물 작성자가 맞는지 여부
-  const isWriter = loggedInUserId === post.userId
+  const [isLiked, setLiked] = useState(false);
 
-  //맵에 전달할 장소 정보 상태값으로 관리
-  const [allPlaces, setAllPlaces] = useState([])
-  //카카오 지도의 중심 좌표를 저장하는 상태값
-  const [kakaoMapCenterLocation, setKakaoMapCenterLocation] = useState({ Ma: 37.5665, La: 126.978 })
-  //구글 지도의 중심 좌표를 저장하는 상태값
-  const [googleMapCenterLocation, setGoogleMapCenterLocation] = useState({ Ma: 37.5665, La: 126.978 })
-  //댓글 목록을 상태값으로 관리
-  const [commentList, setCommentList] = useState([])
+  //덧글 관련 설정 ( to do )
+  // 댓글 목록
+  const [commentList, setCommentList] = useState([]);
   //댓글의 현재 페이지 번호
-  const [pageNum, setPageNum] = useState(1)
-  //댓글 전체 페이지의 개수(마지막 페이지 번호)
-  const [totalPageCount, setTotalPageCount] = useState(0)
+  const [pageNum, setPageNum] = useState(1);
+  //댓글 전체의 페이지 개수
+  const [totalCommentPages, setTotalCommentPages] = useState(0);
   //현재 로딩중인지 여부
-  const [isLoading, setLoading] = useState(false)
+  const [isLoading, setLoading] = useState(false);
   //원글의 댓글 내용 상태값
-  const [commentInnerText, setCommentInnerText] = useState("")
+  const [commentInnerText, setCommentInnerText] = useState("");
   //dropdown 상태 정의
-  const [dropdownIndex, setDropdownIndex] = useState(null)
+  const [dropdownIndex, setDropdownIndex] = useState(null);
   //dropdown 참조값
-  const dropdownRefs = useRef([])
+  const dropdownRefs = useRef([]);
   // 각 답글 폼 상태를 관리하는 배열
-  const [replyTexts, setReplyTexts] = useState({})
+  const [replyTexts, setReplyTexts] = useState({});
   // 각 수정 폼 상태를 관리하는 배열
-  const [editTexts, setEditTexts] = useState({})
+  const [editTexts, setEditTexts] = useState({});
 
-  //검색 키워드, 국내외 관련 처리
-  const [searchParams] = useSearchParams()
-  const location = useLocation()
-  const searchParams2 = new URLSearchParams(location.search)
-  const domesticInternational = searchParams.get('di')
-  //Confirm 모달을 띄울지 여부를 상태값으로 관리
-  const [confirmShow, setConfirmShow] = useState(false)
-  //action 발행하기 위해
-  const navigate = useNavigate()
+  // 선택된 날짜
+  const [selectedDateRange, setSelectedDateRange] = useState([null, null]);
+
+  // HTML 로 구성된 Content 관리
+  const [contentHTML, setContentHTML] = useState(); // HTML 로 구성된 Content
+  const cleanHTML = DOMPurify.sanitize(contentHTML); // HTML 클린징으로 보안처리
+
+  // 버튼 스타일 - 신청 전/후 색상 변경
+  const likeButtonClasses = `px-4 py-2 text-sm font-medium rounded-md ${
+    isRecruited ? "bg-gray-200 text-gray-800" : "bg-green-500 text-white"
+  }`;
 
   //--------------------------------------------------------------------------------------------------------------rating 관리 부
   // rating 비교 조건 데이터
@@ -79,286 +84,244 @@ const CourseBoardDetail = () => {
     { min: 7500, max: 8999, icon: faPlane, color: "blue" }, // 프리미엄 퍼스트
     { min: 9000, max: 10000, icon: faCrown, color: "yellow" }, // 로얄
     { min: -Infinity, max: Infinity, icon: faUser, color: "black" }, // 기본값
-  ]
+  ];
 
   // rating 값에 따른 아이콘과 색상 계산 //
   const getRatingDetails = (ratings) => {
     return (
       ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { icon: faUser, color: "black" }
-    ) // 기본값
-  }
+    ); // 기본값
+  };
 
   const { icon: ratingIcon, color: ratingColor } = getRatingDetails(writerProfile.ratings || 0);
-  //--------------------------------------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------------------------------------------rating 관리부
+
   useEffect(() => {
-    //id가 변경될 때 기존 게시물 데이터가 화면에 남아있는 것 방지
-    setPost({ tags: [], postData: [{ dayMemo: "", places: [""] }] }) // 초기값으로 설정
-    setCommentList([])
-    setTotalPageCount(0)
-
-    //검색 키워드 정보도 같이 보내기
-    const query = new URLSearchParams(searchParams).toString()
-    //글 정보 가져오기
     axios
-      .get(`/api/v1/posts/${id}?${query}`)
+      .get(`/api/v1/posts/${id}`)
       .then((res) => {
-        //게시글 정보
-        const postData = res.data.dto
-        setPost(postData)
-        //글 작성자 정보
-        const writerData = res.data.userProfileInfo
-        setWriterProfile(writerData)
+        console.log(res.data);
 
-        //장소 정보
-        const places = postData.postData.reduce((acc, day) => acc.concat(day.places), [])
-        setAllPlaces(places)
+        setPost(res.data.dto);
+        setContentHTML(res.data.dto.content);
+        setLiked(res.data.dto.like);
 
-        // 첫 번째 장소로 지도 중심 설정
-        if (places.length > 0 && places[0].position && domesticInternational === "Domestic") {
-          setKakaoMapCenterLocation({ Ma: places[0].position.Ma, La: places[0].position.La });
-        }
-        if (places.length > 0 && places[0] && domesticInternational === "Domestic") {
-          setGoogleMapCenterLocation({ Ma: places[0].Ma, La: places[0].La });
-        }
+        setWriterProfile(res.data.userProfileInfo);
+
+        setSelectedDateRange([res.data.dto.startDate, res.data.dto.endDate]);
 
         //댓글 목록이 존재하는지 확인 후, 배열에 ref라는 방 추가
         const list = Array.isArray(res.data.commentList)
           ? res.data.commentList.map((item) => {
-            item.ref = createRef()
-            return item
-          })
-          : []
+              item.ref = createRef();
+              return item;
+            })
+          : [];
         //댓글 목록
-        setCommentList(list)
-        //전체 댓글 페이지의 개수를 상태값으로 넣어주기
-        setTotalPageCount(res.data.totalCommentPages)
+        setCommentList(list);
 
-
+        setTotalCommentPages(res.data.totalCommentPages);
       })
-      .catch((error) => {
-        console.log("데이터를 가져오지 못했습니다.", error)
-        alert("게시물을 불러오는 중 문제가 발생했습니다.")
-      })
-  }, [id, searchParams]) //경로 파라미터가 변경될 때 서버로부터 데이터 다시 받기
+      .catch((error) => console.log(error));
+  }, [id]);
 
-  useEffect(() => {
-    // 마운트될 때 클릭 이벤트를 추가
-    document.addEventListener("mousedown", handleClickOutside)
+  // 프로필 보기 클릭
+  const handleClickProfile = () => {
+    navigate(`/users/${writerProfile.id}/profile`);
+  };
 
-    // 언마운트될 때 이벤트 리스너 제거
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [dropdownIndex])
-
-  //글 삭제를 눌렀을 때 호출되는 함수
-  const deleteHandleYes = () => {
-    axios
-      .delete(`/api/v1/posts/${id}`)
-      .then((res) => {
-        alert("해당 글이 삭제되었습니다.")
-        navigate(`/posts/course?di=${domesticInternational}`)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-  }
-
-  //작성자 프로필 보기
-  const handleViewProfile = () => {
-    navigate(`/users/${writerProfile.id}/profile`)
-  }
-
+  //좋아요 버튼 클릭
   const handleLike = () => {
-    if (loggedInUsername) {
-      if (!isLiked) { // 좋아요를 누르지 않은 경우
+    if (username) {
+      if (!isLiked) {
+        // isLiked = false 좋아요 누르지 않음
         axios
-          .post(`/api/v1/posts/${id}/likes`, { postId: post.id, userId: loggedInUserId })
+          .post(`/api/v1/posts/${id}/likes`, {
+            postId: post.id,
+            userId: userId,
+          })
           .then((res) => {
-            setIsLiked(true)
+            setLiked(true);
             //view 페이지에서만 숫자 변경
-            setPost((prevPost) => ({
-              ...prevPost,
-              likeCount: prevPost.likeCount + 1,
-            }))
-            setLikeId(res.data)
+            setPost({
+              ...post,
+              likeCount: post.likeCount + 1,
+            });
           })
           .catch((error) => {
-            console.log(error)
-            alert(error.response.data)
-          })
-      } else if (isLiked) { //이미 좋아요 누른 경우
+            console.log(error);
+            alert(error.response.data);
+          });
+      } else if (isLiked) {
+        // isLiked = true 좋아요 누름
         axios
-          .delete(`/api/v1/posts/${id}/likes/${loggedInUserId}`)
+          .delete(`/api/v1/posts/${id}/likes/${userId}`)
           .then((res) => {
-            setIsLiked(false)
+            setLiked(false);
             //view 페이지에서만 숫자 변경
             setPost({
               ...post,
               likeCount: post.likeCount - 1,
-            })
+            });
           })
           .catch((error) => {
-            console.log(error)
-            alert(error.response.data)
-          })
+            console.log(error);
+            alert(error.response.data);
+          });
       }
     } else {
-      alert("로그인을 해주세요")
-    }
-  }
-
-  //장소명 눌렀을 때 실행되는 함수
-  const handlePlaceClick = (place) => {
-    if (place.position && place.position.Ma !== undefined && place.position.La !== undefined) {
-      setKakaoMapCenterLocation({ Ma: place.position.Ma, La: place.position.La })
-    } else {
-      setGoogleMapCenterLocation({ Ma: place.Ma, La: place.La })
+      alert("로그인을 해주세요");
     }
   };
 
+  // --------------댓글 관련 이벤트
   // 답글 텍스트 상태 업데이트
   const handleReplyTextChange = (index, value) => {
     setReplyTexts((prev) => ({
       ...prev,
       [index]: value,
-    }))
-  }
+    }));
+  };
 
   // 수정 텍스트 상태 업데이트
   const handleEditTextChange = (index, value) => {
     setEditTexts((prev) => ({
       ...prev,
       [index]: value,
-    }))
-  }
+    }));
+  };
 
   // 드롭다운 토글 함수
   const toggleDropdown = (e, index) => {
-    e.stopPropagation()
+    e.stopPropagation();
     if (dropdownIndex === index) {
       // 같은 인덱스를 다시 클릭하면 드롭다운을 닫음
-      setDropdownIndex(null)
+      setDropdownIndex(null);
     } else {
       // 새로운 인덱스를 클릭하면 해당 드롭다운을 열음
-      setDropdownIndex(index)
+      setDropdownIndex(index);
     }
-  }
+  };
 
   // 부모 요소에 클릭 이벤트를 추가하여 드롭다운 닫기 처리
   const handleClickOutside = (event) => {
-    if (dropdownIndex !== null && dropdownRefs.current[dropdownIndex] && !dropdownRefs.current[dropdownIndex].contains(event.target)) {
-      setDropdownIndex(null)
+    if (
+      dropdownIndex !== null &&
+      dropdownRefs.current[dropdownIndex] &&
+      !dropdownRefs.current[dropdownIndex].contains(event.target)
+    ) {
+      setDropdownIndex(null);
     }
-  }
+  };
 
   // 신고 처리 함수
   const handleReportComment = (commentId) => {
     // 신고 기능 구현
-    alert(`댓글 ID ${commentId}가 신고되었습니다.`)
+    alert(`댓글 ID ${commentId}가 신고되었습니다.`);
     // 추가로 서버에 신고 요청을 보내는 로직을 여기에 추가
-  }
+  };
 
   //댓글 등록
   const handleCommentSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
+
     //댓글 정보
     const data = {
       postId: id,
-      userId: loggedInUserId,
-      writer: loggedInNickname,
-      profilePicture: loggedInProfilePicture,
+      userId: userId,
+      writer: nickname,
+      profilePicture: profilePicture,
       content: e.target.content.value,
       // parentCommentId: e.target.parentCommentId.value,
       toUsername: e.target.toUsername?.value || "",
       status: "PUBLIC",
-    }
+    };
 
     axios
       .post(`/api/v1/posts/${post.id}/comments`, data)
       .then((res) => {
-        console.log(res.data)
+        console.log(res.data);
         //방금 저장한 댓글의 정보
-        const newComment = res.data
+        const newComment = res.data;
         //댓글의 정보에 ref라는 방을 추가하고 거기에 참조값을 담을 object넣어준다
-        newComment.ref = createRef()
+        newComment.ref = createRef();
         //새로운 배열을 만들면서 기존 배열에 저장된 아이템을 펼쳐 놓아서 상태값을 변경
-        setCommentList([...commentList, newComment])
+        setCommentList([...commentList, newComment]);
         //댓글 입력한 textarea 초기화
-        setCommentInnerText("")
+        setCommentInnerText("");
       })
       .catch((error) => {
-        console.log(error)
-      })
-  }
+        console.log(error);
+      });
+  };
 
   //답글 등록
   const handleReplySubmit = (e) => {
-    e.preventDefault()
-
+    e.preventDefault();
     const data = {
       postId: id,
-      userId: loggedInUserId,
-      writer: loggedInNickname,
-      profilePicture: loggedInProfilePicture,
+      userId: userId,
+      writer: nickname,
+      profilePicture: profilePicture,
       content: e.target.content.value,
       toUsername: e.target.toUsername.value,
       parentCommentId: e.target.parentCommentId.value,
-      status: "PUBLIC"
-    }
+      status: "PUBLIC",
+    };
 
-    axios.post(`/api/v1/posts/${post.id}/comments`, data)
+    axios
+      .post(`/api/v1/posts/${post.id}/comments`, data)
       .then((res) => {
-        console.log(res.data)
+        console.log(res.data);
         //방금 저장한 댓글의 정보
-        const newComment = res.data
+        const newComment = res.data;
         //댓글의 정보에 ref라는 방을 추가하고 거기에 참조값을 담을 object넣어준다
-        newComment.ref = createRef()
+        newComment.ref = createRef();
         //이 댓글을 commentIndex에 끼워 넣기
-        commentList.splice(commentIndex, 0, res.data)
+        commentList.splice(commentIndex, 0, res.data);
         //새로운 배열을 만들면서 기존 배열에 저장된 아이템을 펼쳐 놓아서 상태값을 변경
-        setCommentList([...commentList])
+        setCommentList([...commentList]);
         //댓글 입력한 textarea 초기화
-        e.target.content.value = ""
+        e.target.content.value = "";
       })
       .catch((error) => {
-        console.log(error)
-      })
-  }
+        console.log(error);
+      });
+  };
 
   //댓글 삭제
   const handleDeleteComment = (commentId, ref) => {
     axios
       .delete(`/api/v1/posts/${id}/comments/${commentId}`)
       .then((res) => {
-        ref.current.querySelector(".commentSource").outerHTML = "<p>삭제된 댓글입니다</p>"
+        ref.current.querySelector(".commentSource").outerHTML = "<p>삭제된 댓글입니다</p>";
         /*
-          commentId.current는 li요소의 참조값
-          commentId.current.querySelector("dl")은 li요소의 자손 중에서 dl요소를 찾아서 참조값 가져오기
-          .outerHTML = "새로운 요소"는 새로운 요소로 대체(replace)하기
-        */
+            commentId.current는 li요소의 참조값
+            commentId.current.querySelector("dl")은 li요소의 자손 중에서 dl요소를 찾아서 참조값 가져오기
+            .outerHTML = "새로운 요소"는 새로운 요소로 대체(replace)하기
+          */
       })
       .catch((error) => {
-        console.log(error)
-      })
-  }
+        console.log(error);
+      });
+  };
 
   //댓글 수정 버튼
   const handleUpdateComment = (e) => {
-    e.preventDefault()
-    const action = e.target.action
+    e.preventDefault();
+    const action = e.target.action;
     const updatedData = {
       id: e.target.commentId.value,
       postId: e.target.id.value,
-      userId: loggedInUserId,
-      writer: loggedInUserId,
-      profilePicture: loggedInProfilePicture,
+      userId: userId,
+      writer: nickname,
+      profilePicture: profilePicture,
       content: e.target.content.value,
       parentCommentId: e.target.parentCommentId.value,
       toUsername: e.target.toUsername.value,
       status: "PUBLIC",
       createdAt: e.target.createdAt.value,
-    }
+    };
     axios
       .put(action, updatedData)
       .then((res) => {
@@ -368,68 +331,153 @@ const CourseBoardDetail = () => {
             //수정된 댓글을 기존 배열의 위치에서 업데이트
             return {
               ...item,
-              content: e.target.content.value
-            }
+              content: e.target.content.value,
+            };
           }
-          return item
-        })
+          return item;
+        });
         //새로운 배열로 상태값 변경
-        setCommentList(newCommentList)
+        setCommentList(newCommentList);
       })
       .catch((error) => {
-        console.log(error)
-      })
-  }
+        console.log(error);
+      });
+  };
 
   //댓글 더보기 버튼
   const handleMoreComment = () => {
     //현재 댓글의 페이지가 마지막 페이지인지 여부를 알아내서
-    const isLast = pageNum >= totalPageCount
+    const isLast = pageNum >= totalCommentPages;
     //만일 마지막 페이지라면
     if (isLast) {
-      alert("댓글의 마지막 페이지 입니다")
+      alert("댓글의 마지막 페이지 입니다");
     } else {
       //마지막 페이지가 아니라면
       //로딩 상태로 바꿔준다
-      setLoading(true)
+      setLoading(true);
       //요청할 댓글의 게시물id
-      const postId = id
+      const postId = id;
       //요청할 댓글의 페이지
-      const page = pageNum + 1
+      const page = pageNum + 1;
       //서버에 데이터 추가 요청
       axios
         .get(`/api/v1/posts/${postId}/comments?pageNum=${page}`)
         .then((res) => {
-          console.log(res.data)
+          console.log(res.data);
           //res.data에는 댓글 목록과 전체 페이지 개수가 들어있다.
           //댓글 목록에 ref를 추가한 새로운 배열을 얻어내서
           const newList = res.data.commentList.map((item) => {
-            item.ref = createRef()
-            return item
-          })
+            item.ref = createRef();
+            return item;
+          });
           //현재까지 출력된 댓글 목록에 새로운 댓글 목록을 추가해 새로운 배열로 상태값 변경
           //댓글 목록 데이터 변경하기
-          setCommentList([...commentList, ...newList])
-          setTotalPageCount(res.data.totalCommentPages)
+          setCommentList([...commentList, ...newList]);
+          setTotalCommentPages(res.data.totalCommentPages);
           //증가된 페이지 번호도 반영
-          setPageNum(page)
+          setPageNum(page);
 
-          setLoading(false)
+          setLoading(false);
         })
         .catch((error) => {
-          console.log(error)
-          setLoading(false)
-        })
+          console.log(error);
+          setLoading(false);
+        });
     }
-  }
+  };
+  // ---------------------------------------------------- 채팅 관련
+  const { stompClient, isConnected, messages, setMessages } = useWebSocket();
+  const [subscribedRoomIds, setSubscribedRoomIds] = useState([]); // 내가 구독한 목록
+
+  const handleClickChat = () => {
+    console.log("채팅 버튼 클릭");
+    console.log("1번" + userId);
+
+    console.log("2번" + writerProfile.id);
+    axios
+      .post("/api/chat/rooms", {
+        ownerId: userId, // 방 생성자를 명시
+        participantsList: [userId, writerProfile.id], // 대화 참가자 목록
+        type: "ONE_ON_ONE",
+        title: `${username}님과${writerProfile.nickname}님의 채팅`,
+      })
+      .then((res) => {
+        const chatRoomId = res.data;
+        navigate(`/chatroom/${chatRoomId.id}`);
+        alert("채팅방 생성.");
+
+        selectRoom(chatRoomId.id); // 방 선택
+      })
+      .catch((error) => {
+        console.log(error);
+        alert("채팅방 생성에 실패했습니다.");
+      });
+  };
+
+  // 채팅방 선택시 메시지 불러오기
+  const selectRoom = (roomId) => {
+    if (!stompClient || !stompClient.connected) {
+      console.error("WebSocket not connected yet");
+      return;
+    }
+
+    navigate(`/chatroom/${roomId}`);
+
+    axios
+      .get(`/api/chat/rooms/${roomId}`)
+      .then((res) => {
+        const chatMessageroom = res.data;
+        console.log("Response:", res.data);
+
+        const chatMessagetopic =
+          chatMessageroom.type === "ONE_ON_ONE"
+            ? `/user/private/${chatMessageroom.id}`
+            : `/topic/group/${chatMessageroom.id}`;
+
+        stompClient.subscribe(chatMessagetopic, (message) => {
+          const parsedMessage = JSON.parse(message.body);
+          setMessages((prevMessages) => [...prevMessages, parsedMessage]);
+        });
+
+        const newRoomTopic =
+          chatMessageroom.type === "ONE_ON_ONE"
+            ? `/user/newroom/private/${chatMessageroom.id}`
+            : `/topic/newroom/group/${chatMessageroom.id}`;
+        stompClient.subscribe(newRoomTopic, (message) => {
+          const parsedMessage = JSON.parse(message.body);
+          setMessages((prevMessages) => [...prevMessages, parsedMessage]);
+        });
+      })
+
+      .catch((error) => {
+        console.error("Error fetching room info:", error.response ? error.response.data : error.message);
+      });
+
+    axios
+      .get(`/api/chat/rooms/${roomId}/getMessages`)
+      .then((response) => {
+        setMessages(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching messages:", error);
+      });
+  };
 
   return (
-
-    <div className="container mx-auto p-4 max-w-[1024px]">
+    <div className="container mx-auto p-4 max-w-[900px]">
       <div className="flex flex-col h-full bg-gray-100 p-6">
-        <div className="flex flex-wrap justify-between items-center gap-2 mt-2">
-          <div className="flex gap-2">
-            {/* 태그s */}
+        <div className="container">
+          <NavLink
+            className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
+            to={{
+              pathname: "/posts/community",
+              search: post.country === "한국" ? "?di=Domestic" : "?di=International",
+            }}>
+            Community
+          </NavLink>
+
+          {/* 태그s */}
+          <div className="flex flex-wrap gap-2 mt-10">
             <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{post.country}</span>
             <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{post.city}</span>
             {post.tags &&
@@ -440,164 +488,129 @@ const CourseBoardDetail = () => {
               ))}
           </div>
 
-          {/* 목록으로 버튼 */}
-          <button
-            onClick={() => navigate(`/posts/course?di=${domesticInternational}`)}
-            className="text-white bg-gray-600 hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
-            목록으로 돌아가기
-          </button>
-        </div>
-
-        {/* 여행 일정 */}
-        <div className="my-2 text-sm text-gray-500">
-          <span>
-            여행 일정 : {post.startDate === null ? "설정하지 않았습니다." : new Date(post.startDate).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })}
-            {post.endDate === null ? "" : ` ~ ${new Date(post.endDate).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })}`}
-          </span>
-        </div>
-
-        <div className="flex justify-between items-center m-3">
-          <div>
+          {/* title */}
+          <h5 className="m-3 mb-10 text-2xl">
             <strong>{post.title}</strong>
-            {/* title / 좋아요 버튼 / 좋아요, 조회수 */}
-            {!isWriter && (
+            {/* title / 좋아요 버튼 / 좋아요,조회수, 덧글수 */}
+            {/* 내 게시물이 아닌경우에만 좋아요 버튼 보여주기 */}
+            {userId !== post.userId && (
               <button
-                className={`mx-3 ${isLiked ? "bg-pink-600" : "bg-pink-400"
-                  } text-white active:bg-emerald-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
+                className={`mx-3 ${
+                  isLiked ? "bg-pink-600" : "bg-pink-400"
+                } text-white active:bg-emerald-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
                 type="button"
                 onClick={handleLike}>
                 <FontAwesomeIcon icon={faHeart} className="mr-2" />
-                Like
+                {isLiked ? "unLike" : "Like"}
               </button>
             )}
-            <span className="text-sm text-gray-500">
-              <span className="mx-3">
+            {/* 조회수, 좋아요, 덧글 수 */}
+            <span className="ml-10 text-sm text-gray-500 space-x-3">
+              <span>
                 <FontAwesomeIcon icon={faEye} className="h-5 w-5 mr-2" />
                 {post.viewCount}
               </span>
-              <span className="mr-3">
+              <span>
                 <FontAwesomeIcon icon={faHeart} className="h-4 w-4 mr-2" />
                 {post.likeCount}
               </span>
-              <span className="mr-3">
+              <span>
                 <FontAwesomeIcon icon={faMessage} className="h-4 w-4 mr-2" />
                 {post.commentCount}
               </span>
             </span>
+          </h5>
+
+          {/* 프로필 */}
+          <div className="container mb-10">
+            <div className="flex items-center gap-x-6">
+              {writerProfile.profilePicture ? (
+                <img src={writerProfile.profilePicture} className="w-20 h-20 rounded-full" alt="" />
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="100"
+                  height="100"
+                  fill="currentColor"
+                  className="bi bi-person-circle"
+                  viewBox="0 0 16 16">
+                  <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+                  <path
+                    fillRule="evenodd"
+                    d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.206 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"
+                  />
+                </svg>
+              )}
+              <div>
+                <h3 className="text-base font-semibold leading-7 tracking-tight text-gray-900">
+                  <FontAwesomeIcon icon={ratingIcon} color={ratingColor}></FontAwesomeIcon>
+                  {writerProfile.nickname}
+                </h3>
+                <p className="text-sm font-semibold leading-6 text-indigo-600">
+                  {writerProfile.gender} / {writerProfile.age}
+                </p>
+              </div>
+              <div>
+                <button
+                  onClick={handleClickChat}
+                  type="button"
+                  className="text-white bg-gray-500 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-3 py-2.5 me-2 mb-2 ">
+                  채팅 test
+                </button>
+                <button
+                  type="button"
+                  className="text-white bg-gray-500 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-3 py-2.5 me-2 mb-2 "
+                  onClick={handleClickProfile}>
+                  {" "}
+                  프로필 보기
+                </button>
+              </div>
+            </div>
           </div>
 
-          {/* 수정, 삭제 버튼 */}
-          {loggedInNickname === post.writer && (
-            <div className="flex gap-2">
+          <p>안녕하세요~</p>
+
+          <a href="/">대충 경로 공유한 url</a>
+          <br />
+          <br />
+
+          {/* Froala Editor 내용 */}
+          <div dangerouslySetInnerHTML={{ __html: cleanHTML }}></div>
+        </div>
+        {
+          // 로그인된 username 과 post의 userId 로 불러온 작성자 아이디가 동일하면 랜더링
+          userId === post.userId && (
+            <div className="container mt-3">
               <button
-                onClick={() => navigate(`/posts/trip_log/${id}/new?di=${domesticInternational}`)}
-                className="text-white bg-gray-600 hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
-                여행기록 작성
-              </button>
-              <button
-                onClick={() => navigate(`/posts/course/${id}/edit?di=${domesticInternational}`)}
-                className="text-white bg-gray-600 hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
+                type="button"
+                className="m-1 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                onClick={() => navigate(`/posts/community/${id}/edit`)}>
                 수정
               </button>
               <button
-                onClick={() => setConfirmShow(true)}
-                className="text-white bg-red-600 hover:bg-red-500 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
+                type="button"
+                className="m-1 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                onClick={() => {
+                  axios
+                    .delete(`/api/v1/posts/${id}`)
+                    .then((res) => {
+                      alert("글 삭제 성공");
+                      // 국/해외 페이지 별 리다일렉트
+                      post.country === "한국"
+                        ? navigate(`/posts/community?di=Domestic`)
+                        : navigate(`/posts/community?di=International`);
+                    })
+                    .catch((error) => console.log(error));
+                }}>
                 삭제
               </button>
             </div>
-          )}
-          <ConfirmModal
-            show={confirmShow}
-            message="글을 삭제하시겠습니까?"
-            yes={deleteHandleYes}
-            no={() => setConfirmShow(false)}
-          />
-        </div>
-
-        {/* 프로필 */}
-        <div className="container my-3">
-          <div className="flex items-center gap-x-6">
-            {writerProfile.profilePicture ? (
-              <img src={writerProfile.profilePicture} className="w-20 h-20 rounded-full" alt="" />
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="100"
-                height="100"
-                fill="currentColor"
-                className="bi bi-person-circle"
-                viewBox="0 0 16 16">
-                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-                <path
-                  fillRule="evenodd"
-                  d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.206 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"
-                />
-              </svg>
-            )}
-            <div>
-              <h3 className="text-base font-semibold leading-7 tracking-tight text-gray-900">
-              <FontAwesomeIcon icon={ratingIcon} color={ratingColor}></FontAwesomeIcon>
-                {writerProfile.nickname}
-              </h3>
-              <p className="text-sm font-semibold leading-6 text-indigo-600">
-                {writerProfile.gender} / {writerProfile.age}
-              </p>
-            </div>
-            <div>
-              <button
-                type="button"
-                className="btn btn-secondary btn-sm"
-                onClick={handleViewProfile}>
-                프로필 보기
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Day 목록 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 mb-6">
-          {(post.postData || [{ dayMemo: "", places: [] }]).map((day, dayIndex) => (
-            <div key={dayIndex} className="bg-white rounded-lg shadow-md p-4">
-              <h2 className="text-xl font-semibold mb-4">Day {dayIndex + 1}</h2>
-              <div className="mb-4">
-                <label className="block font-semibold">Day Memo</label>
-                <p className="border p-2 w-3/4 bg-gray-100">{day.dayMemo || "메모가 없습니다"}</p>
-              </div>
-              {day.places && day.places.length > 0 ? (
-                day.places.map((place, placeIndex) => (
-                  <div key={placeIndex} className="mb-4 border rounded-lg p-2 bg-gray-50">
-                    <h3 className="font-semibold mb-2">{placeIndex + 1}번 장소</h3>
-                    <button
-                      className="text-blue-500 hover:underline"
-                      onClick={() => {
-
-                        handlePlaceClick(place)
-                      }}>
-                      {place.place_name || "장소명이 없습니다"}
-                    </button>
-                    <label className="block font-semibold">장소 메모</label>
-                    <p className="border p-2 w-full bg-white">{place.placeMemo || "메모가 없습니다"}</p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500">장소가 없습니다.</p>
-              )}
-            </div>
-          ))}
-        </div>
-        <div>
-          {
-            domesticInternational === "Domestic" ?
-              <SavedPlacesKakaoMapComponent savedPlaces={allPlaces} centerLocation={kakaoMapCenterLocation} />
-              :
-              <SavedPlacesGoogleMapComponent savedPlaces={allPlaces} centerLocation={googleMapCenterLocation} />
-          }
-        </div>
-
+          )
+        }
 
         {/* 원글의 댓글 작성 form */}
-        <div className={`border-3 rounded-lg p-3 mt-4 mb-6 bg-white ${!loggedInUsername ? 'hidden' : ''}`}>
-          <div className="font-bold text-lg">{loggedInNickname}</div>
+        <div className={`border-3 rounded-lg p-3 mt-4 mb-6 bg-white ${!username ? "hidden" : ""}`}>
+          <div className="font-bold text-lg">{nickname}</div>
           <form onSubmit={handleCommentSubmit}>
             <div className="relative">
               {/* 원글의 id */}
@@ -627,7 +640,6 @@ const CourseBoardDetail = () => {
             </div>
           </form>
         </div>
-
         {/* 댓글 목록 */}
         <div className="mt-6 space-y-6">
           <ul className="space-y-4">
@@ -637,9 +649,9 @@ const CourseBoardDetail = () => {
                 ref={item.ref}
                 //댓글Ui수정 전 추가되어있던  bg-white shadow-md p-4 rounded-lg
                 className={`flex items-start space-x-4 ${item.id !== item.parentCommentId ? "pl-12" : ""}`}>
-                {item.status === "DELETED" ?
+                {item.status === "DELETED" ? (
                   <p>삭제된 댓글입니다</p>
-                  :
+                ) : (
                   <>
                     {/* 댓글 요소들 */}
                     <div className="flex-1">
@@ -665,9 +677,10 @@ const CourseBoardDetail = () => {
                             <span className="font-bold text-gray-900">{item.writer}</span>
                           </div>
 
-
                           {/* Dropdown 메뉴 */}
-                          <div className="relative inline-block text-left" ref={(el) => (dropdownRefs.current[index] = el)}>
+                          <div
+                            className="relative inline-block text-left"
+                            ref={(el) => (dropdownRefs.current[index] = el)}>
                             <button
                               onClick={(e) => toggleDropdown(e, index)}
                               className="flex items-center p-2 text-gray-500 rounded hover:text-gray-700">
@@ -676,8 +689,7 @@ const CourseBoardDetail = () => {
                                 className="w-6 h-6"
                                 fill="none"
                                 viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
+                                stroke="currentColor">
                                 <path
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
@@ -690,31 +702,35 @@ const CourseBoardDetail = () => {
                             {/* Dropdown 내용 */}
                             {dropdownIndex === index && (
                               <div className="absolute right-0 w-40 mt-2 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg">
-                                <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                                <div
+                                  className="py-1"
+                                  role="menu"
+                                  aria-orientation="vertical"
+                                  aria-labelledby="options-menu">
                                   <button
                                     className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
                                     onClick={() => {
-                                      setDropdownIndex(null)
-                                      handleReportComment(item.id)
+                                      setDropdownIndex(null);
+                                      handleReportComment(item.id);
                                     }}>
                                     신고
                                   </button>
-                                  {item.writer === loggedInNickname && (
+                                  {item.writer === nickname && (
                                     <>
                                       <button
                                         className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
                                         onClick={() => {
-                                          setDropdownIndex(null)
-                                          const updateForm = item.ref.current.querySelector(".updateCommentForm")
-                                          updateForm.classList.remove("hidden")
+                                          setDropdownIndex(null);
+                                          const updateForm = item.ref.current.querySelector(".updateCommentForm");
+                                          updateForm.classList.remove("hidden");
                                         }}>
                                         수정
                                       </button>
                                       <button
                                         className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
                                         onClick={() => {
-                                          setDropdownIndex(null)
-                                          handleDeleteComment(item.id, item.ref)
+                                          setDropdownIndex(null);
+                                          handleDeleteComment(item.id, item.ref);
                                         }}>
                                         삭제
                                       </button>
@@ -735,15 +751,15 @@ const CourseBoardDetail = () => {
                           <button
                             className="ml-4 text-blue-500 hover:text-blue-700 text-sm"
                             onClick={(e) => {
-                              const text = e.target.innerText
-                              const replyForm = item.ref.current.querySelector(".replyCommentForm")
+                              const text = e.target.innerText;
+                              const replyForm = item.ref.current.querySelector(".replyCommentForm");
 
                               if (text === "답글") {
-                                e.target.innerText = "취소"
-                                replyForm.classList.remove("hidden")
+                                e.target.innerText = "취소";
+                                replyForm.classList.remove("hidden");
                               } else {
-                                e.target.innerText = "답글"
-                                replyForm.classList.add("hidden")
+                                e.target.innerText = "답글";
+                                replyForm.classList.add("hidden");
                               }
                             }}>
                             답글
@@ -751,12 +767,9 @@ const CourseBoardDetail = () => {
                         </div>
                       </div>
 
-
-
-
                       {/* 답글 작성 폼 */}
                       <div className="replyCommentForm border-3 rounded-lg p-3 mt-4 mb-6 bg-white hidden">
-                        <div className="font-bold text-lg">{loggedInNickname}</div>
+                        <div className="font-bold text-lg">{nickname}</div>
                         <form onSubmit={handleReplySubmit}>
                           <div className="relative">
                             {/* 원글의 작성자 */}
@@ -773,7 +786,7 @@ const CourseBoardDetail = () => {
                               value={replyTexts[index] || ""}
                               maxLength={maxLength}
                               onChange={(e) => {
-                                handleReplyTextChange(index, e.target.value)
+                                handleReplyTextChange(index, e.target.value);
                               }}
                             />
                             <div className="char-limit absolute top-2 right-2 text-gray-500 text-sm">
@@ -785,9 +798,9 @@ const CourseBoardDetail = () => {
                               type="submit"
                               className="text-blue-500 hover:text-blue-700 font-semibold"
                               onClick={() => {
-                                (commentIndex = index + 1)
-                                const replyForm = item.ref.current.querySelector(".replyCommentForm")
-                                replyForm.classList.add("hidden")
+                                commentIndex = index + 1;
+                                const replyForm = item.ref.current.querySelector(".replyCommentForm");
+                                replyForm.classList.add("hidden");
                               }}>
                               답글 등록
                             </button>
@@ -797,7 +810,7 @@ const CourseBoardDetail = () => {
 
                       {/* 댓글 수정 폼 */}
                       <div className="updateCommentForm border-3 rounded-lg p-3 mt-4 mb-6 bg-white hidden">
-                        <div className="font-bold text-lg">{loggedInNickname}</div>
+                        <div className="font-bold text-lg">{nickname}</div>
                         <form action={`/api/v1/posts/${id}/comments/${item.id}`} onSubmit={handleUpdateComment}>
                           <div className="relative">
                             <input type="hidden" name="commentId" defaultValue={item.id} />
@@ -822,8 +835,8 @@ const CourseBoardDetail = () => {
                               type="submit"
                               className="text-blue-500 hover:text-blue-700 font-semibold"
                               onClick={() => {
-                                const updateForm = item.ref.current.querySelector(".updateCommentForm")
-                                updateForm.classList.add("hidden")
+                                const updateForm = item.ref.current.querySelector(".updateCommentForm");
+                                updateForm.classList.add("hidden");
                               }}>
                               수정 확인
                             </button>
@@ -832,21 +845,21 @@ const CourseBoardDetail = () => {
                       </div>
                     </div>
                   </>
-                }
+                )}
               </li>
             ))}
           </ul>
         </div>
-
         {/* 댓글 더보기 버튼 */}
         <div className="grid grid-cols-1 md:grid-cols-2 mx-auto mb-5">
           <button
-            className={`bg-green-500 text-white py-2 px-4 rounded ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
-              }`}
+            className={`bg-green-500 text-white py-2 px-4 rounded ${
+              isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
+            }`}
             disabled={isLoading}
             onClick={handleMoreComment}>
             {isLoading ? (
-              <span className="animate-spin inline-block w-5 h-5 border-2 border-t-2 border-white rounded-full"></span>
+              <span className="animation-spin inline-block w-5 h-5 border-2 border-t-2 border-white rounded-full"></span>
             ) : (
               <span>댓글 더보기</span>
             )}
@@ -854,7 +867,7 @@ const CourseBoardDetail = () => {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default CourseBoardDetail
+export default CommunityBoardDetail;

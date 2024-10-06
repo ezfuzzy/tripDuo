@@ -1,30 +1,11 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import axios from "axios"
+import React, { useEffect, useState } from "react"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import CourseKakaoMapComponent from "../../components/CourseKakaoMapComponent";
-import { shallowEqual, useSelector } from "react-redux";
 import CourseGoogleMapComponent from "../../components/CourseGoogleMapComponent";
 
 
-const CourseBoardEditForm = () => {
-    const userId = useSelector((state) => state.userData.id, shallowEqual)
-    const nickname = useSelector((state) => state.userData.nickname, shallowEqual)
-    const username = useSelector((state) => state.userData.username, shallowEqual)
-
-    // postInfo 하나의 state로 통합 관리
-    const [postInfo, setPostInfo] = useState({
-        id: "",
-        userId: "",
-        writer: "",
-        type: "COURSE",
-        title: "",
-        postData: [{ places: [], dayMemo: "" }],
-        country: "",
-        city: "",
-        tags: [],
-        status: "PUBLIC"
-    })
-
+const TripLogBoardEditForm = () => {
     const [selectedDayIndex, setSelectedDayIndex] = useState(null)
     const [selectedPlaceIndex, setSelectedPlaceIndex] = useState(null)
     const [savedPlaces, setSavedPlaces] = useState([])
@@ -32,6 +13,21 @@ const CourseBoardEditForm = () => {
 
     const [searchParams] = useSearchParams()
     const domesticInternational = searchParams.get("di") || "Domestic"
+    const status = searchParams.get("status") || "PUBLIC"
+
+    // postInfo 하나의 state로 통합 관리
+    const [postInfo, setPostInfo] = useState({
+        id: "",
+        userId: "",
+        writer: "",
+        type: "TRIP_LOG",
+        title: "",
+        postData: [{ places: [], dayMemo: "" }],
+        country: "",
+        city: "",
+        tags: [],
+        status: status
+    })
 
     const navigate = useNavigate()
     const { id } = useParams()  // URL에서 게시물 ID를 가져옴
@@ -52,7 +48,6 @@ const CourseBoardEditForm = () => {
         Australia: ["시드니", "멜버른", "브리즈번", "퍼스"],
         Russia: ["모스크바", "상트페테르부르크", "노보시비르스크", "예카테린부르크"],
         SouthAfrica: ["케이프타운", "요하네스버그", "더반", "프리토리아"],
-        // Add more countries and cities as needed
     }
 
     const cities = citiesByCountry[postInfo.country] || []
@@ -65,16 +60,6 @@ const CourseBoardEditForm = () => {
             })
             .catch((error) => console.log(error))
     }, [id])
-
-    const handleSubmit = () => {
-        axios.put(`/api/v1/posts/${id}`, postInfo)  // PUT 요청으로 업데이트
-            .then((res) => {
-                alert("수정했습니다")
-                // 업데이트 후 해당글 자세히보기로 이동
-                navigate(`/posts/course/${id}/detail?di=${domesticInternational}`)
-            })
-            .catch((error) => console.log(error))
-    }
 
     //태그 입력
     const handleTagInput = (e) => {
@@ -183,19 +168,6 @@ const CourseBoardEditForm = () => {
         }
     }
 
-    //장소 메모 
-    const handlePlaceMemoChange = (dayIndex, placeIndex, memo) => {
-        const newDays = [...postInfo.postData]
-        newDays[dayIndex].places[placeIndex] = {
-            ...newDays[dayIndex].places[placeIndex],
-            placeMemo: memo,
-        }
-        setPostInfo((prev) => ({
-            ...prev,
-            postData: newDays
-        }))
-    }
-
     //Day 메모
     const handleDayMemoChange = (dayIndex, memo) => {
         const newDays = [...postInfo.postData]
@@ -206,14 +178,26 @@ const CourseBoardEditForm = () => {
         }))
     }
 
+    //수정 완료 버튼
+    const handleSubmit = () => {
+        axios.put(`/api/v1/posts/${id}`, postInfo)  // PUT 요청으로 업데이트
+            .then((res) => {
+                alert("수정했습니다")
+                // 업데이트 후 해당글 자세히보기로 이동
+                navigate(`/posts/trip_log/${id}/detail?di=${domesticInternational}`)
+            })
+            .catch((error) => console.log(error))
+    }
+
+
     return (
         <div className="container mx-auto p-6 max-w-[900px]">
             <div className="flex flex-col h-full bg-white p-6 shadow-lg rounded-lg">
                 <div className="flex justify-between items-center mb-4">
-                    <h1 className="text-3xl font-semibold text-gray-800">여행 코스 수정</h1>
+                    <h1 className="text-3xl font-semibold text-gray-800">여행기록 수정</h1>
                     <div className="flex space-x-2">
                         <button
-                            onClick={() => navigate(`/posts/course/${id}/detail?di=${domesticInternational}`)}
+                            onClick={() => navigate(`/posts/trip_log/${id}/detail?di=${domesticInternational}`)}
                             className="text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-full text-sm px-5 py-2">
                             게시글로 돌아가기
                         </button>
@@ -396,18 +380,6 @@ const CourseBoardEditForm = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="mb-2">
-                                        <label htmlFor={`placeMemo-${dayIndex}-${placeIndex}`} className="text-sm text-gray-700">
-                                            장소 메모
-                                        </label>
-                                        <input
-                                            className="border-gray-300 rounded-md p-2 w-full"
-                                            type="text"
-                                            id={`placeMemo-${dayIndex}-${placeIndex}`}
-                                            value={place.placeMemo || ""}
-                                            onChange={(e) => handlePlaceMemoChange(dayIndex, placeIndex, e.target.value)}
-                                        />
-                                    </div>
                                 </div>
 
 
@@ -456,7 +428,7 @@ const CourseBoardEditForm = () => {
                 </div>
             )}
         </div>
-    )
-}
+    );
+};
 
-export default CourseBoardEditForm
+export default TripLogBoardEditForm

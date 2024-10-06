@@ -1,7 +1,7 @@
 import axios from "axios"
 import React, { createRef, useEffect, useRef, useState } from "react"
-import { shallowEqual, useDispatch, useSelector } from "react-redux"
-import { NavLink, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom"
+import { shallowEqual, useSelector } from "react-redux"
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import ConfirmModal from "../../components/ConfirmModal"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCrown, faDove, faEye, faFeather, faHeart, faMessage, faPlane, faUser } from "@fortawesome/free-solid-svg-icons"
@@ -14,8 +14,8 @@ let commentIndex = 0
 //댓글 글자수 제한
 const maxLength = 3000
 
-const CourseBoardDetail = () => {
-  //"/posts/course/:id/detail" 에서 id에 해당되는 경로 파라미터 값 얻어오기
+const TripLogBoardDetail = () => {
+  //"/posts/trip_log/:id/detail" 에서 id에 해당되는 경로 파라미터 값 얻어오기
   const { id } = useParams()
   //로그인된 user정보
   const loggedInUserId = useSelector((state) => state.userData.id, shallowEqual) // 로그인된 user의 id
@@ -29,9 +29,9 @@ const CourseBoardDetail = () => {
   const [isLiked, setIsLiked] = useState(false)
   const [likeId, setLikeId] = useState()
   //글 하나의 정보 상태값으로 관리
-  const [post, setPost] = useState({ tags: [], postData: [{ dayMemo: "", places: [""] }] })
+  const [postInfo, setPostInfo] = useState({ tags: [], postData: [{ dayMemo: "", places: [""] }] })
   //게시물 작성자가 맞는지 여부
-  const isWriter = loggedInUserId === post.userId
+  const isWriter = loggedInUserId === postInfo.userId
 
   //맵에 전달할 장소 정보 상태값으로 관리
   const [allPlaces, setAllPlaces] = useState([])
@@ -92,7 +92,7 @@ const CourseBoardDetail = () => {
   //--------------------------------------------------------------------------------------------------------------
   useEffect(() => {
     //id가 변경될 때 기존 게시물 데이터가 화면에 남아있는 것 방지
-    setPost({ tags: [], postData: [{ dayMemo: "", places: [""] }] }) // 초기값으로 설정
+    setPostInfo({ tags: [], postData: [{ dayMemo: "", places: [""] }] }) // 초기값으로 설정
     setCommentList([])
     setTotalPageCount(0)
 
@@ -104,7 +104,7 @@ const CourseBoardDetail = () => {
       .then((res) => {
         //게시글 정보
         const postData = res.data.dto
-        setPost(postData)
+        setPostInfo(postData)
         //글 작성자 정보
         const writerData = res.data.userProfileInfo
         setWriterProfile(writerData)
@@ -132,8 +132,6 @@ const CourseBoardDetail = () => {
         setCommentList(list)
         //전체 댓글 페이지의 개수를 상태값으로 넣어주기
         setTotalPageCount(res.data.totalCommentPages)
-
-
       })
       .catch((error) => {
         console.log("데이터를 가져오지 못했습니다.", error)
@@ -151,13 +149,24 @@ const CourseBoardDetail = () => {
     }
   }, [dropdownIndex])
 
+  // 날짜 계산 함수
+  const calculateDate = (startDate, dayIndex) => {
+    const date = new Date(startDate)
+    date.setDate(date.getDate() + dayIndex) // 시작 날짜에 dayIndex 만큼 더함
+    return date.toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+  }
+
   //글 삭제를 눌렀을 때 호출되는 함수
   const deleteHandleYes = () => {
     axios
       .delete(`/api/v1/posts/${id}`)
       .then((res) => {
         alert("해당 글이 삭제되었습니다.")
-        navigate(`/posts/course?di=${domesticInternational}`)
+        navigate(`/posts/trip_log?di=${domesticInternational}`)
       })
       .catch((error) => {
         console.log(error)
@@ -173,11 +182,11 @@ const CourseBoardDetail = () => {
     if (loggedInUsername) {
       if (!isLiked) { // 좋아요를 누르지 않은 경우
         axios
-          .post(`/api/v1/posts/${id}/likes`, { postId: post.id, userId: loggedInUserId })
+          .post(`/api/v1/posts/${id}/likes`, { postId: postInfo.id, userId: loggedInUserId })
           .then((res) => {
             setIsLiked(true)
             //view 페이지에서만 숫자 변경
-            setPost((prevPost) => ({
+            setPostInfo((prevPost) => ({
               ...prevPost,
               likeCount: prevPost.likeCount + 1,
             }))
@@ -193,9 +202,9 @@ const CourseBoardDetail = () => {
           .then((res) => {
             setIsLiked(false)
             //view 페이지에서만 숫자 변경
-            setPost({
-              ...post,
-              likeCount: post.likeCount - 1,
+            setPostInfo({
+              ...postInfo,
+              likeCount: postInfo.likeCount - 1,
             })
           })
           .catch((error) => {
@@ -275,7 +284,7 @@ const CourseBoardDetail = () => {
     }
 
     axios
-      .post(`/api/v1/posts/${post.id}/comments`, data)
+      .post(`/api/v1/posts/${postInfo.id}/comments`, data)
       .then((res) => {
         console.log(res.data)
         //방금 저장한 댓글의 정보
@@ -307,7 +316,7 @@ const CourseBoardDetail = () => {
       status: "PUBLIC"
     }
 
-    axios.post(`/api/v1/posts/${post.id}/comments`, data)
+    axios.post(`/api/v1/posts/${postInfo.id}/comments`, data)
       .then((res) => {
         console.log(res.data)
         //방금 저장한 댓글의 정보
@@ -400,7 +409,6 @@ const CourseBoardDetail = () => {
       axios
         .get(`/api/v1/posts/${postId}/comments?pageNum=${page}`)
         .then((res) => {
-          console.log(res.data)
           //res.data에는 댓글 목록과 전체 페이지 개수가 들어있다.
           //댓글 목록에 ref를 추가한 새로운 배열을 얻어내서
           const newList = res.data.commentList.map((item) => {
@@ -430,10 +438,10 @@ const CourseBoardDetail = () => {
         <div className="flex flex-wrap justify-between items-center gap-2 mt-2">
           <div className="flex gap-2">
             {/* 태그s */}
-            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{post.country}</span>
-            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{post.city}</span>
-            {post.tags &&
-              post.tags.map((tag, index) => (
+            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{postInfo.country}</span>
+            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{postInfo.city}</span>
+            {postInfo.tags &&
+              postInfo.tags.map((tag, index) => (
                 <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center">
                   {tag}
                 </span>
@@ -442,7 +450,7 @@ const CourseBoardDetail = () => {
 
           {/* 목록으로 버튼 */}
           <button
-            onClick={() => navigate(`/posts/course?di=${domesticInternational}`)}
+            onClick={() => navigate(`/posts/trip_log?di=${domesticInternational}`)}
             className="text-white bg-gray-600 hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
             목록으로 돌아가기
           </button>
@@ -451,14 +459,14 @@ const CourseBoardDetail = () => {
         {/* 여행 일정 */}
         <div className="my-2 text-sm text-gray-500">
           <span>
-            여행 일정 : {post.startDate === null ? "설정하지 않았습니다." : new Date(post.startDate).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })}
-            {post.endDate === null ? "" : ` ~ ${new Date(post.endDate).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })}`}
+            여행 일정 : {postInfo.startDate === null ? "설정하지 않았습니다." : new Date(postInfo.startDate).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })}
+            {postInfo.endDate === null ? "" : ` ~ ${new Date(postInfo.endDate).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })}`}
           </span>
         </div>
 
         <div className="flex justify-between items-center m-3">
           <div>
-            <strong>{post.title}</strong>
+            <strong>{postInfo.title}</strong>
             {/* title / 좋아요 버튼 / 좋아요, 조회수 */}
             {!isWriter && (
               <button
@@ -473,29 +481,24 @@ const CourseBoardDetail = () => {
             <span className="text-sm text-gray-500">
               <span className="mx-3">
                 <FontAwesomeIcon icon={faEye} className="h-5 w-5 mr-2" />
-                {post.viewCount}
+                {postInfo.viewCount}
               </span>
               <span className="mr-3">
                 <FontAwesomeIcon icon={faHeart} className="h-4 w-4 mr-2" />
-                {post.likeCount}
+                {postInfo.likeCount}
               </span>
               <span className="mr-3">
                 <FontAwesomeIcon icon={faMessage} className="h-4 w-4 mr-2" />
-                {post.commentCount}
+                {postInfo.commentCount}
               </span>
             </span>
           </div>
 
           {/* 수정, 삭제 버튼 */}
-          {loggedInNickname === post.writer && (
+          {loggedInNickname === postInfo.writer && (
             <div className="flex gap-2">
               <button
-                onClick={() => navigate(`/posts/trip_log/${id}/new?di=${domesticInternational}`)}
-                className="text-white bg-gray-600 hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
-                여행기록 작성
-              </button>
-              <button
-                onClick={() => navigate(`/posts/course/${id}/edit?di=${domesticInternational}`)}
+                onClick={() => navigate(`/posts/trip_log/${id}/edit`)}
                 className="text-white bg-gray-600 hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
                 수정
               </button>
@@ -556,11 +559,11 @@ const CourseBoardDetail = () => {
 
         {/* Day 목록 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 mb-6">
-          {(post.postData || [{ dayMemo: "", places: [] }]).map((day, dayIndex) => (
+          {(postInfo.postData || [{ dayMemo: "", places: [] }]).map((day, dayIndex) => (
             <div key={dayIndex} className="bg-white rounded-lg shadow-md p-4">
-              <h2 className="text-xl font-semibold mb-4">Day {dayIndex + 1}</h2>
+              <h2 className="text-xl font-semibold mb-4">Day {dayIndex + 1} - {postInfo.startDate && calculateDate(postInfo.startDate, dayIndex)} </h2>
               <div className="mb-4">
-                <label className="block font-semibold">Day Memo</label>
+                <label className="block font-semibold">Day Record</label>
                 <p className="border p-2 w-3/4 bg-gray-100">{day.dayMemo || "메모가 없습니다"}</p>
               </div>
               {day.places && day.places.length > 0 ? (
@@ -575,8 +578,6 @@ const CourseBoardDetail = () => {
                       }}>
                       {place.place_name || "장소명이 없습니다"}
                     </button>
-                    <label className="block font-semibold">장소 메모</label>
-                    <p className="border p-2 w-full bg-white">{place.placeMemo || "메모가 없습니다"}</p>
                   </div>
                 ))
               ) : (
@@ -601,9 +602,9 @@ const CourseBoardDetail = () => {
           <form onSubmit={handleCommentSubmit}>
             <div className="relative">
               {/* 원글의 id */}
-              <input type="hidden" name="id" defaultValue={post.id} />
+              <input type="hidden" name="id" defaultValue={postInfo.id} />
               {/* 원글의 작성자 */}
-              <input type="hidden" name="toUsername" defaultValue={post.writer} />
+              <input type="hidden" name="toUsername" defaultValue={postInfo.writer} />
               <input type="hidden" name="status" />
               <textarea
                 name="content"
@@ -760,7 +761,7 @@ const CourseBoardDetail = () => {
                         <form onSubmit={handleReplySubmit}>
                           <div className="relative">
                             {/* 원글의 작성자 */}
-                            <input type="hidden" name="id" defaultValue={post.id} />
+                            <input type="hidden" name="id" defaultValue={postInfo.id} />
                             {/* 답글 대상자 username */}
                             <input type="hidden" name="toUsername" defaultValue={item.toUsername} />
                             <input type="hidden" name="status" />
@@ -857,4 +858,4 @@ const CourseBoardDetail = () => {
   )
 }
 
-export default CourseBoardDetail
+export default TripLogBoardDetail
