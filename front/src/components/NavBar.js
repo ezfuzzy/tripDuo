@@ -303,7 +303,7 @@ function NavBar() {
       </div>
 
       {/* Off-canvas */}
-      <div ref={offcanvasRef} className="fixed top-0 left-0 w-64 bg-white shadow-lg h-full hidden">
+      <div ref={offcanvasRef} className="z-20 fixed top-0 left-0 w-64 bg-white shadow-lg h-full hidden">
         <div className="p-4 border-b flex justify-between">
           <h5>
             <button className="text-lg font-semibold" onClick={handleLoginLogoutClick}>
