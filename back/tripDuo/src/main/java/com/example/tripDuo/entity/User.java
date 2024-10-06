@@ -66,7 +66,9 @@ public class User {
     public void onPreUpdate() {
     	updatedAt = LocalDateTime.now();
     }
-    
+
+    public void softDelete() { deletedAt = LocalDateTime.now(); }
+
     public static User toEntity(UserDto dto) {
                 
         return User.builder()
