@@ -6,17 +6,21 @@ import { shallowEqual, useSelector } from "react-redux"
 import CourseGoogleMapComponent from "../../components/CourseGoogleMapComponent"
 import Calendar from "react-calendar"
 
-const CourseBoardForm = () => {
-  const userId = useSelector((state) => state.userData.id, shallowEqual)
-  const nickname = useSelector((state) => state.userData.nickname, shallowEqual)
-  const username = useSelector((state) => state.userData.username, shallowEqual)
+const TripLogBoardFormNew = () => {
+  const loggedInUserId = useSelector((state) => state.userData.id, shallowEqual)
+  const loggedInNickname = useSelector((state) => state.userData.nickname, shallowEqual)
+  const loggedInUsername = useSelector((state) => state.userData.username, shallowEqual)
+
+  // 달력에서 선택된 날짜 범위 저장
+  const [selectedDateRange, setSelectedDateRange] = useState([null, null])
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false) // 캘린더 표시 여부 상태
 
   const [title, setTitle] = useState("")
-  // 달력에서 선택된 날짜 범위 저장
-  const [selectedDateRange, setSelectedDateRange] = useState([null, null]);
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false); // 캘린더 표시 여부 상태
   const [country, setCountry] = useState("")
   const [city, setCity] = useState("")
+  const [tagInput, setTagInput] = useState("")
+  const [tags, setTags] = useState([])
+  const [days, setDays] = useState([{ places: [""], dayMemo: "" }])
   // 나라별 도시 목록
   const citiesByCountry = {
     Korea: ["서울", "부산", "제주", "인천"],
@@ -37,20 +41,16 @@ const CourseBoardForm = () => {
   }
   // 선택한 나라에 맞는 도시 목록을 얻음
   const cities = citiesByCountry[country] || [] //citiesByCountry[country]가 undefined 또는 null일 경우 빈 배열 반환
-  const [tagInput, setTagInput] = useState("")
-  const [tags, setTags] = useState([])
-  const [days, setDays] = useState([{ places: [""], dayMemo: "" }])
 
   const [selectedDayIndex, setSelectedDayIndex] = useState(null)
   const [selectedPlaceIndex, setSelectedPlaceIndex] = useState(null)
   const [savedPlaces, setSavedPlaces] = useState([])
-
   const [isSelectPlace, setIsSelectPlace] = useState(false)
 
   //검색 키워드, 국내외 관련 처리
   const [searchParams] = useSearchParams()
   const domesticInternational = searchParams.get("di") || "Domestic"
-  const status = searchParams.get("status") //"PUBLIC"이거나 "PRIVATE"인 경우 처리
+  const status = searchParams.get("status") || "PUBLIC" //"PUBLIC"이거나 "PRIVATE"인 경우 처리
   const navigate = useNavigate()
 
   // 날짜 초기화
@@ -63,6 +63,17 @@ const CourseBoardForm = () => {
     setSelectedDateRange(dateRange)
     // 날짜 선택 후 캘린더 닫기
     setIsCalendarOpen(false)
+  }
+
+  // 날짜 계산 함수
+  const calculateDate = (startDate, dayIndex) => {
+    const date = new Date(startDate)
+    date.setDate(date.getDate() + dayIndex) // 시작 날짜에 dayIndex 만큼 더함
+    return date.toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
   }
 
   const handleTagInput = (e) => {
@@ -78,22 +89,27 @@ const CourseBoardForm = () => {
     }
   }
 
+  //tag 삭제
   const removeTag = (tagToRemove) => setTags(tags.filter((tag) => tag !== tagToRemove))
 
+  //Day 추가
   const addDay = () => setDays([...days, { places: [""], dayMemo: "" }])
 
+  //Day 삭제
   const removeDay = (dayIndex) => {
     if (days.length > 1) {
       setDays(days.filter((_, index) => index !== dayIndex))
     }
   }
 
+  //장소 추가
   const addPlace = (dayIndex) => {
     const newDays = [...days]
     newDays[dayIndex].places.push("")
     setDays(newDays)
   }
 
+  //장소 제거
   const removePlace = (dayIndex, placeIndex) => {
     const newDays = [...days]
 
@@ -108,12 +124,14 @@ const CourseBoardForm = () => {
     setDays(newDays)
   }
 
+  //장소 선택
   const handlePlaceSelection = (dayIndex, placeIndex) => {
     setSelectedDayIndex(dayIndex)
     setSelectedPlaceIndex(placeIndex)
     setIsSelectPlace(true)
   }
 
+  //선택한 장소 저장
   const handleSavePlace = (place) => {
     if (place && isSelectPlace) {
       const newDays = [...days]
@@ -131,26 +149,19 @@ const CourseBoardForm = () => {
     }
   }
 
-  const handlePlaceMemoChange = (dayIndex, placeIndex, memo) => {
-    const newDays = [...days]
-    newDays[dayIndex].places[placeIndex] = {
-      ...newDays[dayIndex].places[placeIndex],
-      placeMemo: memo,
-    }
-    setDays(newDays)
-  }
-
+  //Day 메모
   const handleDayMemoChange = (dayIndex, memo) => {
     const newDays = [...days]
     newDays[dayIndex].dayMemo = memo
     setDays(newDays)
   }
 
+  //게시글 작성 완료
   const handleSubmit = () => {
     const post = {
-      userId,
-      writer: nickname,
-      type: "COURSE",
+      userId: loggedInUserId,
+      writer: loggedInNickname,
+      type: "TRIP_LOG",
       title,
       country,
       city,
@@ -161,9 +172,9 @@ const CourseBoardForm = () => {
       status: status,
     }
     axios
-      .post("/api/v1/posts/course", post)
+      .post("/api/v1/posts/trip_log", post)
       .then((res) => {
-        navigate(`/posts/course?di=${domesticInternational}`)
+        navigate(`/posts/trip_log?di=${domesticInternational}`)
       })
       .catch((error) => console.log(error))
   }
@@ -173,10 +184,11 @@ const CourseBoardForm = () => {
       <div className="flex flex-col h-full bg-white p-6 shadow-lg rounded-lg">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-3xl font-semibold text-gray-800">
-            {status === "PRIVATE" && "나만의 "}{domesticInternational === "Domestic" ? "국내 " : "해외 "}여행 코스 작성
+            {status === "PRIVATE" && "나만의 "}
+            {domesticInternational === "Domestic" ? "국내 " : "해외 "}여행기록 작성
           </h1>
           <button
-            onClick={() => navigate(`/posts/course?di=${domesticInternational}`)}
+            onClick={() => navigate(`/posts/trip_log?di=${domesticInternational}`)}
             className="text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-full text-sm px-5 py-2">
             목록으로 돌아가기
           </button>
@@ -207,18 +219,19 @@ const CourseBoardForm = () => {
             <div className="flex flex-grow-[1] items-end justify-end ml-4">
               <button
                 onClick={() => setIsCalendarOpen(!isCalendarOpen)}
-                className="text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-full text-sm px-5 py-2"
-              >
+                className="text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-full text-sm px-5 py-2">
                 날짜 선택
               </button>
-              <button onClick={handleDateReset} className="text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-full text-sm px-5 py-2 ml-2">
+              <button
+                onClick={handleDateReset}
+                className="text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-full text-sm px-5 py-2 ml-2">
                 날짜 초기화
               </button>
             </div>
           </div>
           {/* 선택한 날짜 */}
           <div className="sm:col-span-6">
-            <p style={{ marginTop: '-10px', marginBottom: '-20px' }} className="text-sm text-gray-600 text-right">
+            <p style={{ marginTop: "-10px", marginBottom: "-20px" }} className="text-sm text-gray-600 text-right">
               {selectedDateRange[0] && selectedDateRange[1]
                 ? `${selectedDateRange[0].toLocaleDateString()} ~ ${selectedDateRange[1].toLocaleDateString()}`
                 : "0000. 00. 00. ~ 0000. 00. 00."}
@@ -231,7 +244,7 @@ const CourseBoardForm = () => {
               <Calendar
                 selectRange={true}
                 onChange={handleDateChange}
-                value={selectedDateRange || [new Date(), new Date()]}  // 초기값 또는 선택된 날짜 범위
+                value={selectedDateRange || [new Date(), new Date()]} // 초기값 또는 선택된 날짜 범위
               />
             </div>
           )}
@@ -333,7 +346,7 @@ const CourseBoardForm = () => {
           {days.map((day, dayIndex) => (
             <div key={dayIndex} className="bg-gray-50 p-4 rounded-lg shadow-inner">
               <div className="flex justify-between items-center mb-2">
-                <h2 className="text-xl font-semibold">Day {dayIndex + 1}</h2>
+                <h2 className="text-xl font-semibold">Day {dayIndex + 1} - {selectedDateRange && calculateDate(selectedDateRange[0], dayIndex)}</h2>
                 <div className="flex space-x-2">
                   <button onClick={addDay} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
                     Day 추가
@@ -347,7 +360,7 @@ const CourseBoardForm = () => {
               </div>
               <div className="mb-4">
                 <label htmlFor={`dayMemo-${dayIndex}`} className="block text-lg font-medium text-gray-700">
-                  Day Memo
+                  Day Record
                 </label>
                 <textarea
                   className="border-gray-300 rounded-md p-2 w-full"
@@ -385,27 +398,16 @@ const CourseBoardForm = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="mb-2">
-                    <div>
-                      <label htmlFor={`placeMemo-${dayIndex}-${placeIndex}`} className="text-sm text-gray-700">
-                        장소 메모
-                      </label>
-                      <input
-                        className="border-gray-300 rounded-md p-2 w-full"
-                        type="text"
-                        id={`placeMemo-${dayIndex}-${placeIndex}`}
-                        value={place.placeMemo || ""}
-                        onChange={(e) => handlePlaceMemoChange(dayIndex, placeIndex, e.target.value)}
-                      />
-                    </div>
-                  </div>
                 </div>
               ))}
-              <button
-                onClick={() => addPlace(dayIndex)}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
-                장소 추가
-              </button>
+              {/* 장소 추가 버튼을 하단 중앙에 배치 */}
+              <div className="flex justify-center mt-4">
+                <button
+                  onClick={() => addPlace(dayIndex)}
+                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-full">
+                  장소 추가
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -450,4 +452,4 @@ const CourseBoardForm = () => {
   )
 }
 
-export default CourseBoardForm
+export default TripLogBoardFormNew

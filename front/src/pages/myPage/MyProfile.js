@@ -55,6 +55,8 @@ function MyProfile(props) {
   const [selectedTags, setSelectedTags] = useState([]);
   //리뷰 이미 작성한 사용자인지 체크
   const [isReviewed, setReviewed] = useState(false);
+  //리뷰를 작성할 조건이 되는 사용자 (나를 팔로우한 사용자인지)
+  const [isFollowing, setFollowing] = useState(false);
 
   // 팔로잉/팔로워 모달 상태관리
   const [isModalOpen, setModalOpen] = useState(false);
@@ -127,6 +129,8 @@ function MyProfile(props) {
         if (res.data.theirFollowType === "BLOCK") {
           alert("해당 사용자가 당신을 차단하여 더 이상 프로필을 볼 수 없습니다.");
           navigate("/");
+        } else if (res.data.theirFollowType === "FOLLOW") {
+          setFollowing(true);
         }
 
         // BLOCK or FOLLOW
@@ -227,6 +231,10 @@ function MyProfile(props) {
         .then((res) => {
           console.log(res.data);
           setFollowingStatus(true);
+          setProfile({
+            ...profile,
+            followerCount: profile.followerCount + 1,
+          });
         })
         .catch((error) => console.log(error));
     } else {
@@ -237,6 +245,10 @@ function MyProfile(props) {
           .then((res) => {
             console.log(res.data);
             setFollowingStatus(false);
+            setProfile({
+              ...profile,
+              followerCount: profile.followerCount - 1,
+            });
           })
           .catch((error) => console.log(error));
       }
@@ -294,12 +306,12 @@ function MyProfile(props) {
   // 프로필 사용자 신고
   const handleReportUser = () => {
     const data = { content: "신고 테스트" };
-    if(window.confirm("사용자를 신고하시겠습니까")){
+    if (window.confirm("사용자를 신고하시겠습니까")) {
       axios
         .post(`/api/v1/reports/${id}/user/${userId}`, data)
         .then((res) => {
           console.log(res.data);
-          alert("해당 사용자에 대한 신고가 접수되었습니다.")
+          alert("해당 사용자에 대한 신고가 접수되었습니다.");
         })
         .catch((error) => console.log(error));
     }
@@ -330,6 +342,8 @@ function MyProfile(props) {
         setUserReview("");
         setSelectedTags([]);
         setExperience("");
+        // 리뷰 작성 조건 조정 => 리뷰 작성 창 제거
+        setReviewed(true);
       })
       .catch((error) => console.log(error));
   };
@@ -339,12 +353,12 @@ function MyProfile(props) {
     const data = {
       content: "신고 테스트",
     };
-    if(window.confirm("해당 리뷰를 신고하시겠습니까")){
+    if (window.confirm("해당 리뷰를 신고하시겠습니까")) {
       axios
         .post(`/api/v1/reports/${reviewId}/user_review/${userId}`, data)
         .then((res) => {
           console.log(res.data);
-          alert("해당 리뷰에 대한 신고가 접수되었습니다.")
+          alert("해당 리뷰에 대한 신고가 접수되었습니다.");
         })
         .catch((error) => console.log(error));
     }
@@ -384,6 +398,9 @@ function MyProfile(props) {
           console.log(res.data);
           // 사용자당 한개의 리뷰를 작성하기때문에 삭제가 가능한 reviewerId = userId 이다
           setReviewList(reviewList.filter((item) => item.reviewerId !== userId));
+
+          //리뷰 작성 조건 수정
+          setReviewed(false);
         })
         .catch((error) => console.log(error));
     }
@@ -584,7 +601,8 @@ function MyProfile(props) {
         {/* -------------------------------------------------------------------------------------- */}
         {/* 리뷰 작성 */}
         {/* 두 조건 모두 거짓(리뷰 하지않음, 프로필 사용자가 아님)이어야 true 를 반환 => 리뷰 작성 랜더링 */}
-        {!isReviewed && !isProfileOwner && (
+        {/* + 프로필 사용자가 팔로우 하고 있어야한다. */}
+        {!isReviewed && !isProfileOwner && isFollowing && (
           <form className="border-3 rounded-lg p-3 mb-6 bg-gray-100" onSubmit={handleReviewSubmit}>
             <div className="mt-10 text-center space-x-20">
               <FontAwesomeIcon
@@ -733,7 +751,9 @@ function MyProfile(props) {
                       </p>
                     ) : (
                       // 리뷰 신고
-                      <p onClick={()=>handleReportReview(item.id)} className="text-xs text-gray-500 ml-auto mr-4 cursor-pointer">
+                      <p
+                        onClick={() => handleReportReview(item.id)}
+                        className="text-xs text-gray-500 ml-auto mr-4 cursor-pointer">
                         신고
                       </p>
                     )}

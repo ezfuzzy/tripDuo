@@ -28,18 +28,9 @@ function MateBoardDetail(props) {
   const { id } = useParams(); // 게시물 번호
   // 로그인된 유저 정보
   const userId = useSelector((state) => state.userData.id, shallowEqual); // 로그인된 user의 id
-  const username = useSelector(
-    (state) => state.userData.username,
-    shallowEqual
-  ); // 로그인된 username
-  const nickname = useSelector(
-    (state) => state.userData.nickname,
-    shallowEqual
-  ); // 로그인된 유저의 nickname
-  const profilePicture = useSelector(
-    (state) => state.userData.profilePicture,
-    shallowEqual
-  ); // 로그인된 유저의 profilePicture
+  const username = useSelector((state) => state.userData.username, shallowEqual); // 로그인된 username
+  const nickname = useSelector((state) => state.userData.nickname, shallowEqual); // 로그인된 유저의 nickname
+  const profilePicture = useSelector((state) => state.userData.profilePicture, shallowEqual); // 로그인된 유저의 profilePicture
 
   const navigate = useNavigate();
 
@@ -100,15 +91,11 @@ function MateBoardDetail(props) {
   // rating 값에 따른 아이콘과 색상 계산 //
   const getRatingDetails = (ratings) => {
     return (
-      ratingConfig.find(
-        (config) => ratings >= config.min && ratings <= config.max
-      ) || { icon: faUser, color: "black" }
+      ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { icon: faUser, color: "black" }
     ); // 기본값
   };
 
-  const { icon: ratingIcon, color: ratingColor } = getRatingDetails(
-    writerProfile.ratings || 0
-  );
+  const { icon: ratingIcon, color: ratingColor } = getRatingDetails(writerProfile.ratings || 0);
   //---------------------------------------------------------------------------------------------------------------rating 관리부
 
   useEffect(() => {
@@ -309,8 +296,7 @@ function MateBoardDetail(props) {
     axios
       .delete(`/api/v1/posts/${id}/comments/${commentId}`)
       .then((res) => {
-        ref.current.querySelector(".commentSource").outerHTML =
-          "<p>삭제된 댓글입니다</p>";
+        ref.current.querySelector(".commentSource").outerHTML = "<p>삭제된 댓글입니다</p>";
         /*
             commentId.current는 li요소의 참조값
             commentId.current.querySelector("dl")은 li요소의 자손 중에서 dl요소를 찾아서 참조값 가져오기
@@ -401,7 +387,7 @@ function MateBoardDetail(props) {
         });
     }
   };
-// ---------------------------------------------------- 채팅 관련
+  // ---------------------------------------------------- 채팅 관련
   const { stompClient, isConnected, messages, setMessages } = useWebSocket();
   const [subscribedRoomIds, setSubscribedRoomIds] = useState([]); // 내가 구독한 목록
 
@@ -466,10 +452,7 @@ function MateBoardDetail(props) {
       })
 
       .catch((error) => {
-        console.error(
-          "Error fetching room info:",
-          error.response ? error.response.data : error.message
-        );
+        console.error("Error fetching room info:", error.response ? error.response.data : error.message);
       });
 
     axios
@@ -487,29 +470,21 @@ function MateBoardDetail(props) {
       <div className="flex flex-col h-full bg-gray-100 p-6">
         <div className="container">
           <NavLink
+            className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
             to={{
               pathname: "/posts/mate",
-              search:
-                post.country === "한국" ? "?di=Domestic" : "?di=International",
-            }}
-          >
+              search: post.country === "한국" ? "?di=Domestic" : "?di=International",
+            }}>
             Mate
           </NavLink>
 
           {/* 태그s */}
           <div className="flex flex-wrap gap-2 mt-10">
-            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">
-              #{post.country}
-            </span>
-            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">
-              #{post.city}
-            </span>
+            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{post.country}</span>
+            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{post.city}</span>
             {post.tags &&
               post.tags.map((tag, index) => (
-                <span
-                  key={index}
-                  className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center"
-                >
+                <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center">
                   {tag}
                 </span>
               ))}
@@ -526,8 +501,7 @@ function MateBoardDetail(props) {
                   isLiked ? "bg-pink-600" : "bg-pink-400"
                 } text-white active:bg-emerald-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
                 type="button"
-                onClick={handleLike}
-              >
+                onClick={handleLike}>
                 <FontAwesomeIcon icon={faHeart} className="mr-2" />
                 {isLiked ? "unLike" : "Like"}
               </button>
@@ -553,11 +527,7 @@ function MateBoardDetail(props) {
           <div className="container mb-10">
             <div className="flex items-center gap-x-6">
               {writerProfile.profilePicture ? (
-                <img
-                  src={writerProfile.profilePicture}
-                  className="w-20 h-20 rounded-full"
-                  alt=""
-                />
+                <img src={writerProfile.profilePicture} className="w-20 h-20 rounded-full" alt="" />
               ) : (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -565,8 +535,7 @@ function MateBoardDetail(props) {
                   height="100"
                   fill="currentColor"
                   className="bi bi-person-circle"
-                  viewBox="0 0 16 16"
-                >
+                  viewBox="0 0 16 16">
                   <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
                   <path
                     fillRule="evenodd"
@@ -576,10 +545,7 @@ function MateBoardDetail(props) {
               )}
               <div>
                 <h3 className="text-base font-semibold leading-7 tracking-tight text-gray-900">
-                  <FontAwesomeIcon
-                    icon={ratingIcon}
-                    color={ratingColor}
-                  ></FontAwesomeIcon>
+                  <FontAwesomeIcon icon={ratingIcon} color={ratingColor}></FontAwesomeIcon>
                   {writerProfile.nickname}
                 </h3>
                 <p className="text-sm font-semibold leading-6 text-indigo-600">
@@ -590,15 +556,13 @@ function MateBoardDetail(props) {
                 <button
                   onClick={handleClickChat}
                   type="button"
-                  className="text-white bg-gray-500 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-3 py-2.5 me-2 mb-2 "
-                >
+                  className="text-white bg-gray-500 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-3 py-2.5 me-2 mb-2 ">
                   채팅 test
                 </button>
                 <button
                   type="button"
                   className="text-white bg-gray-500 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-3 py-2.5 me-2 mb-2 "
-                  onClick={handleClickProfile}
-                >
+                  onClick={handleClickProfile}>
                   {" "}
                   프로필 보기
                 </button>
@@ -636,8 +600,7 @@ function MateBoardDetail(props) {
               <button
                 type="button"
                 className="m-1 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                onClick={() => navigate(`/posts/mate/${id}/edit`)}
-              >
+                onClick={() => navigate(`/posts/mate/${id}/edit`)}>
                 수정
               </button>
               <button
@@ -654,8 +617,7 @@ function MateBoardDetail(props) {
                         : navigate(`/posts/mate?di=International`);
                     })
                     .catch((error) => console.log(error));
-                }}
-              >
+                }}>
                 삭제
               </button>
             </div>
@@ -663,22 +625,14 @@ function MateBoardDetail(props) {
         }
 
         {/* 원글의 댓글 작성 form */}
-        <div
-          className={`border-3 rounded-lg p-3 mt-4 mb-6 bg-white ${
-            !username ? "hidden" : ""
-          }`}
-        >
+        <div className={`border-3 rounded-lg p-3 mt-4 mb-6 bg-white ${!username ? "hidden" : ""}`}>
           <div className="font-bold text-lg">{nickname}</div>
           <form onSubmit={handleCommentSubmit}>
             <div className="relative">
               {/* 원글의 id */}
               <input type="hidden" name="id" defaultValue={post.id} />
               {/* 원글의 작성자 */}
-              <input
-                type="hidden"
-                name="toUsername"
-                defaultValue={post.writer}
-              />
+              <input type="hidden" name="toUsername" defaultValue={post.writer} />
               <input type="hidden" name="status" />
               <textarea
                 name="content"
@@ -695,8 +649,7 @@ function MateBoardDetail(props) {
                 <button
                   type="submit"
                   className="text-blue-500 hover:text-blue-700 font-semibold"
-                  onClick={() => (commentIndex = 0)}
-                >
+                  onClick={() => (commentIndex = 0)}>
                   등록
                 </button>
               </div>
@@ -711,10 +664,7 @@ function MateBoardDetail(props) {
                 key={item.id}
                 ref={item.ref}
                 //댓글Ui수정 전 추가되어있던  bg-white shadow-md p-4 rounded-lg
-                className={`flex items-start space-x-4 ${
-                  item.id !== item.parentCommentId ? "pl-12" : ""
-                }`}
-              >
+                className={`flex items-start space-x-4 ${item.id !== item.parentCommentId ? "pl-12" : ""}`}>
                 {item.status === "DELETED" ? (
                   <p>삭제된 댓글입니다</p>
                 ) : (
@@ -730,8 +680,7 @@ function MateBoardDetail(props) {
                                 xmlns="http://www.w3.org/2000/svg"
                                 className="w-10 h-10 text-gray-400"
                                 viewBox="0 0 16 16"
-                                fill="currentColor"
-                              >
+                                fill="currentColor">
                                 <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
                                 <path
                                   fillRule="evenodd"
@@ -739,33 +688,24 @@ function MateBoardDetail(props) {
                                 />
                               </svg>
                             ) : (
-                              <img
-                                src={item.profilePicture}
-                                className="w-10 h-10 rounded-full"
-                                alt="프로필"
-                              />
+                              <img src={item.profilePicture} className="w-10 h-10 rounded-full" alt="프로필" />
                             )}
-                            <span className="font-bold text-gray-900">
-                              {item.writer}
-                            </span>
+                            <span className="font-bold text-gray-900">{item.writer}</span>
                           </div>
 
                           {/* Dropdown 메뉴 */}
                           <div
                             className="relative inline-block text-left"
-                            ref={(el) => (dropdownRefs.current[index] = el)}
-                          >
+                            ref={(el) => (dropdownRefs.current[index] = el)}>
                             <button
                               onClick={(e) => toggleDropdown(e, index)}
-                              className="flex items-center p-2 text-gray-500 rounded hover:text-gray-700"
-                            >
+                              className="flex items-center p-2 text-gray-500 rounded hover:text-gray-700">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 className="w-6 h-6"
                                 fill="none"
                                 viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
+                                stroke="currentColor">
                                 <path
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
@@ -782,15 +722,13 @@ function MateBoardDetail(props) {
                                   className="py-1"
                                   role="menu"
                                   aria-orientation="vertical"
-                                  aria-labelledby="options-menu"
-                                >
+                                  aria-labelledby="options-menu">
                                   <button
                                     className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
                                     onClick={() => {
                                       setDropdownIndex(null);
                                       handleReportComment(item.id);
-                                    }}
-                                  >
+                                    }}>
                                     신고
                                   </button>
                                   {item.writer === nickname && (
@@ -799,25 +737,17 @@ function MateBoardDetail(props) {
                                         className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
                                         onClick={() => {
                                           setDropdownIndex(null);
-                                          const updateForm =
-                                            item.ref.current.querySelector(
-                                              ".updateCommentForm"
-                                            );
+                                          const updateForm = item.ref.current.querySelector(".updateCommentForm");
                                           updateForm.classList.remove("hidden");
-                                        }}
-                                      >
+                                        }}>
                                         수정
                                       </button>
                                       <button
                                         className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
                                         onClick={() => {
                                           setDropdownIndex(null);
-                                          handleDeleteComment(
-                                            item.id,
-                                            item.ref
-                                          );
-                                        }}
-                                      >
+                                          handleDeleteComment(item.id, item.ref);
+                                        }}>
                                         삭제
                                       </button>
                                     </>
@@ -829,23 +759,16 @@ function MateBoardDetail(props) {
                         </div>
 
                         {/* 댓글 내용 */}
-                        <p className="whitespace-pre-wrap text-gray-700 mt-1">
-                          {item.content}
-                        </p>
+                        <p className="whitespace-pre-wrap text-gray-700 mt-1">{item.content}</p>
 
                         {/* 답글 및 기타 버튼 */}
                         <div className="mt-2 text-sm text-gray-500">
-                          <small className="ml-4 text-gray-400">
-                            {item.createdAt}
-                          </small>
+                          <small className="ml-4 text-gray-400">{item.createdAt}</small>
                           <button
                             className="ml-4 text-blue-500 hover:text-blue-700 text-sm"
                             onClick={(e) => {
                               const text = e.target.innerText;
-                              const replyForm =
-                                item.ref.current.querySelector(
-                                  ".replyCommentForm"
-                                );
+                              const replyForm = item.ref.current.querySelector(".replyCommentForm");
 
                               if (text === "답글") {
                                 e.target.innerText = "취소";
@@ -854,8 +777,7 @@ function MateBoardDetail(props) {
                                 e.target.innerText = "답글";
                                 replyForm.classList.add("hidden");
                               }
-                            }}
-                          >
+                            }}>
                             답글
                           </button>
                         </div>
@@ -867,24 +789,12 @@ function MateBoardDetail(props) {
                         <form onSubmit={handleReplySubmit}>
                           <div className="relative">
                             {/* 원글의 작성자 */}
-                            <input
-                              type="hidden"
-                              name="id"
-                              defaultValue={post.id}
-                            />
+                            <input type="hidden" name="id" defaultValue={post.id} />
                             {/* 답글 대상자 username */}
-                            <input
-                              type="hidden"
-                              name="toUsername"
-                              defaultValue={item.toUsername}
-                            />
+                            <input type="hidden" name="toUsername" defaultValue={item.toUsername} />
                             <input type="hidden" name="status" />
                             {/* 댓글의 그룹번호(=답글 대상 댓글의 id) */}
-                            <input
-                              type="hidden"
-                              name="parentCommentId"
-                              defaultValue={item.parentCommentId}
-                            />
+                            <input type="hidden" name="parentCommentId" defaultValue={item.parentCommentId} />
                             <textarea
                               name="content"
                               className="border border-white rounded w-full h-24 p-2"
@@ -905,13 +815,9 @@ function MateBoardDetail(props) {
                               className="text-blue-500 hover:text-blue-700 font-semibold"
                               onClick={() => {
                                 commentIndex = index + 1;
-                                const replyForm =
-                                  item.ref.current.querySelector(
-                                    ".replyCommentForm"
-                                  );
+                                const replyForm = item.ref.current.querySelector(".replyCommentForm");
                                 replyForm.classList.add("hidden");
-                              }}
-                            >
+                              }}>
                               답글 등록
                             </button>
                           </div>
@@ -921,45 +827,20 @@ function MateBoardDetail(props) {
                       {/* 댓글 수정 폼 */}
                       <div className="updateCommentForm border-3 rounded-lg p-3 mt-4 mb-6 bg-white hidden">
                         <div className="font-bold text-lg">{nickname}</div>
-                        <form
-                          action={`/api/v1/posts/${id}/comments/${item.id}`}
-                          onSubmit={handleUpdateComment}
-                        >
+                        <form action={`/api/v1/posts/${id}/comments/${item.id}`} onSubmit={handleUpdateComment}>
                           <div className="relative">
-                            <input
-                              type="hidden"
-                              name="commentId"
-                              defaultValue={item.id}
-                            />
-                            <input
-                              type="hidden"
-                              name="id"
-                              defaultValue={item.postId}
-                            />
-                            <input
-                              type="hidden"
-                              name="toUsername"
-                              defaultValue={item.toUsername}
-                            />
+                            <input type="hidden" name="commentId" defaultValue={item.id} />
+                            <input type="hidden" name="id" defaultValue={item.postId} />
+                            <input type="hidden" name="toUsername" defaultValue={item.toUsername} />
                             <input type="hidden" name="status" />
-                            <input
-                              type="hidden"
-                              name="createdAt"
-                              defaultValue={item.createdAt}
-                            />
-                            <input
-                              type="hidden"
-                              name="parentCommentId"
-                              defaultValue={item.parentCommentId}
-                            />
+                            <input type="hidden" name="createdAt" defaultValue={item.createdAt} />
+                            <input type="hidden" name="parentCommentId" defaultValue={item.parentCommentId} />
                             <textarea
                               name="content"
                               className="border border-white rounded w-full h-24 p-2"
                               defaultValue={item.content}
                               maxLength={maxLength}
-                              onChange={(e) =>
-                                handleEditTextChange(index, e.target.value)
-                              }
+                              onChange={(e) => handleEditTextChange(index, e.target.value)}
                             />
                             <div className="absolute top-2 right-2 text-gray-500 text-sm">
                               {editTexts[index]?.length || 0}/{maxLength}
@@ -970,13 +851,9 @@ function MateBoardDetail(props) {
                               type="submit"
                               className="text-blue-500 hover:text-blue-700 font-semibold"
                               onClick={() => {
-                                const updateForm =
-                                  item.ref.current.querySelector(
-                                    ".updateCommentForm"
-                                  );
+                                const updateForm = item.ref.current.querySelector(".updateCommentForm");
                                 updateForm.classList.add("hidden");
-                              }}
-                            >
+                              }}>
                               수정 확인
                             </button>
                           </div>
@@ -996,8 +873,7 @@ function MateBoardDetail(props) {
               isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
             }`}
             disabled={isLoading}
-            onClick={handleMoreComment}
-          >
+            onClick={handleMoreComment}>
             {isLoading ? (
               <span className="animate-spin inline-block w-5 h-5 border-2 border-t-2 border-white rounded-full"></span>
             ) : (

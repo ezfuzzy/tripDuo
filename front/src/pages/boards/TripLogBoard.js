@@ -61,7 +61,7 @@ function TripLogBoard() {
         }))
     
         axios
-          .get(`/api/v1/posts/course`, {
+          .get(`/api/v1/posts/trip_log`, {
             params: {
               pageNum: Number(pageNum),
               country: country || undefined,
@@ -275,7 +275,7 @@ function TripLogBoard() {
 
     // 게시물 클릭 시 해당 게시물 상세 페이지로 이동
     const handlePostClick = (id) => {
-        navigate(`/posts/triplog/${id}/detail?di=${domesticInternational}`)
+        navigate(`/posts/trip_log/${id}/detail?di=${domesticInternational}`)
     }
 
     return (
@@ -284,7 +284,7 @@ function TripLogBoard() {
                 <div className="flex justify-between mb-4">
                     <Link
                         to={{
-                            pathname: "/posts/course/new",
+                            pathname: "/posts/trip_log/new",
                             search: `?di=${domesticInternational}&status=PUBLIC`
                         }}
                         className="text-blue-500"
@@ -435,7 +435,7 @@ function TripLogBoard() {
                                         {post.tags &&
                                             post.tags.map((tag, index) => (
                                                 <span key={index} className="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded">
-                                                    #{tag}
+                                                    {tag}
                                                 </span>
                                             ))}
                                     </div>
@@ -480,7 +480,7 @@ function TripLogBoard() {
                 </p>
             </div>
         </div>
-    );
+    )
 }
 
 export default TripLogBoard
