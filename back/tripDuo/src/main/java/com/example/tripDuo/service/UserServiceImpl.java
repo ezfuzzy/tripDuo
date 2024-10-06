@@ -354,10 +354,14 @@ public class UserServiceImpl implements UserService {
 	    userProfileInfoDto.setToken("Bearer+" + token);
 	    return userProfileInfoDto;
 	}
-	
+
+	@Transactional
 	@Override
 	public void deleteUser(Long userId) {
-		userRepo.deleteById(userId);
+		User user = userRepo.findById(userId)
+				.orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+		user.softDelete();
 	}
 	
 
