@@ -6,7 +6,7 @@ import { shallowEqual, useSelector } from "react-redux"
 import CourseGoogleMapComponent from "../../components/CourseGoogleMapComponent"
 import Calendar from "react-calendar"
 
-const TripLogBoardFormNew = () => {
+const TripBoardFormNew = () => {
   const loggedInUserId = useSelector((state) => state.userData.id, shallowEqual)
   const loggedInNickname = useSelector((state) => state.userData.nickname, shallowEqual)
   const loggedInUsername = useSelector((state) => state.userData.username, shallowEqual)
@@ -52,6 +52,15 @@ const TripLogBoardFormNew = () => {
   const domesticInternational = searchParams.get("di") || "Domestic"
   const status = searchParams.get("status") || "PUBLIC" //"PUBLIC"이거나 "PRIVATE"인 경우 처리
   const navigate = useNavigate()
+
+  //국내 글 작성시 대한민국 자동 선택처리
+  useEffect(()=>{
+    if (domesticInternational === "Domestic") {
+      setCountry("Korea")
+    } else {
+      setCountry("")
+    }
+  }, [domesticInternational])
 
   // 날짜 초기화
   const handleDateReset = () => {
@@ -262,38 +271,46 @@ const TripLogBoardFormNew = () => {
                   setCountry(e.target.value)
                   setCity("")
                 }}>
-                <option value="">나라를 선택하세요</option>
-                <optgroup label="아시아">
+                {domesticInternational === "Domestic" ? (
+                  // Domestic일 경우 대한민국만 표시
                   <option value="Korea">대한민국</option>
-                  <option value="Japan">일본</option>
-                  <option value="China">중국</option>
-                  <option value="India">인도</option>
-                </optgroup>
+                ) : (
+                  // International일 경우 기존 나라 선택 옵션 제공
+                  <>
+                    <option value="">나라를 선택하세요</option>
+                    <optgroup label="아시아">
+                      {/* <option value="Korea">대한민국</option> */}
+                      <option value="Japan">일본</option>
+                      <option value="China">중국</option>
+                      <option value="India">인도</option>
+                    </optgroup>
 
-                <optgroup label="유럽">
-                  <option value="UK">영국</option>
-                  <option value="Germany">독일</option>
-                  <option value="France">프랑스</option>
-                  <option value="Italy">이탈리아</option>
-                </optgroup>
+                    <optgroup label="유럽">
+                      <option value="UK">영국</option>
+                      <option value="Germany">독일</option>
+                      <option value="France">프랑스</option>
+                      <option value="Italy">이탈리아</option>
+                    </optgroup>
 
-                <optgroup label="북아메리카">
-                  <option value="USA">미국</option>
-                  <option value="Canada">캐나다</option>
-                </optgroup>
+                    <optgroup label="북아메리카">
+                      <option value="USA">미국</option>
+                      <option value="Canada">캐나다</option>
+                    </optgroup>
 
-                <optgroup label="남아메리카">
-                  <option value="Brazil">브라질</option>
-                </optgroup>
+                    <optgroup label="남아메리카">
+                      <option value="Brazil">브라질</option>
+                    </optgroup>
 
-                <optgroup label="오세아니아">
-                  <option value="Australia">호주</option>
-                </optgroup>
+                    <optgroup label="오세아니아">
+                      <option value="Australia">호주</option>
+                    </optgroup>
 
-                <optgroup label="기타">
-                  <option value="Russia">러시아</option>
-                  <option value="SouthAfrica">남아프리카 공화국</option>
-                </optgroup>
+                    <optgroup label="기타">
+                      <option value="Russia">러시아</option>
+                      <option value="SouthAfrica">남아프리카 공화국</option>
+                    </optgroup>
+                  </>
+                )}
               </select>
             </div>
 
@@ -452,4 +469,4 @@ const TripLogBoardFormNew = () => {
   )
 }
 
-export default TripLogBoardFormNew
+export default TripBoardFormNew
