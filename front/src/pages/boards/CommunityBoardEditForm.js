@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import FroalaEditor from "react-froala-wysiwyg";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, NavLink, useNavigate, useParams } from "react-router-dom";
 
 function CommunityBoardEditForm(props) {
   const { id } = useParams();
@@ -51,7 +51,12 @@ function CommunityBoardEditForm(props) {
 
   return (
     <div className="container mx-auto p-4 max-w-[900px]">
-      <Link to={`/posts/community/${id}/detail`}>상세 페이지로</Link>
+      <div className="h-full bg-gray-100 p-6">
+      <NavLink
+        className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
+        to={`/posts/community/${id}/detail`}>
+        상세 페이지로
+      </NavLink>
 
       <h3>{id} 번 게시물 수정 폼</h3>
 
@@ -69,12 +74,19 @@ function CommunityBoardEditForm(props) {
 
       <form>
         <div className="m-3">
-          <label htmlFor="title">제목</label>
-          <input onChange={handleChange} type="text" id="title" name="title" value={post.title || ""} />
+          <label className="font-semibold" htmlFor="title">제목</label>
+          <input
+            className="w-full border-gray-300 rounded-md"
+            onChange={handleChange}
+            type="text"
+            id="title"
+            name="title"
+            value={post.title || ""}
+          />
         </div>
 
         <div>
-          <label htmlFor="content">내용</label>
+          <label className="font-semibold" htmlFor="content">내용</label>
           <FroalaEditor
             model={post.content}
             onModelChange={handleModelChange}
@@ -91,6 +103,7 @@ function CommunityBoardEditForm(props) {
           수정
         </button>
       </form>
+      </div>
     </div>
   );
 }

@@ -76,7 +76,7 @@ function CommunityBoard() {
       .then((res) => {
         const filtered = res.data.list.filter((item) => {
           const matchesDomesticInternational =
-            domesticInternational === "Domestic" ? item.country === "한국" : item.country !== "한국";
+            domesticInternational === "Domestic" ? item.country === "대한민국" : item.country !== "대한민국";
           if (!matchesDomesticInternational) return false;
 
           const matchesCountry = searchCriteria.country ? item.country.includes(searchCriteria.country) : true;
