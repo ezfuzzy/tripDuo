@@ -49,26 +49,15 @@ public class ReportSpecification {
             // targetType 검색 조건
             if (reportDto.getTargetType() != null) {
                 ReportTarget targetEnum = ReportTarget.fromString(reportDto.getTargetType());
-                switch (targetEnum) {
-                    case USER:
-                        predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.type(), ReportToUser.class));
-                        break;
-                    case USER_REVIEW:
-                        predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.type(), ReportToUserReview.class));
-                        break;
-                    case POST:
-                        predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.type(), ReportToPost.class));
-                        break;
-                    case POST_COMMENT:
-                        predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.type(), ReportToPostComment.class));
-                        break;
-                    case CHAT_ROOM:
-                        predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.type(), ReportToChatRoom.class));
-                        break;
-                    case CHAT_MESSAGE:
-                        predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.type(), ReportToChatMessage.class));
-                        break;
-                }
+                Class<? extends Report> reportClass = switch (targetEnum) {
+                    case USER -> ReportToUser.class;
+                    case USER_REVIEW -> ReportToUserReview.class;
+                    case POST -> ReportToPost.class;
+                    case POST_COMMENT -> ReportToPostComment.class;
+                    case CHAT_ROOM -> ReportToChatRoom.class;
+                    case CHAT_MESSAGE -> ReportToChatMessage.class;
+                };
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.type(), reportClass));
             }
 
             // targetId 검색 조건
