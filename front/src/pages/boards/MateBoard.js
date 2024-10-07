@@ -31,6 +31,7 @@ function MateBoard() {
 
   // 페이지 전환 버튼
   const [whereAreYou, setWhereAreYou] = useState(null);
+  const [originalData, setOriginalData] = useState([]); // 원본 데이터를 저장
   const [sortBy, setSortBy] = useState("latest"); // 정렬 기준 초기값 설정
 
   // 달력에서 선택된 날짜 범위 저장
@@ -162,22 +163,32 @@ function MateBoard() {
 
           return true;
         });
-        const sorted = filtered.sort((a, b) => {
-          if (sortBy === "latest") {
-            return new Date(b.createdAt) - new Date(a.createdAt); // 최신순
-          } else if (sortBy === "viewCount") {
-            return b.viewCount - a.viewCount; // 조회수순
-          } else if (sortBy === "likeCount") {
-            return b.likeCount - a.likeCount; // 좋아요순
-          }
-          return 0; // 기본값
-        });
-        setPageData(sorted);
+        setPageData(filtered);
+        applySorting(filtered); // 정렬 로직을 적용
         setWhereAreYou(domesticInternational === "Domestic" ? "국내 여행 메이트 페이지" : "해외 여행 메이트 페이지");
         setPageTurn(domesticInternational === "Domestic" ? "to International" : "to Domestic");
       })
       .catch((error) => console.log(error));
   }, [domesticInternational, searchCriteria, sortBy]);
+
+  const applySorting = (data) => {
+    const sorted = [...data].sort((a, b) => {
+      if (sortBy === "latest") {
+        return new Date(b.createdAt) - new Date(a.createdAt); // 최신순
+      } else if (sortBy === "viewCount") {
+        return b.viewCount - a.viewCount; // 조회수순
+      } else if (sortBy === "likeCount") {
+        return b.likeCount - a.likeCount; // 좋아요순
+      }
+      return 0; // 기본값
+    });
+    setPageData(sorted); // 정렬된 데이터를 업데이트
+  };
+  
+  
+  useEffect(() => {
+    applySorting(originalData); // 정렬 기준이 변경될 때마다 원본 데이터를 정렬하여 적용
+  }, [sortBy, originalData]);
 
   // -------------이벤트 관리부
 
@@ -203,9 +214,16 @@ function MateBoard() {
       di: domesticInternational,
     });
   };
+
   const handleSortChange = (e) => {
-    setSortBy(e.target.value); // 정렬 기준 변경
+    setSortBy(e.target.value); // 정렬 기준을 업데이트
+    applySorting(originalData); // 기존 데이터를 정렬 기준에 맞게 다시 정렬
   };
+  
+  useEffect(() => {
+  applySorting(originalData); // 정렬 기준이 변경되었을 때 기존 데이터를 정렬
+}, [sortBy, originalData]);
+
 
   // 캘린더의 날짜 스타일을 설정하는 함수 추가
   const tileClassName = ({ date }) => {
