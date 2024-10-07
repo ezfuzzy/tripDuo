@@ -25,7 +25,10 @@ function MyProfileForm(props) {
     gender: "",
     profilePicture: "",
     profileMessage: "",
-    socialLinks: "",
+    socialLinks: {
+      instagram: "",
+      github: "",
+    },
   });
 
   const { id } = useParams();
@@ -44,8 +47,16 @@ function MyProfileForm(props) {
           alert("잘못된 접근입니다.");
           navigate(`/`);
         }
-        console.log(res.data);
-        setProfile(res.data.userProfileInfo);
+
+        const parsedSocialLinks = JSON.parse(res.data.userProfileInfo.socialLinks) || { instagram: "", github: "" }
+        console.log(parsedSocialLinks)
+        const userProfileInfo = {
+          ...res.data.userProfileInfo,
+          socialLinks: parsedSocialLinks
+        };
+        console.log(userProfileInfo)
+
+        setProfile(userProfileInfo);
 
         setInitialNickname(res.data.userProfileInfo.nickname); // 로딩된 닉네임 초기값 저장
         if (res.data.userProfileInfo.profilePicture) {
@@ -76,6 +87,16 @@ function MyProfileForm(props) {
         setIsNicknameChanged(true);
       }
     }
+  };
+
+  const handleSocialLinksChange = (e) => {
+    setProfile({
+      ...profile,
+      socialLinks: {
+        ...profile.socialLinks,
+        [e.target.name]: e.target.value,
+      },
+    });
   };
 
   // *** 중복 검사 핸들러
@@ -132,11 +153,18 @@ function MyProfileForm(props) {
     const formData = new FormData();
     formData.append("id", profile.id);
     formData.append("userId", profile.userId);
-    formData.append("age", profile.age);
-    formData.append("gender", profile.gender);
+    formData.append("age", profile.age || "");
+    formData.append("gender", profile.gender || "");
     formData.append("nickname", profile.nickname);
-    formData.append("socialLinks", profile.socialLinks);
-    formData.append("profileMessage", profile.profileMessage);
+
+    if (profile.socialLinks) {
+      const jsonString = JSON.stringify(profile.socialLinks);
+      formData.append("socialLinks", jsonString);
+    } else {
+      formData.append("socialLinks", {instagram:"", github:""})
+    }
+
+    formData.append("profileMessage", profile.profileMessage ?? "");
     formData.append("profilePicture", profile.profilePicture);
 
     formData.append("curLocation", profile.curLocation);
@@ -264,7 +292,7 @@ function MyProfileForm(props) {
                 onChange={handleChange}
                 type="text"
                 name="nickname"
-                value={profile.nickname}
+                value={profile.nickname || ""}
                 className="flex-1 block w-full p-2 border border-gray-300 rounded-md"
               />
 
@@ -318,7 +346,7 @@ function MyProfileForm(props) {
               <input
                 type="text"
                 name="age"
-                value={profile.age}
+                value={profile.age || ""}
                 className="block w-full p-2 border border-gray-300 rounded-md"
                 onChange={handleChange}
               />
@@ -328,7 +356,7 @@ function MyProfileForm(props) {
                 gender
               </label>
               <select
-                value={profile.gender}
+                value={profile.gender || ""}
                 onChange={handleChange}
                 className="block w-full p-2 border border-gray-300 rounded-md"
                 name="gender"
@@ -343,26 +371,26 @@ function MyProfileForm(props) {
           {/* 소셜 링크 */}
           <div className="flex space-x-4">
             <div className="mb-3 flex-1">
-              <label htmlFor="github" className="block text-sm font-medium mb-1">
-                {gitHubIcon}
-              </label>
-              <input
-                onChange={handleChange}
-                type="text"
-                name="socialLinks"
-                value={profile.socialLinks}
-                className="block w-full p-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div className="mb-3 flex-1">
               <label htmlFor="instagram" className="block text-sm font-medium mb-1">
                 {instagramIcon}
               </label>
               <input
-                onChange={handleChange}
+                onChange={handleSocialLinksChange}
                 type="text"
-                name="socialLinks"
-                value={profile.socialLinks}
+                name="instagram"
+                value={profile.socialLinks.instagram || ""}
+                className="block w-full p-2 border border-gray-300 rounded-md"
+              />
+            </div>
+            <div className="mb-3 flex-1">
+              <label htmlFor="github" className="block text-sm font-medium mb-1">
+                {gitHubIcon}
+              </label>
+              <input
+                onChange={handleSocialLinksChange}
+                type="text"
+                name="github"
+                value={profile.socialLinks.github || ""}
                 className="block w-full p-2 border border-gray-300 rounded-md"
               />
             </div>
@@ -376,9 +404,9 @@ function MyProfileForm(props) {
             <textarea
               onChange={handleChange}
               name="profileMessage"
-              className="form-control w-full h-auto resize-none overflow-y-auto"
+              className="form-control w-full h-auto resize-none overflow-y-auto  border-gray-300 rounded-md"
               rows="5"
-              value={profile.profileMessage}
+              value={profile.profileMessage || ""}
             />
           </div>
 
@@ -394,15 +422,6 @@ function MyProfileForm(props) {
         </form>
       </div>
 
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
     </div>
   );
 }
