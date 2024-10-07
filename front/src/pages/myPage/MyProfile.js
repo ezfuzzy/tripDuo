@@ -425,13 +425,6 @@ function MyProfile(props) {
 
   return (
     <div className="container mx-auto p-4 max-w-[900px]">
-      <button
-        onClick={() => {
-          console.log(profile)
-          console.log(" ??? : ", Array.isArray(profile.socialLinks))
-        }}>
-        test test test
-      </button>
       {isProfileOwner && (
         <div>
           <button
