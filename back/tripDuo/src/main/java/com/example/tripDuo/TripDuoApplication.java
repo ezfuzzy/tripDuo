@@ -65,9 +65,11 @@ public class TripDuoApplication {
 	public void init() {
 		System.out.println("\n### init ###");
 		
+		String[] socialLinks = {"tictok+", "instagram+"};
+		
 		User u1 = User.builder().username("ezfz").password(encoder.encode("hysz")).phoneNumber("010-3456-7890").role(UserRole.ADMIN).build(); 
 		User savedUser1 = userRepo.save(u1);
-		UserProfileInfo upi1 = UserProfileInfo.builder().user(savedUser1).nickname("ezfz").age((long) 28).profilePicture("9a926641-7e7f-4d23-8a78-1fe301813ccd.jpg").gender(Gender.MALE).build();
+		UserProfileInfo upi1 = UserProfileInfo.builder().user(savedUser1).nickname("ezfz").age((long) 28).profilePicture("9a926641-7e7f-4d23-8a78-1fe301813ccd.jpg").socialLinks(socialLinks).gender(Gender.MALE).build();
 		upi1 = userProfileInfoRepo.save(upi1);
 		
 		User u2 = User.builder().username("aaaa").password(encoder.encode("aaaa")).phoneNumber("010-3456-7890").role(UserRole.USER).build();
