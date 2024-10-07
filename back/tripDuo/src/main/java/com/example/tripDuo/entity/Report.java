@@ -14,7 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -55,12 +54,12 @@ public abstract class Report {
     }
 
     public void updateContent(String newContent) {
-        this.content = newContent;
+        content = newContent;
         status = ReportStatus.UNPROCESSED;
         createdAt = LocalDateTime.now();
     }
 
     public void updateStatus(ReportStatus newStatus) {
-        this.status = newStatus;
+        status = newStatus;
     }
 }
