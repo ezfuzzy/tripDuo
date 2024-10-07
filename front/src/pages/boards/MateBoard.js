@@ -169,7 +169,7 @@ function MateBoard() {
             return true;
           });
         }
-  
+        setOriginalData(filtered);
         setPageData(filtered);
         applySorting(filtered);
         // setWhereAreYou(domesticInternational === "Domestic" ? "국내 여행 메이트 페이지" : "해외 여행 메이트 페이지");
@@ -206,6 +206,7 @@ function MateBoard() {
     applySorting(originalData); // 정렬 기준이 변경될 때마다 원본 데이터를 정렬하여 적용
   }, [sortBy, originalData]);
 
+  
   // -------------이벤트 관리부
 
   // 국내/해외 변경 버튼 핸들러-
