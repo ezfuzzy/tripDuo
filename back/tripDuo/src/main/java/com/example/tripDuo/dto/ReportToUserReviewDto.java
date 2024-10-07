@@ -19,7 +19,7 @@ public class ReportToUserReviewDto extends ReportDto {
                 .id(entity.getId())
                 .reporterId(entity.getReporterId())
                 .content(entity.getContent())
-                .status(entity.getStatus())
+                .reportStatus(entity.getStatus())
                 .createdAt(entity.getCreatedAt())
                 .reportedUserReviewId(entity.getReportedUserReview() != null ? entity.getReportedUserReview().getId() : null)
                 .build();
