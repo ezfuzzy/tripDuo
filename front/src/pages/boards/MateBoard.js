@@ -218,10 +218,21 @@ function MateBoard() {
     // 여기서 whereAreYou 상태를 업데이트합니다.
     setWhereAreYou(newInternationalState === "Domestic" ? "국내 여행 메이트 페이지" : "해외 여행 메이트 페이지");
 
-    setSearchParams({
-      ...searchCriteria,
-      di: newInternationalState, // 변경된 상태에 따라 파라미터 업데이트
+    const newSearchParams = {
+      di: newInternationalState,
+    };
+  
+    // 검색 조건 초기화
+    setSearchCriteria({
+      country: "", // 초기화
+      city: "",    // 초기화
+      startDate: "", // 초기화
+      endDate: "",   // 초기화
+      keyword: "",   // 초기화
+      condition: "title", // 기본 검색 조건으로 초기화
     });
+    
+    setSearchParams(newSearchParams);
 
     // 데이터를 불러오기 위한 상태 변경
     setShouldFetchData(true); // 게시물 불러오기
