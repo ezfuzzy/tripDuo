@@ -182,7 +182,10 @@ function MateBoard() {
   useEffect(() => {
     fetchData(); // 컴포넌트가 마운트될 때 데이터를 불러옵니다.
   }, []); // 빈 배열을 사용하여 초기 로딩 시에만 실행됩니다.
-  
+
+  useEffect(() => {
+    fetchData(); // di가 변경될 때마다 데이터 로딩
+  }, [domesticInternational]);
   
   const applySorting = (data) => {
     const sorted = [...data].sort((a, b) => {
@@ -225,6 +228,7 @@ function MateBoard() {
     // 상태 변경 후 자동으로 데이터를 불러옵니다.
     fetchData(); // 인자를 전달하지 않음
 };
+
 
   // useEffect를 추가하여 초기 로딩 시 기본 게시물 불러오기
   useEffect(() => {
