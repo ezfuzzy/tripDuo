@@ -207,6 +207,21 @@ function MateBoard() {
     setSortBy(e.target.value); // 정렬 기준 변경
   };
 
+  // 캘린더의 날짜 스타일을 설정하는 함수 추가
+  const tileClassName = ({ date }) => {
+    const day = date.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
+    // 기본적으로 검은색으로 설정
+    let className = 'text-black'; 
+  
+    // 토요일과 일요일에만 빨간색으로 변경
+    if (day === 0 || day === 6) {
+      className = 'text-red-500'; // 토요일과 일요일에 숫자를 빨간색으로 표시
+    }
+  
+    return className; // 최종 클래스 이름 반환
+  };
+  
+
   return (
     <div className="container mx-auto m-4">
       <Link className="px-4 py-2 text-sm font-medium rounded-md bg-green-600 text-gray-100 mr-3" to={{ pathname: "/posts/mate/new", search: `?di=${domesticInternational}` }}>새글 작성</Link>
@@ -272,12 +287,21 @@ function MateBoard() {
                 selectRange={true}
                 onChange={handleDateChange}
                 value={selectedDateRange || [new Date(), new Date()]} // 초기값 또는 선택된 날짜 범위
-                formatDay={(locale, date) => moment(date).format("DD")}
                 minDetail="month" // 상단 네비게이션에서 '월' 단위만 보이게 설정
                 maxDetail="month" // 상단 네비게이션에서 '월' 단위만 보이게 설정
                 navigationLabel={null}
                 showNeighboringMonth={false} //  이전, 이후 달의 날짜는 보이지 않도록 설정
                 calendarType="hebrew" //일요일부터 보이도록 설정
+                tileClassName={tileClassName} // 날짜 스타일 설정 
+                tileContent={({ date }) => {
+                  const day = date.getDay();
+                  return (
+                    <span className={date.getDay() === 0 || date.getDay() === 6 ? 'text-red-500' : 'text-black'}>
+                      {date.getDate()} {/* 날짜 숫자만 표시 */}
+                    </span>
+                  );  
+                }} // 날짜 내용 설정
+                formatDay={() => null}
               />
               <button onClick={handleDateReset} className="bg-red-500 text-white px-4 py-2 ml-2">
                 날짜 초기화
