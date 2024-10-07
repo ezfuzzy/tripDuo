@@ -69,6 +69,10 @@ public class User {
 
     public void softDelete() { deletedAt = LocalDateTime.now(); }
 
+    public void updateAccountStatus(AccountStatus newAccountStatus) {
+        accountStatus = newAccountStatus;
+    }
+    
     public static User toEntity(UserDto dto) {
                 
         return User.builder()

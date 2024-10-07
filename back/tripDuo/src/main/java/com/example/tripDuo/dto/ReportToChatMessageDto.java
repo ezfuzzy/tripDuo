@@ -19,7 +19,7 @@ public class ReportToChatMessageDto extends ReportDto {
                 .id(entity.getId())
                 .reporterId(entity.getReporterId())
                 .content(entity.getContent())
-                .status(entity.getStatus())
+                .reportStatus(entity.getStatus())
                 .createdAt(entity.getCreatedAt())   
                 .reportedChatMessageId(entity.getReportedChatMessage() != null ? entity.getReportedChatMessage().getId() : null)
                 .build();

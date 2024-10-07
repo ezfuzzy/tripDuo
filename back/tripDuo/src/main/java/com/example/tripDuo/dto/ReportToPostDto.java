@@ -19,7 +19,7 @@ public class ReportToPostDto extends ReportDto {
                 .id(entity.getId())
                 .reporterId(entity.getReporterId())
                 .content(entity.getContent())
-                .status(entity.getStatus())
+                .reportStatus(entity.getStatus())
                 .createdAt(entity.getCreatedAt())
                 .reportedPostId(entity.getReportedPost() != null ? entity.getReportedPost().getId() : null)
                 .build();

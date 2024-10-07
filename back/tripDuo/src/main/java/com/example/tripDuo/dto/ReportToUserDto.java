@@ -19,7 +19,7 @@ public class ReportToUserDto extends ReportDto {
                 .id(entity.getId())
                 .reporterId(entity.getReporterId())
                 .content(entity.getContent())
-                .status(entity.getStatus())
+                .reportStatus(entity.getStatus())
                 .createdAt(entity.getCreatedAt())
                 .reportedUserId(entity.getReportedUser() != null ? entity.getReportedUser().getId() : null)
                 .build();

@@ -1,8 +1,18 @@
 package com.example.tripDuo.dto;
 
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 
+import com.example.tripDuo.entity.Report;
+import com.example.tripDuo.entity.ReportToChatMessage;
+import com.example.tripDuo.entity.ReportToChatRoom;
+import com.example.tripDuo.entity.ReportToPost;
+import com.example.tripDuo.entity.ReportToPostComment;
+import com.example.tripDuo.entity.ReportToUser;
+import com.example.tripDuo.entity.ReportToUserReview;
+import com.example.tripDuo.enums.AccountStatus;
 import com.example.tripDuo.enums.ReportStatus;
+import com.example.tripDuo.enums.ReportTarget;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +27,47 @@ public class ReportDto {
     private Long id;
     private Long reporterId;
     private String content;
-    private ReportStatus status;
+    private ReportStatus reportStatus;
     private LocalDateTime createdAt;
+
+    private String targetType;
+    private Long targetId;
+
+    // ### for app ###
+    private int pageNum = 1;
+    private String sortBy;
+    private AccountStatus accountStatus;
+    private YearMonth createdAtMonth;
+
+    public static ReportDto toDto(Report report) {
+        ReportDto dto = ReportDto.builder()
+            .id(report.getId())
+            .reporterId(report.getReporterId())
+            .content(report.getContent())
+            .reportStatus(report.getStatus())
+            .createdAt(report.getCreatedAt())
+            .build();
+
+        if (report instanceof ReportToUser) {
+            dto.setTargetType(ReportTarget.USER.name());
+            dto.setTargetId(((ReportToUser) report).getReportedUser().getId());
+        } else if (report instanceof ReportToUserReview) {
+            dto.setTargetType(ReportTarget.USER_REVIEW.name());
+            dto.setTargetId(((ReportToUserReview) report).getReportedUserReview().getId());
+        } else if (report instanceof ReportToPost) {
+            dto.setTargetType(ReportTarget.POST.name());
+            dto.setTargetId(((ReportToPost) report).getReportedPost().getId());
+        } else if (report instanceof ReportToPostComment) {
+            dto.setTargetType(ReportTarget.POST_COMMENT.name());
+            dto.setTargetId(((ReportToPostComment) report).getReportedPostComment().getId());
+        } else if (report instanceof ReportToChatRoom) {
+            dto.setTargetType(ReportTarget.CHAT_ROOM.name());
+            dto.setTargetId(((ReportToChatRoom) report).getReportedChatRoom().getId());
+        } else if (report instanceof ReportToChatMessage) {
+            dto.setTargetType(ReportTarget.CHAT_MESSAGE.name());
+            dto.setTargetId(((ReportToChatMessage) report).getReportedChatMessage().getId());
+        }
+
+        return dto;
+    }
 }
