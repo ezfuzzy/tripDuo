@@ -231,7 +231,7 @@ function MateBoard() {
       keyword: "",   // 초기화
       condition: "title", // 기본 검색 조건으로 초기화
     });
-    
+
     setSearchParams(newSearchParams);
 
     // 데이터를 불러오기 위한 상태 변경
@@ -245,12 +245,12 @@ function MateBoard() {
   // useEffect를 추가하여 초기 로딩 시 기본 게시물 불러오기
   useEffect(() => {
     // 초기 상태 설정
-    setDomesticInternational("International"); // di를 "Domestic"으로 설정
-    setWhereAreYou("해외 여행 메이트 페이지"); // 초기 메시지 설정
+    setDomesticInternational("Domestic"); // di를 "Domestic"으로 설정
+    setWhereAreYou("국내 여행 메이트 페이지"); // 초기 메시지 설정
 
     // 검색 파라미터를 업데이트
     setSearchParams({
-      di: "International", // 초기 검색 파라미터 설정
+      di: "Domestic", // 초기 검색 파라미터 설정
     });
 
     fetchData(); // 기본 게시물 불러오기
