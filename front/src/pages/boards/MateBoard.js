@@ -14,6 +14,7 @@ function MateBoard() {
   //파라미터 값 관리
   // URL에서 검색 매개변수를 가져오기 위한 상태
   const [searchParams, setSearchParams] = useSearchParams();
+  const [shouldFetchData, setShouldFetchData] = useState(false);
 
   // 사용자가 입력한 검색 조건을 저장하기 위한 상태
   const [searchCriteria, setSearchCriteria] = useState({
@@ -109,68 +110,80 @@ function MateBoard() {
 
   // domesticInternational 가 바뀔때마다 실행된다.
   // to D~ I~ Button 을 누를때 or 새로운 요청이 들어왔을때
-  useEffect(() => {
+  const fetchData = () => {
     axios
       .get("/api/v1/posts/mate")
       .then((res) => {
-        const filtered = res.data.list.filter((item) => {
-          const matchesDomesticInternational =
-            domesticInternational === "Domestic" ? item.country === "한국" : item.country !== "한국";
-          if (!matchesDomesticInternational) return false;
-
-          const matchesCountry = searchCriteria.country ? item.country.includes(searchCriteria.country) : true;
-          if (!matchesCountry) return false;
-
-          const matchesCity = searchCriteria.city ? item.city.includes(searchCriteria.city) : true;
-          if (!matchesCity) return false;
-
-          // 조건에 따라 제목 또는 작성자를 필터링
-          const matchesKeyword =
-            searchCriteria.condition === "title"
-              ? item.title.includes(searchCriteria.keyword)
-              : searchCriteria.condition === "writer"
-              ? item.writer.includes(searchCriteria.keyword)
-              : searchCriteria.condition === "content"
-              ? item.content.includes(searchCriteria.keyword)
-              : searchCriteria.condition === "title_content"
-              ? item.title.includes(searchCriteria.keyword) || item.content.includes(searchCriteria.keyword)
-              : true;
-
-          if (!matchesKeyword) return false;
-
-          // 선택한 startDate와 endDate 범위에 포함되는 항목만 필터링
-          const matchesDateRange = (item) => {
-            const itemStartDate = new Date(item.startDate);
-            const itemEndDate = new Date(item.endDate);
-            const searchStartDate = searchCriteria.startDate ? new Date(searchCriteria.startDate) : null;
-            const searchEndDate = searchCriteria.endDate ? new Date(searchCriteria.endDate) : null;
-
-            // 검색 범위의 날짜가 설정되지 않았으면 모든 게시물 표시
-            if (!searchStartDate && !searchEndDate) {
-              return true;
-            }
-
-            // 검색 범위에 날짜가 설정되었을 경우 날짜 범위 체크
-            return (
-              (itemStartDate < searchEndDate && itemEndDate > searchStartDate) ||
-              (itemStartDate <= searchStartDate && itemEndDate >= searchStartDate) ||
-              (itemStartDate <= searchEndDate && itemEndDate >= searchEndDate)
-            );
-          };
-
-          // 필터링 적용
-          if (!matchesDateRange(item)) return false;
-
-          return true;
-        });
+        let filtered = res.data.list;
+  
+        // 검색 조건이 있을 경우 필터링
+        if (shouldFetchData) {
+          filtered = filtered.filter((item) => {
+            // 국내/해외 필터링
+            const matchesDomesticInternational =
+              domesticInternational === "Domestic" ? item.country === "한국" : item.country !== "한국";
+            if (!matchesDomesticInternational) return false;
+  
+            // 국가 필터링
+            const matchesCountry = searchCriteria.country ? item.country.includes(searchCriteria.country) : true;
+            if (!matchesCountry) return false;
+  
+            // 도시 필터링
+            const matchesCity = searchCriteria.city ? item.city.includes(searchCriteria.city) : true;
+            if (!matchesCity) return false;
+  
+            // 키워드 필터링
+            const matchesKeyword =
+              searchCriteria.condition === "title"
+                ? item.title.includes(searchCriteria.keyword)
+                : searchCriteria.condition === "writer"
+                ? item.writer.includes(searchCriteria.keyword)
+                : searchCriteria.condition === "content"
+                ? item.content.includes(searchCriteria.keyword)
+                : searchCriteria.condition === "title_content"
+                ? item.title.includes(searchCriteria.keyword) || item.content.includes(searchCriteria.keyword)
+                : true;
+  
+            if (!matchesKeyword) return false;
+  
+            // 날짜 범위 필터링
+            const matchesDateRange = (item) => {
+              const itemStartDate = new Date(item.startDate);
+              const itemEndDate = new Date(item.endDate);
+              const searchStartDate = searchCriteria.startDate ? new Date(searchCriteria.startDate) : null;
+              const searchEndDate = searchCriteria.endDate ? new Date(searchCriteria.endDate) : null;
+  
+              if (!searchStartDate && !searchEndDate) {
+                return true;
+              }
+  
+              return (
+                (itemStartDate < searchEndDate && itemEndDate > searchStartDate) ||
+                (itemStartDate <= searchStartDate && itemEndDate >= searchStartDate) ||
+                (itemStartDate <= searchEndDate && itemEndDate >= searchEndDate)
+              );
+            };
+  
+            if (!matchesDateRange(item)) return false;
+  
+            return true;
+          });
+        }
+  
         setPageData(filtered);
-        applySorting(filtered); // 정렬 로직을 적용
-        setWhereAreYou(domesticInternational === "Domestic" ? "국내 여행 메이트 페이지" : "해외 여행 메이트 페이지");
+        applySorting(filtered);
+        // setWhereAreYou(domesticInternational === "Domestic" ? "국내 여행 메이트 페이지" : "해외 여행 메이트 페이지");
         setPageTurn(domesticInternational === "Domestic" ? "to International" : "to Domestic");
       })
       .catch((error) => console.log(error));
-  }, [domesticInternational, searchCriteria, sortBy]);
+  };
+  
 
+  useEffect(() => {
+    fetchData(); // 컴포넌트가 마운트될 때 데이터를 불러옵니다.
+  }, []); // 빈 배열을 사용하여 초기 로딩 시에만 실행됩니다.
+  
+  
   const applySorting = (data) => {
     const sorted = [...data].sort((a, b) => {
       if (sortBy === "latest") {
@@ -194,26 +207,66 @@ function MateBoard() {
 
   // 국내/해외 변경 버튼 핸들러-
   const handleButtonClick = () => {
-    // 국내 상태에서 눌렀을 때
-    //상태 변경
-    setDomesticInternational(domesticInternational === "International" ? "Domestic" : "International");
+    // 현재 상태에 따라 새로운 상태를 결정
+    const newInternationalState = domesticInternational === "International" ? "Domestic" : "International";
+    setDomesticInternational(newInternationalState);
+
+    // 여기서 whereAreYou 상태를 업데이트합니다.
+    setWhereAreYou(newInternationalState === "Domestic" ? "국내 여행 메이트 페이지" : "해외 여행 메이트 페이지");
+
     setSearchParams({
       ...searchCriteria,
-      di: domesticInternational === "International" ? "Domestic" : "International",
+      di: newInternationalState, // 변경된 상태에 따라 파라미터 업데이트
     });
-  };
+
+    // 데이터를 불러오기 위한 상태 변경
+    setShouldFetchData(true); // 게시물 불러오기
+
+    // 상태 변경 후 자동으로 데이터를 불러옵니다.
+    fetchData(); // 인자를 전달하지 않음
+};
+
+  // useEffect를 추가하여 초기 로딩 시 기본 게시물 불러오기
+  useEffect(() => {
+    // 초기 상태 설정
+    setDomesticInternational("International"); // di를 "Domestic"으로 설정
+    setWhereAreYou("해외 여행 메이트 페이지"); // 초기 메시지 설정
+
+    // 검색 파라미터를 업데이트
+    setSearchParams({
+      di: "International", // 초기 검색 파라미터 설정
+    });
+
+    fetchData(); // 기본 게시물 불러오기
+  }, []);
 
   // 새로운 검색을 시작하는 함수
   const handleSearch = () => {
-    setSearchParams({
-      country: searchCriteria.country,
-      city: searchCriteria.city,
-      startDate: searchCriteria.startDate,
-      endDate: searchCriteria.endDate,
-      keyword: searchCriteria.keyword,
-      di: domesticInternational,
-    });
+  const newSearchParams = {
+    di: domesticInternational,
   };
+
+  if (searchCriteria.country) {
+    newSearchParams.country = searchCriteria.country;
+  }
+  if (searchCriteria.city) {
+    newSearchParams.city = searchCriteria.city;
+  }
+  if (searchCriteria.startDate) {
+    newSearchParams.startDate = searchCriteria.startDate;
+  }
+  if (searchCriteria.endDate) {
+    newSearchParams.endDate = searchCriteria.endDate;
+  }
+  if (searchCriteria.keyword) {
+    newSearchParams.keyword = searchCriteria.keyword;
+  }
+
+  setSearchParams(newSearchParams);
+  setShouldFetchData(true); // 데이터를 불러오기 위한 상태 변경
+  fetchData(); // 검색 버튼 클릭 시 데이터를 바로 불러옵니다.
+};
+
 
   const handleSortChange = (e) => {
     setSortBy(e.target.value); // 정렬 기준을 업데이트
@@ -242,7 +295,7 @@ function MateBoard() {
 
   return (
     <div className="container mx-auto m-4">
-      <Link className="px-4 py-2 text-sm font-medium rounded-md bg-green-600 text-gray-100 mr-3" to={{ pathname: "/posts/mate/new", search: `?di=${domesticInternational}` }}>새글 작성</Link>
+     <Link className="px-4 py-2 text-sm font-medium rounded-md bg-green-600 text-gray-100 mr-3" to={{ pathname: "/posts/mate/new", search: `?di=${domesticInternational}` }}>새글 작성</Link>
       <button className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100" onClick={handleButtonClick}>
         {pageTurn}
       </button>
@@ -293,7 +346,7 @@ function MateBoard() {
             onClick={() => setIsCalendarOpen(!isCalendarOpen)} // 버튼 클릭 시 캘린더 표시/숨김 토글
             className="bg-blue-500 text-white px-4 py-2 mb-4">
             {selectedDateRange[0] && selectedDateRange[1] // 날짜가 선택되었을 때
-              ? `${selectedDateRange[0].toLocaleDateString()} ~ ${selectedDateRange[1].toLocaleDateString()}`
+              ? `${selectedDateRange[0].toLocaleDateString()} ~ ${selectedDateRange[1].toLocaleDateString()}` // 수정된 부분
               : "날짜 선택"}{" "}
             {/* 날짜가 선택되지 않았을 때 */}
           </button>
@@ -365,8 +418,8 @@ function MateBoard() {
               <td>{item.id}</td>
               <td className="text-left">
                 <div className="flex flex-wrap gap-2 mt-2">
-                  <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">{`#${item.country}`}</span>
-                  <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">{`#${item.city}`}</span>
+                  <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">{`#${item.country}`}</span> 
+                  <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">{`#${item.city}`}</span> 
                   {item.tags &&
                     item.tags.map((tag, index) => (
                       <span key={index} className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center">
