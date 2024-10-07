@@ -471,7 +471,7 @@ function CommunityBoardDetail(props) {
             className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
             to={{
               pathname: "/posts/community",
-              search: post.country === "한국" ? "?di=Domestic" : "?di=International",
+              search: post.country === "대한민국" ? "?di=Domestic" : "?di=International",
             }}>
             Community
           </NavLink>
@@ -596,7 +596,7 @@ function CommunityBoardDetail(props) {
                     .then((res) => {
                       alert("글 삭제 성공");
                       // 국/해외 페이지 별 리다일렉트
-                      post.country === "한국"
+                      post.country === "대한민국"
                         ? navigate(`/posts/community?di=Domestic`)
                         : navigate(`/posts/community?di=International`);
                     })
