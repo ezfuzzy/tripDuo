@@ -149,8 +149,14 @@ function LoginPage() {
           />
         </div>
         <p className="mt-6 text-center">
-          회원가입 하지 않으셨다면{" "}
+          회원가입 하지 않으셨다면
           <Link as={NavLink} to="/agreement" className="text-blue-500 hover:underline font-semibold">
+            클릭
+          </Link>
+        </p>
+        <p className="mt-6 text-center">
+          비밀번호가 기억나지 않으신다면
+          <Link as={NavLink} to="/auth/resetPassword" className="text-blue-500 hover:underline font-semibold">
             클릭
           </Link>
         </p>

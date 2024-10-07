@@ -48,6 +48,7 @@ import TripLogBoardEditForm from "../pages/boards/TripLogBoardEditForm";
 import TripLogBoardFormNew from "../pages/boards/TripLogBoardFormNew";
 import CommunityBoardDetail from "../pages/boards/CommunityBoardDetail";
 import CommunityBoardEditForm from "../pages/boards/CommunityBoardEditForm";
+import ResetPassword from "../pages/ResetPassword";
 
 // /users/:id
 // /users/:id/setting
@@ -67,6 +68,9 @@ const routes = [
   { path: "/completedSignup", element: <CompletedSignup /> },
   { path: "/kakaoLogin/redirect", element: <KakaoRedirect /> },
   { path: "/googleLogin/redirect", element: <GoogleRedirect /> },
+
+  // ### Reset Password ###
+  { path: "/auth/resetPassword", element: <ResetPassword/>},
 
   // ### board ###
 
@@ -134,6 +138,7 @@ const protectedRoutes = [
 
   // ### 개인정보 설정(보안, 인증정보) ###
   { path: "/auth/:id/changePassword", element: <ChangePassword /> },
+
 
   // ### chat ###
   { path: "/chatroom", element: <ChatRoom /> },
