@@ -33,7 +33,7 @@ public class UserSavedPlace {
     private Long userId;
     private String userMemo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "place_id", nullable = false)
     private Place place;
 

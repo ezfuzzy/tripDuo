@@ -32,7 +32,7 @@ public class UserSavedCourse {
 
     private Long userId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "post_id", nullable = false)
     private Post course;
     
