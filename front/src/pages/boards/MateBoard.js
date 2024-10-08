@@ -126,7 +126,7 @@ function MateBoard() {
       .then((res) => {
         const filtered = res.data.list.filter((item) => {
           const matchesDomesticInternational =
-            domesticInternational === "Domestic" ? item.country === "한국" : item.country !== "한국";
+            domesticInternational === "International" ? item.country !== "한국" :  item.country === "한국";
           if (!matchesDomesticInternational) return false;
 
           const matchesCountry = searchCriteria.country ? item.country.includes(searchCriteria.country) : true;
@@ -185,8 +185,8 @@ function MateBoard() {
           return 0; // 기본값
         });
         setPageData(sorted);
-        setWhereAreYou(domesticInternational === "Domestic" ? "국내 여행 메이트 페이지" : "해외 여행 메이트 페이지");
-        setPageTurn(domesticInternational === "Domestic" ? "to International" : "to Domestic");
+        setWhereAreYou(domesticInternational === "International" ? "해외 여행 메이트 페이지" : "국내 여행 메이트 페이지");
+        setPageTurn(domesticInternational === "International" ? "to Domestic" : "to International");
       })
       .catch((error) => console.log(error));
   }, [domesticInternational, searchCriteria, sortBy]);
