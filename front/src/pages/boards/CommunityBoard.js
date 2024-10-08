@@ -4,6 +4,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import "react-calendar/dist/Calendar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faHeart, faMessage } from "@fortawesome/free-solid-svg-icons";
+import LoadingAnimation from "../../components/LoadingAnimation"
 
 function CommunityBoard() {
   //로딩 상태 추가

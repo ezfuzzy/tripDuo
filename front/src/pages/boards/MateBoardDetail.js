@@ -20,6 +20,7 @@ import { shallowEqual, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { NavLink } from "react-router-dom";
 import useWebSocket from "../../components/useWebSocket";
+import LoadingAnimation from "../../components/LoadingAnimation"
 
 //새로 등록한 댓글을 추가할 인덱스
 let commentIndex = 0;

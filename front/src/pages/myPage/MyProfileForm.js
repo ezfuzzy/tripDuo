@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
+import LoadingAnimation from "../../components/LoadingAnimation"
 
 function MyProfileForm(props) {
   //로딩 상태 추가

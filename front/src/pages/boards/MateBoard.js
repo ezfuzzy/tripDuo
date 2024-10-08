@@ -6,6 +6,7 @@ import "react-calendar/dist/Calendar.css";
 import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faHeart, faMessage } from "@fortawesome/free-solid-svg-icons";
+import LoadingAnimation from "../../components/LoadingAnimation"
 
 function MateBoard() {
   //로딩 상태 추가

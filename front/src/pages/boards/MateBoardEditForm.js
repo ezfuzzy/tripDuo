@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import FroalaEditor from "react-froala-wysiwyg";
 import { Link, NavLink, useNavigate, useParams } from "react-router-dom";
+import LoadingAnimation from "../../components/LoadingAnimation"
 
 function MateBoardEditForm(props) {
   //로딩 상태 추가

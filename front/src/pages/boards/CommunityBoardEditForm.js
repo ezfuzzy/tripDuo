@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import FroalaEditor from "react-froala-wysiwyg";
 import { Link, NavLink, useNavigate, useParams } from "react-router-dom";
+import LoadingAnimation from "../../components/LoadingAnimation"
 
 function CommunityBoardEditForm(props) {
   //로딩 상태 추가
