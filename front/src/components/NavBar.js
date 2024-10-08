@@ -7,6 +7,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
   faBell,
+  faChevronDown,
+  faChevronUp,
   faCompass,
   faMessage,
   faPeoplePulling,
@@ -39,6 +41,7 @@ function NavBar() {
   // drop-down ref
   const dropdownRef = useRef(null);
 
+  const [isOffCanvasOpen, setOffCanvasOpen] = useState(false);
   // NavLink 공통 css
   // to do : 모듈 사용으로 컴포넌트별 css 설정  || 글로벌 css 관리로 요소별 css 통일 || styled 기능 활용
   const offCanvasNavLinkStyle = "hover:bg-gray-100 cursor-pointer text-black no-underline";
@@ -71,7 +74,7 @@ function NavBar() {
         !offcanvasRef.current.contains(event.target) &&
         !event.target.closest(".offcanvas-toggle")
       ) {
-        offcanvasRef.current.classList.add("hidden");
+        setOffCanvasOpen(false);
       }
     };
 
@@ -156,7 +159,7 @@ function NavBar() {
     }
 
     if (offcanvasRef.current) {
-      offcanvasRef.current.classList.add("hidden");
+      setOffCanvasOpen(false);
     }
   };
 
@@ -167,7 +170,7 @@ function NavBar() {
   // 링크 클릭시 off-canvas 닫기 로직
   const closeOffCanvas = () => {
     if (offcanvasRef.current) {
-      offcanvasRef.current.classList.add("hidden");
+      setOffCanvasOpen(false);
     }
   };
 
@@ -178,10 +181,7 @@ function NavBar() {
       {/* 글로벌 네비게이션 바 */}
       <nav className="bg-white p-4 shadow-md flex justify-between items-center relative">
         {/* Off-canvas toggle button */}
-        <button
-          type="button"
-          className="text-gray-600 pl-20"
-          onClick={() => offcanvasRef.current.classList.toggle("hidden")}>
+        <button type="button" className="text-gray-600 pl-20" onClick={() => setOffCanvasOpen(true)}>
           <FontAwesomeIcon icon={faBars} className="h-5 w-5 mr-2" />
         </button>
 
@@ -303,8 +303,13 @@ function NavBar() {
       </div>
 
       {/* Off-canvas */}
-      <div ref={offcanvasRef} className="z-20 fixed top-0 left-0 w-64 bg-white shadow-lg h-full hidden">
-        <div className="p-4 border-b flex justify-between">
+      <div
+        ref={offcanvasRef}
+        className={`z-20 fixed top-0 left-0 w-64 bg-white shadow-lg h-full transition-transform duration-300 ease-in-out ${
+          isOffCanvasOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+        style={{ transitionProperty: "transform" }}>
+        <div className="p-5 border-b flex justify-between">
           <h5>
             <button className="text-lg font-semibold" onClick={handleLoginLogoutClick}>
               {isLoggedIn ? "로그아웃" : "로그인/회원가입"}
@@ -318,10 +323,17 @@ function NavBar() {
         <div className="p-4">
           <ul>
             <li className="mb-4">
-              <button className="font-bold" onClick={() => toggleSection("domestic")}>
-                국내 여행
-              </button>
-              {openSections.domestic && (
+              <div
+                className={`font-bold cursor-pointer flex justify-between`}
+                onClick={() => toggleSection("ourTrip")}>
+                <button>여행</button>
+                {openSections.ourTrip ? (
+                  <FontAwesomeIcon icon={faChevronUp} />
+                ) : (
+                  <FontAwesomeIcon icon={faChevronDown} />
+                )}
+              </div>
+              {openSections.ourTrip && (
                 <div className="pl-4">
                   <div>
                     <NavLink to={"/posts/trip_log"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
@@ -333,8 +345,6 @@ function NavBar() {
                       여행 계획
                     </NavLink>
                   </div>
-                  <div>여행 메이트</div>
-                  <div>여행 정보</div>
                   <div>
                     <NavLink to={"/posts/community"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                       커뮤니티
@@ -345,9 +355,16 @@ function NavBar() {
             </li>
 
             <li className="mb-4">
-              <button className="font-bold" onClick={() => toggleSection("travelMate")}>
-                여행 메이트
-              </button>
+              <div
+                className={`font-bold cursor-pointer flex justify-between`}
+                onClick={() => toggleSection("travelMate")}>
+                <button>여행 메이트</button>
+                {openSections.travleMate ? (
+                  <FontAwesomeIcon icon={faChevronUp} />
+                ) : (
+                  <FontAwesomeIcon icon={faChevronDown} />
+                )}
+              </div>
               {openSections.travelMate && (
                 <div className="pl-4">
                   <div>
@@ -368,9 +385,14 @@ function NavBar() {
             </li>
 
             <li className="mb-4">
-              <button className="font-bold" onClick={() => toggleSection("myPage")}>
-                마이 페이지
-              </button>
+              <div className={`font-bold cursor-pointer flex justify-between`} onClick={() => toggleSection("myPage")}>
+                <button>마이 페이지</button>
+                {openSections.myPage ? (
+                  <FontAwesomeIcon icon={faChevronUp} />
+                ) : (
+                  <FontAwesomeIcon icon={faChevronDown} />
+                )}
+              </div>
               {openSections.myPage && (
                 <div className="pl-4">
                   <div>
@@ -403,9 +425,10 @@ function NavBar() {
             </li>
 
             <li className="mb-4">
-              <button className="font-bold" onClick={() => toggleSection("extra")}>
-                부가 기능
-              </button>
+              <div className={`font-bold cursor-pointer flex justify-between`} onClick={() => toggleSection("extra")}>
+                <button>부가 기능</button>
+                {openSections.extra ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}
+              </div>
               {openSections.extra && (
                 <div className="pl-4">
                   <div>
