@@ -32,9 +32,9 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain securityFilerChain(HttpSecurity httpSecurity) throws Exception {
-
+	
 		String[] whiteList = { 
-				"/", "/home", "/api/**", "/upload/images/**", "/test/**"
+			       "/api/**", "/test/**", "/v3/api-docs/**"
 				};
 
 		httpSecurity.headers((header) -> {
