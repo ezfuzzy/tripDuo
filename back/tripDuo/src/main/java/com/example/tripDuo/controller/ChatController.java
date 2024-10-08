@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.tripDuo.dto.ChatMessageDto;
 import com.example.tripDuo.dto.ChatRoomDto;
 import com.example.tripDuo.entity.ChatRoom;
+import com.example.tripDuo.entity.UserFollow;
 import com.example.tripDuo.service.ChatService;
 
 @RestController
@@ -25,7 +26,13 @@ public class ChatController {
 	public ChatController(ChatService chatService) {
 		this.chatService = chatService;
 	}
-
+	
+	// 맞팔 리스트 목록 반환 API
+	@GetMapping("/users")
+	public ResponseEntity<List<UserFollow>> getFollowList(@RequestParam Long userId){
+		return ResponseEntity.ok(chatService.getSelectUser(userId));
+	}
+	
 	// 현재 사용자가 속한 채팅방 목록을 반환하는 API
 	@GetMapping
 	public ResponseEntity<List<ChatRoomDto>> getAllChatRooms(@RequestParam Long userId) {

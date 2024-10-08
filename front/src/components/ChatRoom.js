@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react"
 import axios from "axios"
-import { useNavigate, useParams } from "react-router"
+import { useLocation, useNavigate, useParams } from "react-router"
 import { shallowEqual, useSelector } from "react-redux"
 import useWebSocket from "../components/useWebSocket"
 import Modal from "react-modal" // 모달 라이브러리 추가
@@ -22,8 +22,6 @@ function ChatRoom() {
 
   const [newMessage, setNewMessage] = useState("")
   const [chatRooms, setChatRooms] = useState([])
-  const [selectedRoomIds, setSelectedRoomIds] = useState([]) // 여러 채팅방 구독을 위한 배열
-  const [recipient, setRecipient] = useState("") // 1:1 채팅을 위한 수신자
   const [notification, setNotification] = useState("")
   const { roomId } = useParams() // URL에서 roomId 가져오기
   const [currentRoomId, setCurrentRoomId] = useState()
@@ -38,7 +36,7 @@ function ChatRoom() {
   const CurrentUsername = useSelector((state) => state.userData.username, shallowEqual)
   const currentUserNickname = useSelector((state) => state.userData.nickname, shallowEqual)
   const currentUserProfilePicture = useSelector((state) => state.userData.profilePicture, shallowEqual)
-
+  const location = useLocation()
   const [userProfileInfo, setUserProfileInfo] = useState({
     id: currentUserId,
     nickname: currentUserNickname,
@@ -48,9 +46,10 @@ function ChatRoom() {
   // 채팅방 생성 상태를 초기화하는 함수
   const initializeChatRoom = () => ({
     type: modalType === "ONE_ON_ONE" ? "ONE_ON_ONE" : "GROUP",
-    title: modalType === "ONE_ON_ONE" ? `${CurrentUsername}와 ${selectedUser}의 1:1 채팅` : "그룹 채팅",
+    title: modalType === "ONE_ON_ONE" ? `${userProfileInfo.nickname}와 ${selectedUser}의 1:1 채팅` : "그룹 채팅",
     ownerId: currentUserId,
     participantsList: modalType === "ONE_ON_ONE" ? [currentUserId, selectedUser] : [currentUserId, ...selectedUsers],
+    // createdAt : new Date().toLocaleString()
   })
 
   // 채팅방 목록을 불러오기 위한 useEffect
@@ -65,10 +64,10 @@ function ChatRoom() {
       })
 
     axios
-      .get("/api/v1/users")
+      .get("/api/chat/rooms/users", { params: { userId: currentUserId }})
       .then((response) => {
         setParticipantsList(response.data) // 사용자 목록 설정
-        console.log(response.data)
+        console.log("Participants List:", response.data);
       })
       .catch((error) => {
         console.error("Error fetching users", error)
@@ -94,6 +93,7 @@ function ChatRoom() {
                   console.error("Error fetching chat rooms", error)
                 })
             }
+                      // window.location.reload();
 
             setNotifications((prevNotifications) => [...prevNotifications, parsedNotification])
           })
@@ -111,7 +111,6 @@ function ChatRoom() {
           const topic = room.type === "ONE_ON_ONE" ? `/user/private/${room.id}` : `/topic/group/${room.id}`
           stompClient.subscribe(topic, (message) => {
             const parsedMessage = JSON.parse(message.body)
-
             setMessages((prevMessages) => [...prevMessages, parsedMessage])
           })
           setSubscribedRoomIds((prevIds) => [...prevIds, room.id])
@@ -121,6 +120,16 @@ function ChatRoom() {
     }
   }, [stompClient, chatRooms, subscribedRoomIds])
 
+  useEffect(()=>{
+    if (location.state && location.state.chatRooms.id) {
+      console.log("#################");
+      console.log(location.state.chatRooms.id);
+      console.log(location.state.chatRooms.type);
+      selectRoom(location.state.chatRooms.id)
+    }
+    }) 
+    
+    
   const createChatRoom = (chatRoom) => {
     if (stompClient && stompClient.connected) {
       axios
@@ -128,6 +137,8 @@ function ChatRoom() {
         .then((response) => {
           const newRoom = response.data
           console.log(newRoom)
+          console.log("####################", selectedUser);
+
           // 새로운 방이 생성되었음을 알리는 알림 추가
           const notification = {
             message: `${CurrentUsername}님이 "${newRoom.title}" 방을 생성했습니다.`,
@@ -141,9 +152,6 @@ function ChatRoom() {
             destination: `/app/notification`,
             body: JSON.stringify(notification),
           })
-
-          // chatRooms 상태 업데이트
-          // setChatRooms((prevRooms) => [...prevRooms, newRoom]);
 
           // 생성된 채팅방 구독 설정
           const chatRoomTopic =
@@ -160,18 +168,18 @@ function ChatRoom() {
             setMessages((prevMessages) => [...prevMessages, parsedMessage])
           })
 
-          setSubscribedRoomIds((prevIds) => [...prevIds, newRoom.id])
-
           setMessages((prevMessages) => [...prevMessages, newRoom])
-
           // 생성된 채팅방으로 이동
           navigate(`/chatroom/${newRoom.id}`)
           selectRoom(newRoom.id) // 방 선택
+          console.log("#######################",selectedUser);
         })
         .catch((error) => {
           console.error("Error creating chat room:", error)
         })
     }
+              // window.location.reload();
+
   }
 
   // 채팅방 선택시 메시지 불러오기
@@ -205,6 +213,7 @@ function ChatRoom() {
             setMessages((prevMessages) => [...prevMessages, parsedMessage]) // 다른 사용자 메시지 추가
           })
         }
+
       }
     }
     // 이전 채팅 메시지를 가져옵니다
@@ -464,8 +473,8 @@ function ChatRoom() {
               className="p-2 border border-gray-300 rounded">
               <option value="">사용자를 선택하세요</option>
               {participantsList.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.username}
+                <option key={user.followerUserProfileInfo.id} value={user.followerUserProfileInfo.id}>
+                  {user.followerUserProfileInfo.nickname}
                 </option>
               ))}
             </select>
@@ -476,8 +485,8 @@ function ChatRoom() {
                   <label htmlFor={`user-${user.id}`} className="ml-2 cursor-pointer">
                     <input
                       type="checkbox"
-                      id={`user-${user.id}`}
-                      value={user.id}
+                      id={`user-${user.followerUserProfileInfo.id}`}
+                      value={user.followerUserProfileInfo.id}
                       onChange={(e) => {
                         if (e.target.checked) {
                           setSelectedUsers([...selectedUsers, e.target.value])
@@ -487,7 +496,7 @@ function ChatRoom() {
                       }}
                       className="mr-2"
                     />
-                    {user.username}
+                    {user.followerUserProfileInfo.nickname}
                   </label>
                 </div>
               ))}

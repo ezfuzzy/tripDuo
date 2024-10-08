@@ -74,7 +74,7 @@ public class WebSocketController {
 		return message;
 	}
 
-	// 5. 그룹 채팅방 생성
+	// 5. 그룹 채팅방 구독
 	@MessageMapping("/chat.addChatroom/group/{roomId}")
 	@SendTo("/topic/newroom/group/{roomId}")
 	public ChatRoomDto addChatRoomGroup(ChatRoomDto message, SimpMessageHeaderAccessor headerAccessor,
@@ -82,7 +82,7 @@ public class WebSocketController {
 		return message;
 	}
 
-	// 6. 1:1 채팅방 생성
+	// 6. 1:1 채팅방 구독
 	@MessageMapping("/chat.addChatroom/private/{roomId}")
 	@SendTo("/user/newroom/private/{roomId}")
 	public ChatRoomDto addChatRoomPrivate(ChatRoomDto message, SimpMessageHeaderAccessor headerAccessor,
