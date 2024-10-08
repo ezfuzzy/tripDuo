@@ -18,6 +18,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import "../../css/MyProfile.css";
 import FollowerFolloweeModal from "../../components/FollowerFolloweeModal";
+import LoadingAnimation from "../../components/LoadingAnimation"
 
 function MyProfile(props) {
   // to do : cur_location, last_login
