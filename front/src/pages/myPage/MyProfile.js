@@ -320,7 +320,11 @@ function MyProfile(props) {
         .post(`/api/v1/reports/${id}/user/${userId}`, data)
         .then((res) => {
           console.log(res.data)
-          alert("해당 사용자에 대한 신고가 접수되었습니다.")
+          if(res.data.isSuccess){
+            alert("해당 사용자에 대한 신고가 접수되었습니다.")
+          } else {
+            alert(res.data.message)
+          }
         })
         .catch((error) => console.log(error))
     }
@@ -367,7 +371,11 @@ function MyProfile(props) {
         .post(`/api/v1/reports/${reviewId}/user_review/${userId}`, data)
         .then((res) => {
           console.log(res.data)
-          alert("해당 리뷰에 대한 신고가 접수되었습니다.")
+          if(res.data.isSuccess){
+            alert("해당 사용자에 대한 신고가 접수되었습니다.")
+          } else {
+            alert(res.data.message)
+          }
         })
         .catch((error) => console.log(error))
     }
