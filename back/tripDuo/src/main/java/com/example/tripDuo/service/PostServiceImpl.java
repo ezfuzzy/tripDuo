@@ -76,8 +76,6 @@ public class PostServiceImpl implements PostService {
 	}
 	
 	/**
-	 * @date : 2024. 9. 13.
-	 * @user : 김민준
 	 * getPostList: 검색, 정렬, 페이징처리가 된 post list 리턴
 	 * 				만약 postDto에 userId가 세팅되어있으면 그건 profile view page에서 호출한 것
 	 * @param postDto
@@ -113,8 +111,6 @@ public class PostServiceImpl implements PostService {
 	}
 	
 	/**
-	 * @date : 2024. 9. 14.
-	 * @user : 김민준
 	 * getPostById : post 수정 페이지에서 호출할 api. 기본 정보만 return
 	 *
 	 * @param postId
@@ -128,8 +124,6 @@ public class PostServiceImpl implements PostService {
 	}
 
 	/**
-	 * @date : 2024. 9. 14.
-	 * @user : 김민준
 	 * getPostDetailById : post 상세보기 페이지에서 호출할 api
 	 * 					   condition과 keyword 받은 다음에 다시 return
 	 *					   댓글 첫번째 페이지와 함께 리턴.
@@ -179,8 +173,6 @@ public class PostServiceImpl implements PostService {
 	}
 
 	/**
-	 * @date : 2024. 9. 14.
-	 * @user : 김민준
 	 * writePost : post 작성, userProfileInfo와 함께 저장
 	 *
 	 * @param postDto
@@ -192,8 +184,6 @@ public class PostServiceImpl implements PostService {
 	}
 
 	/**
-	 * @date : 2024. 9. 14.
-	 * @user : 김민준
 	 * updatePost : post 수정 메소드 - post의 모든 정보가 postDto에 담겨서 넘어옴
 	 *
 	 * @param postDto
@@ -215,8 +205,6 @@ public class PostServiceImpl implements PostService {
 	}
 
 	/**
-	 * @date : 2024. 9. 14.
-	 * @user : 김민준
 	 * deletePost : post 삭제
 	 *
 	 * @param postId
@@ -237,8 +225,6 @@ public class PostServiceImpl implements PostService {
 
 	
 	/**
-	 * @date : 2024. 9. 13.
-	 * @user : 김민준
 	 * writeComment: comment 추가 post의 commentCount 갱신
 	 * 
 	 * @param postCommentDto
@@ -264,8 +250,6 @@ public class PostServiceImpl implements PostService {
 	}
 
 	/**
-	 * @date : 2024. 9. 14.
-	 * @user : 김민준
 	 * getCommentList : postCommentDto에 postId와 pageNum이 설정되어서 넘어옴
 	 * 					pageNum에 해당하는 댓글 list return.
 	 *
@@ -298,8 +282,6 @@ public class PostServiceImpl implements PostService {
 	}
 	
 	/**
-	 * @date : 2024. 9. 13.
-	 * @user : 김민준
 	 * updateComment: comment 수정
 	 * 
 	 * @param postCommentDto
@@ -315,8 +297,6 @@ public class PostServiceImpl implements PostService {
 	}
 	
 	/**
-	 * @date : 2024. 9. 13.
-	 * @user : 김민준
 	 * deleteComment: comment soft delete + post의 commentCount 갱신 
 	 * 
 	 * @param commentId
@@ -337,8 +317,6 @@ public class PostServiceImpl implements PostService {
 	// ### like ### 
 
 	/**
-	 * @date : 2024. 9. 13.
-	 * @user : 김민준
 	 * addLikeToPost: post에 대한 like정보 추가 + post의 likeCount 갱신
 	 * 
 	 * @param postLikeDto
@@ -373,8 +351,6 @@ public class PostServiceImpl implements PostService {
 	}
 	
 	/**
-	 * @date : 2024. 9. 27.
-	 * @user : 김민준
 	 * getLikedPostList: userId가 좋아요를 누른 post List 
 	 * 
 	 * @param userId
@@ -387,8 +363,6 @@ public class PostServiceImpl implements PostService {
 
 	
 	/**
-	 * @date : 2024. 9. 13.
-	 * @user : 김민준
 	 * deleteLikeFromPost: post에 대한 like정보 삭제 + post의 likeCount 갱신 
 	 * 
 	 * @param likeId
@@ -410,8 +384,6 @@ public class PostServiceImpl implements PostService {
 	// ### rating ###
 	
 	/**
-	 * @date : 2024. 9. 13.
-	 * @user : 김민준
 	 * addRatingToPost: post에 대한 rating정보 추가 + post의 rating 갱신 
 	 * 
 	 * @param postRatingDto
@@ -436,8 +408,6 @@ public class PostServiceImpl implements PostService {
 	}
 
 	/**
-	 * @date : 2024. 9. 13.
-	 * @user : 김민준
 	 * updateRatingForPost: post에 대한 rating정보를 update - rating 값이 바뀔 수 있으니 post테이블의 rating 갱신
 	 * 
 	 * @param postRatingDto
@@ -461,8 +431,6 @@ public class PostServiceImpl implements PostService {
 	}
 	
 	/**
-	 * @date : 2024. 9. 13.
-	 * @user : 김민준
 	 * deleteRatingFromPost: post에 대한 rating정보를 삭제 + post의 rating 갱신
 	 * 
 	 * @param ratingId
