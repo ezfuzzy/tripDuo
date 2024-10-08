@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.tripDuo.dto.PlaceDto;
 import com.example.tripDuo.dto.UserSavedCourseDto;
 import com.example.tripDuo.dto.UserSavedPlaceDto;
 import com.example.tripDuo.dto.UserTripInfoDto;
@@ -52,27 +53,37 @@ public class UserTripController {
 
 	// ### saved places ###
 
-	@PostMapping("/visited-place")
-	public ResponseEntity<?> saveVisitedPlace(@RequestBody UserVisitedPlaceDto userVisitedPlaceDto) {
+	@PostMapping("/visited-places")
+	public ResponseEntity<?> saveVisitedPlace(@RequestBody PlaceDto placeDto) {
 		try {
-			userTripInfoService.saveVisitedPlace(userVisitedPlaceDto);
+			userTripInfoService.saveVisitedPlace(placeDto);
 			return ResponseEntity.ok("");
 		} catch (Exception error) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
 
-	@PutMapping("/visited-place")
-	public ResponseEntity<?> updateVisitedPlace(@RequestBody UserVisitedPlaceDto userVisitedPlaceDto) {
+	@GetMapping("/visited-places")
+	public ResponseEntity<?> getVisitedPlaceList(@PathVariable("userId") Long userId) {
 		try {
-			userTripInfoService.updateVisitedPlace(userVisitedPlaceDto);
+			userTripInfoService.getVisitedPlaceList(userId);
+			return ResponseEntity.ok("");
+		} catch (Exception error) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
+	}
+	
+	@PutMapping("/visited-places")
+	public ResponseEntity<?> updateUserVisitedPlace(@RequestBody UserVisitedPlaceDto userVisitedPlaceDto) {
+		try {
+			userTripInfoService.updateUserVisitedPlace(userVisitedPlaceDto);
 			return ResponseEntity.ok("");
 		} catch (Exception error) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
 
-	@DeleteMapping("/visited-place")
+	@DeleteMapping("/visited-places")
 	public ResponseEntity<?> deleteVisitedPlace(Long userVisitedPlaceId) {
 		try {
 			userTripInfoService.deleteVisitedPlace(userVisitedPlaceId);
@@ -84,27 +95,37 @@ public class UserTripController {
 
 	// ### saved places ##
 
-	@PostMapping("/saved-place")
-	public ResponseEntity<?> savePlaceToMyTripInfo(@RequestBody UserSavedPlaceDto userSavedPlaceDto) {
+	@PostMapping("/saved-places")
+	public ResponseEntity<?> savePlaceToMyTripInfo(@RequestBody PlaceDto placeDto) {
 		try {
-			userTripInfoService.savePlaceToMyTripInfo(userSavedPlaceDto);
+			userTripInfoService.savePlaceToMyTripInfo(placeDto);
+			return ResponseEntity.ok("savePlace task success");
+		} catch (Exception error) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
+	}
+	
+	@GetMapping("/saved-places")
+	public ResponseEntity<?> getSavedPlaceList(@PathVariable("userId") Long userId) {
+		try {
+			userTripInfoService.getSavedPlaceList(userId);
+			return ResponseEntity.ok("");
+		} catch (Exception error) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
+	}
+	
+	@PutMapping("/saved-places")
+	public ResponseEntity<?> updateUserSavedPlace(@RequestBody UserSavedPlaceDto userSavedPlaceDto) {
+		try {
+			userTripInfoService.updateUserSavedPlace(userSavedPlaceDto);
 			return ResponseEntity.ok("");
 		} catch (Exception error) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
 
-	@PutMapping("/saved-place")
-	public ResponseEntity<?> updatePlaceToMyTripInfo(@RequestBody UserSavedPlaceDto userSavedPlaceDto) {
-		try {
-			userTripInfoService.updatePlaceToMyTripInfo(userSavedPlaceDto);
-			return ResponseEntity.ok("");
-		} catch (Exception error) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-		}
-	}
-
-	@DeleteMapping("/saved-place")
+	@DeleteMapping("/saved-places")
 	public ResponseEntity<?> deletePlaceFromMyTripInfo(Long userSavedPlaceId) {
 		try {
 			userTripInfoService.deletePlaceFromMyTripInfo(userSavedPlaceId);
@@ -116,7 +137,7 @@ public class UserTripController {
 
 	// ### saved courses ###
 
-	@PostMapping("/saved-course")
+	@PostMapping("/saved-courses")
 	public ResponseEntity<?> saveCourseToMyTripInfo(@RequestBody UserSavedCourseDto userSavedCourseDto) {
 		try {
 			userTripInfoService.saveCourseToMyTripInfo(userSavedCourseDto);
@@ -126,7 +147,17 @@ public class UserTripController {
 		}
 	}
 
-	@PutMapping("/saved-course")
+	@GetMapping("/saved-courses")
+	public ResponseEntity<?> getSavedCourseList(@PathVariable("userId") Long userId) {
+		try {
+			userTripInfoService.getSavedCourseList(userId);
+			return ResponseEntity.ok("");
+		} catch (Exception error) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
+	}
+	
+	@PutMapping("/saved-courses")
 	public ResponseEntity<?> updateCourseToMyTripInfo(@RequestBody UserSavedCourseDto userSavedCourseDto) {
 		try {
 			userTripInfoService.updateCourseToMyTripInfo(userSavedCourseDto);
@@ -136,7 +167,7 @@ public class UserTripController {
 		}
 	}
 
-	@DeleteMapping("/saved-course")
+	@DeleteMapping("/saved-courses")
 	public ResponseEntity<?> deleteCourseFromMyTripInfo(Long userSavedCourseId) {
 		try {
 			userTripInfoService.deleteCourseFromMyTripInfo(userSavedCourseId);

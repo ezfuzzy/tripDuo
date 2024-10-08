@@ -31,6 +31,7 @@ public class UserSavedPlace {
     private Long id;
 
     private Long userId;
+    private String userMemo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_id", nullable = false)
@@ -49,6 +50,7 @@ public class UserSavedPlace {
     	return UserSavedPlace.builder()
                 .id(dto.getId())
                 .userId(dto.getUserId())
+                .userMemo(dto.getUserMemo())
                 .place(place)
                 .createdAt(dto.getCreatedAt())
                 .build();

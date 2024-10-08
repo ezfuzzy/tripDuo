@@ -17,6 +17,7 @@ public class UserVisitedPlaceDto {
 
     private Long id;
     private Long userId;
+    private String userMemo;
     private Long placeId;
     private String placeName;  
     private LocalDateTime visitDate;
@@ -27,6 +28,7 @@ public class UserVisitedPlaceDto {
     	return UserVisitedPlaceDto.builder()
                 .id(entity.getId())
                 .userId(entity.getUserId())
+                .userMemo(entity.getUserMemo())
                 .placeId(entity.getPlace() != null ? entity.getPlace().getId() : null)
                 .placeName(entity.getPlace() != null ? entity.getPlace().getPlaceName() : null)
                 .visitDate(entity.getVisitDate())
