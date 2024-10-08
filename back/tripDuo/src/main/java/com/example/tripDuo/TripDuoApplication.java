@@ -20,9 +20,11 @@ import com.example.tripDuo.entity.ReportToChatRoom;
 import com.example.tripDuo.entity.ReportToPost;
 import com.example.tripDuo.entity.ReportToUser;
 import com.example.tripDuo.entity.User;
+import com.example.tripDuo.entity.UserFollow;
 import com.example.tripDuo.entity.UserProfileInfo;
 import com.example.tripDuo.enums.AccountStatus;
 import com.example.tripDuo.enums.ChatRoomType;
+import com.example.tripDuo.enums.FollowType;
 import com.example.tripDuo.enums.Gender;
 import com.example.tripDuo.enums.PostStatus;
 import com.example.tripDuo.enums.PostType;
@@ -33,6 +35,7 @@ import com.example.tripDuo.repository.ChatParticipantRepository;
 import com.example.tripDuo.repository.ChatRoomRepository;
 import com.example.tripDuo.repository.PostRepository;
 import com.example.tripDuo.repository.ReportRepository;
+import com.example.tripDuo.repository.UserFollowRepository;
 import com.example.tripDuo.repository.UserProfileInfoRepository;
 import com.example.tripDuo.repository.UserRepository;
 
@@ -62,6 +65,9 @@ public class TripDuoApplication {
 	
 	@Autowired
 	private PostRepository postRepo;
+
+	@Autowired
+	private UserFollowRepository followRepo;
 
 	@Autowired
 	private ReportRepository reportRepo;
@@ -266,7 +272,24 @@ public class TripDuoApplication {
 		messageRepo.save(message4);
 		messageRepo.save(message5);
 
-		// 4. 신고 데이터 생성 및 저장
+		// 4. 팔로우 데이터 생성 및 저장
+		UserFollow follow1 = UserFollow.builder().followerUserProfileInfo(upi2).followeeUserProfileInfo(upi3).followType(FollowType.FOLLOW).build();
+		UserFollow follow2 = UserFollow.builder().followerUserProfileInfo(upi3).followeeUserProfileInfo(upi2).followType(FollowType.FOLLOW).build();
+		
+		UserFollow follow3 = UserFollow.builder().followerUserProfileInfo(upi2).followeeUserProfileInfo(upi4).followType(FollowType.FOLLOW).build();
+		UserFollow follow4 = UserFollow.builder().followerUserProfileInfo(upi4).followeeUserProfileInfo(upi2).followType(FollowType.FOLLOW).build();
+
+		UserFollow follow5 = UserFollow.builder().followerUserProfileInfo(upi3).followeeUserProfileInfo(upi4).followType(FollowType.FOLLOW).build();
+		UserFollow follow6 = UserFollow.builder().followerUserProfileInfo(upi4).followeeUserProfileInfo(upi3).followType(FollowType.FOLLOW).build();
+		
+		followRepo.save(follow1);
+		followRepo.save(follow2);
+		followRepo.save(follow3);
+		followRepo.save(follow4);
+		followRepo.save(follow5);
+		followRepo.save(follow6);
+
+		// 5. 신고 데이터 생성 및 저장
 		ReportToUser report1 = ReportToUser.builder().reporterId(u1.getId()).content("2번 유저를 신고").reportedUser(u2).build();
         ReportToUser report2 = ReportToUser.builder().reporterId(u2.getId()).content("3번 유저를 신고").reportedUser(u3).build();
         ReportToUser report3 = ReportToUser.builder().reporterId(u3.getId()).content("4번 유저를 신고").reportedUser(u4).build();
