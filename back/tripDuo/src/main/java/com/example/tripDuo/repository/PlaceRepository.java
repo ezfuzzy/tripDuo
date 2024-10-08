@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.tripDuo.entity.Place;
 
 public interface PlaceRepository extends JpaRepository<Place, Long>{
-
+	Place findByPlaceId(String placeId);
 }

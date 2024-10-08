@@ -1,7 +1,10 @@
 package com.example.tripDuo.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
+import com.example.tripDuo.dto.PlaceDto;
 import com.example.tripDuo.dto.UserSavedCourseDto;
 import com.example.tripDuo.dto.UserSavedPlaceDto;
 import com.example.tripDuo.dto.UserTripInfoDto;
@@ -46,6 +49,8 @@ public class UserTripInfoServiceImpl implements UserTripInfoService {
 		this.postRepo = postRepo;
 	}
 	
+
+	
 	@Override
 	public UserTripInfo getTripInfoByUserId(Long userId) {
 		
@@ -65,16 +70,31 @@ UserTripInfo.toEntity(UserTripInfoDto dto, UserTripInfo userTripInfoDto, Place p
 	// ### visit place 
 	
 	@Override
-	public void saveVisitedPlace(UserVisitedPlaceDto userVisitedPlaceDto) {
+	public void saveVisitedPlace(PlaceDto placeDto) {
 		
-		Place place = placeRepo.findById(userVisitedPlaceDto.getPlaceId())
-				.orElseThrow(() -> new EntityNotFoundException("Place not found"));
+		Place place = placeRepo.findByPlaceId(placeDto.getPlaceId());
+		if(place == null) {
+			place = placeRepo.save(Place.toEntity(placeDto));
+		}
+		UserVisitedPlace userVisitedPlace = UserVisitedPlace.builder()
+														.userId(placeDto.getUserId())
+														.userMemo(placeDto.getUserMemo())
+														.place(place)
+														.visitDate(placeDto.getVisitDate())
+														.build();
 		
-		userVisitedPlaceRepo.save(UserVisitedPlace.toEntity(userVisitedPlaceDto, place));
+		userVisitedPlaceRepo.save(userVisitedPlace);
 	}
 
 	@Override
-	public void updateVisitedPlace(UserVisitedPlaceDto userVisitedPlaceDto) {
+	public List<UserVisitedPlaceDto> getVisitedPlaceList(Long userId) {
+		return userVisitedPlaceRepo.findByUserId(userId).stream().map(UserVisitedPlaceDto::toDto).toList();
+	}
+
+	// 변경될 수 있는건 userMemo + visitDate 
+	// id를 비롯한 모든 정보가 프론트에서 넘어옴 
+	@Override
+	public void updateUserVisitedPlace(UserVisitedPlaceDto userVisitedPlaceDto) {
 
 		Place place = placeRepo.findById(userVisitedPlaceDto.getPlaceId())
 				.orElseThrow(() -> new EntityNotFoundException("Place not found"));
@@ -90,16 +110,34 @@ UserTripInfo.toEntity(UserTripInfoDto dto, UserTripInfo userTripInfoDto, Place p
 	// ### save place  
 	
 	@Override
-	public void savePlaceToMyTripInfo(UserSavedPlaceDto userSavedPlaceDto) {
+	public void savePlaceToMyTripInfo(PlaceDto placeDto) {
 
-		Place place = placeRepo.findById(userSavedPlaceDto.getPlaceId())
-				.orElseThrow(() -> new EntityNotFoundException("Place not found"));
+		Place place = placeRepo.findByPlaceId(placeDto.getPlaceId());
 		
-		userSavedPlaceRepo.save(UserSavedPlace.toEntity(userSavedPlaceDto, place));
+		if(place == null) {
+			place = placeRepo.save(Place.toEntity(placeDto));
+		}
+		
+		UserSavedPlace userSavedPlace = UserSavedPlace.builder()
+														.userId(placeDto.getUserId())
+														.userMemo(placeDto.getUserMemo())
+														.place(place)
+														.build();
+		
+		userSavedPlaceRepo.save(userSavedPlace);
+	}
+	
+	@Override
+	public List<UserSavedPlaceDto> getSavedPlaceList(Long userId) {
+		
+		return userSavedPlaceRepo.findByUserId(userId).stream().map(UserSavedPlaceDto::toDto).toList();
 	}
 
+	
+	// 변경될 수 있는건 userMemo
+	// id를 비롯한 모든 정보가 프론트에서 넘어옴 
 	@Override
-	public void updatePlaceToMyTripInfo(UserSavedPlaceDto userSavedPlaceDto) {
+	public void updateUserSavedPlace(UserSavedPlaceDto userSavedPlaceDto) {
 
 		Place place = placeRepo.findById(userSavedPlaceDto.getPlaceId())
 				.orElseThrow(() -> new EntityNotFoundException("Place not found"));
@@ -121,6 +159,11 @@ UserTripInfo.toEntity(UserTripInfoDto dto, UserTripInfo userTripInfoDto, Place p
 				.orElseThrow(() -> new EntityNotFoundException("Course(post) not found"));
 		
 		userSavedCourseRepo.save(UserSavedCourse.toEntity(userSavedCourseDto, course));
+	}
+	
+	@Override
+	public List<UserSavedCourseDto> getSavedCourseList(Long userId) {
+		return userSavedCourseRepo.findByUserId(userId).stream().map(UserSavedCourseDto::toDto).toList();
 	}
 
 	@Override

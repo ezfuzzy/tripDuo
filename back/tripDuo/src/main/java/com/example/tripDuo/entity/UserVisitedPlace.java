@@ -30,7 +30,8 @@ public class UserVisitedPlace {
     private Long id;
     
     private Long userId;
-
+    private String userMemo;
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_id", nullable = false)
     private Place place;
@@ -44,6 +45,7 @@ public class UserVisitedPlace {
     	return UserVisitedPlace.builder()
                 .id(dto.getId())
                 .userId(dto.getUserId())
+                .userMemo(dto.getUserMemo())
                 .place(place)
                 .visitDate(dto.getVisitDate())
                 .build();

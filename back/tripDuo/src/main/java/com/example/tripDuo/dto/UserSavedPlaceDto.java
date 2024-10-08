@@ -17,6 +17,7 @@ public class UserSavedPlaceDto {
 
     private Long id;
     private Long userId;
+    private String userMemo;
     private Long placeId;
     private String placeName;
     private LocalDateTime createdAt;
@@ -27,6 +28,7 @@ public class UserSavedPlaceDto {
     	return UserSavedPlaceDto.builder()
                 .id(entity.getId())
                 .userId(entity.getUserId())
+                .userMemo(entity.getUserMemo())
                 .placeId(entity.getPlace() != null ? entity.getPlace().getId() : null)
                 .placeName(entity.getPlace() != null ? entity.getPlace().getPlaceName() : null)
                 .createdAt(entity.getCreatedAt())
