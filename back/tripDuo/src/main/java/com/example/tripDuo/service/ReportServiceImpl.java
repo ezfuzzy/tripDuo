@@ -4,18 +4,36 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.tripDuo.dto.ChatRoomDto;
 import com.example.tripDuo.dto.ReportDto;
-import com.example.tripDuo.entity.*;
+import com.example.tripDuo.entity.ChatMessage;
+import com.example.tripDuo.entity.ChatRoom;
+import com.example.tripDuo.entity.Post;
+import com.example.tripDuo.entity.PostComment;
+import com.example.tripDuo.entity.Report;
+import com.example.tripDuo.entity.ReportToChatMessage;
+import com.example.tripDuo.entity.ReportToChatRoom;
+import com.example.tripDuo.entity.ReportToPost;
+import com.example.tripDuo.entity.ReportToPostComment;
+import com.example.tripDuo.entity.ReportToUser;
+import com.example.tripDuo.entity.ReportToUserReview;
+import com.example.tripDuo.entity.User;
+import com.example.tripDuo.entity.UserReview;
 import com.example.tripDuo.enums.ReportTarget;
-import com.example.tripDuo.repository.*;
+import com.example.tripDuo.repository.ChatMessageRepository;
+import com.example.tripDuo.repository.ChatRoomRepository;
+import com.example.tripDuo.repository.PostCommentRepository;
+import com.example.tripDuo.repository.PostRepository;
+import com.example.tripDuo.repository.ReportRepository;
+import com.example.tripDuo.repository.UserRepository;
+import com.example.tripDuo.repository.UserReviewRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -45,8 +63,6 @@ public class ReportServiceImpl implements ReportService {
     }
 
     /**
-     * @date : 2024. 10. 07.
-     * @user : 유병한
      * report: 신고하기
      * 
      * @param userReportDto
@@ -133,8 +149,6 @@ public class ReportServiceImpl implements ReportService {
     }
 
     /**
-     * @date : 2024. 10. 04.
-     * @user : 유병한
      * getReportList: 신고 정보 가져오기
      * 검색 가능 : status, createdAtMonth, targetType, targetId, pageNum
      * 정렬 가능 : sortBy=createdAt_asc, createdAt_desc
@@ -183,8 +197,6 @@ public class ReportServiceImpl implements ReportService {
     }
 
     /**
-     * @date : 2024. 10. 05.
-     * @user : 유병한
      * processReport: 신고 처리하기
      * 
      * reportStatus: 신고 상태(PROCESSED-처리됨, UNPROCESSED-처리되지 않음, PENDING-보류 중)

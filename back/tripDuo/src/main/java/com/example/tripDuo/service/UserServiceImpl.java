@@ -61,8 +61,6 @@ public class UserServiceImpl implements UserService {
 	}
 
 	/**
-	 * @date : 2024. 9. 14.
-	 * @user : 김민준
 	 * getUserList : admin dashboard 페이지에서 호출할 api
 	 *
 	 * @return
@@ -198,8 +196,6 @@ public class UserServiceImpl implements UserService {
 	}
 
 	/**
-	 * @date : 2024. 9. 14.
-	 * @user : 김민준
 	 * checkExists : 중복체크 메소드
 	 *
 	 * @param checkType
@@ -218,8 +214,6 @@ public class UserServiceImpl implements UserService {
 	}
 
 	/**
-	 * @date : 2024. 9. 14.
-	 * @user : 김민준
 	 * updateUserPrivateInfo : user 엔티티의 정보 변경 메소드
 	 *
 	 * @param userDto
@@ -230,8 +224,6 @@ public class UserServiceImpl implements UserService {
 	}
 
 	/**
-	 * @date : 2024. 9. 14.
-	 * @user : 김민준
 	 * updateUserPassword : password 변경 메소드
 	 *
 	 * @param userDto
@@ -263,8 +255,6 @@ public class UserServiceImpl implements UserService {
 	}
 
 	/**
-	 * @date : 2024. 9. 14.
-	 * @user : 김민준
 	 * resetUserPassword : 비밀번호 초기화 메소드 (sms 인증을 거친 뒤 수행)
 	 *
 	 * @param userDto
@@ -288,8 +278,6 @@ public class UserServiceImpl implements UserService {
 	}
 
 	/**
-	 * @date : 2024. 9. 14.
-	 * @user : 김민준
 	 * updateUserProfileInfo : UserProfileInfo 엔티티의 정보 변경 메소드
 	 *
 	 * @param userProfileInfoDto
@@ -364,8 +352,6 @@ public class UserServiceImpl implements UserService {
 	// ### follow ### 
 	
 	/**
-	 * @date : 2024. 9. 25.
-	 * @user : 유병한
 	 * getFollowInfo: 유저의 팔로워/팔로이 리스트 받아오기
 	 * 
 	 * @param userId
@@ -388,8 +374,6 @@ public class UserServiceImpl implements UserService {
 	}
 
 	/**
-	 * @date : 2024. 9. 25.
-	 * @user : 유병한
 	 * getBlockInfo: 유저가 차단한 차단 리스트 받아오기
 	 * 
 	 * @param userId
@@ -404,8 +388,6 @@ public class UserServiceImpl implements UserService {
 	}
 
 	/**
-	 * @date : 2024. 9. 25.
-	 * @user : 유병한
 	 * addFollowOrBlock: 팔로우/차단 하기
 	 * 
 	 * @param userFollowDto
@@ -428,8 +410,6 @@ public class UserServiceImpl implements UserService {
 	}
 
 	/**
-	 * @date : 2024. 9. 25.
-	 * @user : 유병한
 	 * deleteFollowOrBlock: 팔로우/차단 해제하기
 	 * 
 	 * @param userFollowDto
@@ -446,8 +426,6 @@ public class UserServiceImpl implements UserService {
 	// ### review ### 
 
 	/**
-	 * @date : 2024. 9. 23.
-	 * @user : 유병한
 	 * writeReview: 리뷰 작성하기
 	 * 
 	 * @param userReviewDto
@@ -493,8 +471,6 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	/**
-	 * @date : 2024. 9. 23.
-	 * @user : 유병한
 	 * updateReview: 리뷰 수정하기
 	 * 
 	 * @param userReviewDto
@@ -536,8 +512,6 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	/**
-	 * @date : 2024. 9. 23.
-	 * @user : 유병한
 	 * deleteReview: reviewerId가 revieweeId에게 작성한 리뷰 삭제하기
 	 * 
 	 * @param revieweeId
