@@ -15,6 +15,10 @@ import com.example.tripDuo.entity.ChatMessage;
 import com.example.tripDuo.entity.ChatParticipant;
 import com.example.tripDuo.entity.ChatRoom;
 import com.example.tripDuo.entity.Post;
+import com.example.tripDuo.entity.ReportToChatMessage;
+import com.example.tripDuo.entity.ReportToChatRoom;
+import com.example.tripDuo.entity.ReportToPost;
+import com.example.tripDuo.entity.ReportToUser;
 import com.example.tripDuo.entity.User;
 import com.example.tripDuo.entity.UserProfileInfo;
 import com.example.tripDuo.enums.AccountStatus;
@@ -28,6 +32,7 @@ import com.example.tripDuo.repository.ChatMessageRepository;
 import com.example.tripDuo.repository.ChatParticipantRepository;
 import com.example.tripDuo.repository.ChatRoomRepository;
 import com.example.tripDuo.repository.PostRepository;
+import com.example.tripDuo.repository.ReportRepository;
 import com.example.tripDuo.repository.UserProfileInfoRepository;
 import com.example.tripDuo.repository.UserRepository;
 
@@ -57,6 +62,9 @@ public class TripDuoApplication {
 	
 	@Autowired
 	private PostRepository postRepo;
+
+	@Autowired
+	private ReportRepository reportRepo;
 	
 	@Autowired
 	private PasswordEncoder encoder;
@@ -258,7 +266,73 @@ public class TripDuoApplication {
 		messageRepo.save(message4);
 		messageRepo.save(message5);
 
+		// 4. 신고 데이터 생성 및 저장
+		ReportToUser report1 = ReportToUser.builder().reporterId(u1.getId()).content("2번 유저를 신고").reportedUser(u2).build();
+        ReportToUser report2 = ReportToUser.builder().reporterId(u2.getId()).content("3번 유저를 신고").reportedUser(u3).build();
+        ReportToUser report3 = ReportToUser.builder().reporterId(u3.getId()).content("4번 유저를 신고").reportedUser(u4).build();
+        ReportToUser report4 = ReportToUser.builder().reporterId(u4.getId()).content("5번 유저를 신고").reportedUser(u5).build();
+        ReportToUser report5 = ReportToUser.builder().reporterId(u5.getId()).content("6번 유저를 신고").reportedUser(u6).build();
+        ReportToUser report6 = ReportToUser.builder().reporterId(u6.getId()).content("7번 유저를 신고").reportedUser(u7).build();
+        ReportToUser report7 = ReportToUser.builder().reporterId(u7.getId()).content("8번 유저를 신고").reportedUser(u8).build();
+        ReportToUser report8 = ReportToUser.builder().reporterId(u8.getId()).content("9번 유저를 신고").reportedUser(u9).build();
+        ReportToUser report9 = ReportToUser.builder().reporterId(u9.getId()).content("10번 유저를 신고").reportedUser(u10).build();
+		ReportToUser report10 = ReportToUser.builder().reporterId(u10.getId()).content("1번 유저를 신고").reportedUser(u1).build();
         
+		reportRepo.save(report1);
+        reportRepo.save(report2);
+        reportRepo.save(report3);
+        reportRepo.save(report4);
+        reportRepo.save(report5);
+        reportRepo.save(report6);
+        reportRepo.save(report7);
+        reportRepo.save(report8);
+        reportRepo.save(report9);
+        reportRepo.save(report10);
+
+		ReportToPost report11 = ReportToPost.builder().reporterId(u1.getId()).content("1번 게시글을 신고").reportedPost(p1).build();
+		ReportToPost report12 = ReportToPost.builder().reporterId(u2.getId()).content("2번 게시글을 신고").reportedPost(p2).build();
+		ReportToPost report13 = ReportToPost.builder().reporterId(u3.getId()).content("3번 게시글을 신고").reportedPost(p3).build();
+		ReportToPost report14 = ReportToPost.builder().reporterId(u4.getId()).content("4번 게시글을 신고").reportedPost(p4).build();
+		ReportToPost report15 = ReportToPost.builder().reporterId(u5.getId()).content("5번 게시글을 신고").reportedPost(p5).build();
+		ReportToPost report16 = ReportToPost.builder().reporterId(u6.getId()).content("6번 게시글을 신고").reportedPost(p6).build();
+		ReportToPost report17 = ReportToPost.builder().reporterId(u7.getId()).content("7번 게시글을 신고").reportedPost(p7).build();
+		ReportToPost report18 = ReportToPost.builder().reporterId(u8.getId()).content("8번 게시글을 신고").reportedPost(p8).build();
+		ReportToPost report19 = ReportToPost.builder().reporterId(u9.getId()).content("9번 게시글을 신고").reportedPost(p9).build();
+		ReportToPost report20 = ReportToPost.builder().reporterId(u10.getId()).content("10번 게시글을 신고").reportedPost(p10).build();
+		ReportToPost report21 = ReportToPost.builder().reporterId(u10.getId()).content("11번 게시글을 신고").reportedPost(p11).build();
+
+		reportRepo.save(report11);
+		reportRepo.save(report12);
+		reportRepo.save(report13);
+		reportRepo.save(report14);
+		reportRepo.save(report15);
+		reportRepo.save(report16);
+		reportRepo.save(report17);
+		reportRepo.save(report18);
+		reportRepo.save(report19);
+		reportRepo.save(report20);
+		reportRepo.save(report21);
+
+		ReportToChatRoom report22 = ReportToChatRoom.builder().reporterId(u1.getId()).content("1번 채팅방을 신고").reportedChatRoom(chatRoom1).build();
+		ReportToChatRoom report23 = ReportToChatRoom.builder().reporterId(u2.getId()).content("2번 채팅방을 신고").reportedChatRoom(chatRoom2).build();
+		ReportToChatRoom report24 = ReportToChatRoom.builder().reporterId(u3.getId()).content("3번 채팅방을 신고").reportedChatRoom(groupChatRoom).build();
+
+		reportRepo.save(report22);
+		reportRepo.save(report23);
+		reportRepo.save(report24);
+
+		ReportToChatMessage report25 = ReportToChatMessage.builder().reporterId(u1.getId()).content("1번 채팅 메시지를 신고").reportedChatMessage(message1).build();
+		ReportToChatMessage report26 = ReportToChatMessage.builder().reporterId(u2.getId()).content("2번 채팅 메시지를 신고").reportedChatMessage(message2).build();
+		ReportToChatMessage report27 = ReportToChatMessage.builder().reporterId(u3.getId()).content("3번 채팅 메시지를 신고").reportedChatMessage(message3).build();
+		ReportToChatMessage report28 = ReportToChatMessage.builder().reporterId(u4.getId()).content("4번 채팅 메시지를 신고").reportedChatMessage(message4).build();
+		ReportToChatMessage report29 = ReportToChatMessage.builder().reporterId(u5.getId()).content("5번 채팅 메시지를 신고").reportedChatMessage(message5).build();
+
+		reportRepo.save(report25);
+		reportRepo.save(report26);
+		reportRepo.save(report27);
+		reportRepo.save(report28);
+		reportRepo.save(report29);
+
         // 확인용 출력
         System.out.println("초기 데이터 저장 완료!");
 
@@ -268,8 +342,4 @@ public class TripDuoApplication {
 		System.out.println("#                             #");
 		System.out.println("### ### ### ### ### ### ### ###");
 	}
-	
-	
-
-
 }
