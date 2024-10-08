@@ -7,6 +7,7 @@ import com.example.tripDuo.dto.UserSavedCourseDto;
 import com.example.tripDuo.dto.UserSavedPlaceDto;
 import com.example.tripDuo.dto.UserTripInfoDto;
 import com.example.tripDuo.dto.UserVisitedPlaceDto;
+import com.example.tripDuo.entity.UserSavedPlace;
 import com.example.tripDuo.entity.UserTripInfo;
 
 public interface UserTripInfoService {
@@ -22,8 +23,8 @@ public interface UserTripInfoService {
 	public void deleteVisitedPlace(Long userVisitedPlaceId);
 	
 	// ### saved places ###
-	public void savePlaceToMyTripInfo(PlaceDto placeDto);
-	public List<UserSavedPlaceDto> getSavedPlaceList(Long userId);
+	public UserSavedPlace savePlaceToMyTripInfo(PlaceDto placeDto);
+	public List<UserSavedPlace> getSavedPlaceList(Long userId);
 	public void updateUserSavedPlace(UserSavedPlaceDto userSavedPlaceDto);
 	public void deletePlaceFromMyTripInfo(Long userSavedPlaceId);
 	

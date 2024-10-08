@@ -23,7 +23,7 @@ public class PlaceDto {
     private String categoryGroupCode;
     private String categoryGroupName;
     private String categoryName;
-    private String placeId;
+    private String mapPlaceId;
     private String phone;
     private String placeName;
     private String placeUrl;
@@ -51,7 +51,7 @@ public class PlaceDto {
                 .categoryGroupCode(entity.getCategoryGroupCode())
                 .categoryGroupName(entity.getCategoryGroupName())
                 .categoryName(entity.getCategoryName())
-                .placeId(entity.getPlaceId())
+                .mapPlaceId(entity.getMapPlaceId())
                 .phone(entity.getPhone())
                 .placeName(entity.getPlaceName())
                 .placeUrl(entity.getPlaceUrl())

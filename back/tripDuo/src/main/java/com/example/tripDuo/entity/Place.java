@@ -30,7 +30,7 @@ public class Place {
     private String categoryGroupCode;
     private String categoryGroupName;
     private String categoryName;
-    private String placeId;
+    private String mapPlaceId;
     private String phone;
     private String placeName;
     private String placeUrl;
@@ -51,7 +51,7 @@ public class Place {
                 .categoryGroupCode(dto.getCategoryGroupCode())
                 .categoryGroupName(dto.getCategoryGroupName())
                 .categoryName(dto.getCategoryName())
-                .placeId(dto.getPlaceId())
+                .mapPlaceId (dto.getMapPlaceId())
                 .phone(dto.getPhone())
                 .placeName(dto.getPlaceName())
                 .placeUrl(dto.getPlaceUrl())

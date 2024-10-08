@@ -72,7 +72,7 @@ UserTripInfo.toEntity(UserTripInfoDto dto, UserTripInfo userTripInfoDto, Place p
 	@Override
 	public void saveVisitedPlace(PlaceDto placeDto) {
 		
-		Place place = placeRepo.findByPlaceId(placeDto.getPlaceId());
+		Place place = placeRepo.findByMapPlaceId(placeDto.getMapPlaceId());
 		if(place == null) {
 			place = placeRepo.save(Place.toEntity(placeDto));
 		}
@@ -110,11 +110,11 @@ UserTripInfo.toEntity(UserTripInfoDto dto, UserTripInfo userTripInfoDto, Place p
 	// ### save place  
 	
 	@Override
-	public void savePlaceToMyTripInfo(PlaceDto placeDto) {
+	public UserSavedPlace savePlaceToMyTripInfo(PlaceDto placeDto) {
 
 		// Long  place의 pk인 id랑
 		// string -> kakao/google map에서 제공하는 placeId
-		Place place = placeRepo.findByPlaceId(placeDto.getPlaceId());
+		Place place = placeRepo.findByMapPlaceId(placeDto.getMapPlaceId());
 		
 		if(place == null) {
 			place = placeRepo.save(Place.toEntity(placeDto));
@@ -126,13 +126,13 @@ UserTripInfo.toEntity(UserTripInfoDto dto, UserTripInfo userTripInfoDto, Place p
 														.place(place)
 														.build();
 		
-		userSavedPlaceRepo.save(userSavedPlace);
+		return userSavedPlaceRepo.save(userSavedPlace);
 	}
 	
 	@Override
-	public List<UserSavedPlaceDto> getSavedPlaceList(Long userId) {
+	public List<UserSavedPlace> getSavedPlaceList(Long userId) {
 		
-		return userSavedPlaceRepo.findByUserId(userId).stream().map(UserSavedPlaceDto::toDto).toList();
+		return userSavedPlaceRepo.findByUserId(userId);
 	}
 
 	
