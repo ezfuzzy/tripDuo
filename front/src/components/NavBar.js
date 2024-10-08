@@ -323,7 +323,7 @@ function NavBar() {
         <div className="p-4">
           <ul>
             <li className="mb-4">
-              <div className={`font-bold cursor-pointer flex justify-between`} onClick={() => toggleSection("ourTrip")}>
+              <div className={`font-bold cursor-pointer flex justify-between mb-4`} onClick={() => toggleSection("ourTrip")}>
                 <button>여행</button>
                 {openSections.ourTrip ? (
                   <FontAwesomeIcon icon={faChevronUp} />
@@ -333,7 +333,7 @@ function NavBar() {
               </div>
 
               <div
-                className={`pl-4 overflow-hidden transition-all duration-300 ease-in-out ${
+                className={`bg-gray-50 space-y-2 pl-5 overflow-hidden transition-all duration-300 ease-in-out ${
                   openSections.ourTrip ? "max-h-60" : "max-h-0"
                 }`}>
                 <div>
@@ -356,7 +356,7 @@ function NavBar() {
 
             <li className="mb-4">
               <div
-                className={`font-bold cursor-pointer flex justify-between`}
+                className={`font-bold cursor-pointer flex justify-between mb-4`}
                 onClick={() => toggleSection("travelMate")}>
                 <button>여행 메이트</button>
                 {openSections.travleMate ? (
@@ -367,7 +367,7 @@ function NavBar() {
               </div>
 
               <div
-                className={`pl-4 overflow-hidden transition-all duration-300 ease-in-out ${
+                className={`bg-gray-50 space-y-2 pl-5 overflow-hidden transition-all duration-300 ease-in-out ${
                   openSections.travelMate ? "max-h-60" : "max-h-0"
                 }`}>
                 <div>
@@ -387,7 +387,7 @@ function NavBar() {
             </li>
 
             <li className="mb-4">
-              <div className={`font-bold cursor-pointer flex justify-between`} onClick={() => toggleSection("myPage")}>
+              <div className={`font-bold cursor-pointer flex justify-between mb-4`} onClick={() => toggleSection("myPage")}>
                 <button>마이 페이지</button>
                 {openSections.myPage ? (
                   <FontAwesomeIcon icon={faChevronUp} />
@@ -397,7 +397,7 @@ function NavBar() {
               </div>
 
               <div
-                className={`pl-4 overflow-hidden transition-all duration-300 ease-in-out ${
+                className={`bg-gray-50 space-y-2 pl-5 overflow-hidden transition-all duration-300 ease-in-out ${
                   openSections.myPage ? "max-h-60" : "max-h-0"
                 }`}>
                 <div>
@@ -429,13 +429,13 @@ function NavBar() {
             </li>
 
             <li className="mb-4">
-              <div className={`font-bold cursor-pointer flex justify-between`} onClick={() => toggleSection("extra")}>
+              <div className={`font-bold cursor-pointer flex justify-between mb-4`} onClick={() => toggleSection("extra")}>
                 <button>부가 기능</button>
                 {openSections.extra ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}
               </div>
               <div
-                className={`pl-4 overflow-hidden transition-all duration-300 ease-in-out ${
-                  openSections.extra ? "max-h-60" : "max-h-0"
+                className={`bg-gray-50 space-y-2 pl-5 overflow-hidden transition-all duration-300 ease-in-out ${
+                  openSections.extra ? "max-h-80" : "max-h-0"
                 }`}>
                 <div>
                   <NavLink to="/checklist" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
