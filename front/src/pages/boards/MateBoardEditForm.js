@@ -53,7 +53,7 @@ function MateBoardEditForm(props) {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-    }, 500);
+    }, 700);
 
     axios
       .get(`/api/v1/posts/${id}/update`)
