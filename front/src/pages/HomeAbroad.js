@@ -3,15 +3,20 @@ import { useNavigate } from 'react-router-dom';
 import 'keen-slider/keen-slider.min.css';
 import { useKeenSlider } from 'keen-slider/react';
 import '../css/Home.css';
-import axios from 'axios';
+import LoadingAnimation from '../components/LoadingAnimation';
 
 function HomeAbroad() {
+    //로딩 상태 추가
+    const [loading, setLoading] = useState(false)
+    useEffect(() => {
+        // 로딩 애니메이션을 0.5초 동안만 표시
+        setLoading(true)
+        setTimeout(() => {
+            setLoading(false)
+        }, 500)
+    }, [])
     const navigate = useNavigate();
     const [currentSlide, setCurrentSlide] = useState(0); // 현재 슬라이드 상태 추가
-    const [matePosts, setMatePosts] = useState([]); // 메이트 게시물 상태
-    const [sortBy, setSortBy] = useState("viewCount"); // 정렬 기준 초기값 설정
-    const [isLoading, setIsLoading] = useState(true); // 로딩 상태
-    const [writerProfile, setWriterProfile] = useState({});
     const [sliderRef, slider] = useKeenSlider({
         loop: true,
         slides: {
@@ -31,8 +36,7 @@ function HomeAbroad() {
             setCurrentSlide(s.track.details.rel); // 슬라이드가 변경될 때 현재 슬라이드 업데이트
         },
     });
-    
-   // 버튼을 클릭했을 때 실행할 함수 정의
+    // 버튼을 클릭했을 때 실행할 함수 정의
     const handlePrev = () => {
         if (slider.current) slider.current.prev();
     };
@@ -50,10 +54,6 @@ function HomeAbroad() {
         navigate(`/posts/mate?di=${destination}`);
     };
 
-    const navigateToCourse = (destination) => {
-        navigate(`/posts/course?di=${destination}`);
-    };
-    
     const navigateToPage = (path) => {
         navigate(path);
     };
@@ -65,47 +65,10 @@ function HomeAbroad() {
     // 토큰 확인 (예시로 'token' 키를 사용)
     const token = localStorage.getItem('token');
 
-    useEffect(() => {
-        const MatePosts = async () => {
-            setIsLoading(true);
-            try {
-                const response = await axios.get('/api/v1/posts/mate');
-                console.log(response.data); // API 응답 데이터 확인
-
-                // posts를 response.data.list에서 추출
-                const posts = response.data.list; 
-
-                // posts가 배열인지 확인
-                console.log(Array.isArray(posts)); // true여야 함
-
-                // 정렬 및 필터링 로직
-                const sortedPosts = Array.isArray(posts) ? posts.sort((a, b) => {
-                    if (sortBy === "viewCount") {
-                        return b.viewCount - a.viewCount; // 조회수 순
-                    } else if (sortBy === "likeCount") {
-                        return b.likeCount - a.likeCount; // 좋아요 순
-                    }
-                    return 0; // 기본값
-                }) : []; // posts가 배열이 아닐 경우 빈 배열로 초기화
-
-                const topThreePosts = sortedPosts.slice(0, 3); // 상위 3개 게시물
-                setMatePosts(topThreePosts);
-            } catch (error) {
-                console.error("게시물 로딩 중 오류 발생:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        MatePosts();
-    }, [sortBy]);
-
-    if (isLoading) {
-        return <p>로딩 중...</p>;
-    }
-
     return (
         <div className="container mx-auto px-8 bg-white min-h-screen">
+            {/* 로딩 애니메이션 */}
+            {loading && <LoadingAnimation />}
             <div className="my-12 relative">
                 <header className="py-8 text-center">
                     <h1 className="text-3xl font-bold text-green-600">해외 여행</h1>
@@ -150,9 +113,8 @@ function HomeAbroad() {
                             <div
                                 key={index}
                                 onClick={() => handleDotClick(index)} // 점 클릭 시 해당 슬라이드로 이동
-                                className={`w-3 h-3 mx-1 rounded-full cursor-pointer transition-all duration-200 ${
-                                    currentSlide === index ? "bg-green-600 scale-125" : "bg-gray-300"
-                                }`}
+                                className={`w-3 h-3 mx-1 rounded-full cursor-pointer transition-all duration-200 ${currentSlide === index ? "bg-green-600 scale-125" : "bg-gray-300"
+                                    }`}
                             />
                         ))}
                     </div>
@@ -180,62 +142,27 @@ function HomeAbroad() {
                     </div>
                 </div>
             </div>
-            <div className="flex items-center justify-between mb-8 p-4 bg-green-300 rounded-lg shadow-lg">
-                <h3 className="text-xl font-semibold text-white">여행 코스 검색</h3>
-                <div className="flex space-x-4">
-                    <div
-                        className="relative min-w-[80px] cursor-pointer"
-                        onClick={() => navigateToCourse("Domestic")}
-                    >
-                        <img src="https://picsum.photos/80/80?random=1" alt="국내" className="rounded-full border-2 border-white shadow-md" />
-                        <span className="absolute inset-0 flex items-center justify-center text-white text-lg font-bold">국내</span>
-                    </div>
-                    <div
-                        className="relative min-w-[80px] cursor-pointer"
-                        onClick={() => navigateToCourse("International")}
-                    >
-                        <img src="https://picsum.photos/80/80?random=2" alt="해외" className="rounded-full border-2 border-white shadow-md" />
-                        <span className="absolute inset-0 flex items-center justify-center text-white text-lg font-bold">해외</span>
-                    </div>
-                </div>
-            </div>
 
             <div className="my-12 h-16" />
 
             <div className="my-12">
-                <h3 className="text-xl font-semibold mb-4 text-green-600">국내 인기 게시물</h3>
+                <h3 className="text-xl font-semibold mb-4 text-green-600">해외 여행 인기 게시물</h3>
+                {!token && (
+                    <p className="text-gray-600 text-sm text-left mb-4">
+                        <span className='cursor-pointer' onClick={navigateToLogin}>로그인</span> 하시면 고객님에게 알맞는 게시물을 추천해드립니다.
+                    </p>
+                )}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {matePosts.map((post) => (
-                        <div 
-                            key={post.id} 
-                            className="relative bg-white shadow-lg rounded-lg overflow-hidden flex flex-col transition-transform cursor-pointer"
-                            onClick={() => navigate(`/posts/mate/${post.id}/detail`)} // 클릭 시 해당 게시물로 이동
-                        >
+                    {[1, 2, 3].map((mate) => (
+                        <div key={mate} className="relative bg-white shadow-lg rounded-lg overflow-hidden flex flex-col transition-transform">
                             <div className="h-32 w-full bg-gray-300" />
                             <div className="flex justify-center -mt-16">
-                            {writerProfile.profilePicture ? (
-                                <img src={writerProfile.profilePicture} className="w-20 h-20 rounded-full" alt="" />
-                            ) : (
-                                <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="100"
-                                height="100"
-                                fill="currentColor"
-                                className="bi bi-person-circle"
-                                viewBox="0 0 16 16">
-                                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-                                <path
-                                    fillRule="evenodd"
-                                    d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.206 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"
-                                />
-                                </svg>
-                            )}
+                                <img src={`https://picsum.photos/80/80?random=${mate + 3}`} alt={`메이트 ${mate}`} className="rounded-full border-4 border-white shadow-md" />
                             </div>
                             <div className="p-4 text-center flex-grow">
-                                <h4 className="font-bold text-lg">{post.writer}</h4>
-                                <p className="text-gray-600">{post.content || '여행을 좋아하는 메이트입니다.'}</p>
-                                <p className="text-gray-500">좋아요: {post.likeCount}</p>
-                                <p className='text-gray-500'>조회수: {post.viewCount}</p>
+                                <h4 className="font-bold text-lg">{`메이트 ${mate}`}</h4>
+                                <p className="text-gray-600">여행을 좋아하는 메이트입니다.</p>
+                                <p className="text-gray-500">좋아요: {Math.floor(Math.random() * 100)}</p>
                             </div>
                         </div>
                     ))}
