@@ -23,6 +23,9 @@ let commentIndex = 0;
 const maxLength = 3000;
 
 function CommunityBoardDetail(props) {
+  //로딩 상태 추가
+  const [loading, setLoading] = useState(false);
+
   const { id } = useParams(); // 게시물 번호
   // 로그인된 유저 정보
   const userId = useSelector((state) => state.userData.id, shallowEqual); // 로그인된 user의 id
@@ -49,7 +52,7 @@ function CommunityBoardDetail(props) {
   //댓글 전체의 페이지 개수
   const [totalCommentPages, setTotalCommentPages] = useState(0);
   //현재 로딩중인지 여부
-  const [isLoading, setLoading] = useState(false);
+  const [isCommentLoading, setCommentLoading] = useState(false);
   //원글의 댓글 내용 상태값
   const [commentInnerText, setCommentInnerText] = useState("");
   //dropdown 상태 정의
@@ -97,6 +100,12 @@ function CommunityBoardDetail(props) {
   //---------------------------------------------------------------------------------------------------------------rating 관리부
 
   useEffect(() => {
+    // 로딩 애니메이션을 0.5초 동안만 표시
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+
     axios
       .get(`/api/v1/posts/${id}`)
       .then((res) => {
@@ -354,7 +363,7 @@ function CommunityBoardDetail(props) {
     } else {
       //마지막 페이지가 아니라면
       //로딩 상태로 바꿔준다
-      setLoading(true);
+      setCommentLoading(true);
       //요청할 댓글의 게시물id
       const postId = id;
       //요청할 댓글의 페이지
@@ -377,11 +386,11 @@ function CommunityBoardDetail(props) {
           //증가된 페이지 번호도 반영
           setPageNum(page);
 
-          setLoading(false);
+          setCommentLoading(false);
         })
         .catch((error) => {
           console.log(error);
-          setLoading(false);
+          setCommentLoading(false);
         });
     }
   };
@@ -465,6 +474,8 @@ function CommunityBoardDetail(props) {
 
   return (
     <div className="container mx-auto p-4 max-w-[900px]">
+      {/* 로딩 애니메이션 */}
+      {loading && <LoadingAnimation />}
       <div className="flex flex-col h-full bg-gray-100 p-6">
         <div className="container">
           <NavLink
@@ -854,11 +865,11 @@ function CommunityBoardDetail(props) {
         <div className="grid grid-cols-1 md:grid-cols-2 mx-auto mb-5">
           <button
             className={`bg-green-500 text-white py-2 px-4 rounded ${
-              isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
+              isCommentLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
             }`}
-            disabled={isLoading}
+            disabled={isCommentLoading}
             onClick={handleMoreComment}>
-            {isLoading ? (
+            {isCommentLoading ? (
               <span className="animation-spin inline-block w-5 h-5 border-2 border-t-2 border-white rounded-full"></span>
             ) : (
               <span>댓글 더보기</span>

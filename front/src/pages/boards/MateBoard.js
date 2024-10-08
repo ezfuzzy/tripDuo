@@ -8,6 +8,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faHeart, faMessage } from "@fortawesome/free-solid-svg-icons";
 
 function MateBoard() {
+  //로딩 상태 추가
+  const [loading, setLoading] = useState(false);
+
   //배열 안에서 객체로 관리
   const [pageData, setPageData] = useState([]);
 
@@ -94,11 +97,11 @@ function MateBoard() {
   const tileClassName = ({ date }) => {
     const day = date.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
     // 기본적으로 검은색으로 설정
-    let className = 'text-black'; 
+    let className = "text-black";
 
     // 토요일과 일요일에만 빨간색으로 변경
     if (day === 0 || day === 6) {
-      className = 'text-red-500'; // 토요일과 일요일에 숫자를 빨간색으로 표시
+      className = "text-red-500"; // 토요일과 일요일에 숫자를 빨간색으로 표시
     }
 
     return className; // 최종 클래스 이름 반환
@@ -106,6 +109,12 @@ function MateBoard() {
   // searchParams 가 바뀔때마다 실행된다.
   // searchParams 가 없다면 초기값 "Domestic" 있다면 di 란 key 값의 데이터를 domesticInternational에 전달한다
   useEffect(() => {
+    // 로딩 애니메이션을 0.5초 동안만 표시
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+
     const diValue = searchParams.get("di") || "Domestic"; // 국내/국제 값 가져오기
     const city = searchParams.get("city") || ""; // 도시 가져오기
     const startDate = searchParams.get("startDate") || ""; // 시작 날짜 가져오기
@@ -121,12 +130,18 @@ function MateBoard() {
   // domesticInternational 가 바뀔때마다 실행된다.
   // to D~ I~ Button 을 누를때 or 새로운 요청이 들어왔을때
   useEffect(() => {
+    // 로딩 애니메이션을 0.5초 동안만 표시
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+
     axios
       .get("/api/v1/posts/mate")
       .then((res) => {
         const filtered = res.data.list.filter((item) => {
           const matchesDomesticInternational =
-            domesticInternational === "International" ? item.country !== "한국" :  item.country === "한국";
+            domesticInternational === "International" ? item.country !== "한국" : item.country === "한국";
           if (!matchesDomesticInternational) return false;
 
           const matchesCountry = searchCriteria.country ? item.country.includes(searchCriteria.country) : true;
@@ -185,7 +200,9 @@ function MateBoard() {
           return 0; // 기본값
         });
         setPageData(sorted);
-        setWhereAreYou(domesticInternational === "International" ? "해외 여행 메이트 페이지" : "국내 여행 메이트 페이지");
+        setWhereAreYou(
+          domesticInternational === "International" ? "해외 여행 메이트 페이지" : "국내 여행 메이트 페이지"
+        );
         setPageTurn(domesticInternational === "International" ? "to Domestic" : "to International");
       })
       .catch((error) => console.log(error));
@@ -221,8 +238,16 @@ function MateBoard() {
 
   return (
     <div className="container mx-auto m-4">
-      <Link className="px-4 py-2 text-sm font-medium rounded-md bg-green-600 text-gray-100 mr-3" to={{ pathname: "/posts/mate/new", search: `?di=${domesticInternational}` }}>새글 작성</Link>
-      <button className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100" onClick={handleButtonClick}>
+      {/* 로딩 애니메이션 */}
+      {loading && <LoadingAnimation />}
+      <Link
+        className="px-4 py-2 text-sm font-medium rounded-md bg-green-600 text-gray-100 mr-3"
+        to={{ pathname: "/posts/mate/new", search: `?di=${domesticInternational}` }}>
+        새글 작성
+      </Link>
+      <button
+        className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
+        onClick={handleButtonClick}>
         {pageTurn}
       </button>
       <h4 className="font-bold mb-4">{whereAreYou}</h4>
@@ -290,15 +315,15 @@ function MateBoard() {
                 navigationLabel={null}
                 showNeighboringMonth={false} //  이전, 이후 달의 날짜는 보이지 않도록 설정
                 calendarType="hebrew" //일요일부터 보이도록 설정
-                tileClassName={tileClassName} // 날짜 스타일 설정 
+                tileClassName={tileClassName} // 날짜 스타일 설정
                 tileContent={({ date }) => {
-                    return (
-                      <span className={date.getDay() === 0 || date.getDay() === 6 ? 'text-red-500' : 'text-black'}>
-                        {date.getDate()} {/* 날짜 숫자만 표시 */}
-                      </span>
-                    );  
-                  }} // 날짜 내용 설정
-                  formatDay={() => null}
+                  return (
+                    <span className={date.getDay() === 0 || date.getDay() === 6 ? "text-red-500" : "text-black"}>
+                      {date.getDate()} {/* 날짜 숫자만 표시 */}
+                    </span>
+                  );
+                }} // 날짜 내용 설정
+                formatDay={() => null}
               />
               <button onClick={handleDateReset} className="bg-red-500 text-white px-4 py-2 ml-2">
                 날짜 초기화
@@ -348,7 +373,9 @@ function MateBoard() {
                   <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">{`#${item.city}`}</span>
                   {item.tags &&
                     item.tags.map((tag, index) => (
-                      <span key={index} className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center">
+                      <span
+                        key={index}
+                        className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center">
                         {tag}
                       </span>
                     ))}

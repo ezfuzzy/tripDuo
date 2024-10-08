@@ -6,6 +6,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faHeart, faMessage } from "@fortawesome/free-solid-svg-icons";
 
 function CommunityBoard() {
+  //로딩 상태 추가
+  const [loading, setLoading] = useState(false);
+
   //배열 안에서 객체로 관리
   const [pageData, setPageData] = useState([]);
 
@@ -58,6 +61,12 @@ function CommunityBoard() {
   // searchParams 가 바뀔때마다 실행된다.
   // searchParams 가 없다면 초기값 "Domestic" 있다면 di 란 key 값의 데이터를 domesticInternational에 전달한다
   useEffect(() => {
+    // 로딩 애니메이션을 0.5초 동안만 표시
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+
     const diValue = searchParams.get("di") || "Domestic"; // 국내/국제 값 가져오기
     const city = searchParams.get("city") || ""; // 도시 가져오기
     const country = searchParams.get("country") || ""; // 국가 가져오기
@@ -71,6 +80,12 @@ function CommunityBoard() {
   // domesticInternational 가 바뀔때마다 실행된다.
   // to D~ I~ Button 을 누를때 or 새로운 요청이 들어왔을때
   useEffect(() => {
+    // 로딩 애니메이션을 0.5초 동안만 표시
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+
     axios
       .get("/api/v1/posts/community")
       .then((res) => {
@@ -149,6 +164,8 @@ function CommunityBoard() {
 
   return (
     <div className="container mx-auto m-4">
+      {/* 로딩 애니메이션 */}
+      {loading && <LoadingAnimation />}
       <Link
         className="px-4 py-2 text-sm font-medium rounded-md bg-green-600 text-gray-100 mr-3"
         to={{ pathname: "/posts/community/new", search: `?di=${domesticInternational}` }}>
@@ -238,7 +255,9 @@ function CommunityBoard() {
                   <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">{`#${item.city}`}</span>
                   {item.tags &&
                     item.tags.map((tag, index) => (
-                      <span key={index} className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center">
+                      <span
+                        key={index}
+                        className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center">
                         {tag}
                       </span>
                     ))}
