@@ -331,8 +331,12 @@ public class UserServiceImpl implements UserService {
 	    userProfileInfoRepo.save(UserProfileInfo.toEntity(userProfileInfoDto, user));
 	    
 	    // 업데이트된 정보를 처리하기 위해 front로 정보 return
-	    userProfileInfoDto.setProfilePicture(PROFILE_PICTURE_CLOUDFRONT_URL + userProfileInfoDto.getProfilePicture());
-	   
+	    if(userProfileInfoDto.getProfilePicture() != null) {
+	    	System.out.println("이미지 갱신함");
+	    	userProfileInfoDto.setProfilePicture(PROFILE_PICTURE_CLOUDFRONT_URL + userProfileInfoDto.getProfilePicture());
+	    } else {
+	    	System.out.println("이미지 없음");
+	    }
 	    String token = jwtUtil.generateToken(user.getUsername());
 		
 	    userProfileInfoDto.setToken("Bearer+" + token);
