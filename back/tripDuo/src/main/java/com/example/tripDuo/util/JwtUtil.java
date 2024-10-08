@@ -68,13 +68,16 @@ public class JwtUtil {
 
 		User user = userRepo.findByUsername(username);
 		UserProfileInfo userProfileInfo = userProfileInfoRepo.findByUserId(user.getId()); 
+
+		String profilePictureUrl = "";
+		if(userProfileInfo.getProfilePicture() != null && !userProfileInfo.getProfilePicture().isEmpty()) {
+			profilePictureUrl = PROFILE_PICTURE_CLOUDFRONT_URL + userProfileInfo.getProfilePicture();
+		}
 		
 		claims.put("id", user.getId());
 		claims.put("username", user.getUsername());
 		claims.put("nickname", userProfileInfo.getNickname());
-		claims.put("profilePicture", userProfileInfo.getProfilePicture() != null 
-			    ? PROFILE_PICTURE_CLOUDFRONT_URL + userProfileInfo.getProfilePicture() 
-			    : null);
+		claims.put("profilePicture", profilePictureUrl);
 		
 		return createToken(claims, username);
 	}
