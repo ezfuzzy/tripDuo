@@ -1,4 +1,5 @@
 import {
+  faCircleExclamation,
   faCrown,
   faDove,
   faEye,
@@ -6,6 +7,7 @@ import {
   faHeart,
   faMessage,
   faPlane,
+  faShareNodes,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -176,6 +178,26 @@ function MateBoardDetail(props) {
     }
   };
 
+  // 게시물 신고
+  const handleReportPost = ()=>{
+    const data = {
+      content: "신고 테스트",
+    }
+    if (window.confirm("해당 게시물을 신고하시겠습니까")) {
+      axios
+        .post(`/api/v1/reports/${post.id}/post/${userId}`, data)
+        .then((res) => {
+          console.log(res.data)
+          if(res.data.isSuccess){
+            alert("해당 게시물에 대한 신고가 접수되었습니다.")
+          } else {
+            alert(res.data.message)
+          }
+        })
+        .catch((error) => console.log(error))
+    }
+  }
+
   // --------------댓글 관련 이벤트
   // 답글 텍스트 상태 업데이트
   const handleReplyTextChange = (index, value) => {
@@ -216,11 +238,24 @@ function MateBoardDetail(props) {
     }
   };
 
-  // 신고 처리 함수
+  // 댓글 신고 처리 함수
   const handleReportComment = (commentId) => {
-    // 신고 기능 구현
-    alert(`댓글 ID ${commentId}가 신고되었습니다.`);
-    // 추가로 서버에 신고 요청을 보내는 로직을 여기에 추가
+    const data = {
+      content: "신고 테스트",
+    };
+    if (window.confirm("해당 리뷰를 신고하시겠습니까")) {
+      axios
+        .post(`/api/v1/reports/${commentId}/post_comment/${userId}`, data)
+        .then((res) => {
+          console.log(res.data);
+          if (res.data.isSuccess) {
+            alert("해당 사용자에 대한 신고가 접수되었습니다.");
+          } else {
+            alert(res.data.message);
+          }
+        })
+        .catch((error) => console.log(error));
+    }
   };
 
   //댓글 등록
@@ -465,18 +500,35 @@ function MateBoardDetail(props) {
       });
   };
 
+    //프로필 링크 복사
+    const handleCopy = () => {
+      const tmpText = `localhost:3000/posts/mate/${post.id}/detail`
+      navigator.clipboard
+        .writeText(tmpText)
+        .then(() => {
+          alert("클립보드에 복사되었습니다.")
+        })
+        .catch((error) => console.log(error))
+    }
+
   return (
     <div className="container mx-auto p-4 max-w-[900px]">
       <div className="flex flex-col h-full bg-gray-100 p-6">
         <div className="container">
-          <NavLink
-            className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
-            to={{
-              pathname: "/posts/mate",
-              search: post.country === "대한민국" ? "?di=Domestic" : "?di=International",
-            }}>
-            Mate
-          </NavLink>
+          <div className="flex">
+            <NavLink
+              className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
+              to={{
+                pathname: "/posts/mate",
+                search: post.country === "대한민국" ? "?di=Domestic" : "?di=International",
+              }}>
+              Mate
+            </NavLink>
+            <div className="ml-auto text-sm text-gray-600">
+            <span className="cursor-pointer" onClick={handleCopy}><FontAwesomeIcon icon={faShareNodes}/> 공유</span> &nbsp;
+            <span className="cursor-pointer" onClick={handleReportPost}><FontAwesomeIcon icon={faCircleExclamation}/> 신고</span>
+            </div>
+          </div>
 
           {/* 태그s */}
           <div className="flex flex-wrap gap-2 mt-10">
@@ -723,14 +775,16 @@ function MateBoardDetail(props) {
                                   role="menu"
                                   aria-orientation="vertical"
                                   aria-labelledby="options-menu">
-                                  <button
-                                    className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
-                                    onClick={() => {
-                                      setDropdownIndex(null);
-                                      handleReportComment(item.id);
-                                    }}>
-                                    신고
-                                  </button>
+                                  {item.writer !== nickname && (
+                                    <button
+                                      className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                                      onClick={() => {
+                                        setDropdownIndex(null);
+                                        handleReportComment(item.id);
+                                      }}>
+                                      신고
+                                    </button>
+                                  )}
                                   {item.writer === nickname && (
                                     <>
                                       <button
