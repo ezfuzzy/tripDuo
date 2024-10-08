@@ -32,7 +32,7 @@ function MyPlace() {
         setLoading(true)
         setTimeout(() => {
             setLoading(false)
-        }, 500)
+        }, 700)
         axios.get(`/api/v1/users/${loggedInUserId}/trips/saved-places`)
             .then(res => {
                 const savedPlacesList = res.data

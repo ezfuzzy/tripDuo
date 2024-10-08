@@ -114,7 +114,7 @@ function MateBoard() {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-    }, 500);
+    }, 700);
 
     const diValue = searchParams.get("di") || "Domestic"; // 국내/국제 값 가져오기
     const city = searchParams.get("city") || ""; // 도시 가져오기
