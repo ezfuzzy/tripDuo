@@ -110,9 +110,8 @@ public class UserController {
 		return ResponseEntity.ok(userService.updateUserPassword(userDto));
 	}
 
-	@PostMapping("/{userId}/reset-password")
-	public ResponseEntity<Boolean> resetUserPassword(@PathVariable Long userId, @RequestBody UserDto userDto) {
-		userDto.setId(userId);
+	@PostMapping("/reset-password")
+	public ResponseEntity<Boolean> resetUserPassword(@RequestBody UserDto userDto) {
 		return ResponseEntity.ok(userService.resetUserPassword(userDto));
 	}
 

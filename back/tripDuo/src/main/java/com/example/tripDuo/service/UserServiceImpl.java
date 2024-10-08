@@ -265,19 +265,15 @@ public class UserServiceImpl implements UserService {
 	/**
 	 * @date : 2024. 9. 14.
 	 * @user : 김민준
-	 * resetUserPassword : 비밀번호 초기화 메소드
+	 * resetUserPassword : 비밀번호 초기화 메소드 (sms 인증을 거친 뒤 수행)
 	 *
 	 * @param userDto
 	 * @return
-	 * TODO : sms 인증을 거친 뒤 수행
 	 */
 	@Override
 	public Boolean resetUserPassword(UserDto userDto) {
 
-		
-		
-		
-		UserDto userInfo = UserDto.toDto(userRepo.findById(userDto.getId()).get());
+		UserDto user = UserDto.toDto(userRepo.findByUsername(userDto.getUsername()));
 
 		// 새 비밀번호와 새 비밀번호 확인이 일치하는지 확인
 		if (!userDto.getNewPassword().equals(userDto.getConfirmPassword())) {
@@ -285,8 +281,8 @@ public class UserServiceImpl implements UserService {
 		}
 
 		String encodedNewPassword = passwordEncoder.encode(userDto.getNewPassword());
-		userInfo.setPassword(encodedNewPassword);
-		userRepo.save(User.toEntity(userInfo));
+		user.setPassword(encodedNewPassword);
+		userRepo.save(User.toEntity(user));
 
 		return true;
 	}
