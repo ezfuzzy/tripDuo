@@ -18,7 +18,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import "../../css/MyProfile.css";
 import FollowerFolloweeModal from "../../components/FollowerFolloweeModal";
-import LoadingAnimation from "../../components/LoadingAnimation"
+import LoadingAnimation from "../../components/LoadingAnimation";
 
 function MyProfile(props) {
   // to do : cur_location, last_login
@@ -32,9 +32,7 @@ function MyProfile(props) {
   // 접족된 사용자와 profile 의 사용자가 같은지
   const [isProfileOwner, setProfileOwner] = useState(false);
   // 프로필 정보
-  const [profile, setProfile] = useState({
-    socialLinks: [],
-  });
+  const [profile, setProfile] = useState({});
   // 리뷰 정보
   const [reviewList, setReviewList] = useState([]);
 
@@ -153,7 +151,7 @@ function MyProfile(props) {
 
         // 불러온 사용자의 정보 저장
         const userProfileInfo = res.data.userProfileInfo;
-        const socialLinksArray = userProfileInfo.socialLinks || [];
+        const socialLinksArray = userProfileInfo.socialLinks || ["tictok+", "instagram+"];
 
         setProfile({
           ...userProfileInfo,

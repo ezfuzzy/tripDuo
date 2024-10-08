@@ -30,7 +30,7 @@ function MyProfileForm(props) {
     profilePicture: "",
     profileMessage: "",
     ratings: 1300,
-    socialLinks: "",
+    socialLinks: [],
   });
 
   const tictokRef = useRef();
@@ -68,7 +68,7 @@ function MyProfileForm(props) {
           if (platform === "tictok") {
             tictokRef.current.value = value.replace("tictok+", "");
           } else if (platform === "instagram") {
-            instagramRef.current.value = value.replace("tictok+", "");
+            instagramRef.current.value = value.replace("instagram+", "");
           }
         });
 
@@ -163,10 +163,10 @@ function MyProfileForm(props) {
     const formData = new FormData();
     formData.append("id", profile.id);
     formData.append("userId", profile.userId);
-    formData.append("age", profile.age);
-    formData.append("gender", profile.gender);
+    formData.append("age", profile.age || "");
+    formData.append("gender", profile.gender || "");
     formData.append("nickname", profile.nickname);
-    formData.append("socialLinks", socialLinks);
+    formData.append("socialLinks", socialLinks || []);
     formData.append("profileMessage", profile.profileMessage || "");
     formData.append("profilePicture", profile.profilePicture || "");
 
@@ -329,7 +329,7 @@ function MyProfileForm(props) {
               <input
                 type="text"
                 name="age"
-                value={profile.age}
+                value={profile.age || ""}
                 className="block w-full p-2 border border-gray-300 rounded-md"
                 onChange={handleChange}
               />
@@ -339,7 +339,7 @@ function MyProfileForm(props) {
                 gender
               </label>
               <select
-                value={profile.gender}
+                value={profile.gender || ""}
                 onChange={handleChange}
                 className="block w-full p-2 border border-gray-300 rounded-md"
                 name="gender"
@@ -381,7 +381,7 @@ function MyProfileForm(props) {
             <textarea
               onChange={handleChange}
               name="profileMessage"
-              className="form-control w-full h-auto resize-none overflow-y-auto"
+              className="fborder-2 border-gray-400 rounded-md p-2 min-h-[100px] overflow-y-auto w-full"
               rows="5"
               value={profile.profileMessage || ""}
             />
