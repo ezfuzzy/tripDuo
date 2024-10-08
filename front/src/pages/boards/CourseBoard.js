@@ -3,9 +3,12 @@ import moment from "moment/moment";
 import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import LoadingAnimation from "../../components/LoadingAnimation";
 
 
 function CourseBoard() {
+  //로딩 상태 추가
+  const [loading, setLoading] = useState(false)
   // 글 목록 정보
   const [pageInfo, setPageInfo] = useState([])
   const [totalPages, setTotalPages] = useState(1);
@@ -40,6 +43,12 @@ function CourseBoard() {
   const navigate = useNavigate()
 
   useEffect(() => {
+    // 로딩 애니메이션을 0.5초 동안만 표시
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false)
+    }, 500)
+
     let pageNum = searchParams.get("pageNum") || 1
     const diValue = searchParams.get("di") || "Domestic"
     const city = searchParams.get("city") || ""
@@ -145,7 +154,6 @@ function CourseBoard() {
         console.log(res.data.list)
         // console.log(sorted)
         setTotalPages(res.data.totalPostPages)
-
       })
       .catch(error => {
         console.log(error)
@@ -278,9 +286,10 @@ function CourseBoard() {
     navigate(`/posts/course/${id}/detail?di=${domesticInternational}`)
   }
 
-
   return (
     <div className="container mx-auto p-4 max-w-[1024px]">
+      {/* 로딩 애니메이션 */}
+      {loading && <LoadingAnimation />}
       <div className="container mx-auto">
         <div className="flex justify-between mb-4">
           <Link
