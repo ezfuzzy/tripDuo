@@ -112,6 +112,8 @@ UserTripInfo.toEntity(UserTripInfoDto dto, UserTripInfo userTripInfoDto, Place p
 	@Override
 	public void savePlaceToMyTripInfo(PlaceDto placeDto) {
 
+		// Long  place의 pk인 id랑
+		// string -> kakao/google map에서 제공하는 placeId
 		Place place = placeRepo.findByPlaceId(placeDto.getPlaceId());
 		
 		if(place == null) {
