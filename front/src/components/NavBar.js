@@ -323,9 +323,7 @@ function NavBar() {
         <div className="p-4">
           <ul>
             <li className="mb-4">
-              <div
-                className={`font-bold cursor-pointer flex justify-between`}
-                onClick={() => toggleSection("ourTrip")}>
+              <div className={`font-bold cursor-pointer flex justify-between`} onClick={() => toggleSection("ourTrip")}>
                 <button>여행</button>
                 {openSections.ourTrip ? (
                   <FontAwesomeIcon icon={faChevronUp} />
@@ -333,25 +331,27 @@ function NavBar() {
                   <FontAwesomeIcon icon={faChevronDown} />
                 )}
               </div>
-              {openSections.ourTrip && (
-                <div className="pl-4">
-                  <div>
-                    <NavLink to={"/posts/trip_log"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
-                      여행 기록
-                    </NavLink>
-                  </div>
-                  <div>
-                    <NavLink to={"/posts/course"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
-                      여행 계획
-                    </NavLink>
-                  </div>
-                  <div>
-                    <NavLink to={"/posts/community"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
-                      커뮤니티
-                    </NavLink>
-                  </div>
+
+              <div
+                className={`pl-4 overflow-hidden transition-all duration-300 ease-in-out ${
+                  openSections.ourTrip ? "max-h-60" : "max-h-0"
+                }`}>
+                <div>
+                  <NavLink to={"/posts/trip_log"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                    여행 기록
+                  </NavLink>
                 </div>
-              )}
+                <div>
+                  <NavLink to={"/posts/course"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                    여행 계획
+                  </NavLink>
+                </div>
+                <div>
+                  <NavLink to={"/posts/community"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                    커뮤니티
+                  </NavLink>
+                </div>
+              </div>
             </li>
 
             <li className="mb-4">
@@ -365,23 +365,25 @@ function NavBar() {
                   <FontAwesomeIcon icon={faChevronDown} />
                 )}
               </div>
-              {openSections.travelMate && (
-                <div className="pl-4">
-                  <div>
-                    <NavLink to={"/posts/mate?di=Domestic"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
-                      국내 메이트 게시판
-                    </NavLink>
-                  </div>
-                  <div>
-                    <NavLink
-                      to={"/posts/mate?di=International"}
-                      className={offCanvasNavLinkStyle}
-                      onClick={closeOffCanvas}>
-                      해외 메이트 게시판
-                    </NavLink>
-                  </div>
+
+              <div
+                className={`pl-4 overflow-hidden transition-all duration-300 ease-in-out ${
+                  openSections.travelMate ? "max-h-60" : "max-h-0"
+                }`}>
+                <div>
+                  <NavLink to={"/posts/mate?di=Domestic"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                    국내 메이트 게시판
+                  </NavLink>
                 </div>
-              )}
+                <div>
+                  <NavLink
+                    to={"/posts/mate?di=International"}
+                    className={offCanvasNavLinkStyle}
+                    onClick={closeOffCanvas}>
+                    해외 메이트 게시판
+                  </NavLink>
+                </div>
+              </div>
             </li>
 
             <li className="mb-4">
@@ -393,35 +395,37 @@ function NavBar() {
                   <FontAwesomeIcon icon={faChevronDown} />
                 )}
               </div>
-              {openSections.myPage && (
-                <div className="pl-4">
-                  <div>
-                    <NavLink to={`/users/${userId}`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
-                      마이 페이지
-                    </NavLink>
-                  </div>
-                  <div>
-                    <NavLink to={`/myPlan/${userId}`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
-                      여행 계획
-                    </NavLink>
-                  </div>
-                  <div>
-                    <NavLink to={`/myRecord/${userId}`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
-                      여행 기록
-                    </NavLink>
-                  </div>
-                  <div>
-                    <NavLink to={`/wishMate/${userId}`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
-                      관심 메이트
-                    </NavLink>
-                  </div>
-                  <div>
-                    <NavLink to={`/myPlace/${userId}`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
-                      마이 플레이스
-                    </NavLink>
-                  </div>
+
+              <div
+                className={`pl-4 overflow-hidden transition-all duration-300 ease-in-out ${
+                  openSections.myPage ? "max-h-60" : "max-h-0"
+                }`}>
+                <div>
+                  <NavLink to={`/users/${userId}`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                    마이 페이지
+                  </NavLink>
                 </div>
-              )}
+                <div>
+                  <NavLink to={`/myPlan/${userId}`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                    여행 계획
+                  </NavLink>
+                </div>
+                <div>
+                  <NavLink to={`/myRecord/${userId}`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                    여행 기록
+                  </NavLink>
+                </div>
+                <div>
+                  <NavLink to={`/wishMate/${userId}`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                    관심 메이트
+                  </NavLink>
+                </div>
+                <div>
+                  <NavLink to={`/myPlace/${userId}`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                    마이 플레이스
+                  </NavLink>
+                </div>
+              </div>
             </li>
 
             <li className="mb-4">
@@ -429,50 +433,51 @@ function NavBar() {
                 <button>부가 기능</button>
                 {openSections.extra ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}
               </div>
-              {openSections.extra && (
-                <div className="pl-4">
-                  <div>
-                    <NavLink to="/checklist" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
-                      체크 리스트
-                    </NavLink>
-                  </div>
-                  <div>
-                    <NavLink to="/exchangeInfo" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
-                      환율 정보
-                    </NavLink>
-                  </div>
-                  <div>
-                    <NavLink to="/safetyInfo" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
-                      안전 정보
-                    </NavLink>
-                  </div>
-                  <div>
-                    <NavLink to="/calculator" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
-                      여행 경비 계산기
-                    </NavLink>
-                  </div>
-                  <div>
-                    <NavLink to="planner" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
-                      여행 플래너
-                    </NavLink>
-                  </div>
-                  <div>
-                    <NavLink to="recommendations" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
-                      여행 추천 장소
-                    </NavLink>
-                  </div>
-                  <div>
-                    <NavLink to="diary" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
-                      여행 일기
-                    </NavLink>
-                  </div>
-                  <div>
-                    <NavLink to="languageTip" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
-                      여행 대화/문화 팁
-                    </NavLink>
-                  </div>
+              <div
+                className={`pl-4 overflow-hidden transition-all duration-300 ease-in-out ${
+                  openSections.extra ? "max-h-60" : "max-h-0"
+                }`}>
+                <div>
+                  <NavLink to="/checklist" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                    체크 리스트
+                  </NavLink>
                 </div>
-              )}
+                <div>
+                  <NavLink to="/exchangeInfo" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                    환율 정보
+                  </NavLink>
+                </div>
+                <div>
+                  <NavLink to="/safetyInfo" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                    안전 정보
+                  </NavLink>
+                </div>
+                <div>
+                  <NavLink to="/calculator" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                    여행 경비 계산기
+                  </NavLink>
+                </div>
+                <div>
+                  <NavLink to="planner" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                    여행 플래너
+                  </NavLink>
+                </div>
+                <div>
+                  <NavLink to="recommendations" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                    여행 추천 장소
+                  </NavLink>
+                </div>
+                <div>
+                  <NavLink to="diary" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                    여행 일기
+                  </NavLink>
+                </div>
+                <div>
+                  <NavLink to="languageTip" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                    여행 대화/문화 팁
+                  </NavLink>
+                </div>
+              </div>
             </li>
           </ul>
         </div>
