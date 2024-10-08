@@ -27,6 +27,9 @@ let commentIndex = 0;
 const maxLength = 3000;
 
 function MateBoardDetail(props) {
+  //로딩 상태 추가
+  const [loading, setLoading] = useState(false);
+
   const { id } = useParams(); // 게시물 번호
   // 로그인된 유저 정보
   const userId = useSelector((state) => state.userData.id, shallowEqual); // 로그인된 user의 id
@@ -53,7 +56,7 @@ function MateBoardDetail(props) {
   //댓글 전체의 페이지 개수
   const [totalCommentPages, setTotalCommentPages] = useState(0);
   //현재 로딩중인지 여부
-  const [isLoading, setLoading] = useState(false);
+  const [isCommentLoading, setCommentLoading] = useState(false);
   //원글의 댓글 내용 상태값
   const [commentInnerText, setCommentInnerText] = useState("");
   //dropdown 상태 정의
@@ -101,6 +104,12 @@ function MateBoardDetail(props) {
   //---------------------------------------------------------------------------------------------------------------rating 관리부
 
   useEffect(() => {
+    // 로딩 애니메이션을 0.5초 동안만 표시
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+
     axios
       .get(`/api/v1/posts/${id}`)
       .then((res) => {
@@ -179,24 +188,24 @@ function MateBoardDetail(props) {
   };
 
   // 게시물 신고
-  const handleReportPost = ()=>{
+  const handleReportPost = () => {
     const data = {
       content: "신고 테스트",
-    }
+    };
     if (window.confirm("해당 게시물을 신고하시겠습니까")) {
       axios
         .post(`/api/v1/reports/${post.id}/post/${userId}`, data)
         .then((res) => {
-          console.log(res.data)
-          if(res.data.isSuccess){
-            alert("해당 게시물에 대한 신고가 접수되었습니다.")
+          console.log(res.data);
+          if (res.data.isSuccess) {
+            alert("해당 게시물에 대한 신고가 접수되었습니다.");
           } else {
-            alert(res.data.message)
+            alert(res.data.message);
           }
         })
-        .catch((error) => console.log(error))
+        .catch((error) => console.log(error));
     }
-  }
+  };
 
   // --------------댓글 관련 이벤트
   // 답글 텍스트 상태 업데이트
@@ -391,7 +400,7 @@ function MateBoardDetail(props) {
     } else {
       //마지막 페이지가 아니라면
       //로딩 상태로 바꿔준다
-      setLoading(true);
+      setCommentLoading(true);
       //요청할 댓글의 게시물id
       const postId = id;
       //요청할 댓글의 페이지
@@ -414,11 +423,11 @@ function MateBoardDetail(props) {
           //증가된 페이지 번호도 반영
           setPageNum(page);
 
-          setLoading(false);
+          setCommentLoading(false);
         })
         .catch((error) => {
           console.log(error);
-          setLoading(false);
+          setCommentLoading(false);
         });
     }
   };
@@ -500,19 +509,21 @@ function MateBoardDetail(props) {
       });
   };
 
-    //프로필 링크 복사
-    const handleCopy = () => {
-      const tmpText = `localhost:3000/posts/mate/${post.id}/detail`
-      navigator.clipboard
-        .writeText(tmpText)
-        .then(() => {
-          alert("클립보드에 복사되었습니다.")
-        })
-        .catch((error) => console.log(error))
-    }
+  //프로필 링크 복사
+  const handleCopy = () => {
+    const tmpText = `localhost:3000/posts/mate/${post.id}/detail`;
+    navigator.clipboard
+      .writeText(tmpText)
+      .then(() => {
+        alert("클립보드에 복사되었습니다.");
+      })
+      .catch((error) => console.log(error));
+  };
 
   return (
     <div className="container mx-auto p-4 max-w-[900px]">
+      {/* 로딩 애니메이션 */}
+      {loading && <LoadingAnimation />}
       <div className="flex flex-col h-full bg-gray-100 p-6">
         <div className="container">
           <div className="flex">
@@ -525,8 +536,13 @@ function MateBoardDetail(props) {
               Mate
             </NavLink>
             <div className="ml-auto text-sm text-gray-600">
-            <span className="cursor-pointer" onClick={handleCopy}><FontAwesomeIcon icon={faShareNodes}/> 공유</span> &nbsp;
-            <span className="cursor-pointer" onClick={handleReportPost}><FontAwesomeIcon icon={faCircleExclamation}/> 신고</span>
+              <span className="cursor-pointer" onClick={handleCopy}>
+                <FontAwesomeIcon icon={faShareNodes} /> 공유
+              </span>{" "}
+              &nbsp;
+              <span className="cursor-pointer" onClick={handleReportPost}>
+                <FontAwesomeIcon icon={faCircleExclamation} /> 신고
+              </span>
             </div>
           </div>
 
@@ -924,11 +940,11 @@ function MateBoardDetail(props) {
         <div className="grid grid-cols-1 md:grid-cols-2 mx-auto mb-5">
           <button
             className={`bg-green-500 text-white py-2 px-4 rounded ${
-              isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
+              isCommentLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
             }`}
-            disabled={isLoading}
+            disabled={isCommentLoading}
             onClick={handleMoreComment}>
-            {isLoading ? (
+            {isCommentLoading ? (
               <span className="animate-spin inline-block w-5 h-5 border-2 border-t-2 border-white rounded-full"></span>
             ) : (
               <span>댓글 더보기</span>
