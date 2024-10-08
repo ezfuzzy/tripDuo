@@ -51,7 +51,7 @@ public class UserTripController {
 		}
 	}
 
-	// ### saved places ###
+	// ### visited places ###
 
 	@PostMapping("/visited-places")
 	public ResponseEntity<?> saveVisitedPlace(@RequestBody PlaceDto placeDto) {
@@ -97,8 +97,7 @@ public class UserTripController {
 	@PostMapping("/saved-places")
 	public ResponseEntity<?> savePlaceToMyTripInfo(@RequestBody PlaceDto placeDto) {
 		try {
-			userTripInfoService.savePlaceToMyTripInfo(placeDto);
-			return ResponseEntity.ok("saved place saved");
+			return ResponseEntity.ok(userTripInfoService.savePlaceToMyTripInfo(placeDto));
 		} catch (Exception error) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
