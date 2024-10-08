@@ -15,10 +15,13 @@ import com.example.tripDuo.dto.ChatRoomDto;
 import com.example.tripDuo.entity.ChatMessage;
 import com.example.tripDuo.entity.ChatParticipant;
 import com.example.tripDuo.entity.ChatRoom;
+import com.example.tripDuo.entity.UserFollow;
 import com.example.tripDuo.entity.UserProfileInfo;
+import com.example.tripDuo.enums.FollowType;
 import com.example.tripDuo.repository.ChatMessageRepository;
 import com.example.tripDuo.repository.ChatParticipantRepository;
 import com.example.tripDuo.repository.ChatRoomRepository;
+import com.example.tripDuo.repository.UserFollowRepository;
 import com.example.tripDuo.repository.UserProfileInfoRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,18 +34,42 @@ public class ChatServiceImpl implements ChatService {
 	private ChatMessageRepository chatMessageRepo;
 	private ChatParticipantRepository chatParticipantsRepo;
 	private UserProfileInfoRepository userProfileInfoRepo;
+	private UserFollowRepository userFollowRepo;
     private RedisTemplate<String, ChatMessageDto> redisTemplate;
 
 	public ChatServiceImpl(ChatRoomRepository chatRoomRepo, ChatMessageRepository chatMessageRepo,
 			ChatParticipantRepository chatParticipantsRepo, UserProfileInfoRepository userProfileInfoRepo,
-			RedisTemplate redisTemplate) {
+			UserFollowRepository userFollowRepo, RedisTemplate redisTemplate) {
 		this.chatRoomRepo = chatRoomRepo;
 		this.chatMessageRepo = chatMessageRepo;
 		this.chatParticipantsRepo = chatParticipantsRepo;
 		this.userProfileInfoRepo = userProfileInfoRepo;
+		this.userFollowRepo = userFollowRepo;
 		this.redisTemplate = redisTemplate;
 	}
 
+	@Override
+	public List<UserFollow> getSelectUser(Long userId) {
+		List<UserFollow> followees = userFollowRepo.findByFolloweeUserProfileInfo_User_IdAndFollowType(userId,
+				FollowType.FOLLOW);
+		List<UserFollow> followers = userFollowRepo.findByFollowerUserProfileInfo_User_IdAndFollowType(userId,
+				FollowType.FOLLOW);
+
+		List<String> followeeIds = followees.stream().map(follow -> follow.getFolloweeUserProfileInfo().getNickname())
+				.collect(Collectors.toList());
+
+		List<String> followerIds = followers.stream().map(follow -> follow.getFollowerUserProfileInfo().getNickname())
+				.collect(Collectors.toList());
+
+		List<UserFollow> userFollowDtos = new ArrayList<>();
+
+		for (UserFollow follow : followees) {
+			Long followeeId = follow.getFolloweeUserProfileInfo().getUser().getId();
+			userFollowDtos.add(follow);
+		}
+		return userFollowDtos;
+	}
+	
 	@Override
 	public List<ChatRoomDto> getSelectAllChatRooms(Long userId) {
 		// 사용자가 속한 채팅방 참여 정보를 모두 가져옴
@@ -68,7 +95,7 @@ public class ChatServiceImpl implements ChatService {
 		ChatRoomDto getUserChatroomDto = ChatRoomDto.toDto(getUserChatroom);
 
 		// 참여자 정보 조회
-				List<ChatParticipant> participants = chatParticipantsRepo.findByChatRoomId(roomId);
+		List<ChatParticipant> participants = chatParticipantsRepo.findByChatRoomId(roomId);
 	    
 		return getUserChatroomDto;
 	}
@@ -163,4 +190,5 @@ public class ChatServiceImpl implements ChatService {
 			}
 		}
 	}
+
 }
