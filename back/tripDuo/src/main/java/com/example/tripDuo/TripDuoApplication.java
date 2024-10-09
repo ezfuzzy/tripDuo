@@ -1,5 +1,7 @@
 package com.example.tripDuo;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -158,10 +160,11 @@ public class TripDuoApplication {
 		postRepo.save(p10);
 		postRepo.save(p11);
 		
+		LocalDateTime localTime = LocalDateTime.now(); 
 		// 1. 채팅방(ChatRoom) 생성
-		ChatRoom chatRoom1 = ChatRoom.builder().title("private Chat Room").type(ChatRoomType.ONE_ON_ONE).build();
-		ChatRoom chatRoom2 = ChatRoom.builder().title("private Chat Room222").type(ChatRoomType.ONE_ON_ONE).build();
-		ChatRoom groupChatRoom = ChatRoom.builder().title("Group Chat Room").type(ChatRoomType.GROUP).build();
+		ChatRoom chatRoom1 = ChatRoom.builder().title("private Chat Room").type(ChatRoomType.ONE_ON_ONE).lastmessagetime(localTime).build();
+		ChatRoom chatRoom2 = ChatRoom.builder().title("private Chat Room222").type(ChatRoomType.ONE_ON_ONE).lastmessagetime(localTime).build();
+		ChatRoom groupChatRoom = ChatRoom.builder().title("Group Chat Room").type(ChatRoomType.GROUP).lastmessagetime(localTime).build();
 
 		// 채팅방 저장
 		chatRoomRepo.save(chatRoom1);  // 첫 번째 1:1 채팅방 저장

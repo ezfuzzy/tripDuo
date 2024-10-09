@@ -1,5 +1,6 @@
 package com.example.tripDuo.dto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.example.tripDuo.entity.ChatRoom;
@@ -23,13 +24,14 @@ public class ChatRoomDto {
 	
 	private Long ownerId;
 	private List<Long> participantsList;
-	
+	private LocalDateTime lastmessagetime;
 
 	public static ChatRoomDto toDto(ChatRoom entity) {
 		return ChatRoomDto.builder()
 				.id(entity.getId())
 				.type(entity.getType())
 				.title(entity.getTitle())
+				.lastmessagetime(entity.getLastmessagetime())
 				.build();
 	}
 }
