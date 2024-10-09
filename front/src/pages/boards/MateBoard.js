@@ -126,24 +126,21 @@ function MateBoard() {
     // 국내/국제 값 업데이트
   }, [searchParams])
 
-  // domesticInternational 가 바뀔때마다 실행된다.
-  // to D~ I~ Button 을 누를때 or 새로운 요청이 들어왔을때
-  useEffect(() => {
-    const fetchFilteredPosts = async () => {
-      //필터링할 검색조건을 params에 담는다
-      const params = {
-        country: searchCriteria.country || null,
-        city: searchCriteria.city || null,
-        startDate: searchCriteria.startDate || null,
-        endDate: searchCriteria.endDate || null,
-        keyword: searchCriteria.keyword || null,
-        condition: searchCriteria.condition || null,
-        sortBy,
-      }
+  const fetchFilteredPosts = () => {
+    //필터링할 검색조건을 params에 담는다
+    const params = {
+      country: searchCriteria.country || null,
+      city: searchCriteria.city || null,
+      startDate: searchCriteria.startDate || null,
+      endDate: searchCriteria.endDate || null,
+      keyword: searchCriteria.keyword || null,
+      condition: searchCriteria.condition || null,
+      sortBy,
+    }
 
-      try {
-        //api호출 및 params를 담아 보낸다
-        const res = await axios.get("/api/v1/posts/mate", { params })
+    // API 호출
+    axios.get("/api/v1/posts/mate", { params })
+      .then((res) => {
         //필터링되어 돌아온 params를 받는다
         console.log(res.data)
         let filtered = res.data.list
@@ -161,51 +158,20 @@ function MateBoard() {
         )
         //페이지 전환버튼을 변경한다
         setPageTurn(domesticInternational === "International" ? "to Domestic" : "to International")
-      } catch (error) {
+      })
+      .catch((error) => {
         console.log("Error:", error)
-      }
-    }
+      })
+  }
 
+  useEffect(() => {
     fetchFilteredPosts()
   }, [domesticInternational])
 
   // -------------이벤트 관리부
 
   const search = () => {
-    //필터링할 검색조건을 params에 담는다
-    const params = {
-      country: searchCriteria.country || null,
-      city: searchCriteria.city || null,
-      startDate: searchCriteria.startDate || null,
-      endDate: searchCriteria.endDate || null,
-      keyword: searchCriteria.keyword || null,
-      condition: searchCriteria.condition || null,
-      sortBy,
-    }
-
-    axios
-      .get("/api/v1/posts/mate", { params })
-      .then((res) => {
-        let filtered = res.data.list
-        //국내 해외 필터링
-        if (domesticInternational === "Domestic") {
-          filtered = filtered.filter((item) => item.country === "한국")
-        } else if (domesticInternational === "International") {
-          filtered = filtered.filter((item) => item.country !== "한국")
-        }
-        //필터링된 데이터를 상태에 저장한다
-        setPageData(filtered)
-        //페이지 제목을 변경한다
-        setWhereAreYou(
-          domesticInternational === "International" ? "해외 여행 메이트 페이지" : "국내 여행 메이트 페이지"
-        )
-        //페이지 전환버튼을 변경한다
-        setPageTurn(domesticInternational === "International" ? "to Domestic" : "to International")
-        console.log(res.data)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
+    fetchFilteredPosts() // 비동기 처리를 기다리지 않음
   }
 
   // 국내/해외 변경 버튼 핸들러-
