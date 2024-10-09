@@ -10,7 +10,7 @@ import LoadingAnimation from "../../components/LoadingAnimation"
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa" // Font Awesome 또는 원하는 아이콘 라이브러리 사용
 
 function MateBoard() {
-  const calendarRef = useRef(null) // ref 생성
+  const calendarRef = useRef(null)
 
   //로딩 상태 추가
   const [loading, setLoading] = useState(false)
@@ -288,7 +288,7 @@ function MateBoard() {
             <option value="title">제목</option>
             <option value="content">내용</option>
             <option value="title_content">제목 + 내용</option>
-            <option value="writer">작성자</option>
+            {/* <option value="writer">작성자</option> */}
           </select>
         </div>
 
@@ -315,6 +315,12 @@ function MateBoard() {
           <div ref={calendarRef}>
             {isCalendarOpen && (
               <div className="absolute z-50 bg-white shadow-lg p-2">
+                <button
+                  onClick={handleDateReset}
+                  className="absolute top-2 right-2 bg-green-500 text-white px-3 py-1 rounded hover:bg-green-700 transition duration-150"
+                >
+                  날짜 리셋
+                </button>
                 <Calendar
                   selectRange={true}
                   className="w-full p-4 bg-white rounded-lg border-none" // 달력 컴포넌트의 테두리를 없애기 위해 border-none 추가
@@ -334,8 +340,10 @@ function MateBoard() {
                   nextLabel={
                     <FaChevronRight className="text-green-500 hover:text-green-700 transition duration-150 mx-auto" />
                   }
+                  
                   prev2Label={null}
                   next2Label={null}
+                  
                     // <button
                     //   onClick={(event) => {
                     //     event.preventDefault()
