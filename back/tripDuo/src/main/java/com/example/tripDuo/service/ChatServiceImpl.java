@@ -1,5 +1,6 @@
 package com.example.tripDuo.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -12,6 +13,7 @@ import org.springframework.web.socket.TextMessage;
 
 import com.example.tripDuo.dto.ChatMessageDto;
 import com.example.tripDuo.dto.ChatRoomDto;
+import com.example.tripDuo.dto.UserProfileInfoDto;
 import com.example.tripDuo.entity.ChatMessage;
 import com.example.tripDuo.entity.ChatParticipant;
 import com.example.tripDuo.entity.ChatRoom;
@@ -26,6 +28,7 @@ import com.example.tripDuo.repository.UserProfileInfoRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.annotation.PreDestroy;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
@@ -74,11 +77,10 @@ public class ChatServiceImpl implements ChatService {
 	public List<ChatRoomDto> getSelectAllChatRooms(Long userId) {
 		// 사용자가 속한 채팅방 참여 정보를 모두 가져옴
 		List<ChatParticipant> chatParticipantsList = chatParticipantsRepo.findByUserProfileInfoUserId(userId);
-		System.out.println(chatParticipantsList.toString());
 		// 참가자가 속한 채팅방 ID 목록을 추출
 		List<Long> chatRoomIds = chatParticipantsList.stream().map(ChatParticipant::getChatRoomId).collect(Collectors.toList());
 		// 한 번에 모든 채팅방 정보를 가져옴
-		List<ChatRoom> chatRooms = chatRoomRepo.findByIdIn(chatRoomIds);
+		List<ChatRoom> chatRooms = chatRoomRepo.findByIdInOrderByLastmessagetimeDesc(chatRoomIds);
 		// ChatRoom을 ChatRoomDto로 변환
 		List<ChatRoomDto> chatRoomDtos = chatRooms.stream().map(ChatRoomDto::toDto).collect(Collectors.toList());
 		System.out.println("사용자가 속한 채팅방 목록: " + chatRoomDtos);
@@ -109,14 +111,16 @@ public class ChatServiceImpl implements ChatService {
 		for (ChatMessage message : messages) {
 			messageDtos.add(ChatMessageDto.toDto(message));
 		}
-
+		System.out.println("메세지 확인"+messageDtos);
+		
 		return messageDtos;
 	}
 
 	// 채팅방 생성
 	@Override
 	public ChatRoom createChatRoom(ChatRoomDto chatRoomDto) {
-
+		LocalDateTime localTime = LocalDateTime.now();
+		chatRoomDto.setLastmessagetime(localTime);
 		ChatRoom chatRoom = chatRoomRepo.save(ChatRoom.toEntity(chatRoomDto));
 		System.out.println("채팅방 생성됨: " + chatRoom.getId());
 
@@ -152,24 +156,28 @@ public class ChatServiceImpl implements ChatService {
 	@Override
 	@Scheduled(fixedRate = 6000000) // 100분마다 실행
 	public void saveMessagesToDatabase() {
-		// Redis에서 모든 채팅방의 메시지를 가져와 DB에 저장
-		Set<String> chatRooms = redisTemplate.keys("chatRoomId:*"); // 모든 채팅방 키 가져오기
+		// 모든 채팅방 키 가져오기
+		Set<String> chatRooms = redisTemplate.keys("chatRoomId:*");
 		System.out.println("Scheduled task running. Found chat rooms: " + chatRooms);
 
 		for (String redisKey : chatRooms) {
-			List<ChatMessageDto> messages = redisTemplate.opsForList().range(redisKey, 0, -1); // 메시지 가져오기
+			// 메시지 가져오기
+			List<ChatMessageDto> messages = redisTemplate.opsForList().range(redisKey, 0, -1);
 			if (messages != null && !messages.isEmpty()) {
 				for (ChatMessageDto message : messages) {
 
-					UserProfileInfo userProfileInfo = userProfileInfoRepo.findById(message.getChatRoomId())
+					// 메시지에서 userId를 가져옴
+					Long userId = message.getUserProfileInfo().getId();// message 객체에 userId가 포함되어 있다고 가정
+
+					// userId를 기반으로 UserProfileInfo 조회
+					UserProfileInfo userProfileInfo = userProfileInfoRepo.findById(userId)
 							.orElseThrow(() -> new RuntimeException("User not found"));
-					ChatMessageDto chatMessageDto = new ChatMessageDto();
-					chatMessageDto.setUserProfileInfo(userProfileInfo);
+
+					UserProfileInfoDto dto = UserProfileInfoDto.toDto(userProfileInfo, redisKey);
 
 					ChatMessage toEntityChatMessage = ChatMessage.toEntity(message, userProfileInfo);
 
 					chatMessageRepo.save(toEntityChatMessage); // DB에 메시지 저장
-
 				}
 				// 메시지를 DB에 저장한 후 Redis에서 삭제할 경우
 				redisTemplate.opsForList().trim(redisKey, messages.size(), -1); // 저장한 메시지 제거
@@ -177,6 +185,7 @@ public class ChatServiceImpl implements ChatService {
 		}
 	}
 
+    @PreDestroy
 	@Override
 	public void clearRedisCacheOnShutdown() {
 		// redis에 저장된 모든 채팅방 키 가져오기
@@ -189,6 +198,37 @@ public class ChatServiceImpl implements ChatService {
 				System.out.println("Deleted Redis cache for: " + redisKey);
 			}
 		}
+	}
+
+	@Override
+	public ChatMessageDto saveMessageToDatabsePassive(ChatMessageDto chatMessageDto) {
+		// 모든 채팅방 키 가져오기
+		Set<String> chatRooms = redisTemplate.keys("chatRoomId:*");
+		System.out.println("Scheduled task running. Found chat rooms: " + chatRooms);
+
+		for (String redisKey : chatRooms) {
+			// 메시지 가져오기
+			List<ChatMessageDto> messages = redisTemplate.opsForList().range(redisKey, 0, -1);
+			if (messages != null && !messages.isEmpty()) {
+				for (ChatMessageDto message : messages) {
+					// 메시지에서 userId를 가져옴
+					Long userId = message.getUserProfileInfo().getId();// message 객체에 userId가 포함되어 있다고 가정
+
+					// userId를 기반으로 UserProfileInfo 조회
+					UserProfileInfo userProfileInfo = userProfileInfoRepo.findById(userId)
+							.orElseThrow(() -> new RuntimeException("User not found"));
+
+					UserProfileInfoDto dto = UserProfileInfoDto.toDto(userProfileInfo, redisKey);
+					ChatMessage toEntityChatMessage = ChatMessage.toEntity(message, userProfileInfo);							
+
+					ChatMessage saveMessage = chatMessageRepo.save(toEntityChatMessage); // DB에 메시지 저장
+					chatMessageDto = chatMessageDto.toDto(saveMessage);
+				}
+				// 메시지를 DB에 저장한 후 Redis에서 삭제할 경우
+				redisTemplate.opsForList().trim(redisKey, messages.size(), -1); // 저장한 메시지 제거
+			}		
+		}
+		return chatMessageDto;
 	}
 
 }

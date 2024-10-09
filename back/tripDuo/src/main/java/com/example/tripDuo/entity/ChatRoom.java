@@ -1,6 +1,9 @@
 package com.example.tripDuo.entity;
 
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 import com.example.tripDuo.dto.ChatRoomDto;
 import com.example.tripDuo.enums.ChatRoomType;
 
@@ -31,7 +34,7 @@ public class ChatRoom {
     private String title; 
     @Enumerated(EnumType.STRING)
     private ChatRoomType type; 
-
+	private LocalDateTime lastmessagetime;
 //    @OneToMany(mappedBy = "chatroom")
 //    private List<ChatMessage> messages = new ArrayList<>();
 
@@ -41,6 +44,7 @@ public class ChatRoom {
                 .id(chatRoomDto.getId())  // ChatRoomDto의 id 사용
                 .title(chatRoomDto.getTitle())  // ChatRoomDto의 name 사용
                 .type(chatRoomDto.getType())  // ChatRoomDto의 type 사용
+                .lastmessagetime(chatRoomDto.getLastmessagetime())
                 .build();  // 빌더 패턴을 사용하여 ChatRoom 객체 생성
     }
 }

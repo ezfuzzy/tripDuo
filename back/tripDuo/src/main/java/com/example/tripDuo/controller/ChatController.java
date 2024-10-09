@@ -60,5 +60,10 @@ public class ChatController {
 
 		return ResponseEntity.ok(chatService.createChatRoom(chatRoomDto));
 	}
+	
+	@PostMapping("/{roomId}/saveMessage")
+	public ResponseEntity<?> saveMessages(@RequestBody ChatMessageDto chatMessageDto) {
 
+		return ResponseEntity.ok(chatService.saveMessageToDatabsePassive(chatMessageDto));
+	}
 }
