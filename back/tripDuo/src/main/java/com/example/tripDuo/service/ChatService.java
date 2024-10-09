@@ -26,5 +26,6 @@ public interface ChatService  {
 	// 메세지 DB 저장 스케줄러
 	public void saveMessagesToDatabase();
 	public void clearRedisCacheOnShutdown();
-
+	public ChatMessageDto saveMessageToDatabsePassive(ChatMessageDto chatMessageDto);
+	
 }
