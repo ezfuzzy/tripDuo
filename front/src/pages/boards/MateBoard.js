@@ -78,6 +78,7 @@ function MateBoard() {
       endDate: dateRange[1] ? dateRange[1].toLocaleDateString("ko-KR") : "",
     })
   }
+
   // 캘린더의 날짜 스타일을 설정하는 함수 추가
   const tileClassName = ({ date }) => {
     const day = date.getDay() // 0: 일요일, 1: 월요일, ..., 6: 토요일
@@ -92,6 +93,17 @@ function MateBoard() {
     return className // 최종 클래스 이름 반환
   }
 
+  // 날짜 초기화
+  const handleDateReset = () => {
+    setSelectedDateRange([null, null]) // 날짜 범위를 현재 날짜로 초기화
+    setSearchCriteria({
+      ...searchCriteria,
+      startDate: "", // 시작 날짜 초기화
+      endDate: "", // 종료 날짜 초기화
+    })
+  }
+
+  // 캘린더 외부 클릭시 캘린더 모달 닫기
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (calendarRef.current && !calendarRef.current.contains(event.target)) {
@@ -139,7 +151,8 @@ function MateBoard() {
     }
 
     // API 호출
-    axios.get("/api/v1/posts/mate", { params })
+    axios
+      .get("/api/v1/posts/mate", { params })
       .then((res) => {
         //필터링되어 돌아온 params를 받는다
         console.log(res.data)
@@ -164,6 +177,7 @@ function MateBoard() {
       })
   }
 
+  // 해외 / 국내 전환시 호출
   useEffect(() => {
     fetchFilteredPosts()
   }, [domesticInternational])
@@ -201,16 +215,20 @@ function MateBoard() {
   }
   const handleSortChange = (e) => {
     setSortBy(e.target.value) // 정렬 기준 변경
-  }
-  // 날짜 초기화
-  const handleDateReset = () => {
-    setSelectedDateRange([null, null]) // 날짜 범위를 현재 날짜로 초기화
-    setSearchCriteria({
-      ...searchCriteria,
-      startDate: "", // 시작 날짜 초기화
-      endDate: "", // 종료 날짜 초기화
+    // 정렬 기준에 따라 pageData를 정렬
+    const sortedData = [...pageData].sort((a, b) => {
+      if (e.target.value === "latest") {
+        return new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt)
+      } else if (e.target.value === "viewCount") {
+        return b.viewCount - a.viewCount
+      } else if (e.target.value === "likeCount") {
+        return b.likeCount - a.likeCount
+      }
+      return 0 // 기본값
     })
+    setPageData(sortedData) // 정렬된 데이터를 상태에 저장
   }
+
   return (
     <div className="container mx-auto m-4">
       {/* 로딩 애니메이션 */}
@@ -228,53 +246,57 @@ function MateBoard() {
       <h4 className="font-bold mb-4">{whereAreYou}</h4>
 
       {/* 검색 조건 입력 폼 */}
-      <div className="my-4">
-        {domesticInternational === "International" && ( // 국제 검색일 때 위치 입력 필드 렌더링
+      <div className="my-4 space-y-4">
+        {/* 국가와 도시를 한 행으로 배치 */}
+        <div className="flex items-center gap-4">
+          {domesticInternational === "International" && (
+            <input
+              type="text"
+              name="country"
+              value={searchCriteria.country}
+              onChange={handleSearchChange}
+              placeholder="국가"
+              className="border border-gray-300 rounded-md px-4 py-2 w-1/2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+            />
+          )}
+
           <input
             type="text"
-            name="country"
-            value={searchCriteria.country}
+            name="city"
+            value={searchCriteria.city}
             onChange={handleSearchChange}
-            placeholder="국가"
-            className="border px-2 py-1 mx-2"
+            placeholder="도시"
+            className="border border-gray-300 rounded-md px-4 py-2 w-1/2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
           />
-        )}
-        <input
-          type="text"
-          name="city"
-          value={searchCriteria.city}
-          onChange={handleSearchChange}
-          placeholder="도시"
-          className="border px-2 py-1 mx-2"
-        />
-
-        {/* 제목/작성자 검색 옵션 선택 */}
-        <div className="flex items-center mb-2">
-          <select value={searchCriteria.condition} onChange={handleConditionChange} className="border px-2 py-1 mx-2">
-            <option value="title">제목</option>
-            <option value="content">내용</option>
-            <option value="title_content">제목 + 내용</option>
-            {/* <option value="writer">작성자</option> */}
-          </select>
         </div>
 
-        <input
-          type="text"
-          name={searchCriteria.condition} // 동적으로 이름 설정
-          value={searchCriteria[searchCriteria.condition]} // 검색 타입에 따라 값 설정
-          onChange={handleQueryChange}
-          placeholder={searchCriteria.condition === "title" ? "제목" : "작성자"}
-          className="border px-2 py-1 mx-2"
-        />
-        <div>
-          {/* 날짜 선택 버튼 */}
+        {/* 제목/작성자 선택 필드 */}
+        <div className="flex items-center gap-4">
+          <select
+            value={searchCriteria.condition}
+            onChange={handleConditionChange}
+            className="border border-gray-300 rounded-md px-4 py-2 w-1/6 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300">
+            <option value="title">제목</option>
+            <option value="content">내용</option>
+            <option value="title_writer">제목 + 내용</option>
+          </select>
+
+          <input
+            type="text"
+            name={searchCriteria.condition}
+            value={searchCriteria[searchCriteria.condition]}
+            onChange={handleQueryChange}
+            placeholder={searchCriteria.condition}
+            className="border border-gray-300 rounded-md px-4 py-2 w-5/6 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+          />
+        </div>
+        <div className="flex items-center space-x-2 mt-4">
           <button
-            onClick={() => setIsCalendarOpen(!isCalendarOpen)} // 버튼 클릭 시 캘린더 표시/숨김 토글
-            className="bg-blue-500 text-white px-4 py-2 mb-4">
-            {selectedDateRange[0] && selectedDateRange[1] // 날짜가 선택되었을 때
+            onClick={() => setIsCalendarOpen(!isCalendarOpen)}
+            className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600 transition-all duration-300">
+            {selectedDateRange[0] && selectedDateRange[1]
               ? `${selectedDateRange[0].toLocaleDateString()} ~ ${selectedDateRange[1].toLocaleDateString()}`
-              : "날짜 선택"}{" "}
-            {/* 날짜가 선택되지 않았을 때 */}
+              : "날짜 선택"}
           </button>
 
           {/* 캘린더 표시 여부에 따라 렌더링 */}
@@ -283,8 +305,7 @@ function MateBoard() {
               <div className="absolute z-50 bg-white shadow-lg p-2">
                 <button
                   onClick={handleDateReset}
-                  className="absolute top-2 right-2 bg-green-500 text-white px-3 py-1 rounded hover:bg-green-700 transition duration-150"
-                >
+                  className="absolute top-2 right-2 bg-green-500 text-white px-3 py-1 rounded hover:bg-green-700 transition duration-150">
                   날짜 리셋
                 </button>
                 <Calendar
@@ -306,19 +327,17 @@ function MateBoard() {
                   nextLabel={
                     <FaChevronRight className="text-green-500 hover:text-green-700 transition duration-150 mx-auto" />
                   }
-                  
                   prev2Label={null}
                   next2Label={null}
-                  
-                    // <button
-                    //   onClick={(event) => {
-                    //     event.preventDefault()
-                    //     // handleDateReset()
-                    //     handleDateChange([new Date(), new Date()])
-                    //   }}
-                    //   className="text-black-500 hover:text-green-700 transition duration-150 mx-auto">
-                    //   오늘로
-                    // </button>
+                  // <button
+                  //   onClick={(event) => {
+                  //     event.preventDefault()
+                  //     // handleDateReset()
+                  //     handleDateChange([new Date(), new Date()])
+                  //   }}
+                  //   className="text-black-500 hover:text-green-700 transition duration-150 mx-auto">
+                  //   오늘로
+                  // </button>
                   //}  다음 달의 다음 달로 이동하는 버튼을 오늘로 이동하는 버튼으로 변경
                   tileContent={({ date }) => {
                     return (
@@ -333,7 +352,9 @@ function MateBoard() {
             )}
           </div>
         </div>
-        <button onClick={handleSearch} className="bg-blue-500 text-white px-4 py-2">
+        <button
+          onClick={handleSearch}
+          className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600 transition-all duration-300 mt-4">
           검색
         </button>
       </div>
@@ -343,7 +364,11 @@ function MateBoard() {
         <label htmlFor="sortBy" className="mr-2">
           정렬 기준:
         </label>
-        <select id="sortBy" value={sortBy} onChange={handleSortChange} className="border px-2 py-1">
+        <select
+          id="sortBy"
+          value={sortBy}
+          onChange={handleSortChange}
+          className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300">
           <option value="latest">최신순</option>
           <option value="viewCount">조회수순</option>
           <option value="likeCount">좋아요순</option>
