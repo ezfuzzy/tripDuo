@@ -84,7 +84,12 @@ public class JwtFilter extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(authToken);
 			}
 		}
-		System.out.println("[tripDuo log] jwt filter on :: " + new Date());
+		String curUsername = "unlogginedUser";
+		if(SecurityContextHolder.getContext().getAuthentication() != null) {
+			 curUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+		}
+		
+		System.out.println("[tripDuo log] jwt filter on :: " + new Date() + " :: #sch : " + curUsername + " :: #jwt : " + username);
 
 		// 다음 spring 필터 체인 진행하기
 		filterChain.doFilter(request, response);

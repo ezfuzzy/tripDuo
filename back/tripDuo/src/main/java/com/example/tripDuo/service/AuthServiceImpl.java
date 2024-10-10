@@ -33,6 +33,7 @@ import com.example.tripDuo.repository.OauthRepository;
 import com.example.tripDuo.repository.UserProfileInfoRepository;
 import com.example.tripDuo.repository.UserRepository;
 import com.example.tripDuo.repository.UserTripInfoRepository;
+import com.example.tripDuo.util.EncryptionUtil;
 import com.example.tripDuo.util.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -56,8 +57,10 @@ public class AuthServiceImpl implements AuthService {
 	private final UserProfileInfoRepository userProfileInfoRepo;
 	private final UserTripInfoRepository userTripInfoRepo;
 	private final OauthRepository oauthRepo;
+	
 	private final PhoneNumberVerificationService phoneNumberVerificationService;
-
+	private final EncryptionUtil encryptionUtil;
+	
 	@Value("${mailgun.key}")
 	private String MAIL_API_KEY;
 
@@ -87,13 +90,14 @@ public class AuthServiceImpl implements AuthService {
 	
 	@Value("${kakao.redirect.uri}")
 	private String KAKAO_REDIRECT_URI;
-
+	
 	public AuthServiceImpl(JwtUtil jwtUtil, AuthenticationManager authManager, 
 			PasswordEncoder encoder, UserRepository userRepo, 
 			UserProfileInfoRepository userProfileInfoRepo,
 			UserTripInfoRepository userTripInfoRepo,
 			OauthRepository oauthRepo,
-			PhoneNumberVerificationService phoneNumberVerificationService) {
+			PhoneNumberVerificationService phoneNumberVerificationService,
+			EncryptionUtil encryptionUtil) {
 		this.jwtUtil = jwtUtil;
 		this.authManager = authManager;
 		this.encoder = encoder;
@@ -102,6 +106,7 @@ public class AuthServiceImpl implements AuthService {
 		this.userTripInfoRepo = userTripInfoRepo;
 		this.oauthRepo = oauthRepo;
 		this.phoneNumberVerificationService = phoneNumberVerificationService;
+		this.encryptionUtil = encryptionUtil;
 	}
 
 	@Override
@@ -122,7 +127,7 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	@Transactional
-	public String signup(UserDto userDto) {
+	public String signup(UserDto userDto) throws Exception {
 
 		// ### username, nickname, password 유효성 체크 ###
 		
@@ -139,7 +144,11 @@ public class AuthServiceImpl implements AuthService {
 		userDto.setRole(UserRole.USER);
 		String encodedPwd = encoder.encode(userDto.getPassword());
 		userDto.setPassword(encodedPwd);
-				
+		
+		// 비밀번호 암호화
+        String encryptedPhoneNumber = encryptionUtil.encrypt(userDto.getEncryptedPhoneNumber());
+		userDto.setEncryptedPhoneNumber(encryptedPhoneNumber);
+        
 		User savedUser = userRepo.save(User.toEntity(userDto));
 		
 		UserProfileInfoDto upiDto = UserProfileInfoDto.builder()
@@ -156,7 +165,7 @@ public class AuthServiceImpl implements AuthService {
 
 		return "Bearer+" + token;
 	}
-
+	
 	// ### 휴대폰 인증 ###
 
 	@Override
@@ -217,6 +226,72 @@ public class AuthServiceImpl implements AuthService {
 				.asJson();
 		
 		return response.getBody();
+	}
+	
+	
+	// 기존 유저 find username, reset password
+	@Override
+    public boolean sendVerificationCodeToPhoneForExistingUser(String phoneNumber) throws Exception {
+		
+		// 0. 기존 휴대폰번호와 일치하는지 확인
+        String encryptedPhoneNumber = encryptionUtil.encrypt(phoneNumber);
+		
+        User foundUser = userRepo.findByEncryptedPhoneNumber(encryptedPhoneNumber);
+        
+        if (foundUser == null) {
+        	return false;
+        }
+		// 1. 인증번호 생성
+		String verificationCode = phoneNumberVerificationService.generateVerificationCode();
+
+		// 2. 인증번호와 휴대폰 번호를 저장
+		phoneNumberVerificationService.storeVerificationCode(phoneNumber, verificationCode);
+
+		// test code -
+		System.out.println("[AuthServiceImpl - sendVerificationCode] verificationCode : " + verificationCode);
+
+//		// ### 문자 전송 api ### 
+//		DefaultMessageService messageService = NurigoApp.INSTANCE.initialize(COOLSMS_KEY, COOLSMS_SECRET, "https://api.coolsms.co.kr");
+//		
+//		
+//		Message message = new Message();
+//		message.setFrom(send_number);
+//		message.setTo(phoneNumber);
+//		message.setText("[tripDuo] 인증코드 : " + verificationCode);
+//
+//		try {
+//		  messageService.send(message);
+//		} catch (NurigoMessageNotReceivedException exception) {
+//		  System.out.println(exception.getFailedMessageList());
+//		  System.out.println(exception.getMessage());
+//		} catch (Exception exception) {
+//		  System.out.println(exception.getMessage());
+//		}
+
+			return true;
+//		try {
+//			sendVerificationCodeToEmail(verificationCode);
+//		} catch (UnirestException e) {
+//			e.printStackTrace();
+//		}
+		
+	}
+	
+	@Override
+    public boolean verifyEncryptedPhoneNumber(String phoneNumber, String verificationCode) {
+		return phoneNumberVerificationService.verifyCode(phoneNumber, verificationCode);
+    }
+	
+	@Override
+    public String findUsernameByPhoneNumber(String phoneNumber) throws Exception {
+		
+        String encryptedPhoneNumber = encryptionUtil.encrypt(phoneNumber);
+		User foundUser = userRepo.findByEncryptedPhoneNumber(encryptedPhoneNumber);
+		if(foundUser == null) {
+			return "User not found";
+		} else {
+			return foundUser.getUsername();			
+		}
 	}
 	
 	// 카카오 회원 찾기
@@ -312,7 +387,7 @@ public class AuthServiceImpl implements AuthService {
 		User user = User.builder()
 						.username("kakao_" + kakaoProfile.getKakao_account().getEmail().split("@")[0])
 						.password(encoder.encode(OAUTHPASSWORD))
-						.phoneNumber(kakaoProfile.getKakao_account().getEmail())
+						.encryptedPhoneNumber(kakaoProfile.getKakao_account().getEmail())
 						.email(kakaoProfile.getKakao_account().getEmail())
 						.role(UserRole.USER)
 						.build();
@@ -351,7 +426,7 @@ public class AuthServiceImpl implements AuthService {
 		kakaoInfo2.put("email", kakaoProfile.getKakao_account().getEmail());
 		kakaoInfo2.put("kakaoToken", kakaoToken.getAccess_token());
 		kakaoInfo2.put("kakaoRefreshToken", kakaoToken.getRefresh_token());
-		kakaoInfo2.put("phonenum", user.getPhoneNumber());
+		kakaoInfo2.put("phonenum", user.getEncryptedPhoneNumber());
 
 		System.out.println("kakaoInfo2: " + kakaoInfo2.toString()); // 보기 좋게 출력
 		String token = jwtUtil.generateToken(user.getUsername());
@@ -484,7 +559,7 @@ public class AuthServiceImpl implements AuthService {
 		User user = User.builder()
 						.username("google_" + googleProfile.getEmail().split("@")[0])
 						.password(encoder.encode(OAUTHPASSWORD))
-						.phoneNumber(googleProfile.getEmail())
+						.encryptedPhoneNumber(googleProfile.getEmail())
 						.email(googleProfile.getEmail())
 						.role(UserRole.USER)
 						.build();
@@ -519,7 +594,7 @@ public class AuthServiceImpl implements AuthService {
 		googleInfo2.put("email", googleProfile.getEmail());
 		googleInfo2.put("googleToken", googleToken.getAccess_token());
 		googleInfo2.put("googleRefreshToken", googleToken.getRefresh_token());
-		googleInfo2.put("phonenum", user.getPhoneNumber());
+		googleInfo2.put("phonenum", user.getEncryptedPhoneNumber());
 
 		System.out.println("googleInfo2: " + googleInfo2.toString()); // 보기 좋게 출력
 		String token = jwtUtil.generateToken(user.getUsername());

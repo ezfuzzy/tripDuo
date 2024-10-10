@@ -28,6 +28,7 @@ import com.example.tripDuo.repository.UserFollowRepository;
 import com.example.tripDuo.repository.UserProfileInfoRepository;
 import com.example.tripDuo.repository.UserRepository;
 import com.example.tripDuo.repository.UserReviewRepository;
+import com.example.tripDuo.util.EncryptionUtil;
 import com.example.tripDuo.util.JwtUtil;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -46,10 +47,12 @@ public class UserServiceImpl implements UserService {
 	private final UserFollowRepository userFollowRepo;
 	private final UserReviewRepository userReviewRepo;
 	private final PasswordEncoder passwordEncoder;
+	private final EncryptionUtil encryptionUtil;
 	
 	public UserServiceImpl(JwtUtil jwtUtil, S3Service s3Service, UserRepository userRepo, 
 			UserProfileInfoRepository userProfileInfoRepo, UserFollowRepository userFollowRepo, 
-			PasswordEncoder passwordEncoder, UserReviewRepository userReviewRepo) {
+			PasswordEncoder passwordEncoder, UserReviewRepository userReviewRepo,
+			EncryptionUtil encryptionUtil) {
 		
 		this.jwtUtil = jwtUtil;
 		this.s3Service = s3Service;
@@ -58,6 +61,7 @@ public class UserServiceImpl implements UserService {
 		this.userFollowRepo = userFollowRepo;
 		this.userReviewRepo = userReviewRepo;
 		this.passwordEncoder = passwordEncoder;
+		this.encryptionUtil = encryptionUtil;
 	}
 
 	/**
@@ -84,8 +88,10 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserDto getUserByPhoneNumber(String phoneNumber) {
-		return UserDto.toDto(userRepo.findByPhoneNumber(phoneNumber));
+	public UserDto getUserByPhoneNumber(String phoneNumber) throws Exception {
+        String encryptedPhoneNumber = encryptionUtil.encrypt(phoneNumber);
+
+		return UserDto.toDto(userRepo.findByEncryptedPhoneNumber(encryptedPhoneNumber));
 	}
 
 	@Override
@@ -204,10 +210,19 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public Boolean checkExists(String checkType, String checkString) {
+		
+		if(checkType.equals("phoneNumber")) {
+			try {
+				checkString = encryptionUtil.encrypt(checkString);
+			} catch (Exception error) {
+				error.printStackTrace();
+			}
+		}
+		
 		return switch (checkType) {
 			case "username" -> userRepo.existsByUsername(checkString);
 			case "nickname" -> userProfileInfoRepo.existsByNickname(checkString);
-			case "phoneNumber" -> userRepo.existsByPhoneNumber(checkString);
+			case "phoneNumber" -> userRepo.existsByEncryptedPhoneNumber(checkString);
 			case "email" -> userRepo.existsByEmail(checkString);
 			default -> throw new IllegalArgumentException("잘못된 체크 타입입니다: " + checkType);
 		};

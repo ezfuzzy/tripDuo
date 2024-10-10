@@ -25,7 +25,7 @@ public class UserDto {
     private String newPassword;
     private String confirmPassword;
     
-    private String phoneNumber;
+    private String encryptedPhoneNumber;
     private String email; // [note: "인증 받으면 email 로그인 사용 가능"]
 
     private VerificationStatus verificationStatus; // [note: "인증 상태"]
@@ -50,7 +50,7 @@ public class UserDto {
                 .id(entity.getId())
                 .username(entity.getUsername())
                 .password(entity.getPassword())
-                .phoneNumber(entity.getPhoneNumber())
+                .encryptedPhoneNumber(entity.getEncryptedPhoneNumber())
                 .email(entity.getEmail())
                 .verificationStatus(entity.getVerificationStatus())
                 .accountStatus(entity.getAccountStatus())
