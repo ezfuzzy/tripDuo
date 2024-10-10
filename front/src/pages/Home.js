@@ -20,7 +20,7 @@ function Home() {
     setLoading(true)
     setTimeout(() => {
       setLoading(false)
-    }, 700)
+    }, 400)
   }, [])
   const [currentSlide, setCurrentSlide] = useState(0) // 현재 슬라이드 상태 추가
   const [matePosts, setMatePosts] = useState([]) // 메이트 게시물 상태
@@ -139,7 +139,7 @@ function Home() {
 
   return (
     <div className="container mx-auto px-8 bg-white min-h-screen">
-      {loading && <LoadingAnimation />}
+      {loading && <LoadingAnimation duration={0.3} />}
       <div className="my-12 relative">
         <header className="py-8 text-center">
           <h1 className="text-3xl font-bold text-green-600">국내 여행</h1>
