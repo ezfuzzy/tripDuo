@@ -527,7 +527,7 @@ function MateBoard() {
             return (
               <div
                 key={post.id}
-                className="bg-white rounded-lg shadow-md overflow-hidden"
+                className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer border border-green-600 hover:scale-105 transition duration-300 hover:shadow-xl"
                 onClick={() => handlePostClick(post.id)}>
                 {/* post.image가 없으면 cityImagePath 사용 */}
                 <img src={imagePath || "/placeholder.jpg"} alt={post.title} className="w-full h-48 object-cover" />
