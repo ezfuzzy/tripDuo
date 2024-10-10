@@ -133,19 +133,22 @@ public class TripDuoApplication {
 		upi10 = userProfileInfoRepo.save(upi10);
 
 		
-		Post p1 = Post.builder().userProfileInfo(upi6).type(PostType.MATE).title("제목입니다 111").content("내용입니다 111").country("한국").city("강릉").viewCount(123L).likeCount(18L).rating(81F).status(PostStatus.OPEN).build();
-		Post p2 = Post.builder().userProfileInfo(upi7).type(PostType.MATE).title("제목입니다 222").content("내용입니다 222").country("베트남").city("하노이").viewCount(234L).likeCount(28L).rating(23F).status(PostStatus.OPEN).build();
-		Post p3 = Post.builder().userProfileInfo(upi8).type(PostType.MATE).title("제목입니다 333").content("내용입니다 333").country("태국").city("방콕").viewCount(456L).likeCount(38L).rating(45F).status(PostStatus.CLOSED).build();
-		Post p4 = Post.builder().userProfileInfo(upi9).type(PostType.MATE).title("제목입니다 444").content("내용입니다 444").country("영국").city("런던").viewCount(345L).likeCount(78L).rating(88F).status(PostStatus.CLOSED).build();
-		Post p5 = Post.builder().userProfileInfo(upi10).type(PostType.MATE).title("제목입니다 555").content("내용입니다 555").country("프랑스").city("파리").viewCount(567L).likeCount(128L).rating(96F).status(PostStatus.OPEN).build();
-		Post p6 = Post.builder().userProfileInfo(upi6).type(PostType.MATE).title("제목입니다 666").content("내용입니다 666").country("스페인").city("바르셀로나").viewCount(789L).likeCount(98L).rating(72F).status(PostStatus.CLOSED).build();
+		Post p1 = Post.builder().userProfileInfo(upi6).type(PostType.MATE).title("메이트 구해용").content("내용입니다 111").country("한국").city("제주").viewCount(123L).likeCount(18L).status(PostStatus.OPEN).build();
+		Post p2 = Post.builder().userProfileInfo(upi7).type(PostType.MATE).title("착한 메이트 구해용").content("내용입니다 222").country("미국").city("로스앤젤레스").viewCount(234L).likeCount(28L).status(PostStatus.OPEN).build();
+		Post p3 = Post.builder().userProfileInfo(upi8).type(PostType.MATE).title("러시아 동행하실분").content("내용입니다 333").country("러시아").city("모스크바").viewCount(456L).likeCount(38L).status(PostStatus.CLOSED).build();
+		Post p4 = Post.builder().userProfileInfo(upi9).type(PostType.MATE).title("영국에서 피쉬앤 칩스 드실분").content("내용입니다 444").country("영국").city("런던").viewCount(345L).likeCount(78L).status(PostStatus.CLOSED).build();
+		Post p5 = Post.builder().userProfileInfo(upi10).type(PostType.MATE).title("같이 와인밭 가보실분ㅜㅜ 패키지라 2인 이상 필수에요").content("내용입니다 555").country("프랑스").city("파리").viewCount(567L).likeCount(128L).status(PostStatus.OPEN).build();
+		Post p6 = Post.builder().userProfileInfo(upi6).type(PostType.MATE).title("스페인 혼자가는데 무서워서 같이 가실 메이트 구해요").content("내용입니다 666").country("스페인").city("바르셀로나").viewCount(789L).likeCount(98L).status(PostStatus.CLOSED).build();
 		
 		Post p7 = Post.builder().userProfileInfo(upi6).type(PostType.COURSE).title("course 1").content("내용입니다 666").country("중국").city("상하이").status(PostStatus.CLOSED).build();
-		Post p8 = Post.builder().userProfileInfo(upi7).type(PostType.COURSE).title("course 2").content("내용입니다 666").country("영국").city("런던").viewCount(789L).likeCount(98L).rating(72F).status(PostStatus.CLOSED).build();
-		Post p9 = Post.builder().userProfileInfo(upi8).type(PostType.COURSE).title("course 3").content("내용입니다 666").country("프랑스").city("파리").viewCount(789L).likeCount(98L).rating(72F).status(PostStatus.DELETED).build();
-		Post p10 = Post.builder().userProfileInfo(upi9).type(PostType.COURSE).title("course 4").content("내용입니다 666").country("미국").city("로스앤젤레스").viewCount(789L).likeCount(98L).rating(72F).status(PostStatus.CLOSED).build();
-		Post p11 = Post.builder().userProfileInfo(upi10).type(PostType.COURSE).title("course 5").content("내용입니다 666").country("호주").city("멜버른").viewCount(789L).likeCount(98L).rating(72F).status(PostStatus.CLOSED).build();
-		
+		Post p8 = Post.builder().userProfileInfo(upi7).type(PostType.COURSE).title("course 2").content("내용입니다 666").country("영국").city("런던").viewCount(789L).likeCount(98L).rating(4.5F).status(PostStatus.CLOSED).build();
+		Post p9 = Post.builder().userProfileInfo(upi8).type(PostType.COURSE).title("course 3").content("내용입니다 666").country("프랑스").city("파리").viewCount(789L).likeCount(98L).rating(3.3F).status(PostStatus.DELETED).build();
+		Post p10 = Post.builder().userProfileInfo(upi9).type(PostType.COURSE).title("course 4").content("내용입니다 666").country("미국").city("로스앤젤레스").viewCount(789L).likeCount(98L).rating(4.7F).status(PostStatus.CLOSED).build();
+		Post p11 = Post.builder().userProfileInfo(upi10).type(PostType.COURSE).title("course 5").content("내용입니다 666").country("호주").city("멜버른").viewCount(789L).likeCount(98L).rating(4.8F).status(PostStatus.CLOSED).build();
+		Post p12 = Post.builder().userProfileInfo(upi10).type(PostType.COURSE).title("course 6").content("내용입니다 12").country("한국").city("인천").viewCount(789L).likeCount(98L).rating(3.6F).status(PostStatus.CLOSED).build();
+		Post p13 = Post.builder().userProfileInfo(upi10).type(PostType.COURSE).title("course 7").content("내용입니다 13").country("한국").city("제주").viewCount(789L).likeCount(98L).rating(4.9F).status(PostStatus.CLOSED).build();
+		Post p14 = Post.builder().userProfileInfo(upi10).type(PostType.COURSE).title("course 8").content("내용입니다 14").country("한국").city("서울").viewCount(789L).likeCount(98L).rating(3.9F).status(PostStatus.CLOSED).build();
+
 		postRepo.save(p1);
 		postRepo.save(p2);
 		postRepo.save(p3);
@@ -158,7 +161,10 @@ public class TripDuoApplication {
 		postRepo.save(p9);
 		postRepo.save(p10);
 		postRepo.save(p11);
-		
+		postRepo.save(p12);
+		postRepo.save(p13);
+		postRepo.save(p14);
+
 		LocalDateTime localTime = LocalDateTime.now(); 
 		// 1. 채팅방(ChatRoom) 생성
 		ChatRoom chatRoom1 = ChatRoom.builder().title("private Chat Room").type(ChatRoomType.ONE_ON_ONE).lastmessagetime(localTime).build();
