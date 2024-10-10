@@ -447,8 +447,8 @@ function MateBoard() {
                 <div className="absolute z-50 bg-white shadow-lg p-2">
                   <button
                     onClick={handleDateReset}
-                    className="absolute top-2 right-2 bg-green-500 text-white px-3 py-1 rounded hover:bg-green-700 transition duration-150">
-                    날짜 리셋
+                    className="text text-sm absolute top-8 right-20 bg-tripDuoGreen text-white px-2 py-1 rounded hover:bg-green-700 transition duration-150">
+                    today
                   </button>
                   <Calendar
                     selectRange={true}
