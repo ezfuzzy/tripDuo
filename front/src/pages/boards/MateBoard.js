@@ -554,7 +554,8 @@ function MateBoard() {
                   <p className="text-sm text-right text-green-800 font-semibold">
                     {post.country} - {post.city}
                   </p>
-                  <div className="flex mt-2 text-xs ml-auto text-gray-600 mr-1
+                  <div
+                    className="mt-2 text-xs text-right text-gray-600
                   ">
                     <span className="mx-3">
                       <FontAwesomeIcon icon={faEye} className="h-4 w-4 mr-1" />
@@ -564,7 +565,7 @@ function MateBoard() {
                       <FontAwesomeIcon icon={faHeart} className="h-4 w-4 mr-1" />
                       {post.likeCount}
                     </span>
-                    <span className="mr-3">
+                    <span className="">
                       <FontAwesomeIcon icon={faMessage} className="h-4 w-4 mr-1" />
                       {post.commentCount}
                     </span>
