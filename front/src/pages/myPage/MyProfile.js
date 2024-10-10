@@ -168,16 +168,20 @@ function MyProfile(props) {
 
         setReviewList(list);
 
-        console.log(res.data);
-
         // 접속된 사용자와 프로필 사용자의 id 가 같으면 Owner = true
         if (userId === res.data.userProfileInfo.userId) {
           setProfileOwner(true);
+        } else {
+          setProfileOwner(false)
         }
 
         const findReviewerId = res.data.userReviewList.find((item) => item.reviewerId === userId);
         // undefined = false / 이 외에 = true
         setReviewed(!!findReviewerId);
+
+        console.log(res.data.userProfileInfo.userId)
+        console.log(userId)
+        console.log(isProfileOwner)
       })
       .catch((error) => console.log(error));
   }, [id, userId]);
