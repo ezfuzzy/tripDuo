@@ -130,11 +130,7 @@ function HomeAbroad() {
       navigate("/", { replace: true })
     }
   }, [location, dispatch, navigate])
-
-  if (isLoading) {
-    return <p>로딩 중...</p>
-  }
-
+  
   return (
     <div className="container mx-auto px-8 bg-white min-h-screen">
       {loading && <LoadingAnimation />}
