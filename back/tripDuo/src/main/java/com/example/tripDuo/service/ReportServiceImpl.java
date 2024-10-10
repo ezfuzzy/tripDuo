@@ -117,6 +117,8 @@ public class ReportServiceImpl implements ReportService {
         switch (targetEnum) {
             case USER:
                 User reportedUser = userRepo.findById(targetId)
+                // orElseThrow : Optional 객체가 값을 가지고 있으면 그 값을 반환,
+                //               값이 없으면 예외 발생
                         .orElseThrow(() -> new EntityNotFoundException("신고 대상 사용자를 찾을 수 없습니다."));
                 reportRepo.save(ReportToUser.toEntity(userReportDto, reportedUser));
                 break;
@@ -182,7 +184,7 @@ public class ReportServiceImpl implements ReportService {
 
 		// 신고 정보 가져오기
         Page<Report> reports = reportRepo.findAll(ReportSpecification.searchReports(reportDto), pageable);
-        List<ReportDto> reportList = reports.stream().map(ReportDto::toDto).toList();
+        List<Report> reportList = reports.getContent();
 
 		// 총 행 수, 페이지 수 계산
         long totalRowCount = reports.getTotalElements();
@@ -194,6 +196,30 @@ public class ReportServiceImpl implements ReportService {
                 "totalRowCount", totalRowCount,
                 "totalReportPages", totalReportPages
         );
+    }
+
+    public Object getReportDetail(Long reportId) {
+        Report existReport = reportRepo.findById(reportId)
+                    .orElseThrow(() -> new EntityNotFoundException("신고를 찾을 수 없습니다."));
+        ReportDto existReportDto = ReportDto.toDto(existReport);
+
+        // 신고 대상의 정보 가져오기
+        Object targetInfo = switch (ReportTarget.fromString(existReportDto.getTargetType())) {
+            case USER -> userRepo.findById(existReportDto.getTargetId())
+                    .orElseThrow(() -> new EntityNotFoundException("신고 대상 사용자를 찾을 수 없습니다."));
+            case USER_REVIEW -> userReviewRepo.findById(existReportDto.getTargetId())
+                    .orElseThrow(() -> new EntityNotFoundException("신고 대상 리뷰를 찾을 수 없습니다."));
+            case POST -> postRepo.findById(existReportDto.getTargetId())
+                    .orElseThrow(() -> new EntityNotFoundException("신고 대상 게시글을 찾을 수 없습니다."));
+            case POST_COMMENT -> postCommentRepo.findById(existReportDto.getTargetId())
+                    .orElseThrow(() -> new EntityNotFoundException("신고 대상 댓글을 찾을 수 없습니다."));
+            case CHAT_ROOM -> chatRoomRepo.findById(existReportDto.getTargetId())
+                    .orElseThrow(() -> new EntityNotFoundException("신고 대상 채팅방을 찾을 수 없습니다."));
+            case CHAT_MESSAGE -> chatMessageRepo.findById(existReportDto.getTargetId())
+                    .orElseThrow(() -> new EntityNotFoundException("신고 대상 채팅 메시지를 찾을 수 없습니다."));
+        };
+
+        return targetInfo;
     }
 
     /**

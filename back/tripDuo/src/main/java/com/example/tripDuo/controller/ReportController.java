@@ -26,7 +26,7 @@ public class ReportController {
         this.reportService = reportService;
     }
 
-    // 어떤 유저(reporterId)가 다른 대상(targetId, targetType)을 신고하기
+    // 어떤 유저(reporterId)가 다른 대상(targetId, reportTarget)을 신고하기
     @PostMapping("/{targetId}/{reportTarget}/{reporterId}")
     public ResponseEntity<Map<String, Object>> report(@PathVariable("targetId") Long targetId,
                                                       @PathVariable("reportTarget") String target,
