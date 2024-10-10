@@ -284,16 +284,18 @@ function CommunityBoard() {
                       </span>
                     ))}
                 </div>
-                <Link to={`/posts/community/${item.id}/detail`} className="text-blue-500">
+                <div className="mt-2">
+                <Link to={`/posts/community/${item.id}/detail`} >
                   {item.title}
                 </Link>
+                </div>
               </div>
 
               {/* 두 번째 열: 작성자 */}
-              <div className="sm:text-center text-sm sm:col-span-1">{item.writer}</div>
+              <div className="sm:text-center text-sm sm:col-span-1 font-semibold text-gray-500">{item.writer}</div>
 
               {/* 세 번째 열: 작성일/수정일 */}
-              <div className="text-xs sm:text-center text-left">
+              <div className="text-xs sm:text-center text-left mr-5 sm:mr-1">
                 {item.updatedAt ? (
                   <span className="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded">
                     update
@@ -326,7 +328,7 @@ function CommunityBoard() {
         </ul>
 
         {/* 페이징 버튼 */}
-        <div className="flex justify-center space-x-2">
+        <div className="flex justify-center space-x-2 mt-5">
           <button
             onClick={() => paginate(currentPage - 1)}
             disabled={currentPage === 1}
