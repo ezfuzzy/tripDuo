@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import moment from "moment";
@@ -10,6 +10,7 @@ import LoadingAnimation from "../../components/LoadingAnimation";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Font Awesome 또는 원하는 아이콘 라이브러리 사용
 
 function MateBoard() {
+  const navigate = useNavigate();
   const calendarRef = useRef(null);
 
   //로딩 상태 추가
@@ -234,225 +235,393 @@ function MateBoard() {
     setPageData(sortedData); // 정렬된 데이터를 상태에 저장
   };
 
+  // 페이지 이동 핸들러
+  const paginate = (pageNum) => {
+    setCurrentPage(pageNum);
+    setSearchParams({ ...searchParams, pageNum });
+  };
+
+  // 현재 시간과 작성일을 비교해 '몇 시간 전' 또는 '몇 일 전'을 계산하는 함수
+  const getTimeDifference = (createdAt, updatedAt) => {
+    const postDate = new Date(updatedAt ? updatedAt : createdAt);
+    const now = new Date();
+    const timeDiff = now - postDate; // 시간 차이를 밀리초 단위로 계산
+
+    const diffInMinutes = Math.floor(timeDiff / (1000 * 60)); // 밀리초 -> 분
+    const diffInHours = Math.floor(timeDiff / (1000 * 60 * 60)); // 밀리초 -> 시간
+    const diffInDays = Math.floor(timeDiff / (1000 * 60 * 60 * 24)); // 밀리초 -> 일
+
+    if (diffInMinutes < 60) {
+      // 1시간 이내일 경우 '몇 분 전'
+      return `${diffInMinutes}분 전`;
+    } else if (diffInHours < 24) {
+      // 24시간 이내일 경우 '몇 시간 전'
+      return `${diffInHours}시간 전`;
+    } else {
+      // 24시간 이상일 경우 '몇 일 전'
+      return `${diffInDays}일 전`;
+    }
+  };
+
+  // 게시물 클릭 시 해당 게시물 상세 페이지로 이동
+  const handlePostClick = (id) => {
+    navigate(`/posts/mate/${id}/detail`);
+  };
+
+  // city 또는 country 값에 따른 이미지 파일명 변환 함수
+  const getImageFileName = (city, country) => {
+    const cityMapping = {
+      // 대한민국
+      서울: "KOR_Seoul_01",
+      부산: "KOR_Busan_01",
+      제주: "KOR_Jeju_01",
+      인천: "KOR_Incheon_01",
+      // 일본
+      도쿄: "JPN_Tokyo_01",
+      오사카: "JPN_Osaka_01",
+      교토: "JPN_Kyoto_01",
+      삿포로: "JPN_Sapporo_01",
+      // 중국
+      베이징: "CHN_Beijing_01",
+      상하이: "CHN_Shanghai_01",
+      광저우: "CHN_Guangzhou_01",
+      시안: "CHN_Xian_01",
+      // 인도
+      델리: "IND_Delhi_01",
+      뭄바이: "IND_Mumbai_01",
+      콜카타: "IND_Kolkata_01",
+      벵갈루루: "IND_Bengaluru_01",
+      // 영국
+      런던: "GBR_London_01",
+      맨체스터: "GBR_Manchester_01",
+      버밍엄: "GBR_Birmingham_01",
+      리버풀: "GBR_Liverpool_01",
+      // 독일
+      베를린: "DEU_Berlin_01",
+      뮌헨: "DEU_Munich_01",
+      프랑크푸르트: "DEU_Frankfurt_01",
+      함부르크: "DEU_Hamburg_01",
+      // 프랑스
+      파리: "FRA_Paris_01",
+      마르세유: "FRA_Marseille_01",
+      리옹: "FRA_Lyon_01",
+      니스: "FRA_Nice_01",
+      // 이탈리아
+      로마: "ITA_Rome_01",
+      밀라노: "ITA_Milan_01",
+      베네치아: "ITA_Venice_01",
+      피렌체: "ITA_Florence_01",
+      // 미국
+      뉴욕: "USA_NewYork_01",
+      로스앤젤레스: "USA_LosAngeles_01",
+      시카고: "USA_Chicago_01",
+      마이애미: "USA_Miami_01",
+      // 캐나다
+      토론토: "CAN_Toronto_01",
+      밴쿠버: "CAN_Vancouver_01",
+      몬트리올: "CAN_Montreal_01",
+      오타와: "CAN_Ottawa_01",
+      // 브라질
+      상파울루: "BRA_SaoPaulo_01",
+      리우데자네이루: "BRA_RioDeJaneiro_01",
+      브라질리아: "BRA_Brasilia_01",
+      살바도르: "BRA_Salvador_01",
+      // 호주
+      시드니: "AUS_Sydney_01",
+      멜버른: "AUS_Melbourne_01",
+      브리즈번: "AUS_Brisbane_01",
+      퍼스: "AUS_Perth_01",
+      // 러시아
+      모스크바: "RUS_Moscow_01",
+      상트페테르부르크: "RUS_SaintPetersburg_01",
+      노보시비르스크: "RUS_Novosibirsk_01",
+      예카테린부르크: "RUS_Yekaterinburg_01",
+      // 남아프리카 공화국
+      케이프타운: "ZAF_CapeTown_01",
+      요하네스버그: "ZAF_Johannesburg_01",
+      더반: "ZAF_Durban_01",
+      프리토리아: "ZAF_Pretoria_01",
+    };
+
+    const countryMapping = {
+      대한민국: "KOR_01",
+      일본: "JPN_01",
+      중국: "CHN_01",
+      인도: "IND_01",
+      영국: "GBR_01",
+      독일: "DEU_01",
+      프랑스: "FRA_01",
+      이탈리아: "ITA_01",
+      미국: "USA_01",
+      캐나다: "CAN_01",
+      브라질: "BRA_01",
+      호주: "AUS_01",
+      러시아: "RUS_01",
+      남아프리카공화국: "ZAF_01",
+    };
+
+    // city 값이 있으면 city에 맞는 이미지, 없으면 country에 맞는 이미지 반환
+    if (city && cityMapping[city]) {
+      return cityMapping[city];
+    } else if (country && countryMapping[country]) {
+      return countryMapping[country];
+    } else {
+      return "defaultImage"; // 매핑되지 않은 경우 기본값 처리
+    }
+  };
+
   return (
-    <div className="container mx-auto m-4">
+    <div className="container mx-auto p-4 max-w-[1024px]">
       {/* 로딩 애니메이션 */}
       {loading && <LoadingAnimation />}
-      <Link
-        className="px-4 py-2 text-sm font-medium rounded-md bg-green-600 text-gray-100 mr-3"
-        to={{ pathname: "/posts/mate/new", search: `?di=${domesticInternational}` }}>
-        새글 작성
-      </Link>
-      <button
-        className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
-        onClick={handleButtonClick}>
-        {pageTurn}
-      </button>
-      <h4 className="font-bold mb-4">{whereAreYou}</h4>
+      <div className="container mx-auto m-4">
+        <Link
+          className="px-4 py-2 text-sm font-medium rounded-md bg-green-600 text-gray-100 mr-3"
+          to={{ pathname: "/posts/mate/new", search: `?di=${domesticInternational}` }}>
+          새글 작성
+        </Link>
+        <button
+          className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
+          onClick={handleButtonClick}>
+          {pageTurn}
+        </button>
+        <h4 className="font-bold mb-4">{whereAreYou}</h4>
 
-      {/* 검색 조건 입력 폼 */}
-      <div className="my-4 space-y-4">
-        {/* 국가와 도시를 한 행으로 배치 */}
-        <div className="flex items-center gap-4">
-          {domesticInternational === "International" && (
+        {/* 검색 조건 입력 폼 */}
+        <div className="my-4 space-y-4">
+          {/* 국가와 도시를 한 행으로 배치 */}
+          <div className="flex items-center gap-4">
+            {domesticInternational === "International" && (
+              <input
+                type="text"
+                name="country"
+                value={searchCriteria.country}
+                onChange={handleSearchChange}
+                placeholder="국가"
+                className="border border-gray-300 rounded-md px-4 py-2 w-1/2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+              />
+            )}
+
             <input
               type="text"
-              name="country"
-              value={searchCriteria.country}
+              name="city"
+              value={searchCriteria.city}
               onChange={handleSearchChange}
-              placeholder="국가"
+              placeholder="도시"
               className="border border-gray-300 rounded-md px-4 py-2 w-1/2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
             />
-          )}
-
-          <input
-            type="text"
-            name="city"
-            value={searchCriteria.city}
-            onChange={handleSearchChange}
-            placeholder="도시"
-            className="border border-gray-300 rounded-md px-4 py-2 w-1/2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
-          />
-        </div>
-
-        {/* 제목/작성자 선택 필드 */}
-        <div className="flex items-center gap-4">
-          <select
-            value={searchCriteria.condition}
-            onChange={handleConditionChange}
-            className="border border-gray-300 rounded-md px-4 py-2 w-1/6 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300">
-            <option value="title">제목</option>
-            <option value="content">내용</option>
-            <option value="title_writer">제목 + 내용</option>
-          </select>
-
-          <input
-            type="text"
-            name={searchCriteria.condition}
-            value={searchCriteria[searchCriteria.condition]}
-            onChange={handleQueryChange}
-            placeholder={searchCriteria.condition}
-            className="border border-gray-300 rounded-md px-4 py-2 w-5/6 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
-          />
-        </div>
-        <div className="flex items-center space-x-2 mt-4">
-          <button
-            onClick={() => setIsCalendarOpen(!isCalendarOpen)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600 transition-all duration-300">
-            {selectedDateRange[0] && selectedDateRange[1]
-              ? `${selectedDateRange[0].toLocaleDateString()} ~ ${selectedDateRange[1].toLocaleDateString()}`
-              : "날짜 선택"}
-          </button>
-
-          {/* 캘린더 표시 여부에 따라 렌더링 */}
-          <div ref={calendarRef}>
-            {isCalendarOpen && (
-              <div className="absolute z-50 bg-white shadow-lg p-2">
-                <button
-                  onClick={handleDateReset}
-                  className="absolute top-2 right-2 bg-green-500 text-white px-3 py-1 rounded hover:bg-green-700 transition duration-150">
-                  날짜 리셋
-                </button>
-                <Calendar
-                  selectRange={true}
-                  className="w-full p-4 bg-white rounded-lg border-none" // 달력 컴포넌트의 테두리를 없애기 위해 border-none 추가
-                  onChange={handleDateChange}
-                  value={selectedDateRange || [new Date(), new Date()]} // 초기값 또는 선택된 날짜 범위
-                  minDetail="month" // 상단 네비게이션에서 '월' 단위만 보이게 설정
-                  maxDetail="month" // 상단 네비게이션에서 '월' 단위만 보이게 설정
-                  navigationLabel={null}
-                  showNeighboringMonth={false} //  이전, 이후 달의 날짜는 보이지 않도록 설정
-                  calendarType="hebrew" //일요일부터 보이도록 설정
-                  tileClassName={tileClassName} // 날짜 스타일 설정
-                  formatYear={(locale, date) => moment(date).format("YYYY")} // 네비게이션 눌렀을때 숫자 년도만 보이게
-                  formatMonthYear={(locale, date) => moment(date).format("YYYY. MM")} // 네비게이션에서 2023. 12 이렇게 보이도록 설정
-                  prevLabel={
-                    <FaChevronLeft className="text-green-500 hover:text-green-700 transition duration-150 mx-auto" />
-                  }
-                  nextLabel={
-                    <FaChevronRight className="text-green-500 hover:text-green-700 transition duration-150 mx-auto" />
-                  }
-                  prev2Label={null}
-                  next2Label={null}
-                  // <button
-                  //   onClick={(event) => {
-                  //     event.preventDefault()
-                  //     // handleDateReset()
-                  //     handleDateChange([new Date(), new Date()])
-                  //   }}
-                  //   className="text-black-500 hover:text-green-700 transition duration-150 mx-auto">
-                  //   오늘로
-                  // </button>
-                  //}  다음 달의 다음 달로 이동하는 버튼을 오늘로 이동하는 버튼으로 변경
-                  tileContent={({ date }) => {
-                    return (
-                      <span className={date.getDay() === 0 || date.getDay() === 6 ? "text-red-500" : "text-black"}>
-                        {date.getDate()} {/* 날짜 숫자만 표시 */}
-                      </span>
-                    );
-                  }} // 날짜 내용 설정
-                  formatDay={() => null}
-                />
-              </div>
-            )}
           </div>
-        </div>
-        <button
-          onClick={handleSearch}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600 transition-all duration-300 mt-4">
-          검색
-        </button>
-      </div>
 
-      {/* 검색 정렬 기준 다운바 */}
-      <div className="my-4">
-        <label htmlFor="sortBy" className="mr-2">
-          정렬 기준:
-        </label>
-        <select
-          id="sortBy"
-          value={sortBy}
-          onChange={handleSortChange}
-          className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300">
-          <option value="latest">최신순</option>
-          <option value="viewCount">조회수순</option>
-          <option value="likeCount">좋아요순</option>
-        </select>
-      </div>
+          {/* 제목/작성자 선택 필드 */}
+          <div className="flex items-center gap-4">
+            <select
+              value={searchCriteria.condition}
+              onChange={handleConditionChange}
+              className="border border-gray-300 rounded-md px-4 py-2 w-1/6 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300">
+              <option value="title">제목</option>
+              <option value="content">내용</option>
+              <option value="title_writer">제목 + 내용</option>
+            </select>
 
-      {/* 메이트 게시판 테이블 */}
-      <table className="table-auto w-full border divide-y divide-x divide-gray-200">
-        <thead className="text-center">
-          <tr>
-            <th>번호</th>
-            <th>제목</th>
-            <th>작성자</th>
-            <th>날짜</th>
-            <th>작성일</th>
-            <th>조회수/댓글수/좋아요</th>
-          </tr>
-        </thead>
-        <tbody className="text-center divide-y">
-          {pageData.map((item) => (
-            <tr key={item.id}>
-              <td>{item.id}</td>
-              <td className="text-left">
-                <div className="flex flex-wrap gap-2 mt-2">
-                  <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">{`#${item.country}`}</span>
-                  <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">{`#${item.city}`}</span>
-                  {item.tags &&
-                    item.tags.map((tag, index) => (
-                      <span
-                        key={index}
-                        className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center">
-                        {tag}
-                      </span>
-                    ))}
+            <input
+              type="text"
+              name={searchCriteria.condition}
+              value={searchCriteria[searchCriteria.condition]}
+              onChange={handleQueryChange}
+              placeholder={searchCriteria.condition}
+              className="border border-gray-300 rounded-md px-4 py-2 w-5/6 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+            />
+          </div>
+          <div className="flex items-center space-x-2 mt-4">
+            <button
+              onClick={() => setIsCalendarOpen(!isCalendarOpen)}
+              className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600 transition-all duration-300">
+              {selectedDateRange[0] && selectedDateRange[1]
+                ? `${selectedDateRange[0].toLocaleDateString()} ~ ${selectedDateRange[1].toLocaleDateString()}`
+                : "날짜 선택"}
+            </button>
+
+            {/* 캘린더 표시 여부에 따라 렌더링 */}
+            <div ref={calendarRef}>
+              {isCalendarOpen && (
+                <div className="absolute z-50 bg-white shadow-lg p-2">
+                  <button
+                    onClick={handleDateReset}
+                    className="absolute top-2 right-2 bg-green-500 text-white px-3 py-1 rounded hover:bg-green-700 transition duration-150">
+                    날짜 리셋
+                  </button>
+                  <Calendar
+                    selectRange={true}
+                    className="w-full p-4 bg-white rounded-lg border-none" // 달력 컴포넌트의 테두리를 없애기 위해 border-none 추가
+                    onChange={handleDateChange}
+                    value={selectedDateRange || [new Date(), new Date()]} // 초기값 또는 선택된 날짜 범위
+                    minDetail="month" // 상단 네비게이션에서 '월' 단위만 보이게 설정
+                    maxDetail="month" // 상단 네비게이션에서 '월' 단위만 보이게 설정
+                    navigationLabel={null}
+                    showNeighboringMonth={false} //  이전, 이후 달의 날짜는 보이지 않도록 설정
+                    calendarType="hebrew" //일요일부터 보이도록 설정
+                    tileClassName={tileClassName} // 날짜 스타일 설정
+                    formatYear={(locale, date) => moment(date).format("YYYY")} // 네비게이션 눌렀을때 숫자 년도만 보이게
+                    formatMonthYear={(locale, date) => moment(date).format("YYYY. MM")} // 네비게이션에서 2023. 12 이렇게 보이도록 설정
+                    prevLabel={
+                      <FaChevronLeft className="text-green-500 hover:text-green-700 transition duration-150 mx-auto" />
+                    }
+                    nextLabel={
+                      <FaChevronRight className="text-green-500 hover:text-green-700 transition duration-150 mx-auto" />
+                    }
+                    prev2Label={null}
+                    next2Label={null}
+                    // <button
+                    //   onClick={(event) => {
+                    //     event.preventDefault()
+                    //     // handleDateReset()
+                    //     handleDateChange([new Date(), new Date()])
+                    //   }}
+                    //   className="text-black-500 hover:text-green-700 transition duration-150 mx-auto">
+                    //   오늘로
+                    // </button>
+                    //}  다음 달의 다음 달로 이동하는 버튼을 오늘로 이동하는 버튼으로 변경
+                    tileContent={({ date }) => {
+                      return (
+                        <span className={date.getDay() === 0 || date.getDay() === 6 ? "text-red-500" : "text-black"}>
+                          {date.getDate()} {/* 날짜 숫자만 표시 */}
+                        </span>
+                      );
+                    }} // 날짜 내용 설정
+                    formatDay={() => null}
+                  />
                 </div>
-                <Link to={`/posts/mate/${item.id}/detail`}>{item.title}</Link>
-              </td>
-              <td>{item.writer}</td>
-              <td>
-                {item.startDate} ~ {item.endDate}
-              </td>
-              <td className="text-xs ">
-                {item.updatedAt ? (
-                  <span className="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded">
-                    update
-                  </span>
-                ) : (
-                  <span className="px-8"></span>
-                )}
-                {new Date(item.updatedAt ? item.updatedAt : item.createdAt).toLocaleDateString("ko-KR", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour: "numeric",
-                  minute: "numeric",
-                  second: "numeric",
-                })}
-              </td>
-              {/* 조회수, 좋아요, 덧글 수 */}
-              <td>
-                <span className="text-sm text-gray-500">
-                  <span className="mx-3">
-                    <FontAwesomeIcon icon={faEye} className="h-4 w-4 mr-2" />
-                    {item.viewCount}
-                  </span>
-                  <span className="mr-3">
-                    <FontAwesomeIcon icon={faHeart} className="h-4 w-4 mr-2" />
-                    {item.likeCount}
-                  </span>
-                  <span className="mr-3">
-                    <FontAwesomeIcon icon={faMessage} className="h-4 w-4 mr-2" />
-                    {item.commentCount}
-                  </span>
-                </span>
-              </td>
-            </tr>
+              )}
+            </div>
+          </div>
+          <button
+            onClick={handleSearch}
+            className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600 transition-all duration-300 mt-4">
+            검색
+          </button>
+        </div>
+
+        {/* 검색 정렬 기준 다운바 */}
+        <div className="my-4">
+          <label htmlFor="sortBy" className="mr-2">
+            정렬 기준:
+          </label>
+          <select
+            id="sortBy"
+            value={sortBy}
+            onChange={handleSortChange}
+            className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300">
+            <option value="latest">최신순</option>
+            <option value="viewCount">조회수순</option>
+            <option value="likeCount">좋아요순</option>
+          </select>
+        </div>
+
+        {/* 메이트 게시판 테이블 */}
+        {/* 카드 리스트 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {pageData.map((post) => {
+            // 변환된 city 또는 country 값을 사용하여 이미지 경로 설정
+            const imageFileName = getImageFileName(post.city, post.country);
+            const imagePath = `/img/countryImages/${imageFileName}.jpg`;
+            return (
+              <div
+                key={post.id}
+                className="bg-white rounded-lg shadow-md overflow-hidden"
+                onClick={() => handlePostClick(post.id)}>
+                {/* post.image가 없으면 cityImagePath 사용 */}
+                <img src={imagePath || "/placeholder.jpg"} alt={post.title} className="w-full h-48 object-cover" />
+                <div className="p-4">
+                  <h2 className="text-lg font-bold">{post.title}</h2>
+                  <p className="text-sm text-gray-600">작성자: {post.writer}</p>
+                  <p className="text-sm text-gray-600">작성일: {getTimeDifference(post.createdAt, post.updatedAt)}</p>
+                  <p className="text-sm text-gray-600">
+                    {post.startDate === null
+                      ? "설정하지 않았습니다."
+                      : new Date(post.startDate).toLocaleDateString("ko-KR", {
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                        })}
+                    {post.endDate === null
+                      ? ""
+                      : ` ~ ${new Date(post.endDate).toLocaleDateString("ko-KR", {
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                        })}`}
+                  </p>
+                  <p className="text-sm text-right text-green-800 font-semibold">
+                    {post.country} - {post.city}
+                  </p>
+                  <div className="flex mt-2 text-xs ml-auto text-gray-600 mr-1
+                  ">
+                    <span className="mx-3">
+                      <FontAwesomeIcon icon={faEye} className="h-4 w-4 mr-1" />
+                      {post.viewCount}
+                    </span>
+                    <span className="mr-3">
+                      <FontAwesomeIcon icon={faHeart} className="h-4 w-4 mr-1" />
+                      {post.likeCount}
+                    </span>
+                    <span className="mr-3">
+                      <FontAwesomeIcon icon={faMessage} className="h-4 w-4 mr-1" />
+                      {post.commentCount}
+                    </span>
+                  </div>
+                  <div className="mt-3">
+                    <div className="flex flex-wrap gap-1">
+                      {post.tags &&
+                        post.tags.map((tag, index) => (
+                          <span
+                            key={index}
+                            className="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded">
+                            {tag}
+                          </span>
+                        ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* 페이징 버튼 */}
+        <div className="flex justify-center space-x-2">
+          <button
+            onClick={() => paginate(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`px-4 py-2 rounded ${
+              currentPage === 1 ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-gray-300 text-gray-700"
+            }`}>
+            &lt;
+          </button>
+          {/* totalPages만큼 배열 생성 */}
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
+            <button
+              key={number}
+              onClick={() => paginate(number)}
+              className={`px-4 py-2 rounded ${
+                currentPage === number ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-700"
+              }`}>
+              {number}
+            </button>
           ))}
-        </tbody>
-      </table>
+          <button
+            onClick={() => paginate(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className={`px-4 py-2 rounded ${
+              currentPage === totalPages ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-gray-300 text-gray-700"
+            }`}>
+            &gt;
+          </button>
+        </div>
+
+        <p className="mt-4 text-center">
+          <strong>{pageData.length}</strong>개의 글이 있습니다.
+        </p>
+      </div>
     </div>
   );
 }
