@@ -66,6 +66,10 @@ function HomeAbroad() {
     navigate(`/posts/course?di=${destination}`)
   }
 
+  const navigateToCommunity = (destination) => {
+    navigate(`/posts/community?di=${destination}`)
+  }
+
   const navigateToPage = (path) => {
     navigate(path)
   }
@@ -130,7 +134,7 @@ function HomeAbroad() {
       navigate("/", { replace: true })
     }
   }, [location, dispatch, navigate])
-  
+
   return (
     <div className="container mx-auto px-8 bg-white min-h-screen">
       {loading && <LoadingAnimation />}
@@ -223,6 +227,28 @@ function HomeAbroad() {
             <span className="absolute inset-0 flex items-center justify-center text-white text-lg font-bold">국내</span>
           </div>
           <div className="relative min-w-[80px] cursor-pointer" onClick={() => navigateToCourse("International")}>
+            <img
+              src="https://picsum.photos/80/80?random=2"
+              alt="해외"
+              className="rounded-full border-2 border-white shadow-md"
+            />
+            <span className="absolute inset-0 flex items-center justify-center text-white text-lg font-bold">해외</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between mb-8 p-4 bg-green-300 rounded-lg shadow-lg">
+        <h3 className="text-xl font-semibold text-white">커뮤니티</h3>
+        <div className="flex space-x-4">
+          <div className="relative min-w-[80px] cursor-pointer" onClick={() => navigateToCommunity("Domestic")}>
+            <img
+              src="https://picsum.photos/80/80?random=1"
+              alt="국내"
+              className="rounded-full border-2 border-white shadow-md"
+            />
+            <span className="absolute inset-0 flex items-center justify-center text-white text-lg font-bold">국내</span>
+          </div>
+          <div className="relative min-w-[80px] cursor-pointer" onClick={() => navigateToCommunity("International")}>
             <img
               src="https://picsum.photos/80/80?random=2"
               alt="해외"
