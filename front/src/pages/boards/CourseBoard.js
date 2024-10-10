@@ -89,7 +89,7 @@ function CourseBoard() {
         //국내코스, 해외코스 필터
         const filteredPageInfo = res.data.list.filter((item) => {
 
-          const matchesDomesticInternational = diValue === "Domestic" ? item.country === "Korea" : item.country !== "Korea"
+          const matchesDomesticInternational = diValue === "Domestic" ? item.country === "대한민국" : item.country !== "대한민국"
           if (!matchesDomesticInternational) return false
 
           const matchesCountry = searchCriteria.country ? item.country.includes(searchCriteria.country) : true
@@ -361,19 +361,19 @@ function CourseBoard() {
 
     const countryMapping = {
       "대한민국": "KOR_01",
-      "Japan": "JPN_01",
-      "China": "CHN_01",
-      "India": "IND_01",
-      "United Kingdom": "GBR_01",
-      "Germany": "DEU_01",
-      "France": "FRA_01",
-      "Italy": "ITA_01",
-      "United States": "USA_01",
-      "Canada": "CAN_01",
-      "Brazil": "BRA_01",
-      "Australia": "AUS_01",
-      "Russia": "RUS_01",
-      "South Africa": "ZAF_01",
+      "일본": "JPN_01",
+      "중국": "CHN_01",
+      "인도": "IND_01",
+      "영국": "GBR_01",
+      "독일": "DEU_01",
+      "프랑스": "FRA_01",
+      "이탈리아": "ITA_01",
+      "미국": "USA_01",
+      "캐나다": "CAN_01",
+      "브라질": "BRA_01",
+      "호주": "AUS_01",
+      "러시아": "RUS_01",
+      "남아프리카공화국": "ZAF_01",
     };
 
     // city 값이 있으면 city에 맞는 이미지, 없으면 country에 맞는 이미지 반환
