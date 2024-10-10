@@ -41,7 +41,7 @@ public class User {
     private String password;
     
     @Column(nullable = false)
-    private String phoneNumber;
+    private String encryptedPhoneNumber;
     private String email; // [note: "인증 받으면 email 로그인 사용 가능 ?? "]
     
     @Enumerated(EnumType.STRING)
@@ -79,7 +79,7 @@ public class User {
                 .id(dto.getId())
                 .username(dto.getUsername())
                 .password(dto.getPassword())
-                .phoneNumber(dto.getPhoneNumber())
+                .encryptedPhoneNumber(dto.getEncryptedPhoneNumber())
                 .email(dto.getEmail())
                 .verificationStatus(dto.getVerificationStatus())
                 .accountStatus(dto.getAccountStatus())

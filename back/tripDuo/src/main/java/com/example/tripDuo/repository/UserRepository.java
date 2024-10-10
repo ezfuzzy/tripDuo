@@ -6,11 +6,11 @@ import com.example.tripDuo.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 	User findByUsername(String username);
-	User findByPhoneNumber(String phoneNumber);
+	User findByEncryptedPhoneNumber(String encryptedPhoneNumber);
 	User findByEmail(String email);
 
 	// username 중복 여부 체크
 	boolean existsByUsername(String username);
-	boolean existsByPhoneNumber(String phoneNumber);
+	boolean existsByEncryptedPhoneNumber(String phoneNumber);
 	boolean existsByEmail(String email);
 }

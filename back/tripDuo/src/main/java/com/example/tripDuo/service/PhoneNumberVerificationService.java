@@ -18,7 +18,7 @@ public class PhoneNumberVerificationService {
 	
 	private final ConcurrentHashMap<String, VerificationData> verificationMap = new ConcurrentHashMap<>();
 	private final SecureRandom secureRandom = new SecureRandom();
-	private static final int CODE_VALIDITY_DURATION = 3; // in minutes
+	private static final int CODE_VALIDITY_DURATION = 3; // in 3 minutes
 
 	public String generateVerificationCode() {
 	    int verificationCode = secureRandom.nextInt(900000) + 100000; // 6자리 숫자 생성 (100000 ~ 999999)
@@ -37,6 +37,7 @@ public class PhoneNumberVerificationService {
 		if (data != null && isCodeValid(data.getTimestamp())) {
 			return data.getHashedCode().equals(hashCode(code));
 		}
+		// 맞으면 삭제 + 일정 횟수 틀리면 삭제 
 		return false;
 	}
 

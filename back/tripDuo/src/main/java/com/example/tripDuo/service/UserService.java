@@ -19,7 +19,7 @@ public interface UserService {
 	
 	public UserDto getUserById(Long userId);
 	public UserDto getUserByUsername(String username);
-	public UserDto getUserByPhoneNumber(String phone_num);
+	public UserDto getUserByPhoneNumber(String phone_num) throws Exception ;
 	public UserDto getUserByEmail(String email);
 
 	// ### getUserProfileInfo ###
