@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
-import { useLocation, useNavigate, useParams } from "react-router";
-import { shallowEqual, useSelector } from "react-redux";
-import useWebSocket from "../components/useWebSocket";
-import Modal from "react-modal"; // 모달 라이브러리 추가
-
+import React, { useState, useEffect, useRef } from "react"
+import axios from "axios"
+import { useLocation, useNavigate, useParams } from "react-router"
+import { shallowEqual, useSelector } from "react-redux"
+import useWebSocket from "../components/useWebSocket"
+import Modal from "react-modal" // 모달 라이브러리 추가
 // 모달 스타일 설정
 const customStyles = {
   content: {
@@ -15,177 +14,138 @@ const customStyles = {
     marginRight: "-50%",
     transform: "translate(-50%, -50%)",
   },
-};
+}
+//프로필 이미지 스타일
+const profileStyle = {
+  width: "30px",
+  height: "30px",
+  border: "1px solid #cecece",
+  borderRadius: "50%",
+}
 
 function ChatRoom() {
-  const {
-    stompClient,
-    messages,
-    setMessages,
-    notifications,
-    setNotifications,
-  } = useWebSocket();
-
-  const [newMessage, setNewMessage] = useState("");
-  const [chatRooms, setChatRooms] = useState([]);
-  const [notification, setNotification] = useState("");
-  const { id: roomId } = useParams(); // useParams 훅을 사용하여 id를 roomId로 가져옴
-  const [currentRoomId, setCurrentRoomId] = useState();
-  const [participantsList, setParticipantsList] = useState([]); // 사용자 목록
-  const navigate = useNavigate();
-  const [selectedUser, setSelectedUser] = useState(""); // 선택된 사용자
-  const [selectedUsers, setSelectedUsers] = useState([]); // 다중 선택된 사용자
-  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
-  const [modalType, setModalType] = useState(""); // 모달 타입 (1:1 또는 그룹)
-  const [subscribedRoomIds, setSubscribedRoomIds] = useState([]); // 내가 구독한 목록
-  const currentUserId = useSelector((state) => state.userData.id, shallowEqual); // 유저네임 불러오기
-  const CurrentUsername = useSelector(
-    (state) => state.userData.username,
-    shallowEqual
-  );
-  const currentUserNickname = useSelector(
-    (state) => state.userData.nickname,
-    shallowEqual
-  );
-  const currentUserProfilePicture = useSelector(
-    (state) => state.userData.profilePicture,
-    shallowEqual
-  );
-  const location = useLocation();
+  const { stompClient, messages, setMessages, notifications, setNotifications } = useWebSocket()
+  const [PROFILE_PICTURE_CLOUDFRONT_URL, setCloudfrontUrl] = useState("")
+  const [newMessage, setNewMessage] = useState("")
+  const [chatRooms, setChatRooms] = useState([])
+  const [notification, setNotification] = useState("")
+  const { id: roomId } = useParams() // useParams 훅을 사용하여 id를 roomId로 가져옴
+  const [currentRoomId, setCurrentRoomId] = useState()
+  const [participantsList, setParticipantsList] = useState([]) // 사용자 목록
+  const navigate = useNavigate()
+  const [selectedUser, setSelectedUser] = useState("") // 선택된 사용자
+  const [selectedUsers, setSelectedUsers] = useState([]) // 다중 선택된 사용자
+  const [isModalOpen, setIsModalOpen] = useState(false) // 모달 상태
+  const [modalType, setModalType] = useState("") // 모달 타입 (1:1 또는 그룹)
+  const [subscribedRoomIds, setSubscribedRoomIds] = useState([]) // 내가 구독한 목록
+  const currentUserId = useSelector((state) => state.userData.id, shallowEqual) // 유저네임 불러오기
+  const CurrentUsername = useSelector((state) => state.userData.username, shallowEqual)
+  const currentUserNickname = useSelector((state) => state.userData.nickname, shallowEqual)
+  const currentUserProfilePicture = useSelector((state) => state.userData.profilePicture, shallowEqual)
+  const location = useLocation()
   const [userProfileInfo, setUserProfileInfo] = useState({
     id: currentUserId,
     nickname: currentUserNickname,
     profilePicture: currentUserProfilePicture,
-  });
-
-  const chatMessageSave = (roomId) => {
-    console.log("Sending request to save messages for room:", roomId); // 요청 전 확인
-
-    axios
-      .post(`/api/chat/rooms/${roomId}/saveMessage`, { message: newMessage })
-      .then((response) => {
-        console.log("메시지가 저장되었습니다.");
-      })
-      .catch((error) => {
-        console.error("메시지 저장 중 오류 발생:", error);
-      });
-  };
-
-  useEffect(() => {
-    console.log(`Current roomId: ${roomId}`); // roomId가 잘 들어오는지 확인
-
-    if (roomId) {
-      chatMessageSave(roomId);
-      console.log(`ChatRoom ID가 변경되었습니다: ${roomId}`);
-    }
-  }, [roomId]);
+  })
 
   // 채팅방 생성 상태를 초기화하는 함수
   const initializeChatRoom = () => ({
     type: modalType === "ONE_ON_ONE" ? "ONE_ON_ONE" : "GROUP",
-    title:
-      modalType === "ONE_ON_ONE"
-        ? `${userProfileInfo.nickname}와 ${selectedUser}의 1:1 채팅`
-        : "그룹 채팅",
+    title: modalType === "ONE_ON_ONE" ? `${userProfileInfo.nickname}와 ${selectedUser}의 1:1 채팅` : "그룹 채팅",
     ownerId: currentUserId,
-    participantsList:
-      modalType === "ONE_ON_ONE"
-        ? [currentUserId, selectedUser]
-        : [currentUserId, ...selectedUsers],
+    participantsList: modalType === "ONE_ON_ONE" ? [currentUserId, selectedUser] : [currentUserId, ...selectedUsers],
     // createdAt : new Date().toLocaleString()
-  });
+  })
 
-  // 채팅방 목록을 불러오기 위한 useEffect
+  // 채팅방 목록 및 사용자 맞팔 user 리스트 불러오기
   useEffect(() => {
     axios
       .get("/api/chat/rooms", { params: { userId: currentUserId } })
       .then((response) => {
-        setChatRooms(response.data);
+        setChatRooms(response.data)
       })
       .catch((error) => {
-        console.error("Error fetching chat rooms", error);
-      });
+        console.error("Error fetching chat rooms", error)
+      })
 
     axios
       .get("/api/chat/rooms/users", { params: { userId: currentUserId } })
       .then((response) => {
-        setParticipantsList(response.data); // 사용자 목록 설정
-        console.log("Participants List:", response.data);
+        setParticipantsList(response.data) // 사용자 목록 설정
+        console.log("Participants List:", response.data)
       })
       .catch((error) => {
-        console.error("Error fetching users", error);
-      });
-  }, [currentUserId]);
+        console.error("Error fetching users", error)
+      })
+  }, [currentUserId])
 
-  // 알림 구독
+  // 알림 구독, roomId 변경시 채팅방 목록 다시 가져오기
   useEffect(
     (room) => {
       if (stompClient && stompClient.connected) {
         if (!subscribedRoomIds.includes(roomId)) {
           stompClient.subscribe("/notification", (message) => {
-            const parsedNotification = JSON.parse(message.body);
+            const parsedNotification = JSON.parse(message.body)
 
             if (parsedNotification.type === "CHATROOM") {
               // 새로운 채팅방이 생성되었을 때 채팅방 목록을 업데이트
               axios
                 .get("/api/chat/rooms", { params: { userId: currentUserId } })
                 .then((response) => {
-                  setChatRooms(response.data);
+                  setChatRooms(response.data)
                 })
                 .catch((error) => {
-                  console.error("Error fetching chat rooms", error);
-                });
+                  console.error("Error fetching chat rooms", error)
+                })
             }
-            // window.location.reload();
 
-            setNotifications((prevNotifications) => [
-              ...prevNotifications,
-              parsedNotification,
-            ]);
-          });
+            setNotifications((prevNotifications) => [...prevNotifications, parsedNotification])
+          })
         }
       }
     },
     [stompClient, chatRooms, subscribedRoomIds]
-  );
+  )
 
   // 채팅방 메세지 전송 구독 설정
   useEffect(() => {
     if (stompClient) {
       chatRooms.forEach((room) => {
         if (!subscribedRoomIds.includes(room.id)) {
-          const topic =
-            room.type === "ONE_ON_ONE"
-              ? `/user/private/${room.id}`
-              : `/topic/group/${room.id}`;
+          const topic = room.type === "ONE_ON_ONE" ? `/user/private/${room.id}` : `/topic/group/${room.id}`
           stompClient.subscribe(topic, (message) => {
-            const parsedMessage = JSON.parse(message.body);
-            setMessages((prevMessages) => [...prevMessages, parsedMessage]);
-          });
-          setSubscribedRoomIds((prevIds) => [...prevIds, room.id]);
-          subscribedRoomIds.push(roomId); // 구독한 방 ID를 기록
+            const parsedMessage = JSON.parse(message.body)
+            setMessages((prevMessages) => [...prevMessages, parsedMessage])
+          })
+          setSubscribedRoomIds((prevIds) => [...prevIds, room.id])
+          subscribedRoomIds.push(roomId) // 구독한 방 ID를 기록
         }
-      });
+      })
     }
-  }, [stompClient, chatRooms, subscribedRoomIds]);
+  }, [stompClient, chatRooms, subscribedRoomIds])
 
   useEffect(() => {
     if (location.state && location.state.chatRooms.id) {
-      console.log("#################");
-      console.log(location.state.chatRooms.id);
-      console.log(location.state.chatRooms.type);
-      selectRoom(location.state.chatRooms.id);
+      selectRoom(location.state.chatRooms.id)
     }
-  });
+  })
+
+  useEffect(() => {
+    console.log(`Current roomId: ${roomId}`) // roomId가 잘 들어오는지 확인
+
+    if (roomId) {
+      chatMessageSave(roomId)
+      console.log(`ChatRoom ID가 변경되었습니다: ${roomId}`)
+    }
+  }, [roomId])
 
   const createChatRoom = (chatRoom) => {
     if (stompClient && stompClient.connected) {
       axios
         .post("/api/chat/rooms", chatRoom)
         .then((response) => {
-          const newRoom = response.data;
-          console.log(newRoom);
-          console.log("####################", selectedUser);
+          const newRoom = response.data
 
           // 새로운 방이 생성되었음을 알리는 알림 추가
           const notification = {
@@ -193,87 +153,85 @@ function ChatRoom() {
             type: "CHATROOM",
             roomId: newRoom.id, // 추가된 부분
             timestamp: new Date().toLocaleString(),
-          };
+          }
 
-          console.log(notification);
-          stompClient.publish({
-            destination: `/app/notification`,
-            body: JSON.stringify(notification),
-          });
+          console.log(notification)
+          if (!subscribedRoomIds.includes(newRoom.id)) {
+            stompClient.publish({
+              destination: `/app/notification`,
+              body: JSON.stringify(notification),
+            })
 
-          // 생성된 채팅방 구독 설정
-          const chatRoomTopic =
-            newRoom.type === "ONE_ON_ONE"
-              ? `/user/newroom/private/${newRoom.id}`
-              : `/topic/newroom/group/${newRoom.id}`;
-          stompClient.subscribe(chatRoomTopic, (chatRoom) => {
-            const parsedMessage3 = JSON.parse(chatRoom.body);
-            setChatRooms((prevRooms) => [...prevRooms, parsedMessage3]);
-          });
+            // 생성된 채팅방 구독 설정
+            const chatRoomTopic =
+              newRoom.type === "ONE_ON_ONE"
+                ? `/user/newroom/private/${newRoom.id}`
+                : `/topic/newroom/group/${newRoom.id}`
+            stompClient.subscribe(chatRoomTopic, (chatRoom) => {
+              const parsedMessage3 = JSON.parse(chatRoom.body)
+              setChatRooms((prevRooms) => [...prevRooms, parsedMessage3])
+            })
 
-          // 생성된 채팅방에 메세지 구독 설정
-          const topic =
-            newRoom.type === "ONE_ON_ONE"
-              ? `/user/private/${newRoom.id}`
-              : `/topic/group/${newRoom.id}`;
-          stompClient.subscribe(topic, (message) => {
-            const parsedMessage = JSON.parse(message.body);
-            // userProfileInfo가 없거나 profilePicture가 없는 경우 기본값 설정
-            if (!parsedMessage.userProfileInfo) {
-              parsedMessage.userProfileInfo = {
-                id: null,
-                nickname: "Unknown",
-                profilePicture: null,
-              };
-            } else if (!parsedMessage.userProfileInfo.profilePicture) {
-              parsedMessage.userProfileInfo.profilePicture = null;
-            }
-            setMessages((prevMessages) => [...prevMessages, parsedMessage]);
-          });
+            // 생성된 채팅방에 메세지 구독 설정
+            const topic = newRoom.type === "ONE_ON_ONE" ? `/user/private/${newRoom.id}` : `/topic/group/${newRoom.id}`
+            stompClient.subscribe(topic, (message) => {
+              const parsedMessage = JSON.parse(message.body)
+              // userProfileInfo가 없거나 profilePicture가 없는 경우 기본값 설정
+              if (!parsedMessage.userProfileInfo) {
+                parsedMessage.userProfileInfo = {
+                  id: null,
+                  nickname: "Unknown",
+                  profilePicture: null,
+                }
+              } else if (!parsedMessage.userProfileInfo.profilePicture) {
+                parsedMessage.userProfileInfo.profilePicture = null
+              }
+              setMessages((prevMessages) => [...prevMessages, newRoom])
+            })
+          }
 
-          setMessages((prevMessages) => [...prevMessages, newRoom]);
           // 생성된 채팅방으로 이동
-          navigate(`/chatroom/${newRoom.id}`);
-          selectRoom(newRoom.id); // 방 선택
-          console.log("#######################", selectedUser);
+          navigate(`/chatroom/${newRoom.id}`)
+          selectRoom(newRoom.id) // 방 선택
+          console.log("#######################", selectedUser)
         })
         .catch((error) => {
-          console.error("Error creating chat room:", error);
-        });
+          console.error("Error creating chat room:", error)
+        })
     }
     // window.location.reload();
-  };
+  }
 
   // 채팅방 선택시 메시지 불러오기
   const selectRoom = (roomId) => {
-    setCurrentRoomId(roomId); // 새로운 상태 추가
-    navigate(`/chatroom/${roomId}`); // 페이지 이동
+    setCurrentRoomId(roomId) // 새로운 상태 추가
+    navigate(`/chatroom/${roomId}`) // 페이지 이동
 
     // 구독이 이미 추가된 방인지 확인 후, 중복 구독 방지
     if (!subscribedRoomIds.includes(roomId)) {
-      setSubscribedRoomIds((prevIds) => [...prevIds, roomId]); // subscribedRoomIds에 roomId 추가
+      // setSubscribedRoomIds((prevIds) => [...prevIds, roomId]) // subscribedRoomIds에 roomId 추가
 
       // 선택한 방에 메세지 구독 설정
       if (stompClient && stompClient.connected) {
-        const chatMessageroom = chatRooms.find((room) => room.id === roomId);
+        const chatMessageroom = chatRooms.find((room) => room.id === roomId)
         if (chatMessageroom) {
           const chatMessagetopic =
             chatMessageroom.type === "ONE_ON_ONE"
               ? `/user/private/${chatMessageroom.id}`
-              : `/topic/group/${chatMessageroom.id}`;
+              : `/topic/group/${chatMessageroom.id}`
           stompClient.subscribe(chatMessagetopic, (message) => {
-            const parsedMessage = JSON.parse(message.body);
-            setMessages((prevMessages) => [...prevMessages, parsedMessage]); // 다른 사용자 메시지 추가
-          });
+            const parsedMessage = JSON.parse(message.body)
+            setMessages((prevMessages) => [...prevMessages, parsedMessage]) // 다른 사용자 메시지 추가
+          })
           // 선택한 방에 구독 설정
           const topic =
             chatMessageroom.type === "ONE_ON_ONE"
               ? `/user/newroom/private/${chatMessageroom.id}`
-              : `/topic/newroom/group/${chatMessageroom.id}`;
+              : `/topic/newroom/group/${chatMessageroom.id}`
           stompClient.subscribe(topic, (message) => {
-            const parsedMessage = JSON.parse(message.body);
-            setMessages((prevMessages) => [...prevMessages, parsedMessage]); // 다른 사용자 메시지 추가
-          });
+            const parsedMessage = JSON.parse(message.body)
+            setMessages((prevMessages) => [...prevMessages, parsedMessage]) // 다른 사용자 메시지 추가
+          })
         }
       }
     }
@@ -281,12 +239,13 @@ function ChatRoom() {
     axios
       .get(`/api/chat/rooms/${roomId}/getMessages`)
       .then((response) => {
-        setMessages(response.data);
+        setMessages(response.data.list)
+        setCloudfrontUrl(response.data.PROFILE_PICTURE_CLOUDFRONT_URL)
       })
       .catch((error) => {
-        console.error("Error fetching messages:", error);
-      });
-  };
+        console.error("Error fetching messages:", error)
+      })
+  }
 
   // 메시지 전송
   const sendMessage = () => {
@@ -297,34 +256,32 @@ function ChatRoom() {
         userProfileInfo,
         chatRoomId: currentRoomId,
         timestamp: new Date().toISOString(),
-      };
-
+      }
       const destination =
-        chatRooms.find((room) => room.id === currentRoomId).type ===
-        "ONE_ON_ONE"
+        chatRooms.find((room) => room.id === currentRoomId).type === "ONE_ON_ONE"
           ? `/app/chat.sendMessage/private/${currentRoomId}`
-          : `/app/chat.sendMessage/group/${currentRoomId}`;
+          : `/app/chat.sendMessage/group/${currentRoomId}`
 
       stompClient.publish({
         destination,
         body: JSON.stringify(message),
-      });
+      })
 
       // 알림 추가
       const notification = {
         message: `${CurrentUsername}님이 메시지를 보냈습니다.`,
         type: "MESSAGE",
         timestamp: new Date().toLocaleString(),
-      };
+      }
 
       stompClient.publish({
         destination: `/app/notification`,
         body: JSON.stringify(notification),
-      });
+      })
 
-      setNewMessage("");
+      setNewMessage("")
     }
-  };
+  }
 
   // 알림 보내기
   const sendNotification = () => {
@@ -332,87 +289,83 @@ function ChatRoom() {
       const notification = {
         message: CurrentUsername,
         timestamp: new Date().toLocaleString(),
-      };
+      }
       stompClient.publish({
         destination: `/app/notification`,
         body: JSON.stringify(notification),
-      });
-      setNotification("");
+      })
+      setNotification("")
     }
-  };
+  }
 
   // 알림 삭제
   const clearNotification = () => {
-    setNotifications([]);
-  };
+    setNotifications([])
+  }
 
   // 모달 열기
   const openModal = (type) => {
-    setModalType(type);
-    setIsModalOpen(true);
-  };
+    setModalType(type)
+    setIsModalOpen(true)
+  }
 
   // 모달 닫기
   const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedUser("");
-    setSelectedUsers([]);
-  };
+    setIsModalOpen(false)
+    setSelectedUser("")
+    setSelectedUsers([])
+  }
 
   // 1:1 채팅방 생성
   const createPrivateChatRoom = () => {
     if (selectedUser !== "") {
-      const chatRoom = initializeChatRoom();
-      createChatRoom(chatRoom);
-      closeModal();
+      const chatRoom = initializeChatRoom()
+      createChatRoom(chatRoom)
+      closeModal()
     }
-  };
+  }
 
   // 그룹 채팅방 생성
   const createGroupChatRoom = () => {
     if (selectedUsers.length > 0) {
-      const chatRoom = initializeChatRoom();
-      createChatRoom(chatRoom);
-      closeModal();
+      const chatRoom = initializeChatRoom()
+      createChatRoom(chatRoom)
+      closeModal()
     }
-  };
+  }
 
   // 구독한 방 목록을 출력
   const handleShowSubscribedRooms = () => {
-    alert(`구독한 채팅방 ID: ${subscribedRoomIds.join(", ")}`);
-  };
+    alert(`구독한 채팅방 ID: ${subscribedRoomIds.join(", ")}`)
+  }
 
-  //프로필 이미지 스타일
-  const profileStyle = {
-    width: "30px",
-    height: "30px",
-    border: "1px solid #cecece",
-    borderRadius: "50%",
-  };
+  const chatMessageSave = (roomId) => {
+    console.log("Sending request to save messages for room:", roomId) // 요청 전 확인
+
+    axios
+      .post(`/api/chat/rooms/${roomId}/saveMessage`, { message: newMessage })
+      .then((response) => {
+        console.log("메시지가 저장되었습니다.")
+      })
+      .catch((error) => {
+        console.error("메시지 저장 중 오류 발생:", error)
+      })
+  }
 
   return (
     <div className="flex flex-row">
       <div className="w-1/3 p-2 border-r border-gray-300">
-        <button
-          onClick={handleShowSubscribedRooms}
-          className="mb-2 p-2 bg-blue-500 text-white rounded"
-        >
+        <button onClick={handleShowSubscribedRooms} className="mb-2 p-2 bg-blue-500 text-white rounded">
           구독한 채팅방 보기
         </button>
 
         {/* 사용자 초대 UI */}
         <div>
           <div className="mb-2">
-            <button
-              onClick={() => openModal("ONE_ON_ONE")}
-              className="mr-3 my-3 p-2 bg-green-500 text-white rounded"
-            >
+            <button onClick={() => openModal("ONE_ON_ONE")} className="mr-3 my-3 p-2 bg-green-500 text-white rounded">
               1:1채팅
             </button>
-            <button
-              onClick={() => openModal("GROUP")}
-              className="p-2 bg-green-500 text-white rounded"
-            >
+            <button onClick={() => openModal("GROUP")} className="p-2 bg-green-500 text-white rounded">
               Group 채팅
             </button>
           </div>
@@ -448,21 +401,21 @@ function ChatRoom() {
               <div
                 key={index}
                 className={`mb-2 flex ${
-                  message.userProfileInfo.id === currentUserId
-                    ? "justify-end"
-                    : "justify-start"
+                  message.userProfileInfo.id === currentUserId ? "justify-end" : "justify-start"
                 }`}
               >
                 <div
                   className={`p-2 flex rounded ${
-                    message.userProfileInfo.id === currentUserId
-                      ? "bg-blue-200"
-                      : "bg-gray-200"
+                    message.userProfileInfo.id === currentUserId ? "bg-blue-200" : "bg-gray-200"
                   }`}
                 >
                   {message.userProfileInfo.profilePicture ? (
                     <img
-                      src={message.userProfileInfo.profilePicture}
+                      src={
+                        message.userProfileInfo.profilePicture.startsWith("https")
+                          ? message.userProfileInfo.profilePicture
+                          : PROFILE_PICTURE_CLOUDFRONT_URL + message.userProfileInfo.profilePicture
+                      }
                       alt="profile"
                       className="w-12 h-12 inline-block mr-2"
                     />
@@ -483,8 +436,7 @@ function ChatRoom() {
                     </svg>
                   )}
                   <div style={{ wordBreak: "break-word" }}>
-                    <strong>{message.userProfileInfo.nickname}:</strong>{" "}
-                    {message.message}
+                    <strong>{message.userProfileInfo.nickname}:</strong> {message.message}
                     <br />
                     {new Date(message.timestamp).toLocaleString()}
                   </div>
@@ -501,10 +453,7 @@ function ChatRoom() {
             placeholder="메시지를 입력하세요..."
             className="w-4/5 p-2 border border-gray-300 rounded"
           />
-          <button
-            onClick={sendMessage}
-            className="w-1/5 p-2 bg-blue-500 text-white rounded"
-          >
+          <button onClick={sendMessage} className="w-1/5 p-2 bg-blue-500 text-white rounded">
             전송
           </button>
         </div>
@@ -519,38 +468,23 @@ function ChatRoom() {
             </li>
           ))}
         </ul>
-        <button
-          onClick={sendNotification}
-          className="mb-2 p-2 bg-blue-500 text-white rounded"
-        >
+        <button onClick={sendNotification} className="mb-2 p-2 bg-blue-500 text-white rounded">
           알림 보내기
         </button>
         <br />
-        <button
-          onClick={clearNotification}
-          className="mb-2 p-2 bg-red-500 text-white rounded"
-        >
+        <button onClick={clearNotification} className="mb-2 p-2 bg-red-500 text-white rounded">
           clear
         </button>
         <br />
-        <button
-          onClick={() => console.log(messages)}
-          className="mb-2 p-2 bg-gray-500 text-white rounded"
-        >
+        <button onClick={() => console.log(messages)} className="mb-2 p-2 bg-gray-500 text-white rounded">
           messages test
         </button>
         <br />
-        <button
-          onClick={() => console.log(subscribedRoomIds)}
-          className="mb-2 p-2 bg-gray-500 text-white rounded"
-        >
+        <button onClick={() => console.log(subscribedRoomIds)} className="mb-2 p-2 bg-gray-500 text-white rounded">
           subscribedRoomIds test2
         </button>
         <br />
-        <button
-          onClick={() => console.log(currentRoomId)}
-          className="mb-2 p-2 bg-gray-500 text-white rounded"
-        >
+        <button onClick={() => console.log(currentRoomId)} className="mb-2 p-2 bg-gray-500 text-white rounded">
           currentRoomId test
         </button>
       </div>
@@ -563,9 +497,7 @@ function ChatRoom() {
         contentLabel="채팅방 생성"
         ariaHideApp={false}
       >
-        <h2 className="text-lg font-bold mb-2">
-          {modalType === "ONE_ON_ONE" ? "1:1 채팅" : "그룹 채팅"} 방 생성
-        </h2>
+        <h2 className="text-lg font-bold mb-2">{modalType === "ONE_ON_ONE" ? "1:1 채팅" : "그룹 채팅"} 방 생성</h2>
         <div>
           {modalType === "ONE_ON_ONE" ? (
             <select
@@ -575,10 +507,7 @@ function ChatRoom() {
             >
               <option value="">사용자를 선택하세요</option>
               {participantsList.map((user) => (
-                <option
-                  key={user.followerUserProfileInfo.id}
-                  value={user.followerUserProfileInfo.id}
-                >
+                <option key={user.followerUserProfileInfo.id} value={user.followerUserProfileInfo.id}>
                   {user.followerUserProfileInfo.nickname}
                 </option>
               ))}
@@ -587,21 +516,16 @@ function ChatRoom() {
             <div>
               {participantsList.map((user) => (
                 <div key={user.id} className="mb-2 flex items-center">
-                  <label
-                    htmlFor={`user-${user.id}`}
-                    className="ml-2 cursor-pointer"
-                  >
+                  <label htmlFor={`user-${user.id}`} className="ml-2 cursor-pointer">
                     <input
                       type="checkbox"
                       id={`user-${user.followerUserProfileInfo.id}`}
                       value={user.followerUserProfileInfo.id}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setSelectedUsers([...selectedUsers, e.target.value]);
+                          setSelectedUsers([...selectedUsers, e.target.value])
                         } else {
-                          setSelectedUsers(
-                            selectedUsers.filter((id) => id !== e.target.value)
-                          );
+                          setSelectedUsers(selectedUsers.filter((id) => id !== e.target.value))
                         }
                       }}
                       className="mr-2"
@@ -614,24 +538,17 @@ function ChatRoom() {
           )}
         </div>
         <button
-          onClick={
-            modalType === "ONE_ON_ONE"
-              ? createPrivateChatRoom
-              : createGroupChatRoom
-          }
+          onClick={modalType === "ONE_ON_ONE" ? createPrivateChatRoom : createGroupChatRoom}
           className="mt-2 p-2 bg-blue-500 text-white rounded"
         >
           채팅방 생성
         </button>
-        <button
-          onClick={closeModal}
-          className="mt-2 p-2 bg-red-500 text-white rounded"
-        >
+        <button onClick={closeModal} className="mt-2 p-2 bg-red-500 text-white rounded">
           취소
         </button>
       </Modal>
     </div>
-  );
+  )
 }
 
-export default ChatRoom;
+export default ChatRoom

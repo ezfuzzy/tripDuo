@@ -1,6 +1,7 @@
 package com.example.tripDuo.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.socket.TextMessage;
 
@@ -18,7 +19,7 @@ public interface ChatService  {
 	// 선택된 채팅방 정보를 조회 
 	public ChatRoomDto getSelectUserChatRoom(Long roomId);
 	// 특정 채팅방의 모든 메시지를 반환
-	public List<ChatMessageDto> getChatMessages(Long roomId);
+	public Map<String, Object> getChatMessages(Long roomId);
 	// 채팅방 생성 추가
 	public ChatRoom createChatRoom(ChatRoomDto chatRoomDto);
 	// 메세지 캐싱
