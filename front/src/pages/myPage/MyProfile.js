@@ -36,6 +36,8 @@ function MyProfile(props) {
   const [profile, setProfile] = useState({});
   // 리뷰 정보
   const [reviewList, setReviewList] = useState([]);
+  // 필터링된 프로필 메세지
+  const [ filteredTextValue, setFilterdTextValue ] = useState();
 
   // BAD or GOOD or EXCELLENT
   const [experience, setExperience] = useState();
@@ -159,6 +161,9 @@ function MyProfile(props) {
           socialLinks: socialLinksArray,
         });
 
+        setFilterdTextValue(res.data.userProfileInfo.profileMessage.replace(/\n/g, '<br>'))
+
+
         //리뷰 목록이 존재하는지 확인하고, 존재한다면 ref 라는 방 추가
         const list = Array.isArray(res.data.userReviewList)
           ? res.data.userReviewList.map((item) => {
@@ -179,10 +184,6 @@ function MyProfile(props) {
         const findReviewerId = res.data.userReviewList.find((item) => item.reviewerId === userId);
         // undefined = false / 이 외에 = true
         setReviewed(!!findReviewerId);
-
-        console.log(res.data.userProfileInfo.userId);
-        console.log(userId);
-        console.log(isProfileOwner);
       })
       .catch((error) => console.log(error));
   }, [id, userId]);
@@ -645,9 +646,12 @@ function MyProfile(props) {
             })}
         </div>
         {/* profile message */}
-        <div className="my-5">
-          <div id="profileMessage" className="py-5 border-t border-slate-200 text-center min-h-40 overflow-y-auto">
-            {profile.profileMessage ?? ""}
+        <div className="mt-5">
+          <div>
+          <h3 className="text-xl font-bold text-center text-gray-800">Profile Message</h3>
+          </div>
+          <div id="profileMessage" className="whitespace-pre-line mt-5 py-5 border-t border-slate-200 text-center min-h-40 overflow-y-auto">
+            {profile.profileMessage}
           </div>
         </div>
         {/* -------------------------------------------------------------------------------------- */}
