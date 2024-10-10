@@ -3,9 +3,11 @@ package com.example.tripDuo.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,10 @@ import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class ChatServiceImpl implements ChatService {
+	
+	@Value("${cloud.aws.cloudfront.profile_picture_url}")
+	private String PROFILE_PICTURE_CLOUDFRONT_URL;
+	
 	private ChatRoomRepository chatRoomRepo;
 	private ChatMessageRepository chatMessageRepo;
 	private ChatParticipantRepository chatParticipantsRepo;
@@ -104,16 +110,20 @@ public class ChatServiceImpl implements ChatService {
 	
 	// 특정 채팅방의 모든 메시지를 반환
 	@Override
-	public List<ChatMessageDto> getChatMessages(Long roomId) {
-		List<ChatMessage> messages = chatMessageRepo.findByChatRoomId(roomId);
-		List<ChatMessageDto> messageDtos = new ArrayList<>();
-
-		for (ChatMessage message : messages) {
-			messageDtos.add(ChatMessageDto.toDto(message));
-		}
-		System.out.println("메세지 확인"+messageDtos);
+	public Map<String, Object> getChatMessages(Long roomId) {
+		List<ChatMessage> messageList = chatMessageRepo.findByChatRoomId(roomId);
+		List<ChatMessageDto> messageDtoList = new ArrayList<>();
 		
-		return messageDtos;
+		for (ChatMessage message : messageList) {			
+			messageDtoList.add(ChatMessageDto.toDto(message));
+		}
+		System.out.println("메세지 확인"+messageDtoList);
+		
+		
+		return Map.of(
+				"list", messageDtoList,
+				"PROFILE_PICTURE_CLOUDFRONT_URL", PROFILE_PICTURE_CLOUDFRONT_URL
+				);
 	}
 
 	// 채팅방 생성
