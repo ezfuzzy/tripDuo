@@ -5,7 +5,21 @@ import { shallowEqual, useSelector } from "react-redux";
 import useWebSocket from "../components/useWebSocket";
 import Modal from "react-modal"; // 모달 라이브러리 추가
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
-import { MainContainer, ChatContainer, MessageList, Message, MessageInput } from "@chatscope/chat-ui-kit-react";
+import {
+  MainContainer,
+  ChatContainer,
+  MessageList,
+  Message,
+  MessageInput,
+  Avatar,
+  TypingIndicator,
+  ConversationHeader,
+  ConversationList,
+  Conversation,
+  Sidebar,
+  Search,
+  AvatarGroup,
+} from "@chatscope/chat-ui-kit-react";
 
 // 모달 스타일 설정
 const customStyles = {
@@ -51,6 +65,22 @@ function ChatRoom() {
     nickname: currentUserNickname,
     profilePicture: currentUserProfilePicture,
   });
+
+  const defaultAvatar = (
+    <svg
+      style={profileStyle}
+      xmlns="http://www.w3.org/2000/svg"
+      width="2"
+      height="2"
+      fill="currentColor"
+      viewBox="0 0 16 16">
+      <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+      <path
+        fill-rule="evenodd"
+        d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"
+      />
+    </svg>
+  );
 
   // 채팅방 생성 상태를 초기화하는 함수
   const initializeChatRoom = () => ({
@@ -365,158 +395,115 @@ function ChatRoom() {
       });
   };
 
+  const handleNewMessage = (e)=>{
+    setNewMessage(e.target.value)
+  }
+
   return (
     <>
-      <div style={{ position: "relative", height: "500px" }}>
+      <div style={{ position: "relative", height: "500px" }} className="z-0">
         <MainContainer>
-          <ChatContainer>
-            <MessageList>
-              <Message
-                model={{
-                  message: "Hello my friend",
-                  sentTime: "just now",
-                  sender: "Joe",
-                }}
-              />
-            </MessageList>
-            <MessageInput placeholder="Type message here" />
-          </ChatContainer>
-        </MainContainer>
-      </div>
-      ;
-      <div className="flex flex-row">
-        <div className="w-1/3 p-2 border-r border-gray-300">
-          {/* 사용자 초대 UI */}
-          <div>
-            <div className="mb-2">
-              <button onClick={() => openModal("ONE_ON_ONE")} className="mr-3 my-3 p-2 bg-green-500 text-white rounded">
-                1:1채팅
-              </button>
-              <button onClick={() => openModal("GROUP")} className="p-2 bg-green-500 text-white rounded">
-                Group 채팅
-              </button>
+          <Sidebar position="left">
+            {/* <Search placeholder="사용자 검색" /> */}
+            <div className="flex m-3 justify-between">
+            <Avatar onClick={() => openModal("ONE_ON_ONE")} src="../../img/person_circle_icon.png"/>
+            <AvatarGroup onClick={() => openModal("GROUP")} >
+              <Avatar src="../../img/person_circle_icon.png"/>
+              <Avatar src="../../img/person_circle_icon.png"/>
+              <Avatar src="../../img/person_circle_icon.png"/>
+            </AvatarGroup>
             </div>
-          </div>
-          <h3 className="text-lg font-bold mb-2">채팅방 목록</h3>
-          <div className="h-96 overflow-y-scroll border border-gray-300 p-2">
-            {/* 채팅방 목록 */}
-            <ul>
+
+            <ConversationList>
               {chatRooms.map((room) => (
-                <li
-                  key={room.id}
+                <Conversation
+                  name="jeo"
+                  // lastSenderName="kim" lastSenderName : info 형식으로 렌더링 가능 (마지막 전송한 메세지 표시)
+                  info={room.title}
                   onClick={() => selectRoom(room.id)}
-                  className={`cursor-pointer p-2 ${
-                    currentRoomId === room.id
-                      ? "bg-blue-200"
-                      : subscribedRoomIds.includes(room.id)
-                      ? "bg-gray-200"
-                      : "bg-transparent"
-                  }`}>
-                  {room.title}
+                  active={currentRoomId === room.id ? true : subscribedRoomIds.includes(room.id) ? false : false}
+                  className={`cursor-pointer p-2`}>
+                  <Avatar name="Joe" src="../../img/person_circle_icon.png" />
+                </Conversation>
+              ))}
+            </ConversationList>
+          </Sidebar>
+          <ChatContainer>
+            <ConversationHeader>
+              <Avatar name="user" src="../../img/person_circle_icon.png" />
+              <ConversationHeader.Content info="10분 전 활동" userName="상대 사용자" />
+            </ConversationHeader>
+            <MessageList typingIndicator={<TypingIndicator content="메세지 작성중" />} ref={chatMessagesRef}>
+              {messages
+                .filter((message) => message.chatRoomId === currentRoomId)
+                .map((message, index) => (
+                  <Message
+                    model={{
+                      message: message.message, // 메세지
+                      sentTime: new Date(message.timestamp).toLocaleTimeString(), //전송 시간
+                      sender: message.userProfileInfo.id === currentUserId ? "You" : "Other", //
+                      direction: message.userProfileInfo.id === currentUserId ? "outgoing" : "incoming", // 방향 outgoing (내가 보냄) incoming (상대가 보냄)
+                      author: message.userProfileInfo.nickname,
+                      position: "single",
+                    }}>
+                    <Avatar
+                      name={message.userProfileInfo.nickname}
+                      src={
+                        message.userProfileInfo.profilePicture?(
+                          message.userProfileInfo.profilePicture.startsWith("https")
+                          ? message.userProfileInfo.profilePicture
+                          : PROFILE_PICTURE_CLOUDFRONT_URL + message.userProfileInfo.profilePicture
+                        ) : (
+                          "../../img/person_circle_icon.png"
+                        )
+                      }
+                    />
+                  </Message>
+                ))}
+            </MessageList>
+            <MessageInput
+              attachButton="false" // 첨부파일 버튼 삭제
+              placeholder="메시지를 입력하세요..."
+              value={newMessage}
+              onChange={(val)=> setNewMessage(val)}
+              onSend={sendMessage}
+            />
+          </ChatContainer>
+          <Sidebar position="right">
+            <h3 className="text-lg font-bold mb-2">알림</h3> {/* 알림 목록 */} {/* 알림 목록 */}
+            <ul>
+              {notifications.map((notification, index) => (
+                <li key={index} className="mb-1">
+                  {notification.message} - {notification.timestamp}
                 </li>
               ))}
             </ul>
-          </div>
-        </div>
-
-        <div className="w-2/3 p-2">
-          <h3 className="text-lg font-bold mb-2">채팅방</h3>
-          <div className="h-96 overflow-y-scroll border border-gray-300 p-2" ref={chatMessagesRef}>
-            {messages
-              .filter((message) => message.chatRoomId === currentRoomId)
-              .map((message, index) => (
-                <div
-                  key={index}
-                  className={`mb-2 flex ${
-                    message.userProfileInfo.id === currentUserId ? "justify-end" : "justify-start"
-                  }`}>
-                  <div
-                    className={`p-2 flex rounded ${
-                      message.userProfileInfo.id === currentUserId ? "bg-blue-200" : "bg-gray-200"
-                    }`}>
-                    {message.userProfileInfo.profilePicture ? (
-                      <img
-                        src={
-                          message.userProfileInfo.profilePicture.startsWith("https")
-                            ? message.userProfileInfo.profilePicture
-                            : PROFILE_PICTURE_CLOUDFRONT_URL + message.userProfileInfo.profilePicture
-                        }
-                        alt="profile"
-                        className="w-12 h-12 inline-block mr-2"
-                      />
-                    ) : (
-                      <svg
-                        style={profileStyle}
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="2"
-                        height="2"
-                        fill="currentColor"
-                        viewBox="0 0 16 16">
-                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-                        <path
-                          fill-rule="evenodd"
-                          d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"
-                        />
-                      </svg>
-                    )}
-                    <div style={{ wordBreak: "break-word" }}>
-                      <strong>{message.userProfileInfo.nickname}:</strong> {message.message}
-                      <br />
-                      {new Date(message.timestamp).toLocaleString()}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            <div ref={messagesEndRef} />
-          </div>
-
-          <div className="flex mt-2">
-            <input
-              type="text"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="메시지를 입력하세요..."
-              className="w-4/5 p-2 border border-gray-300 rounded"
-            />
-            <button onClick={sendMessage} className="w-1/5 p-2 bg-blue-500 text-white rounded">
-              전송
+            <button onClick={sendNotification} className="mb-2 p-2 bg-blue-500 text-white rounded">
+              알림 보내기
             </button>
-          </div>
-        </div>
-
-        <div className="w-1/3 p-2 border-l border-gray-300">
-          <h3 className="text-lg font-bold mb-2">알림</h3> {/* 알림 목록 */} {/* 알림 목록 */}
-          <ul>
-            {notifications.map((notification, index) => (
-              <li key={index} className="mb-1">
-                {notification.message} - {notification.timestamp}
-              </li>
-            ))}
-          </ul>
-          <button onClick={sendNotification} className="mb-2 p-2 bg-blue-500 text-white rounded">
-            알림 보내기
-          </button>
-          <br />
-          <button onClick={handleShowSubscribedRooms} className="mb-2 p-2 bg-blue-500 text-white rounded">
-            구독한 채팅방 보기
-          </button>
-          <br />
-          <button onClick={clearNotification} className="mb-2 p-2 bg-red-500 text-white rounded">
-            clear
-          </button>
-          <br />
-          <button onClick={() => console.log(messages)} className="mb-2 p-2 bg-gray-500 text-white rounded">
-            messages test
-          </button>
-          <br />
-          <button onClick={() => console.log(subscribedRoomIds)} className="mb-2 p-2 bg-gray-500 text-white rounded">
-            subscribedRoomIds test2
-          </button>
-          <br />
-          <button onClick={() => console.log(currentRoomId)} className="mb-2 p-2 bg-gray-500 text-white rounded">
-            currentRoomId test
-          </button>
-        </div>
+            <br />
+            <button onClick={handleShowSubscribedRooms} className="mb-2 p-2 bg-blue-500 text-white rounded">
+              구독한 채팅방 보기
+            </button>
+            <br />
+            <button onClick={clearNotification} className="mb-2 p-2 bg-red-500 text-white rounded">
+              clear
+            </button>
+            <br />
+            <button onClick={() => console.log(messages)} className="mb-2 p-2 bg-gray-500 text-white rounded">
+              messages test
+            </button>
+            <br />
+            <button onClick={() => console.log(subscribedRoomIds)} className="mb-2 p-2 bg-gray-500 text-white rounded">
+              subscribedRoomIds test2
+            </button>
+            <br />
+            <button onClick={() => console.log(currentRoomId)} className="mb-2 p-2 bg-gray-500 text-white rounded">
+              currentRoomId test
+            </button>
+          </Sidebar>
+        </MainContainer>
+      </div>
 
         {/* 모달 */}
         <Modal
@@ -573,7 +560,6 @@ function ChatRoom() {
             취소
           </button>
         </Modal>
-      </div>
     </>
   );
 }
