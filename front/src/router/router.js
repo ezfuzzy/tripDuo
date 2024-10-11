@@ -19,7 +19,6 @@ import MateBoardDetail from "../pages/boards/MateBoardDetail"
 import TravelChecklist from "../pages/Utilities/TravelChecklist"
 import TravelSafetyInfo from "../pages/Utilities/TravelSafetyInfo"
 import TravelCostCalculator from "../pages/Utilities/TravelCostCalculator"
-import TravelPlanner from "../pages/Utilities/TravelPlaner"
 import LocationRecommendations from "../pages/Utilities/LocationRecommendations"
 import ExchangeInfo from "../pages/Utilities/ExchangeInfo"
 import LanguageCultureTips from "../pages/Utilities/LanguageCultureTips"
@@ -97,7 +96,6 @@ const routes = [
   { path: "/exchange", element: <ExchangeInfo /> },
   { path: "/safetyInfo", element: <TravelSafetyInfo /> },
   { path: "/calculator", element: <TravelCostCalculator /> },
-  { path: "/planner", element: <TravelPlanner /> },
   { path: "/recommendations", element: <LocationRecommendations /> },
   { path: "/languageTip", element: <LanguageCultureTips /> },
   { path: "/extra", element: <ExtraPage /> },
@@ -109,7 +107,7 @@ const routes = [
 
 const protectedRoutes = [
   // ### board ###
-  
+
   //      ### mate ###
   { path: "/posts/mate/new", element: <MateBoardForm /> },
   { path: "/posts/mate/:id/edit", element: <MateBoardEditForm /> },
