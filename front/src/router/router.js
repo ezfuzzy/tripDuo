@@ -113,7 +113,7 @@ const routes = [
 
 const protectedRoutes = [
   // ### board ###
-  { path: "/report", element: <ReportBoard /> },
+  
   //      ### mate ###
   { path: "/posts/mate/new", element: <MateBoardForm /> },
   { path: "/posts/mate/:id/edit", element: <MateBoardEditForm /> },
@@ -149,6 +149,9 @@ const protectedRoutes = [
   // ### chat ###
   { path: "/chatroom", element: <ChatRoom /> },
   { path: "/chatroom/:id", element: <ChatRoom /> },
+
+  // ### admin ###
+  { path: "/admin/report", element: <ReportBoard /> },
 ]
 
 const router = createBrowserRouter([
