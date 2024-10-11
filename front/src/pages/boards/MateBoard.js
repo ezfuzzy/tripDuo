@@ -386,12 +386,17 @@ function MateBoard() {
       {loading && <LoadingAnimation />}
       <div className="container mx-auto">
         <div className="flex justify-between mb-4">
-          <Link
-            className="text-tripDuoGreen font-bold"
-            to={{ pathname: "/posts/mate/new", search: `?di=${domesticInternational}` }}>
+          <button
+            onClick={() => {
+              // 버튼 클릭 시 경로로 이동
+              window.location.href = `/posts/mate/new?di=${domesticInternational}`
+            }}
+            className="bg-tripDuoMint text-white px-4 py-2 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300 flex items-center">
             새글 작성
-          </Link>
-          <button className="text-tripDuoGreen font-bold" onClick={handleButtonClick}>
+          </button>
+          <button
+            className="bg-tripDuoMint text-white px-4 py-2 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300 flex items-center"
+            onClick={handleButtonClick}>
             {pageTurn}
           </button>
         </div>
@@ -445,10 +450,19 @@ function MateBoard() {
             />
             <button
               onClick={() => setIsCalendarOpen(!isCalendarOpen)}
-              className="bg-tripDuoGreen text-white px-4 py-2 rounded-md shadow-md hover:bg-tripDuoMint transition-all duration-300 flex items-center">
+              className="bg-tripDuoMint text-white px-4 py-2 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300 flex items-center">
               <span className="whitespace-nowrap">
                 {selectedDateRange[0] && selectedDateRange[1]
-                  ? `${selectedDateRange[0].toLocaleDateString()} ~ ${selectedDateRange[1].toLocaleDateString()}`
+                  ? `${selectedDateRange[0].getFullYear().toString().slice(-2)}${(selectedDateRange[0].getMonth() + 1)
+                      .toString()
+                      .padStart(2, "0")}${selectedDateRange[0]
+                      .getDate()
+                      .toString()
+                      .padStart(2, "0")} / ${selectedDateRange[1].getFullYear().toString().slice(-2)}${(
+                      selectedDateRange[1].getMonth() + 1
+                    )
+                      .toString()
+                      .padStart(2, "0")}${selectedDateRange[1].getDate().toString().padStart(2, "0")}`
                   : "날짜 선택"}
               </span>
             </button>
@@ -507,7 +521,7 @@ function MateBoard() {
             <div className="flex justify-end w-full items-center">
               <button
                 onClick={handleSearch}
-                className="bg-tripDuoGreen text-white px-4 py-2 rounded-md shadow-md hover:bg-tripDuoMint transition-all duration-300">
+                className="bg-tripDuoMint text-white px-4 py-2 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300">
                 검색
               </button>
             </div>
@@ -522,7 +536,7 @@ function MateBoard() {
             id="sortBy"
             value={sortBy}
             onChange={handleSortChange}
-            className="border border-gray-300 text-sm rounded-md px-5 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300">
+            className="flex justify-start w-1/6 border border-tripDuoGreen text-sm rounded-md px-5 py-2 focus:outline-none focus:ring-2 focus:ring-tripDuoMint transition-all duration-300">
             <option value="latest">최신순</option>
             <option value="viewCount">조회수순</option>
             <option value="likeCount">좋아요순</option>
@@ -549,7 +563,7 @@ function MateBoard() {
                   <p className="text-sm text-gray-600">작성일: {getTimeDifference(post.createdAt, post.updatedAt)}</p>
                   <p className="text-sm text-gray-600">
                     {post.startDate === null
-                      ? ""
+                      ? "설정하지 않았습니다."
                       : new Date(post.startDate).toLocaleDateString("ko-KR", {
                           year: "numeric",
                           month: "2-digit",
