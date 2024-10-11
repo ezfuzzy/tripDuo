@@ -27,7 +27,7 @@ function CourseBoard() {
   })
 
   //국내/해외 페이지
-  const [domesticInternational, setDomesticInternational] = useState("")
+  const [domesticInternational, setDomesticInternational] = useState("Domestic")
   //국내/해외 페이지 전환 버튼
   const [pageTurn, setPageTurn] = useState("")
   const [desiredCountry, setDesiredCountry] = useState(null)
@@ -63,7 +63,6 @@ function CourseBoard() {
     setTimeout(() => {
       setLoading(false)
     }, 700)
-
     let pageNum = searchParams.get("pageNum") || 1
     const diValue = searchParams.get("di") || "Domestic"
     const city = searchParams.get("city") || ""
@@ -71,108 +70,59 @@ function CourseBoard() {
     const endDate = searchParams.get("endDate") || ""
     const country = searchParams.get("country") || ""
     const keyword = searchParams.get("keyword") || ""
-    const condition = searchCriteria.condition || "title" // 기존 조건 유지
-
-    setCurrentPage(Number(pageNum))
+    
+    setCurrentPage(Number(pageNum));
     setDomesticInternational(diValue)
 
-    setSearchCriteria((prev) => ({
-      ...prev,
-      city,
-      startDate,
-      endDate,
-      country,
-      keyword,
-      condition: condition,
-    }))
+    setSearchCriteria({ city, startDate, endDate, country, keyword, condition: searchCriteria.condition }); // 검색 조건 설정
+    // 국내/국제 값 업데이트
+  }, [searchParams]);
 
-    axios
-      .get(`/api/v1/posts/course`, {
-        params: {
-          pageNum: Number(pageNum),
-          country: country || undefined,
-          city: city || undefined,
-          startDate: startDate || undefined,
-          endDate: endDate || undefined,
-          keyword: keyword || undefined,
-          condition: condition, // 조건이 없으면 제목으로 설정
-          sortBy: sortBy || "latest", // 정렬 조건이 없으면 최신순으로 설정
-          di: diValue || "Domestic", // 국내/해외 페이지가 설정되지 않았으면 기본값으로 설정
-        },
-      })
+  const fetchFilteredPosts = () => {
+      const params = {
+          country: searchCriteria.country || null,
+          city: searchCriteria.city || null,
+          startDate: searchCriteria.startDate || null,
+          endDate: searchCriteria.endDate || null,
+          keyword: searchCriteria.keyword || null,
+          condition: searchCriteria.condition || null,
+          sortBy
+        }
+
+   axios
+      .get("/api/v1/posts/course", { params })
       .then((res) => {
-        //국내코스, 해외코스 필터
-        const filteredPageInfo = res.data.list.filter((item) => {
-          const matchesDomesticInternational =
-            diValue === "Domestic" ? item.country === "대한민국" : item.country !== "대한민국"
-          if (!matchesDomesticInternational) return false
-
-          const matchesCountry = searchCriteria.country ? item.country.includes(searchCriteria.country) : true
-          if (!matchesCountry) return false
-
-          const matchesCity = searchCriteria.city ? item.city.includes(searchCriteria.city) : true
-          if (!matchesCity) return false
-
-          // 조건에 따라 제목 또는 작성자를 필터링
-          const matchesKeyword =
-            searchCriteria.condition === "title"
-              ? item.title.includes(searchCriteria.keyword)
-              : searchCriteria.condition === "writer"
-              ? item.writer.includes(searchCriteria.keyword)
-              : searchCriteria.condition === "content"
-              ? item.content.includes(searchCriteria.keyword)
-              : searchCriteria.condition === "title_content"
-              ? item.title.includes(searchCriteria.keyword) || item.content.includes(searchCriteria.keyword)
-              : true
-          if (!matchesKeyword) return false
-
-          // 선택한 startDate와 endDate 범위에 포함되는 항목만 필터링
-          const matchesDateRange = (item) => {
-            const itemStartDate = new Date(item.startDate)
-            const itemEndDate = new Date(item.endDate)
-            const searchStartDate = searchCriteria.startDate ? new Date(searchCriteria.startDate) : null
-            const searchEndDate = searchCriteria.endDate ? new Date(searchCriteria.endDate) : null
-
-            // 검색 범위의 날짜가 설정되지 않았으면 모든 게시물 표시
-            if (!searchStartDate && !searchEndDate) {
-              return true
-            }
-
-            // 검색 범위에 날짜가 설정되었을 경우 날짜 범위 체크
-            return (
-              (itemStartDate < searchEndDate && itemEndDate > searchStartDate) ||
-              (itemStartDate <= searchStartDate && itemEndDate >= searchStartDate) ||
-              (itemStartDate <= searchEndDate && itemEndDate >= searchEndDate)
-            )
-          }
-          if (!matchesDateRange(item)) return false
-
-          return true
-        })
-
-        //정렬 조건
-        const sorted = filteredPageInfo.sort((a, b) => {
-          if (sortBy === "latest") {
-            return new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt) // 최신순
-          } else if (sortBy === "viewCount") {
-            return b.viewCount - a.viewCount // 조회수순
-          } else if (sortBy === "likeCount") {
-            return b.likeCount - a.likeCount // 좋아요순
-          }
-          return 0 // 기본값
-        })
-
-        //서버로부터 응답된 데이터 state에 넣기
-        setDesiredCountry(diValue === "Domestic" ? "국내여행 코스 페이지" : "해외여행 코스 페이지")
-        setPageTurn(diValue === "Domestic" ? "해외로" : "국내로")
-        setPageInfo(sorted)
-        // 총 페이지 수 업데이트
+        //필터링되어 돌아온 params를 받는다
+        console.log(res.data);
+        let filtered = res.data.list;
+        //국내 해외 필터링
+        if (domesticInternational === "Domestic") {
+          filtered = filtered.filter((item) => item.country === "한국");
+        } else if (domesticInternational === "International") {
+          filtered = filtered.filter((item) => item.country !== "한국");
+        }
+        setPageInfo(filtered)
         setTotalPages(res.data.totalPostPages)
+        //서버로부터 응답된 데이터 state에 넣기
+        setDesiredCountry(domesticInternational === "Domestic" ? "국내여행 코스 페이지" : "해외여행 코스 페이지")
+        setPageTurn(domesticInternational === "Domestic" ? "해외로" : "국내로")
+        
+        // 총 페이지 수 업데이트
+        
       })
       .catch((error) => {
         console.log(error)
       })
-  }, [searchParams, sortBy])
+  }
+
+   // 해외 / 국내 전환시 호출
+   useEffect(() => {
+    fetchFilteredPosts();
+  }, [domesticInternational]);
+
+  const search = () => {
+    fetchFilteredPosts(); // 비동기 처리를 기다리지 않음
+  }
 
   //국내, 해외 선택 이벤트
   const handleDesiredCountry = () => {
@@ -190,14 +140,29 @@ function CourseBoard() {
       city: searchCriteria.city,
       startDate: searchCriteria.startDate,
       endDate: searchCriteria.endDate,
+      condition: searchCriteria.condition,
       keyword: searchCriteria.keyword,
       di: domesticInternational,
     })
+
+    search()
   }
 
   const handleSortChange = (e) => {
-    setSortBy(e.target.value) // 정렬 기준 변경
-  }
+    setSortBy(e.target.value); // 정렬 기준 변경
+    // 정렬 기준에 따라 pageData를 정렬
+    const sortedData = [...pageInfo].sort((a, b) => {
+      if (e.target.value === "latest") {
+        return new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt);
+      } else if (e.target.value === "viewCount") {
+        return b.viewCount - a.viewCount;
+      } else if (e.target.value === "likeCount") {
+        return b.likeCount - a.likeCount;
+      }
+      return 0; // 기본값
+    });
+    setPageInfo(sortedData); // 정렬된 데이터를 상태에 저장
+  };
 
   // 검색 기준 변경 핸들러
   const handleConditionChange = (e) => {

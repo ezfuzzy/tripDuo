@@ -426,7 +426,7 @@ function MateBoard() {
               className="border border-gray-300 rounded-md px-4 py-2 w-1/6 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300">
               <option value="title">제목</option>
               <option value="content">내용</option>
-              <option value="title_writer">제목 + 내용</option>
+              <option value="title_content">제목 + 내용</option>
             </select>
 
             <input
