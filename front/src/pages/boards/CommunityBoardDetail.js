@@ -425,7 +425,7 @@ function CommunityBoardDetail(props) {
   };
 
   const handlePostRating = ()=>{
-    axios.post(`/api/v1/posts/${post.id}/ratings`, {userId : userId, postId : post.id})
+    axios.post(`/api/v1/posts/${post.id}/ratings`, {userId : userId, postId : post.id, rating : postRating})
     .then(res=>{
       console.log(res.data)
     })
