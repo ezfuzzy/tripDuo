@@ -292,7 +292,7 @@ function NavBar() {
                   ? "border-b-2 border-tripDuoGreen text-tripDuoGreen transform scale-105"
                   : "border-transparent hover:text-gray-600 hover:border-gray-300"
               } group`}
-              to="/posts/mate">
+              to="/posts/mate?di=Domestic">
               <FontAwesomeIcon icon={faPeoplePulling} />
               &nbsp;여행 메이트
             </NavLink>
