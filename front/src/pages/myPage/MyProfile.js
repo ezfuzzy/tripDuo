@@ -89,7 +89,7 @@ function MyProfile(props) {
   ]
 
   const reviewNegativeTagList = [
-    { key: 1, keyword: "COMMUNICATION", text: "메시지 답변이 느��� 소통에 어려움을 느꼈어요." },
+    { key: 1, keyword: "COMMUNICATION", text: "메시지 답변이 느려서 소통에 어려움을 느꼈어요." },
     { key: 2, keyword: "TRUST", text: "계획된 일정을 자주 변경하여 불안했어요." },
     { key: 3, keyword: "ONTIME", text: "약속 시간에 자주 늦어 불편했어요." },
     { key: 4, keyword: "MANNER", text: "무례한 언행으로 불쾌한 경험을 했어요." },
@@ -698,39 +698,41 @@ function MyProfile(props) {
                 ) : (
                   ""
                 )}
-                {experience === "BAD"
-                  ? reviewNegativeTagList.map((item) => (
-                      <li key={item.key}>
-                        <input
-                          id={item.keyword}
-                          type="checkbox"
-                          value={item.keyword || ""}
-                          checked={selectedTags.includes(item.keyword)} // selectedTags 에 포함된 요소만 체크
-                          onChange={handleCheckboxChange}
-                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                        />
-                        <label htmlFor="default-checkbox" className="ms-2 text-sm font-medium text-gray-900 ">
-                          {item.text}
-                        </label>
-                      </li>
-                    ))
-                  : experience === "GOOD" || experience === "EXCELLENT"
-                  ? reviewPositiveTagList.map((item) => (
-                      <li key={item.key}>
-                        <input
-                          id={item.keyword}
-                          type="checkbox"
-                          value={item.keyword || ""}
-                          checked={selectedTags.includes(item.keyword)} // selectedTags 에 포함된 요소만 체크
-                          onChange={handleCheckboxChange}
-                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                        />
-                        <label htmlFor="default-checkbox" className="ms-2 text-sm font-medium text-gray-900 ">
-                          {item.text}
-                        </label>
-                      </li>
-                    ))
-                  : ""}
+                <ul className={`w-full transition-all duration-500 ${experience === "BAD" ? "bg-red-100" : experience === "GOOD" || experience === "EXCELLENT" ? "bg-green-100" : "hidden"} p-4 rounded-lg shadow-lg`}>
+                  {experience === "BAD"
+                    ? reviewNegativeTagList.map((item) => (
+                        <li key={item.key} className="flex items-center mb-2 transform transition-transform duration-100">
+                          <input
+                            id={item.keyword}
+                            type="checkbox"
+                            value={item.keyword || ""}
+                            checked={selectedTags.includes(item.keyword)} // selectedTags 에 포함된 요소만 체크
+                            onChange={handleCheckboxChange}
+                            className="w-5 h-5 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 focus:ring-2"
+                          />
+                          <label htmlFor={item.keyword} className="ms-2 text-md font-bold text-gray-900 transition-colors duration-300 hover:text-red-600">
+                            {item.text}
+                          </label>
+                        </li>
+                      ))
+                    : experience === "GOOD" || experience === "EXCELLENT"
+                    ? reviewPositiveTagList.map((item) => (
+                        <li key={item.key} className="flex items-center mb-2 transform transition-transform duration-100">
+                          <input
+                            id={item.keyword}
+                            type="checkbox"
+                            value={item.keyword || ""}
+                            checked={selectedTags.includes(item.keyword)} // selectedTags 에 포함된 요소만 체크
+                            onChange={handleCheckboxChange}
+                            className="w-5 h-5 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 focus:ring-2"
+                          />
+                          <label htmlFor={item.keyword} className="ms-2 text-md font-bold text-gray-900 transition-colors duration-300 hover:text-green-600">
+                            {item.text}
+                          </label>
+                        </li>
+                      ))
+                    : ""}
+                </ul>
               </ul>
             </div>
 
