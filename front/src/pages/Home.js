@@ -142,10 +142,9 @@ function Home() {
   return (
     <div className="container mx-auto px-8 bg-white min-h-screen">
       {loading && <LoadingAnimation duration={0.3} />}
-      <div className="my-12 relative">
+      <div className="my-3 relative">
         <header className="py-8 text-center">
-          <h1 className="text-3xl font-bold text-tripDuoMint">국내 여행</h1>
-          <p className="mt-2 text-gray-600">다양한 국내 여행 정보를 만나보세요!</p>
+          <h1 className="mt-2 text-gray-600 font-bold text-xl">여행 메이트와 여행 계획을 한번에!</h1>
         </header>
         <div className="relative">
           {/* 슬라이더 */}
@@ -191,7 +190,7 @@ function Home() {
         </div>
       </div>
 
-      <div className="my-12 h-16" />
+      <div className="my-6 h-16" />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <div className="flex items-center justify-between mb-8 p-4 bg-tripDuoGreen rounded-lg shadow-lg">
@@ -273,8 +272,6 @@ function Home() {
         </div>
       </div>
 
-      <div className="my-12 h-16" />
-
       <div className="my-12">
         <h3 className="text-xl font-semibold mb-4 text-tripDuoGreen">국내 인기 게시물</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -313,8 +310,6 @@ function Home() {
         </div>
       </div>
 
-      <div className="my-12 h-16" />
-
       <div className="my-12">
         <h3 className="text-xl font-semibold mb-4 text-tripDuoGreen">국내 추천 여행지(임시)</h3>
         {!isLoggedIn && ( // 로그인하지 않은 경우에만 보이도록 수정
@@ -344,8 +339,6 @@ function Home() {
           ))}
         </div>
       </div>
-
-      <div className="my-12 h-16" />
 
       {/* 추가된 카드들 */}
       <div className="my-12">
