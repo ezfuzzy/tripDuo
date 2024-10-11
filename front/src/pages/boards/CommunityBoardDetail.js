@@ -56,8 +56,8 @@ function CommunityBoardDetail(props) {
   // 작성자 프로필 설정
   const [writerProfile, setWriterProfile] = useState({});
 
-  //좋아요 버튼 설정
-  const [isLiked, setLiked] = useState(false);
+  // 별점 버튼 설정
+  const [isRated, setRated] = useState(false);
 
   //덧글 관련 설정 ( to do )
   // 댓글 목록
@@ -83,14 +83,11 @@ function CommunityBoardDetail(props) {
 
   const [postRating, setPostRating] = useState(0);
 
+  const [ratedInfo, setRatedInfo] = useState();
+
   // HTML 로 구성된 Content 관리
   const [contentHTML, setContentHTML] = useState(); // HTML 로 구성된 Content
   const cleanHTML = DOMPurify.sanitize(contentHTML); // HTML 클린징으로 보안처리
-
-  // 버튼 스타일 - 신청 전/후 색상 변경
-  const likeButtonClasses = `px-4 py-2 text-sm font-medium rounded-md ${
-    isRecruited ? "bg-gray-200 text-gray-800" : "bg-green-500 text-white"
-  }`;
 
   //--------------------------------------------------------------------------------------------------------------rating 관리 부
   // rating 비교 조건 데이터
@@ -129,7 +126,15 @@ function CommunityBoardDetail(props) {
 
         setPost(res.data.dto);
         setContentHTML(res.data.dto.content);
-        setLiked(res.data.dto.like);
+
+        //현재 사용자의 postRating = id, postId, userId, rating
+        console.log(res.data.postRating)
+        if (res.data.postRating === null) {
+          setRated(false);
+        } else {
+          setRated(true);
+          setRatedInfo(res.data.postRating)
+        }
 
         setWriterProfile(res.data.userProfileInfo);
 
@@ -146,55 +151,11 @@ function CommunityBoardDetail(props) {
         setTotalCommentPages(res.data.totalCommentPages);
       })
       .catch((error) => console.log(error));
-  }, [id]);
+  }, [id, isRated]);
 
   // 프로필 보기 클릭
   const handleClickProfile = () => {
     navigate(`/users/${writerProfile.id}/profile`);
-  };
-
-  //좋아요 버튼 클릭
-  const handleLike = () => {
-    if (username) {
-      if (!isLiked) {
-        // isLiked = false 좋아요 누르지 않음
-        axios
-          .post(`/api/v1/posts/${id}/likes`, {
-            postId: post.id,
-            userId: userId,
-          })
-          .then((res) => {
-            setLiked(true);
-            //view 페이지에서만 숫자 변경
-            setPost({
-              ...post,
-              likeCount: post.likeCount + 1,
-            });
-          })
-          .catch((error) => {
-            console.log(error);
-            alert(error.response.data);
-          });
-      } else if (isLiked) {
-        // isLiked = true 좋아요 누름
-        axios
-          .delete(`/api/v1/posts/${id}/likes/${userId}`)
-          .then((res) => {
-            setLiked(false);
-            //view 페이지에서만 숫자 변경
-            setPost({
-              ...post,
-              likeCount: post.likeCount - 1,
-            });
-          })
-          .catch((error) => {
-            console.log(error);
-            alert(error.response.data);
-          });
-      }
-    } else {
-      alert("로그인을 해주세요");
-    }
   };
 
   // --------------댓글 관련 이벤트
@@ -429,8 +390,33 @@ function CommunityBoardDetail(props) {
       .post(`/api/v1/posts/${post.id}/ratings`, { userId: userId, postId: post.id, rating: postRating })
       .then((res) => {
         console.log(res.data);
+        closeModal();
+        setRated(true)
       })
       .catch((error) => console.log(error));
+  };
+
+  const handleUpdateRating = () => {
+    axios
+      .put(`/api/v1/posts/${post.id}/${ratedInfo.id}`, { userId: userId, postId: post.id, rating: postRating })
+      .then((res) => {
+        console.log(res.data);
+        closeModal();
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const handleDeleteRating = () => {
+    if (window.confirm) {
+      axios
+        .delete(`/api/v1/posts/${post.id}/${ratedInfo.id}`)
+        .then((res) => {
+          console.log(res.data);
+          setRated(false)
+          alert("별점을 삭제하였습니다.");
+        })
+        .catch((error) => console.log(error));
+    }
   };
   // ---------------------------------------------------- 채팅 관련
   const { stompClient, isConnected, messages, setMessages } = useWebSocket();
@@ -531,13 +517,30 @@ function CommunityBoardDetail(props) {
                   <FontAwesomeIcon icon={faStar} className={`w-6 h-6 text-yellow-400`} />
                   {post.rating}
                 </p>
-                <p>
-                  <button
-                    className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
-                    onClick={openModal}>
-                    별점
-                  </button>
-                </p>
+                {!isRated ? (
+                  <p>
+                    <button
+                      className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
+                      onClick={openModal}>
+                      별점
+                    </button>
+                  </p>
+                ) : (
+                  <p>
+                    <button
+                      className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
+                      onClick={openModal}>
+                      <FontAwesomeIcon icon={faStar} className={`w-6 h-6 text-yellow-400`} />
+                      {ratedInfo.rating}
+                      수정
+                    </button>
+                    <button
+                      className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
+                      onClick={handleDeleteRating}>
+                      삭제
+                    </button>
+                  </p>
+                )}
               </div>
             </div>
 
@@ -557,27 +560,11 @@ function CommunityBoardDetail(props) {
             <h5 className="m-3 mb-10 text-2xl">
               <strong>{post.title}</strong>
               {/* title / 좋아요 버튼 / 좋아요,조회수, 덧글수 */}
-              {/* 내 게시물이 아닌경우에만 좋아요 버튼 보여주기 */}
-              {userId !== post.userId && (
-                <button
-                  className={`mx-3 ${
-                    isLiked ? "bg-pink-600" : "bg-pink-400"
-                  } text-white active:bg-emerald-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
-                  type="button"
-                  onClick={handleLike}>
-                  <FontAwesomeIcon icon={faHeart} className="mr-2" />
-                  {isLiked ? "unLike" : "Like"}
-                </button>
-              )}
               {/* 조회수, 좋아요, 덧글 수 */}
               <span className="ml-10 text-sm text-gray-500 space-x-3">
                 <span>
                   <FontAwesomeIcon icon={faEye} className="h-5 w-5 mr-2" />
                   {post.viewCount}
-                </span>
-                <span>
-                  <FontAwesomeIcon icon={faHeart} className="h-4 w-4 mr-2" />
-                  {post.likeCount}
                 </span>
                 <span>
                   <FontAwesomeIcon icon={faMessage} className="h-4 w-4 mr-2" />
@@ -624,7 +611,6 @@ function CommunityBoardDetail(props) {
                     type="button"
                     className="text-white bg-gray-500 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-3 py-2.5 me-2 mb-2 "
                     onClick={handleClickProfile}>
-                    {" "}
                     프로필 보기
                   </button>
                 </div>
@@ -633,36 +619,36 @@ function CommunityBoardDetail(props) {
 
             {/* Froala Editor 내용 */}
             <div dangerouslySetInnerHTML={{ __html: cleanHTML }}></div>
-          {
-            // 로그인된 username 과 post의 userId 로 불러온 작성자 아이디가 동일하면 랜더링
-            userId === post.userId && (
-              <div className="container mt-3 text-right">
-                <button
-                  type="button"
-                  className="m-1 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
-                  onClick={() => navigate(`/posts/community/${id}/edit`)}>
-                  수정
-                </button>
-                <button
-                  type="button"
-                  className="m-1 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
-                  onClick={() => {
-                    axios
-                      .delete(`/api/v1/posts/${id}`)
-                      .then((res) => {
-                        alert("글 삭제 성공");
-                        // 국/해외 페이지 별 리다일렉트
-                        post.country === "대한민국"
-                          ? navigate(`/posts/community?di=Domestic`)
-                          : navigate(`/posts/community?di=International`);
-                      })
-                      .catch((error) => console.log(error));
-                  }}>
-                  삭제
-                </button>
-              </div>
-            )
-          }
+            {
+              // 로그인된 username 과 post의 userId 로 불러온 작성자 아이디가 동일하면 랜더링
+              userId === post.userId && (
+                <div className="container mt-3 text-right">
+                  <button
+                    type="button"
+                    className="m-1 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
+                    onClick={() => navigate(`/posts/community/${id}/edit`)}>
+                    수정
+                  </button>
+                  <button
+                    type="button"
+                    className="m-1 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
+                    onClick={() => {
+                      axios
+                        .delete(`/api/v1/posts/${id}`)
+                        .then((res) => {
+                          alert("글 삭제 성공");
+                          // 국/해외 페이지 별 리다일렉트
+                          post.country === "대한민국"
+                            ? navigate(`/posts/community?di=Domestic`)
+                            : navigate(`/posts/community?di=International`);
+                        })
+                        .catch((error) => console.log(error));
+                    }}>
+                    삭제
+                  </button>
+                </div>
+              )
+            }
           </div>
 
           {/* 원글의 댓글 작성 form */}
@@ -943,7 +929,7 @@ function CommunityBoardDetail(props) {
         </div>
         <div className="text-center">
           <button
-            onClick={handlePostRating}
+            onClick={isRated ? handleUpdateRating : handlePostRating}
             className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100">
             평가하기
           </button>
