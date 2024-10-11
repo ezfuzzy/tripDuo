@@ -391,11 +391,11 @@ function MateBoard() {
               // 버튼 클릭 시 경로로 이동
               window.location.href = `/posts/mate/new?di=${domesticInternational}`
             }}
-            className="bg-tripDuoMint text-white px-4 py-2 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300 flex items-center">
+            className="bg-tripDuoMint font-bold text-white px-4 py-2 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300 flex items-center">
             새글 작성
           </button>
           <button
-            className="bg-tripDuoMint text-white px-4 py-2 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300 flex items-center"
+            className="bg-tripDuoMint font-bold text-white px-4 py-2 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300 flex items-center"
             onClick={handleButtonClick}>
             {pageTurn}
           </button>
@@ -409,10 +409,10 @@ function MateBoard() {
             <select
               value={searchCriteria.condition}
               onChange={handleConditionChange}
-              className="border border-tripDuoGreen text-sm rounded-md px-4 py-2 w-1/8 focus:outline-none focus:ring-2 focus:ring-tripDuoMint transition-all duration-300">
+              className="border border-tripDuoGreen text-sm rounded-md px-4 py-2 w-1/3 focus:outline-none focus:ring-2 focus:ring-tripDuoMint transition-all duration-300">
               <option value="title">제목</option>
               <option value="content">내용</option>
-              <option value="title_content">제목 + 내용</option>
+              <option value="title_content">제목 및 내용</option>
             </select>
 
             <input
@@ -422,7 +422,7 @@ function MateBoard() {
               onChange={handleQueryChange}
               placeholder={searchCriteria.condition}
               onKeyDown={handleKeyDown}
-              className="border border-tripDuoGreen text-sm rounded-md px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-tripDuoMint transition-all duration-300"
+              className="border border-tripDuoGreen text-sm rounded-md px-4 py-2 w-2/3 focus:outline-none focus:ring-2 focus:ring-tripDuoMint transition-all duration-300"
             />
           </div>
           {/* 국가와 도시를 한 행으로 배치 */}
@@ -450,7 +450,7 @@ function MateBoard() {
             />
             <button
               onClick={() => setIsCalendarOpen(!isCalendarOpen)}
-              className="bg-tripDuoMint text-white px-4 py-2 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300 flex items-center">
+              className="bg-tripDuoMint text-white font-bold px-4 py-2 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300 flex items-center">
               <span className="whitespace-nowrap">
                 {selectedDateRange[0] && selectedDateRange[1]
                   ? `${selectedDateRange[0].getFullYear().toString().slice(-2)}${(selectedDateRange[0].getMonth() + 1)
@@ -521,7 +521,7 @@ function MateBoard() {
             <div className="flex justify-end w-full items-center">
               <button
                 onClick={handleSearch}
-                className="bg-tripDuoMint text-white px-4 py-2 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300">
+                className="font-bold bg-tripDuoMint text-white px-4 py-2 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300">
                 검색
               </button>
             </div>
