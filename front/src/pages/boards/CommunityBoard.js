@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faHeart, faMessage } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faHeart, faMessage, faStar } from "@fortawesome/free-solid-svg-icons";
 import LoadingAnimation from "../../components/LoadingAnimation";
 
 function CommunityBoard() {
@@ -284,6 +284,10 @@ function CommunityBoard() {
               </div>
               <div className="mt-2">
                 <Link to={`/posts/community/${item.id}/detail`}>{item.title}</Link>
+                <span className="text-xs ml-3">
+                  <FontAwesomeIcon icon={faStar} className={`w-4 h-4 cursor-pointe text-yellow-400`} />
+                  {item.rating}
+                </span>
               </div>
             </div>
 
