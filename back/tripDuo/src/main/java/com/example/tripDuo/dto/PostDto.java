@@ -48,9 +48,7 @@ public class PostDto {
     // ### for app ###
     
     private boolean isLike;
-    private boolean isRated;
     
-    //private int startRowNum, endRowNum;
     private int pageNum = 1;
 
     private String condition = "";
@@ -58,7 +56,6 @@ public class PostDto {
     private String sortBy;
     
     private String searchDateCondition; // includes : start, end 날짜를 포함하는, contained : start, end 안에 포함되는  
-    //private int prevNum, nextNum;
     
     // ### toDto ###
     
