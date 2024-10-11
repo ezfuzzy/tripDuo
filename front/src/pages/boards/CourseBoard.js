@@ -49,7 +49,7 @@ function CourseBoard() {
     setTimeout(() => {
       setLoading(false)
     }, 700)
-    
+
     let pageNum = searchParams.get("pageNum") || 1
     const diValue = searchParams.get("di") || "Domestic"
     const city = searchParams.get("city") || ""
@@ -92,7 +92,7 @@ function CourseBoard() {
       endDate: searchCriteria.endDate || null,
       keyword: searchCriteria.keyword || null,
       condition: searchCriteria.condition || null,
-      sortBy
+      sortBy,
     }
 
     axios
@@ -103,20 +103,20 @@ function CourseBoard() {
 
         //국내 해외 필터링
         if (domesticInternational === "Domestic") {
-          filtered = filtered.filter((item) => item.country === "대한민국");
+          filtered = filtered.filter((item) => item.country === "대한민국")
         } else if (domesticInternational === "International") {
-          filtered = filtered.filter((item) => item.country !== "대한민국");
+          filtered = filtered.filter((item) => item.country !== "대한민국")
         }
 
         setPageInfo(filtered)
         setTotalPages(res.data.totalPostPages)
 
         let tempStr = ""
-        if(domesticInternational === "Domestic") {
+        if (domesticInternational === "Domestic") {
           tempStr = "국내 여행 코스"
         } else if (domesticInternational === "International") {
           tempStr = "해외 여행 코스"
-        } 
+        }
 
         setDesiredCountry(`${tempStr}`)
         setPageTurn(domesticInternational === "Domestic" ? "해외로" : "국내로")
@@ -161,7 +161,7 @@ function CourseBoard() {
     setSortBy(e.target.value) // 정렬 기준 변경
 
     // 정렬 기준에 따라 pageData를 정렬
-    let sortedData = [...pageInfo];
+    let sortedData = [...pageInfo]
     if (newSortBy === "latest") {
       sortedData.sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt))
     } else if (newSortBy === "viewCount") {
@@ -393,14 +393,13 @@ function CourseBoard() {
       {loading && <LoadingAnimation />}
       <div className="container mx-auto">
         <div className="flex justify-between mb-4">
-        <button
-          onClick={() => {
-            window.location.href = `/posts/course/new?di=${domesticInternational}&status=PUBLIC`; // URL을 올바르게 설정
-          }}
-          className="bg-tripDuoMint font-bold text-white px-4 py-2 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300 flex items-center"
-        >
-          여행코스 계획하기
-        </button>
+          <button
+            onClick={() => {
+              window.location.href = `/posts/course/new?di=${domesticInternational}&status=PUBLIC` // URL을 올바르게 설정
+            }}
+            className="bg-tripDuoMint font-bold text-white px-4 py-2 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300 flex items-center">
+            여행코스 계획하기
+          </button>
           <button
             onClick={handleDesiredCountry}
             className="bg-tripDuoMint font-bold text-white px-4 py-2 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300 flex items-center">
@@ -410,13 +409,13 @@ function CourseBoard() {
         <h1 className="font-bold mb-4">{desiredCountry}</h1>
 
         {/* 검색 조건 입력 폼 */}
-        <div className="my-4 space-y-4 p-4 w-1/2 bg-white rounded-lg shadow-md shadow-tripDuoMint border border-tripDuoGreen ">
+        <div className="my-4 space-y-4 p-4 w-full md:w-1/2 bg-white rounded-lg shadow-md shadow-tripDuoMint border border-tripDuoGreen">
           {/* 제목/작성자 선택 필드 */}
-          <div className="flex gap-4">
+          <div className="flex flex-col md:flex-row gap-4">
             <select
               value={searchCriteria.condition}
               onChange={handleConditionChange}
-              className="border border-tripDuoGreen text-sm rounded-md px-4 py-2 w-1/3 focus:outline-none focus:ring-2 focus:ring-tripDuoMint transition-all duration-300">
+              className="border border-tripDuoGreen text-sm rounded-md px-4 py-2 w-full md:w-1/3 focus:outline-none focus:ring-2 focus:ring-tripDuoMint transition-all duration-300">
               <option value="title">제목</option>
               <option value="content">내용</option>
               <option value="title_content">제목 및 내용</option>
@@ -429,11 +428,12 @@ function CourseBoard() {
               onChange={handleQueryChange}
               placeholder={searchCriteria.condition}
               onKeyDown={handleKeyDown}
-              className="border border-tripDuoGreen text-sm rounded-md px-4 py-2 w-2/3 focus:outline-none focus:ring-2 focus:ring-tripDuoMint transition-all duration-300"
+              className="border border-tripDuoGreen text-sm rounded-md px-4 py-2 w-full md:w-2/3 focus:outline-none focus:ring-2 focus:ring-tripDuoMint transition-all duration-300"
             />
           </div>
+
           {/* 국가와 도시를 한 행으로 배치 */}
-          <div className="flex items-center gap-4 w-full">
+          <div className="flex flex-col md:flex-row items-center gap-4 w-full">
             {domesticInternational === "International" && (
               <input
                 type="text"
@@ -455,6 +455,7 @@ function CourseBoard() {
               placeholder="도시"
               className="border text-sm border-tripDuoGreen rounded-md px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-tripDuoMint transition-all duration-300"
             />
+
             <button
               onClick={() => setIsCalendarOpen(!isCalendarOpen)}
               className="bg-tripDuoMint text-white font-bold px-4 py-2 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300 flex items-center">
@@ -473,6 +474,7 @@ function CourseBoard() {
                   : "날짜 선택"}
               </span>
             </button>
+
             {/* 캘린더 표시 여부에 따라 렌더링 */}
             <div ref={calendarRef}>
               {isCalendarOpen && (
@@ -484,17 +486,17 @@ function CourseBoard() {
                   </button>
                   <Calendar
                     selectRange={true}
-                    className="w-full p-4 bg-white rounded-lg border-none" // 달력 컴포넌트의 테두리를 없애기 위해 border-none 추가
+                    className="w-full p-4 bg-white rounded-lg border-none"
                     onChange={handleDateChange}
-                    value={selectedDateRange || [new Date(), new Date()]} // 초기값 또는 선택된 날짜 범위
-                    minDetail="month" // 상단 네비게이션에서 '월' 단위만 보이게 설정
-                    maxDetail="month" // 상단 네비게이션에서 '월' 단위만 보이게 설정
+                    value={selectedDateRange || [new Date(), new Date()]}
+                    minDetail="month"
+                    maxDetail="month"
                     navigationLabel={null}
-                    showNeighboringMonth={false} //  이전, 이후 달의 날짜는 보이지 않도록 설정
-                    calendarType="hebrew" //일요일부터 보이도록 설정
-                    tileClassName={tileClassName} // 날짜 스타일 설정
-                    formatYear={(locale, date) => moment(date).format("YYYY")} // 네비게이션 눌렀을때 숫자 년도만 보이게
-                    formatMonthYear={(locale, date) => moment(date).format("YYYY. MM")} // 네비게이션에서 2023. 12 이렇게 보이도록 설정
+                    showNeighboringMonth={false}
+                    calendarType="hebrew"
+                    tileClassName={tileClassName}
+                    formatYear={(locale, date) => moment(date).format("YYYY")}
+                    formatMonthYear={(locale, date) => moment(date).format("YYYY. MM")}
                     prevLabel={
                       <FaChevronLeft className="text-green-500 hover:text-green-700 transition duration-150 mx-auto" />
                     }
@@ -503,28 +505,19 @@ function CourseBoard() {
                     }
                     prev2Label={null}
                     next2Label={null}
-                    // <button
-                    //   onClick={(event) => {
-                    //     event.preventDefault()
-                    //     // handleDateReset()
-                    //     handleDateChange([new Date(), new Date()])
-                    //   }}
-                    //   className="text-black-500 hover:text-green-700 transition duration-150 mx-auto">
-                    //   오늘로
-                    // </button>
-                    //}  다음 달의 다음 달로 이동하는 버튼을 오늘로 이동하는 버튼으로 변경
                     tileContent={({ date }) => {
                       return (
                         <span className={date.getDay() === 0 || date.getDay() === 6 ? "text-red-500" : "text-black"}>
-                          {date.getDate()} {/* 날짜 숫자만 표시 */}
+                          {date.getDate()}
                         </span>
                       )
-                    }} // 날짜 내용 설정
+                    }}
                     formatDay={() => null}
                   />
                 </div>
               )}
             </div>
+
             <div className="flex justify-end w-full items-center">
               <button
                 onClick={handleSearch}
@@ -543,7 +536,7 @@ function CourseBoard() {
             id="sortBy"
             value={sortBy}
             onChange={handleSortChange}
-            className="flex justify-start w-1/6 border border-tripDuoGreen text-sm rounded-md px-5 py-2 focus:outline-none focus:ring-2 focus:ring-tripDuoMint transition-all duration-300">
+            className="flex justify-start w-full md:w-1/6 border border-tripDuoGreen text-sm rounded-md px-5 py-2 focus:outline-none focus:ring-2 focus:ring-tripDuoMint transition-all duration-300">
             <option value="latest">최신순</option>
             <option value="viewCount">조회수순</option>
             <option value="likeCount">좋아요순</option>
@@ -571,17 +564,17 @@ function CourseBoard() {
                     {post.startDate === null
                       ? ""
                       : new Date(post.startDate).toLocaleDateString("ko-KR", {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                      })}
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                        })}
                     {post.endDate === null
                       ? ""
                       : ` ~ ${new Date(post.endDate).toLocaleDateString("ko-KR", {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                      })}`}
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                        })}`}
                   </p>
                   <p className="text-sm text-right text-green-800 font-semibold">
                     {post.country} - {post.city}
@@ -613,8 +606,9 @@ function CourseBoard() {
           <button
             onClick={() => paginate(currentPage - 1)}
             disabled={currentPage === 1}
-            className={`px-4 py-2 rounded ${currentPage === 1 ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-gray-300 text-gray-700"
-              }`}>
+            className={`px-4 py-2 rounded ${
+              currentPage === 1 ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-gray-300 text-gray-700"
+            }`}>
             &lt;
           </button>
           {/* totalPages만큼 배열 생성 */}
@@ -622,16 +616,18 @@ function CourseBoard() {
             <button
               key={number}
               onClick={() => paginate(number)}
-              className={`px-4 py-2 rounded ${currentPage === number ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-700"
-                }`}>
+              className={`px-4 py-2 rounded ${
+                currentPage === number ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-700"
+              }`}>
               {number}
             </button>
           ))}
           <button
             onClick={() => paginate(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className={`px-4 py-2 rounded ${currentPage === totalPages ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-gray-300 text-gray-700"
-              }`}>
+            className={`px-4 py-2 rounded ${
+              currentPage === totalPages ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-gray-300 text-gray-700"
+            }`}>
             &gt;
           </button>
         </div>
