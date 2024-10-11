@@ -17,7 +17,7 @@ import {
   faUser,
 } from "@fortawesome/free-solid-svg-icons"
 import "../../css/MyProfile.css"
-import FollowerFolloweeModal from "../../components/FollowerFolloweeModal"
+import FollowModal from "../../components/FollowModal"
 import LoadingAnimation from "../../components/LoadingAnimation"
 import useWebSocket from "../../components/useWebSocket"
 
@@ -107,7 +107,7 @@ function MyProfile(props) {
   // rating 비교 조건 데이터
   const ratingConfig = [
     { min: 0, max: 1499, icon: faFeather, color: "gray" }, // 이코노미
-    { min: 1500, max: 2999, icon: faFeather, color: "blue" }, // 프��미엄 이코노미
+    { min: 1500, max: 2999, icon: faFeather, color: "blue" }, // 프리미엄 이코노미
     { min: 3000, max: 4499, icon: faDove, color: "gray" }, // 비지니스
     { min: 4500, max: 5999, icon: faDove, color: "blue" }, // 프리미엄 비지니스
     { min: 6000, max: 7499, icon: faPlane, color: "gray" }, // 퍼스트
@@ -626,7 +626,7 @@ function MyProfile(props) {
           </div>
         </div>
         {/* MODAL */}
-        {isModalOpen && <FollowerFolloweeModal id={id} ff={modalTab} onClose={handleCloseModal} />}
+        {isModalOpen && <FollowModal id={id} ff={modalTab} onClose={handleCloseModal} />}
         {/*  소셜 링크 렌더링 */}
         <div className="mt-5 flex justify-center">
           {Array.isArray(profile.socialLinks) &&
@@ -698,10 +698,19 @@ function MyProfile(props) {
                 ) : (
                   ""
                 )}
-                <ul className={`w-full transition-all duration-500 ${experience === "BAD" ? "bg-red-100" : experience === "GOOD" || experience === "EXCELLENT" ? "bg-green-100" : "hidden"} p-4 rounded-lg shadow-lg`}>
+                <ul
+                  className={`w-full transition-all duration-500 ${
+                    experience === "BAD"
+                      ? "bg-red-100"
+                      : experience === "GOOD" || experience === "EXCELLENT"
+                      ? "bg-green-100"
+                      : "hidden"
+                  } p-4 rounded-lg shadow-lg`}>
                   {experience === "BAD"
                     ? reviewNegativeTagList.map((item) => (
-                        <li key={item.key} className="flex items-center mb-2 transform transition-transform duration-100">
+                        <li
+                          key={item.key}
+                          className="flex items-center mb-2 transform transition-transform duration-100">
                           <input
                             id={item.keyword}
                             type="checkbox"
@@ -710,14 +719,18 @@ function MyProfile(props) {
                             onChange={handleCheckboxChange}
                             className="w-5 h-5 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 focus:ring-2"
                           />
-                          <label htmlFor={item.keyword} className="ms-2 text-md font-bold text-gray-900 transition-colors duration-300 hover:text-red-600">
+                          <label
+                            htmlFor={item.keyword}
+                            className="ms-2 text-md font-bold text-gray-900 transition-colors duration-300 hover:text-red-600">
                             {item.text}
                           </label>
                         </li>
                       ))
                     : experience === "GOOD" || experience === "EXCELLENT"
                     ? reviewPositiveTagList.map((item) => (
-                        <li key={item.key} className="flex items-center mb-2 transform transition-transform duration-100">
+                        <li
+                          key={item.key}
+                          className="flex items-center mb-2 transform transition-transform duration-100">
                           <input
                             id={item.keyword}
                             type="checkbox"
@@ -726,7 +739,9 @@ function MyProfile(props) {
                             onChange={handleCheckboxChange}
                             className="w-5 h-5 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 focus:ring-2"
                           />
-                          <label htmlFor={item.keyword} className="ms-2 text-md font-bold text-gray-900 transition-colors duration-300 hover:text-green-600">
+                          <label
+                            htmlFor={item.keyword}
+                            className="ms-2 text-md font-bold text-gray-900 transition-colors duration-300 hover:text-green-600">
                             {item.text}
                           </label>
                         </li>
