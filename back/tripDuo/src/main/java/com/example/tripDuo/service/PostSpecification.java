@@ -24,6 +24,15 @@ public class PostSpecification {
 			predicate = criteriaBuilder.and(predicate, 
 					criteriaBuilder.equal(root.get("type"), postDto.getType()));
 
+			if(postDto.getCountry() == "Domestic") {
+				predicate = criteriaBuilder.and(predicate, 
+						criteriaBuilder.equal(root.get("type"), postDto.getType()));
+			} else if (postDto.getCountry() == "International"){
+				predicate = criteriaBuilder.and(predicate, 
+						criteriaBuilder.equal(root.get("type"), postDto.getType()));
+			}
+			
+			
 			// userId 검색 조건 추가
 			if (postDto.getUserId() != null) {
 				predicate = criteriaBuilder.and(predicate,
@@ -53,13 +62,23 @@ public class PostSpecification {
                 	predicate = criteriaBuilder.and(predicate,
                 			criteriaBuilder.equal(root.get("city"), postDto.getCity()));
                 }
-				
-				// Country 검색 조건
-				if (postDto.getCountry() != null && !postDto.getCountry().isEmpty()) {
-					predicate = criteriaBuilder.and(predicate,
-							criteriaBuilder.equal(root.get("country"), postDto.getCountry()));
-				}
 
+                // Country 검색 조건 (domestic: 한국, international: 한국이 아닌 나라)
+                if (postDto.getCountry() != null) {
+                    if ("domestic".equals(postDto.getCountry())) {
+                        // 국내 데이터 (country가 '한국'인 데이터만)
+                        predicate = criteriaBuilder.and(predicate, 
+                                criteriaBuilder.equal(root.get("country"), "한국"));
+                    } else if ("international".equals(postDto.getCountry())) {
+                        // 해외 데이터 (country가 '한국'이 아닌 데이터)
+                        predicate = criteriaBuilder.and(predicate, 
+                                criteriaBuilder.notEqual(root.get("country"), "한국"));
+                    } else {
+                        // 일반 Country 검색 조건
+                        predicate = criteriaBuilder.and(predicate, 
+                                criteriaBuilder.equal(root.get("country"), postDto.getCountry()));
+                    }
+                }
                 
 				// Keyword 검색 조건
 				if (postDto.getKeyword() != null && !postDto.getKeyword().isEmpty()) {

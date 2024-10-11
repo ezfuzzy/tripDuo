@@ -170,7 +170,6 @@ public class PostServiceImpl implements PostService {
 		UserProfileInfoDto upiDto = UserProfileInfoDto.toDto(post.getUserProfileInfo(), PROFILE_PICTURE_CLOUDFRONT_URL);
 		existingDto.setViewCount(existingDto.getViewCount() + 1);
 		postRepo.save(Post.toEntity(existingDto, userProfileInfoRepo.findById(existingDto.getUserId()).get()));
-		System.out.println("333");
 		
 		return Map.of(
 				"dto", existingDto, 
