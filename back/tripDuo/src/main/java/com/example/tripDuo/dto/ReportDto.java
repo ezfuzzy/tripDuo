@@ -50,25 +50,25 @@ public class ReportDto {
 
         // 각 Report 타입에 따라 targetType과 targetId 설정
         if (report instanceof ReportToUser) {
-            setTargetInfo(dto, ReportTarget.USER, ((ReportToUser) report).getReportedUser().getId());
+            dto.setTargetType(ReportTarget.USER.name());
+            dto.setTargetId(((ReportToUser) report).getReportedUser().getId());
         } else if (report instanceof ReportToUserReview) {
-            setTargetInfo(dto, ReportTarget.USER_REVIEW, ((ReportToUserReview) report).getReportedUserReview().getId());
+            dto.setTargetType(ReportTarget.USER_REVIEW.name());
+            dto.setTargetId(((ReportToUserReview) report).getReportedUserReview().getId());
         } else if (report instanceof ReportToPost) {
-            setTargetInfo(dto, ReportTarget.POST, ((ReportToPost) report).getReportedPost().getId());
+            dto.setTargetType(ReportTarget.POST.name());
+            dto.setTargetId(((ReportToPost) report).getReportedPost().getId());
         } else if (report instanceof ReportToPostComment) {
-            setTargetInfo(dto, ReportTarget.POST_COMMENT, ((ReportToPostComment) report).getReportedPostComment().getId());
+            dto.setTargetType(ReportTarget.POST_COMMENT.name());
+            dto.setTargetId(((ReportToPostComment) report).getReportedPostComment().getId());
         } else if (report instanceof ReportToChatRoom) {
-            setTargetInfo(dto, ReportTarget.CHAT_ROOM, ((ReportToChatRoom) report).getReportedChatRoom().getId());
+            dto.setTargetType(ReportTarget.CHAT_ROOM.name());
+            dto.setTargetId(((ReportToChatRoom) report).getReportedChatRoom().getId());
         } else if (report instanceof ReportToChatMessage) {
-            setTargetInfo(dto, ReportTarget.CHAT_MESSAGE, ((ReportToChatMessage) report).getReportedChatMessage().getId());
+            dto.setTargetType(ReportTarget.CHAT_MESSAGE.name());
+            dto.setTargetId(((ReportToChatMessage) report).getReportedChatMessage().getId());
         }
 
         return dto;
-    }
-
-    // targetType과 targetId를 설정하는 헬퍼 메서드
-    private static void setTargetInfo(ReportDto dto, ReportTarget target, Long targetId) {
-        dto.setTargetType(target.name());
-        dto.setTargetId(targetId);
     }
 }

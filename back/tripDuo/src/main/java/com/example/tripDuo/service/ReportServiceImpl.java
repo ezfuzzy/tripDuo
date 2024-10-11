@@ -99,60 +99,53 @@ public class ReportServiceImpl implements ReportService {
 		// 첫번째 페이지의 첫번째 결과만 가져오기
         Pageable pageable = PageRequest.of(0, 1);
 
-		// 신고 대상 별로 최근 신고 정보 가져오기
-        switch (targetEnum) {
-            case USER:
-                return reportRepo.findReportsToUser(reporterId, targetId, pageable).stream().findFirst().orElse(null);
-            case USER_REVIEW:
-                return reportRepo.findReportsToUserReview(reporterId, targetId, pageable).stream().findFirst().orElse(null);
-            case POST:
-                return reportRepo.findReportsToPost(reporterId, targetId, pageable).stream().findFirst().orElse(null);
-            case POST_COMMENT:
-                return reportRepo.findReportsToPostComment(reporterId, targetId, pageable).stream().findFirst().orElse(null);
-            case CHAT_ROOM:
-                return reportRepo.findReportsToChatRoom(reporterId, targetId, pageable).stream().findFirst().orElse(null);
-            case CHAT_MESSAGE:
-                return reportRepo.findReportsToChatMessage(reporterId, targetId, pageable).stream().findFirst().orElse(null);
-            default:
-                throw new IllegalArgumentException("Invalid report target");
-        }
+        // 신고 대상 별로 최근 신고 정보 가져오기
+        return switch (targetEnum) {
+            case USER -> reportRepo.findReportsToUser(reporterId, targetId, pageable).stream().findFirst().orElse(null);
+            case USER_REVIEW -> reportRepo.findReportsToUserReview(reporterId, targetId, pageable).stream().findFirst().orElse(null);
+            case POST -> reportRepo.findReportsToPost(reporterId, targetId, pageable).stream().findFirst().orElse(null);
+            case POST_COMMENT -> reportRepo.findReportsToPostComment(reporterId, targetId, pageable).stream().findFirst().orElse(null);
+            case CHAT_ROOM -> reportRepo.findReportsToChatRoom(reporterId, targetId, pageable).stream().findFirst().orElse(null);
+            case CHAT_MESSAGE -> reportRepo.findReportsToChatMessage(reporterId, targetId, pageable).stream().findFirst().orElse(null);
+            default -> throw new IllegalArgumentException("Invalid report target");
+        };
     }
 
     private void saveReport(ReportDto userReportDto, ReportTarget targetEnum, Long targetId) {
 		// 신고 대상 별로 신고 정보 저장
         switch (targetEnum) {
-            case USER:
+            case USER -> {
                 User reportedUser = userRepo.findById(targetId)
-                // orElseThrow : Optional 객체가 값을 가지고 있으면 그 값을 반환,
-                //               값이 없으면 예외 발생
+                        // orElseThrow : Optional 객체가 값을 가지고 있으면 그 값을 반환,
+                        // 값이 없으면 예외 발생
                         .orElseThrow(() -> new EntityNotFoundException("신고 대상 사용자를 찾을 수 없습니다."));
                 reportRepo.save(ReportToUser.toEntity(userReportDto, reportedUser));
-                break;
-            case USER_REVIEW:
+            }
+            case USER_REVIEW -> {
                 UserReview reportedUserReview = userReviewRepo.findById(targetId)
                         .orElseThrow(() -> new EntityNotFoundException("신고 대상 리뷰를 찾을 수 없습니다."));
                 reportRepo.save(ReportToUserReview.toEntity(userReportDto, reportedUserReview));
-                break;
-            case POST:
+            }
+            case POST -> {
                 Post reportedPost = postRepo.findById(targetId)
                         .orElseThrow(() -> new EntityNotFoundException("신고 대상 게시글을 찾을 수 없습니다."));
                 reportRepo.save(ReportToPost.toEntity(userReportDto, reportedPost));
-                break;
-            case POST_COMMENT:
+            }
+            case POST_COMMENT -> {
                 PostComment reportedPostComment = postCommentRepo.findById(targetId)
                         .orElseThrow(() -> new EntityNotFoundException("신고 대상 댓글을 찾을 수 없습니다."));
                 reportRepo.save(ReportToPostComment.toEntity(userReportDto, reportedPostComment));
-                break;
-            case CHAT_ROOM:
+            }
+            case CHAT_ROOM -> {
                 ChatRoom reportedChatRoom = chatRoomRepo.findById(targetId)
                         .orElseThrow(() -> new EntityNotFoundException("신고 대상 채팅방을 찾을 수 없습니다."));
                 reportRepo.save(ReportToChatRoom.toEntity(userReportDto, reportedChatRoom));
-                break;
-            case CHAT_MESSAGE:
+            }
+            case CHAT_MESSAGE -> {
                 ChatMessage reportedChatMessage = chatMessageRepo.findById(targetId)
                         .orElseThrow(() -> new EntityNotFoundException("신고 대상 채팅 메시지를 찾을 수 없습니다."));
                 reportRepo.save(ReportToChatMessage.toEntity(userReportDto, reportedChatMessage));
-                break;
+            }
         }
     }
 
@@ -177,13 +170,7 @@ public class ReportServiceImpl implements ReportService {
         String sortBy = reportDto.getSortBy() != null ? reportDto.getSortBy() : "createdAt_desc";
 
 		// 정렬 기준 설정
-        Sort sort = switch (sortBy) {
-			// 오래된 순
-            case "createdAt_asc" -> Sort.by(Sort.Direction.ASC, "createdAt");
-			// 최신 순
-            case "createdAt_desc" -> Sort.by(Sort.Direction.DESC, "createdAt");
-            default -> Sort.by(Sort.Direction.DESC, "createdAt");
-        };
+        Sort sort = Sort.by(sortBy.equals("createdAt_asc") ? Sort.Direction.ASC : Sort.Direction.DESC, "createdAt");
 
 		// 페이지 번호 설정
         Pageable pageable = PageRequest.of(reportDto.getPageNum() - 1, REPORT_PAGE_SIZE, sort);
@@ -207,27 +194,8 @@ public class ReportServiceImpl implements ReportService {
                 .collect(Collectors.toList());
 
         List<AccountStatus> targetAccountStatusList = reportList.stream()
-        .map(report -> {
-            if (report instanceof ReportToUser) {
-                return ((ReportToUser) report).getReportedUser().getAccountStatus();
-            } else if (report instanceof ReportToUserReview) {
-                return ((ReportToUserReview) report).getReportedUserReview().getReviewerUserProfileInfo().getUser().getAccountStatus();
-            } else if (report instanceof ReportToPost) {
-                return ((ReportToPost) report).getReportedPost().getUserProfileInfo().getUser().getAccountStatus();
-            } else if (report instanceof ReportToPostComment) {
-                return ((ReportToPostComment) report).getReportedPostComment().getUserProfileInfo().getUser().getAccountStatus();
-            } else if (report instanceof ReportToChatRoom) {
-                Long chatRoomId = ((ReportToChatRoom) report).getReportedChatRoom().getId();
-                ChatParticipant chatParticipant = chatParticipantRepo.findByChatRoomIdAndIsOwner(chatRoomId, true);
-                return chatParticipant.getUserProfileInfo().getUser().getAccountStatus();
-            } else if (report instanceof ReportToChatMessage) {
-                return ((ReportToChatMessage) report).getReportedChatMessage().getUserProfileInfo().getUser().getAccountStatus();
-            } else {
-                return null; // 다른 서브클래스의 경우 null 반환
-            }
-        })
+        .map(this::getAccountStatusFromReport)
         .collect(Collectors.toList());
-
 
 		// 총 행 수, 페이지 수 계산
         long totalRowCount = reports.getTotalElements();
@@ -242,6 +210,27 @@ public class ReportServiceImpl implements ReportService {
                 "totalRowCount", totalRowCount,
                 "totalReportPages", totalReportPages
         );
+    }
+
+    private AccountStatus getAccountStatusFromReport(Report report) {
+        // 신고 대상 소유자의 계정 상태 가져오기
+        if (report instanceof ReportToUser r) {
+            return r.getReportedUser().getAccountStatus();
+        } else if (report instanceof ReportToUserReview r) {
+            return r.getReportedUserReview().getReviewerUserProfileInfo().getUser().getAccountStatus();
+        } else if (report instanceof ReportToPost r) {
+            return r.getReportedPost().getUserProfileInfo().getUser().getAccountStatus();
+        } else if (report instanceof ReportToPostComment r) {
+            return r.getReportedPostComment().getUserProfileInfo().getUser().getAccountStatus();
+        } else if (report instanceof ReportToChatRoom r) {
+            Long chatRoomId = r.getReportedChatRoom().getId();
+            ChatParticipant chatParticipant = chatParticipantRepo.findByChatRoomIdAndIsOwner(chatRoomId, true);
+            return chatParticipant.getUserProfileInfo().getUser().getAccountStatus();
+        } else if (report instanceof ReportToChatMessage r) {
+            return r.getReportedChatMessage().getUserProfileInfo().getUser().getAccountStatus();
+        } else {
+            return null; // 다른 서브클래스의 경우 null 반환
+        }
     }
 
     /**
