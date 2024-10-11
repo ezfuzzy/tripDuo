@@ -24,12 +24,14 @@ public class PostSpecification {
 			predicate = criteriaBuilder.and(predicate, 
 					criteriaBuilder.equal(root.get("type"), postDto.getType()));
 
-			if(postDto.getDi().equals("Domestic")) {
-				predicate = criteriaBuilder.and(predicate, 
-						criteriaBuilder.equal(root.get("country"), "대한민국"));
-			} else if (postDto.getDi().equals("International")){
-				predicate = criteriaBuilder.and(predicate, 
-						criteriaBuilder.notEqual(root.get("country"), "대한민국"));
+			if(postDto.getDi() != null) {
+				if(postDto.getDi().equals("Domestic")) {
+					predicate = criteriaBuilder.and(predicate, 
+							criteriaBuilder.equal(root.get("country"), "대한민국"));
+				} else if (postDto.getDi().equals("International")){
+					predicate = criteriaBuilder.and(predicate, 
+							criteriaBuilder.notEqual(root.get("country"), "대한민국"));
+				}
 			}
 				
 			// userId 검색 조건 추가
