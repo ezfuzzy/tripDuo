@@ -129,10 +129,10 @@ function CommunityBoardDetail(props) {
 
         //현재 사용자의 postRating = id, postId, userId, rating
         console.log(res.data.postRating)
-        if (res.data.postRating === null) {
+        if (res.data.postRating === "") {
           setRated(false);
         } else {
-          setRated(true);
+          setRated(true)
           setRatedInfo(res.data.postRating)
         }
 
@@ -391,7 +391,7 @@ function CommunityBoardDetail(props) {
       .then((res) => {
         console.log(res.data);
         closeModal();
-        setRated(true)
+        setRated(true);
       })
       .catch((error) => console.log(error));
   };
@@ -412,7 +412,7 @@ function CommunityBoardDetail(props) {
         .delete(`/api/v1/posts/${post.id}/${ratedInfo.id}`)
         .then((res) => {
           console.log(res.data);
-          setRated(false)
+          setRated(false);
           alert("별점을 삭제하였습니다.");
         })
         .catch((error) => console.log(error));
