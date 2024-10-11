@@ -516,7 +516,7 @@ function CommunityBoardDetail(props) {
         {/* 로딩 애니메이션 */}
         {loading && <LoadingAnimation />}
         <div className="flex flex-col h-full bg-gray-100 p-6">
-          <div className="container">
+          <div className="container mb-10">
             <div className="flex justify-between">
               <NavLink
                 className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
@@ -527,14 +527,18 @@ function CommunityBoardDetail(props) {
                 Community
               </NavLink>
               <div className="flex items-center">
-                <FontAwesomeIcon icon={faStar} className={`w-6 h-6 cursor-pointe text-yellow-400`} />
-                <p>{post.rating}</p>
+                <p className="mr-3 font-bold">
+                  <FontAwesomeIcon icon={faStar} className={`w-6 h-6 text-yellow-400`} />
+                  {post.rating}
+                </p>
+                <p>
+                  <button
+                    className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
+                    onClick={openModal}>
+                    별점
+                  </button>
+                </p>
               </div>
-              <button
-                className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
-                onClick={openModal}>
-                별점
-              </button>
             </div>
 
             {/* 태그s */}
@@ -629,20 +633,19 @@ function CommunityBoardDetail(props) {
 
             {/* Froala Editor 내용 */}
             <div dangerouslySetInnerHTML={{ __html: cleanHTML }}></div>
-          </div>
           {
             // 로그인된 username 과 post의 userId 로 불러온 작성자 아이디가 동일하면 랜더링
             userId === post.userId && (
-              <div className="container mt-3">
+              <div className="container mt-3 text-right">
                 <button
                   type="button"
-                  className="m-1 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                  className="m-1 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
                   onClick={() => navigate(`/posts/community/${id}/edit`)}>
                   수정
                 </button>
                 <button
                   type="button"
-                  className="m-1 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                  className="m-1 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
                   onClick={() => {
                     axios
                       .delete(`/api/v1/posts/${id}`)
@@ -660,6 +663,7 @@ function CommunityBoardDetail(props) {
               </div>
             )
           }
+          </div>
 
           {/* 원글의 댓글 작성 form */}
           <div className={`border-3 rounded-lg p-3 mt-4 mb-6 bg-white ${!username ? "hidden" : ""}`}>
