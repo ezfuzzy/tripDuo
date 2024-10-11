@@ -163,6 +163,16 @@ const CourseBoardForm = () => {
   }
 
   const handleSubmit = () => {
+    if (!title) {
+      alert("제목을 입력해주세요.");
+      return;
+    }
+  
+    if (!country) {
+      alert("나라를 선택해주세요.");
+      return;
+    }
+    
     const post = {
       userId,
       writer: nickname,
