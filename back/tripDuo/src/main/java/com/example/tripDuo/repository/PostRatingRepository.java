@@ -11,5 +11,7 @@ public interface PostRatingRepository extends JpaRepository<PostRating, Long>{
     @Query("SELECT AVG(r.rating) FROM PostRating r WHERE r.post.id = :postId")
     Float findAverageRatingByPostId(@Param("postId") Long postId);
     
-    boolean existsByPostIdAndUserId(Long postId, Long userId); // 같은 게시글에 2개 이상의 평점 남기지 못하게 
+    boolean existsByPostIdAndUserId(Long postId, Long userId); // 같은 게시글에 2개 이상의 평점 남기지 못하게
+    
+    PostRating findByPostIdAndUserId(Long postId, Long userId);
 }
