@@ -150,7 +150,6 @@ public class PostServiceImpl implements PostService {
 		if(username != null && !username.equals("anonymousUser")) {
 			Long currentUserId = userRepo.findByUsername(username).getId();
 			existingDto.setLike(postLikeRepo.existsByPostIdAndUserId(existingDto.getId(), currentUserId));
-			existingDto.setRated(postRatingRepo.existsByPostIdAndUserId(existingDto.getId(), currentUserId));
 
 			PostRating postRating = postRatingRepo.findByPostIdAndUserId(existingDto.getId(), currentUserId);
 			if(postRating != null) {
