@@ -53,12 +53,6 @@ public abstract class Report {
         createdAt = LocalDateTime.now();
     }
 
-    public void updateContent(String newContent) {
-        content = newContent;
-        status = ReportStatus.UNPROCESSED;
-        createdAt = LocalDateTime.now();
-    }
-
     public void updateStatus(ReportStatus newStatus) {
         status = newStatus;
     }
