@@ -2,7 +2,6 @@ import { createBrowserRouter } from "react-router-dom"
 import App from "../App"
 import Home from "../pages/Home"
 import Sample from "../pages/Sample"
-import HomeAbroad from "../pages/HomeAbroad"
 import Signup from "../pages/Signup"
 import Agreement from "../pages/Agreement"
 import LoginPage from "../pages/LoginPage"
@@ -59,7 +58,6 @@ import ReportBoard from "../pages/boards/ReportBoard"
 const routes = [
   // ### home ###
   { path: "/", element: <Home /> },
-  { path: "/home-abroad", element: <HomeAbroad /> },
 
   // ### sign up, login, logout ... ###
   { path: "/sample", element: <Sample /> },
