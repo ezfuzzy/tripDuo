@@ -145,10 +145,14 @@ public class PostServiceImpl implements PostService {
 		existingDto.setKeyword(postDto.getKeyword());
 
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
-
+		PostRatingDto postRatingDto = null;
+		
 		if(username != null && !username.equals("anonymousUser")) {
-			existingDto.setLike(postLikeRepo.existsByPostIdAndUserId(existingDto.getId(), userRepo.findByUsername(username).getId()));
-			existingDto.setLike(postRatingRepo.existsByPostIdAndUserId(existingDto.getId(), userRepo.findByUsername(username).getId()));			
+			Long currentUserId = userRepo.findByUsername(username).getId();
+			existingDto.setLike(postLikeRepo.existsByPostIdAndUserId(existingDto.getId(), currentUserId));
+			existingDto.setRated(postRatingRepo.existsByPostIdAndUserId(existingDto.getId(), currentUserId));
+			
+			postRatingDto = PostRatingDto.toDto(postRatingRepo.findByPostIdAndUserId(existingDto.getId(), currentUserId));
 		}
 		
 		// 댓글 list 
@@ -168,6 +172,7 @@ public class PostServiceImpl implements PostService {
 		return Map.of(
 				"dto", existingDto, 
 				"userProfileInfo", upiDto,
+				"postRating", postRatingDto,
 				"commentList", commentList, 
 				"totalCommentPages", totalCommentPages
 		);

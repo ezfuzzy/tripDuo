@@ -24,7 +24,7 @@ public class PostRatingDto {
     
     private LocalDateTime createdAt;
 
-    public static PostRatingDto toEntity(PostRating entity) {
+    public static PostRatingDto toDto(PostRating entity) {
         return PostRatingDto.builder()
             .id(entity.getId())
             .postId(entity.getPost() != null ? entity.getPost().getId() : null)
