@@ -106,10 +106,10 @@ function FollowerFolloweeModal({ id, ff, onClose }) {
                     )}
                     <div className="min-w-0 flex-auto">
                       <p className="text-sm font-semibold leading-6 text-gray-900">{followee.nickname}</p>
+                      <p className="text-sm leading-6 text-gray-900">
+                        {followee.gender} / {followee.age}
+                      </p>
                     </div>
-                  </div>
-                  <div className="shrink-0 sm:flex sm:flex-col sm:items-end">
-                    <p className="text-sm leading-6 text-gray-900">나이/성별</p>
                   </div>
                 </li>
               ))}
@@ -137,10 +137,10 @@ function FollowerFolloweeModal({ id, ff, onClose }) {
 
                     <div className="min-w-0 flex-auto">
                       <p className="text-sm font-semibold leading-6 text-gray-900">{follower.nickname}</p>
+                      <p className="text-sm leading-6 text-gray-900">
+                        {follower.gender} / {follower.age}
+                      </p>
                     </div>
-                  </div>
-                  <div className="shrink-0 sm:flex sm:flex-col sm:items-end">
-                    <p className="text-sm leading-6 text-gray-900">나이/성별</p>
                   </div>
                 </li>
               ))}
