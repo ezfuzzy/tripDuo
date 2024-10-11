@@ -23,13 +23,13 @@ public class PostSpecification {
 			// Type 검색 조건 (항상 값이 있음)
 			predicate = criteriaBuilder.and(predicate, 
 					criteriaBuilder.equal(root.get("type"), postDto.getType()));
-			
-			if(postDto.getDi() == "Domestic") {
+
+			if(postDto.getDi().equals("Domestic")) {
 				predicate = criteriaBuilder.and(predicate, 
-						criteriaBuilder.equal(root.get("country"), "한국"));
-			} else if (postDto.getDi() == "International"){
+						criteriaBuilder.equal(root.get("country"), "대한민국"));
+			} else if (postDto.getDi().equals("International")){
 				predicate = criteriaBuilder.and(predicate, 
-						criteriaBuilder.notEqual(root.get("country"), "한국"));
+						criteriaBuilder.notEqual(root.get("country"), "대한민국"));
 			}
 				
 			// userId 검색 조건 추가
@@ -97,7 +97,7 @@ public class PostSpecification {
 				// 일반적인 검색의 경우 status값이 PRIVATE, DELETED인 데이터들 필터링  
 				predicate = criteriaBuilder.and(predicate,
 	                    criteriaBuilder.not(root.get("status").in(PostStatus.PRIVATE, PostStatus.DELETED)));
-				
+								
 			}
 			return predicate;
 		};
