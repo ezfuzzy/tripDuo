@@ -262,11 +262,11 @@ function NavBar() {
           <li className="mx-2">
             <NavLink
               className={`font-bold text-lg inline-flex items-center justify-center p-3 border-b-2 rounded-t-lg transition-all duration-300 ${
-                location.pathname === "/"
-                  ? "border-b-2 border-tripDuoGreen text-tripDuoGreen transform scale-105"
+                location.pathname.startsWith("/posts/course") && location.search.includes("di=Domestic")
+                ? "border-b-2 border-tripDuoGreen text-tripDuoGreen transform scale-105"
                   : "border-transparent hover:text-gray-600 hover:border-gray-300"
               } group`}
-              to="/"
+              to="/posts/course?di=Domestic"
               onClick={() => setLastVisited("/")}>
               <FontAwesomeIcon icon={faPersonThroughWindow} />
               &nbsp;국내 여행
@@ -275,12 +275,12 @@ function NavBar() {
           <li className="mx-2">
             <NavLink
               className={`font-bold text-lg inline-flex items-center justify-center p-3 border-b-2 rounded-t-lg transition-all duration-300 ${
-                location.pathname === "/home-abroad"
-                  ? "border-b-2 border-tripDuoGreen text-tripDuoGreen transform scale-105"
+                location.pathname.startsWith("/posts/course") && location.search.includes("di=International")
+                ? "border-b-2 border-tripDuoGreen text-tripDuoGreen transform scale-105"
                   : "border-transparent hover:text-gray-600 hover:border-gray-300"
               } group`}
-              to="/home-abroad"
-              onClick={() => setLastVisited("/home-abroad")}>
+              to="/posts/course?di=International"
+              onClick={() => setLastVisited("/")}>
               <FontAwesomeIcon icon={faPersonSwimming} />
               &nbsp;해외 여행
             </NavLink>
@@ -342,7 +342,7 @@ function NavBar() {
                   </NavLink>
                 </div>
                 <div>
-                  <NavLink to={"/posts/course"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                  <NavLink to={"/posts/course?di=Domestic"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                     여행 계획
                   </NavLink>
                 </div>

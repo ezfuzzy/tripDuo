@@ -27,7 +27,7 @@ function CourseBoard() {
   })
 
   //국내/해외 페이지
-  const [domesticInternational, setDomesticInternational] = useState("Domestic")
+  const [domesticInternational, setDomesticInternational] = useState("")
   //국내/해외 페이지 전환 버튼
   const [pageTurn, setPageTurn] = useState("")
   const [desiredCountry, setDesiredCountry] = useState(null)
@@ -49,6 +49,7 @@ function CourseBoard() {
     setTimeout(() => {
       setLoading(false)
     }, 700)
+    
     let pageNum = searchParams.get("pageNum") || 1
     const diValue = searchParams.get("di") || "Domestic"
     const city = searchParams.get("city") || ""
@@ -109,7 +110,15 @@ function CourseBoard() {
 
         setPageInfo(filtered)
         setTotalPages(res.data.totalPostPages)
-        setDesiredCountry(domesticInternational === "Domestic" ? "국내여행 코스 페이지" : "해외여행 코스 페이지")
+
+        let tempStr = ""
+        if(domesticInternational === "Domestic") {
+          tempStr = "국내 여행 코스"
+        } else if (domesticInternational === "International") {
+          tempStr = "해외 여행 코스"
+        } 
+
+        setDesiredCountry(`${tempStr}`)
         setPageTurn(domesticInternational === "Domestic" ? "해외로" : "국내로")
       })
       .catch((error) => {
