@@ -43,6 +43,26 @@ function CourseBoard() {
 
   const navigate = useNavigate()
 
+  useEffect(() => {
+    // 로딩 애니메이션을 0.5초 동안만 표시
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false)
+    }, 700)
+    let pageNum = searchParams.get("pageNum") || 1
+    const diValue = searchParams.get("di") || "Domestic"
+    const city = searchParams.get("city") || ""
+    const startDate = searchParams.get("startDate") || ""
+    const endDate = searchParams.get("endDate") || ""
+    const country = searchParams.get("country") || ""
+    const keyword = searchParams.get("keyword") || ""
+
+    setCurrentPage(Number(pageNum))
+    setDomesticInternational(diValue)
+
+    setSearchCriteria({ city, startDate, endDate, country, keyword, condition: searchCriteria.condition })
+  }, [searchParams])
+
   // 캘린더 외부 클릭시 캘린더 모달 닫기
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -57,79 +77,58 @@ function CourseBoard() {
     }
   }, [])
 
-  useEffect(() => {
+  // 국내 리스트, 해외 리스트 필터
+  const fetchFilteredPosts = () => {
     // 로딩 애니메이션을 0.5초 동안만 표시
     setLoading(true)
     setTimeout(() => {
       setLoading(false)
     }, 700)
-    let pageNum = searchParams.get("pageNum") || 1
-    const diValue = searchParams.get("di") || "Domestic"
-    const city = searchParams.get("city") || ""
-    const startDate = searchParams.get("startDate") || ""
-    const endDate = searchParams.get("endDate") || ""
-    const country = searchParams.get("country") || ""
-    const keyword = searchParams.get("keyword") || ""
-    
-    setCurrentPage(Number(pageNum));
-    setDomesticInternational(diValue)
+    const params = {
+      country: searchCriteria.country || null,
+      city: searchCriteria.city || null,
+      startDate: searchCriteria.startDate || null,
+      endDate: searchCriteria.endDate || null,
+      keyword: searchCriteria.keyword || null,
+      condition: searchCriteria.condition || null,
+      sortBy
+    }
 
-    setSearchCriteria({ city, startDate, endDate, country, keyword, condition: searchCriteria.condition }); // 검색 조건 설정
-    // 국내/국제 값 업데이트
-  }, [searchParams]);
-
-  const fetchFilteredPosts = () => {
-      const params = {
-          country: searchCriteria.country || null,
-          city: searchCriteria.city || null,
-          startDate: searchCriteria.startDate || null,
-          endDate: searchCriteria.endDate || null,
-          keyword: searchCriteria.keyword || null,
-          condition: searchCriteria.condition || null,
-          sortBy
-        }
-
-   axios
+    axios
       .get("/api/v1/posts/course", { params })
       .then((res) => {
-        //필터링되어 돌아온 params를 받는다
-        console.log(res.data);
-        let filtered = res.data.list;
+        //필터링되어 돌아온 데이터
+        let filtered = res.data.list
+
         //국내 해외 필터링
         if (domesticInternational === "Domestic") {
-          filtered = filtered.filter((item) => item.country === "한국");
+          filtered = filtered.filter((item) => item.country === "대한민국");
         } else if (domesticInternational === "International") {
-          filtered = filtered.filter((item) => item.country !== "한국");
+          filtered = filtered.filter((item) => item.country !== "대한민국");
         }
+
         setPageInfo(filtered)
         setTotalPages(res.data.totalPostPages)
-        //서버로부터 응답된 데이터 state에 넣기
         setDesiredCountry(domesticInternational === "Domestic" ? "국내여행 코스 페이지" : "해외여행 코스 페이지")
         setPageTurn(domesticInternational === "Domestic" ? "해외로" : "국내로")
-        
-        // 총 페이지 수 업데이트
-        
       })
       .catch((error) => {
         console.log(error)
       })
   }
 
-   // 해외 / 국내 전환시 호출
-   useEffect(() => {
-    fetchFilteredPosts();
-  }, [domesticInternational]);
-
-  const search = () => {
-    fetchFilteredPosts(); // 비동기 처리를 기다리지 않음
-  }
+  // 해외 / 국내 전환시 호출
+  useEffect(() => {
+    fetchFilteredPosts()
+  }, [domesticInternational])
 
   //국내, 해외 선택 이벤트
   const handleDesiredCountry = () => {
-    setDomesticInternational(domesticInternational === "International" ? "Domestic" : "International")
+    const newDomesticInternational = domesticInternational === "International" ? "Domestic" : "International"
+    setDomesticInternational(newDomesticInternational)
     setSearchParams({
       ...searchCriteria,
-      di: domesticInternational === "International" ? "Domestic" : "International",
+      di: newDomesticInternational,
     })
   }
 
@@ -145,24 +144,24 @@ function CourseBoard() {
       di: domesticInternational,
     })
 
-    search()
+    fetchFilteredPosts()
   }
 
   const handleSortChange = (e) => {
-    setSortBy(e.target.value); // 정렬 기준 변경
+    const newSortBy = e.target.value
+    setSortBy(e.target.value) // 정렬 기준 변경
+
     // 정렬 기준에 따라 pageData를 정렬
-    const sortedData = [...pageInfo].sort((a, b) => {
-      if (e.target.value === "latest") {
-        return new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt);
-      } else if (e.target.value === "viewCount") {
-        return b.viewCount - a.viewCount;
-      } else if (e.target.value === "likeCount") {
-        return b.likeCount - a.likeCount;
-      }
-      return 0; // 기본값
-    });
-    setPageInfo(sortedData); // 정렬된 데이터를 상태에 저장
-  };
+    let sortedData = [...pageInfo];
+    if (newSortBy === "latest") {
+      sortedData.sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt))
+    } else if (newSortBy === "viewCount") {
+      sortedData.sort((a, b) => b.viewCount - a.viewCount)
+    } else if (newSortBy === "likeCount") {
+      sortedData.sort((a, b) => b.likeCount - a.likeCount)
+    }
+    setPageInfo(sortedData) // 정렬된 데이터를 상태에 저장
+  }
 
   // 검색 기준 변경 핸들러
   const handleConditionChange = (e) => {
@@ -457,7 +456,7 @@ function CourseBoard() {
             <div ref={calendarRef}>
               {isCalendarOpen && (
                 <div className="absolute z-50 bg-white shadow-lg p-2">
-                   <button
+                  <button
                     onClick={handleDateReset}
                     className="text text-sm absolute top-8 right-20 bg-tripDuoGreen text-white px-2 py-1 rounded hover:bg-green-700 transition duration-150">
                     today
@@ -551,17 +550,17 @@ function CourseBoard() {
                     {post.startDate === null
                       ? ""
                       : new Date(post.startDate).toLocaleDateString("ko-KR", {
-                          year: "numeric",
-                          month: "2-digit",
-                          day: "2-digit",
-                        })}
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })}
                     {post.endDate === null
                       ? ""
                       : ` ~ ${new Date(post.endDate).toLocaleDateString("ko-KR", {
-                          year: "numeric",
-                          month: "2-digit",
-                          day: "2-digit",
-                        })}`}
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })}`}
                   </p>
                   <p className="text-sm text-right text-green-800 font-semibold">
                     {post.country} - {post.city}
@@ -593,9 +592,8 @@ function CourseBoard() {
           <button
             onClick={() => paginate(currentPage - 1)}
             disabled={currentPage === 1}
-            className={`px-4 py-2 rounded ${
-              currentPage === 1 ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-gray-300 text-gray-700"
-            }`}>
+            className={`px-4 py-2 rounded ${currentPage === 1 ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-gray-300 text-gray-700"
+              }`}>
             &lt;
           </button>
           {/* totalPages만큼 배열 생성 */}
@@ -603,18 +601,16 @@ function CourseBoard() {
             <button
               key={number}
               onClick={() => paginate(number)}
-              className={`px-4 py-2 rounded ${
-                currentPage === number ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-700"
-              }`}>
+              className={`px-4 py-2 rounded ${currentPage === number ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-700"
+                }`}>
               {number}
             </button>
           ))}
           <button
             onClick={() => paginate(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className={`px-4 py-2 rounded ${
-              currentPage === totalPages ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-gray-300 text-gray-700"
-            }`}>
+            className={`px-4 py-2 rounded ${currentPage === totalPages ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-gray-300 text-gray-700"
+              }`}>
             &gt;
           </button>
         </div>
