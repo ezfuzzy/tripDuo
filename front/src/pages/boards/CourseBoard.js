@@ -41,10 +41,13 @@ function CourseBoard() {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const calendarRef = useRef(null)
 
+  //무한 스크롤 트리거
+  const observerRef = useRef(null)
+
   const navigate = useNavigate()
 
   useEffect(() => {
-    // 로딩 애니메이션을 0.5초 동안만 표시
+    // 로딩 애니메이션을 0.7초 동안만 표시
     setLoading(true)
     setTimeout(() => {
       setLoading(false)
@@ -68,7 +71,7 @@ function CourseBoard() {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (calendarRef.current && !calendarRef.current.contains(event.target)) {
-        setIsCalendarOpen(false) // 달력 닫기
+        setIsCalendarOpen(false)
       }
     }
 
@@ -78,13 +81,13 @@ function CourseBoard() {
     }
   }, [])
 
-  // 국내 리스트, 해외 리스트 필터
-  const fetchFilteredPosts = () => {
-    // 로딩 애니메이션을 0.5초 동안만 표시
+  // 검색 필터 + 국내/해외 필터
+  const fetchFilteredPosts = (pageNum = 1) => {
     setLoading(true)
     setTimeout(() => {
       setLoading(false)
     }, 700)
+
     const params = {
       country: searchCriteria.country || null,
       city: searchCriteria.city || null,
@@ -93,6 +96,8 @@ function CourseBoard() {
       keyword: searchCriteria.keyword || null,
       condition: searchCriteria.condition || null,
       sortBy,
+      pageNum,
+      pageSize: 12
     }
 
     axios
@@ -101,6 +106,10 @@ function CourseBoard() {
         //필터링되어 돌아온 데이터
         let filtered = res.data.list
 
+        // 필터링된 데이터 개수 확인
+        console.log("필터링 전 데이터 개수:", res.data.list.length);
+        console.log("필터링 후 데이터 개수:", filtered.length);
+
         //국내 해외 필터링
         if (domesticInternational === "Domestic") {
           filtered = filtered.filter((item) => item.country === "대한민국")
@@ -108,8 +117,25 @@ function CourseBoard() {
           filtered = filtered.filter((item) => item.country !== "대한민국")
         }
 
-        setPageInfo(filtered)
-        setTotalPages(res.data.totalPostPages)
+        // 국내/해외에 따라 상태 값 관리
+        setPageInfo((prevInfo) => {
+          const combinedPosts = [
+            ...prevInfo.filter((item) =>
+              (domesticInternational === "Domestic" ? item.country === "대한민국" : item.country !== "대한민국")
+            ),
+            ...filtered
+          ]
+
+          // 중복 제거 (id를 기준으로)
+          const uniquePosts = combinedPosts.reduce((acc, currentPost) => {
+            if (!acc.some(post => post.id === currentPost.id)) {
+              acc.push(currentPost)
+            }
+            return acc
+          }, [])
+
+          return uniquePosts
+        })
 
         let tempStr = ""
         if (domesticInternational === "Domestic") {
@@ -117,8 +143,9 @@ function CourseBoard() {
         } else if (domesticInternational === "International") {
           tempStr = "해외 여행 코스"
         }
-
         setDesiredCountry(`${tempStr}`)
+
+        setTotalPages(res.data.totalPostPages)
         setPageTurn(domesticInternational === "Domestic" ? "해외로" : "국내로")
       })
       .catch((error) => {
@@ -128,8 +155,34 @@ function CourseBoard() {
 
   // 해외 / 국내 전환시 호출
   useEffect(() => {
-    fetchFilteredPosts()
+    setPageInfo([])
+    setCurrentPage(1)
+    fetchFilteredPosts(1)
   }, [domesticInternational])
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      const target = entries[0]
+      if (target.isIntersecting && currentPage < totalPages) {
+        setCurrentPage((prevPage) => prevPage + 1)
+      }
+    })
+    if (observerRef.current) {
+      observer.observe(observerRef.current)
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observer.unobserve(observerRef.current)
+      }
+    }
+  }, [currentPage, totalPages])
+
+  useEffect(() => {
+    if (currentPage > 1) {
+      fetchFilteredPosts(currentPage)
+    }
+  }, [currentPage])
 
   //국내, 해외 선택 이벤트
   const handleDesiredCountry = () => {
@@ -143,17 +196,9 @@ function CourseBoard() {
 
   // 새로운 검색을 시작하는 함수
   const handleSearch = () => {
-    setSearchParams({
-      country: searchCriteria.country,
-      city: searchCriteria.city,
-      startDate: searchCriteria.startDate,
-      endDate: searchCriteria.endDate,
-      condition: searchCriteria.condition,
-      keyword: searchCriteria.keyword,
-      di: domesticInternational,
-    })
-
-    fetchFilteredPosts()
+    setPageInfo([]) // 새로운 검색 시 데이터 초기화
+    setCurrentPage(1) // 페이지 초기화
+    fetchFilteredPosts(1) // 첫 페이지 데이터 다시 불러오기
   }
 
   const handleSortChange = (e) => {
@@ -196,6 +241,12 @@ function CourseBoard() {
     })
   }
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch()
+    }
+  }
+
   // 날짜 초기화
   const handleDateReset = () => {
     setSelectedDateRange([null, null]) // 날짜 범위를 현재 날짜로 초기화
@@ -231,23 +282,6 @@ function CourseBoard() {
     return className // 최종 클래스 이름 반환
   }
 
-  // 페이지 이동 핸들러
-  const paginate = (pageNum) => {
-    setCurrentPage(pageNum)
-    setSearchParams({ ...searchParams, pageNum })
-  }
-
-  //Reset 버튼을 눌렀을 때
-  const handleReset = () => {
-    //검색조건과 검색어 초기화
-    setSearchCriteria({
-      condition: "",
-      keyword: "",
-    })
-    // //1페이지 내용이 보여지게
-    // refreshPageInfo(1)
-  }
-
   // 현재 시간과 작성일을 비교해 '몇 시간 전' 또는 '몇 일 전'을 계산하는 함수
   const getTimeDifference = (createdAt, updatedAt) => {
     const postDate = new Date(updatedAt ? updatedAt : createdAt)
@@ -274,11 +308,7 @@ function CourseBoard() {
   const handlePostClick = (id) => {
     navigate(`/posts/course/${id}/detail?di=${domesticInternational}`)
   }
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      handleSearch()
-    }
-  }
+
   // city 또는 country 값에 따른 이미지 파일명 변환 함수
   const getImageFileName = (city, country) => {
     const cityMapping = {
@@ -323,10 +353,10 @@ function CourseBoard() {
       리옹: "FRA_Lyon_01",
       니스: "FRA_Nice_01",
       // 이탈리아
-      로마: "ITA_Rome_01",
-      밀라노: "ITA_Milan_01",
-      베네치아: "ITA_Venice_01",
-      피렌체: "ITA_Florence_01",
+      로마: "ITA_Roma_01",
+      밀라노: "ITA_Milano_01",
+      베네치아: "ITA_Venezia_01",
+      피렌체: "ITA_Firenze_01",
       // 미국
       뉴욕: "USA_NewYork_01",
       로스앤젤레스: "USA_LosAngeles_01",
@@ -455,22 +485,23 @@ function CourseBoard() {
               placeholder="도시"
               className="border text-sm border-tripDuoGreen rounded-md px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-tripDuoMint transition-all duration-300"
             />
-
+            
+            {/* 날짜 선택 및 검색 버튼 */}
             <button
               onClick={() => setIsCalendarOpen(!isCalendarOpen)}
               className="bg-tripDuoMint text-white font-bold px-4 py-2 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300 flex items-center">
               <span className="whitespace-nowrap">
                 {selectedDateRange[0] && selectedDateRange[1]
                   ? `${selectedDateRange[0].getFullYear().toString().slice(-2)}${(selectedDateRange[0].getMonth() + 1)
-                      .toString()
-                      .padStart(2, "0")}${selectedDateRange[0]
+                    .toString()
+                    .padStart(2, "0")}${selectedDateRange[0]
                       .getDate()
                       .toString()
                       .padStart(2, "0")} / ${selectedDateRange[1].getFullYear().toString().slice(-2)}${(
-                      selectedDateRange[1].getMonth() + 1
-                    )
-                      .toString()
-                      .padStart(2, "0")}${selectedDateRange[1].getDate().toString().padStart(2, "0")}`
+                        selectedDateRange[1].getMonth() + 1
+                      )
+                        .toString()
+                        .padStart(2, "0")}${selectedDateRange[1].getDate().toString().padStart(2, "0")}`
                   : "날짜 선택"}
               </span>
             </button>
@@ -528,8 +559,6 @@ function CourseBoard() {
           </div>
         </div>
 
-        <div className="flex items-center space-x-2 mt-4"></div>
-
         {/* 검색 정렬 기준 다운바 */}
         <div className="my-4">
           <select
@@ -564,17 +593,17 @@ function CourseBoard() {
                     {post.startDate === null
                       ? ""
                       : new Date(post.startDate).toLocaleDateString("ko-KR", {
-                          year: "numeric",
-                          month: "2-digit",
-                          day: "2-digit",
-                        })}
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })}
                     {post.endDate === null
                       ? ""
                       : ` ~ ${new Date(post.endDate).toLocaleDateString("ko-KR", {
-                          year: "numeric",
-                          month: "2-digit",
-                          day: "2-digit",
-                        })}`}
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })}`}
                   </p>
                   <p className="text-sm text-right text-green-800 font-semibold">
                     {post.country} - {post.city}
@@ -601,40 +630,8 @@ function CourseBoard() {
           })}
         </div>
 
-        {/* 페이징 버튼 */}
-        <div className="flex justify-center space-x-2">
-          <button
-            onClick={() => paginate(currentPage - 1)}
-            disabled={currentPage === 1}
-            className={`px-4 py-2 rounded ${
-              currentPage === 1 ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-gray-300 text-gray-700"
-            }`}>
-            &lt;
-          </button>
-          {/* totalPages만큼 배열 생성 */}
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
-            <button
-              key={number}
-              onClick={() => paginate(number)}
-              className={`px-4 py-2 rounded ${
-                currentPage === number ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-700"
-              }`}>
-              {number}
-            </button>
-          ))}
-          <button
-            onClick={() => paginate(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className={`px-4 py-2 rounded ${
-              currentPage === totalPages ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-gray-300 text-gray-700"
-            }`}>
-            &gt;
-          </button>
-        </div>
-
-        <p className="mt-4 text-center">
-          <strong>{pageInfo.length}</strong>개의 글이 있습니다.
-        </p>
+        {/* 무한 스크롤 트리거 */}
+        <div ref={observerRef}></div>
       </div>
     </div>
   )
