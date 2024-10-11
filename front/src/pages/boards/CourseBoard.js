@@ -274,7 +274,11 @@ function CourseBoard() {
   const handlePostClick = (id) => {
     navigate(`/posts/course/${id}/detail?di=${domesticInternational}`)
   }
-
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch()
+    }
+  }
   // city 또는 country 값에 따른 이미지 파일명 변환 함수
   const getImageFileName = (city, country) => {
     const cityMapping = {
@@ -389,56 +393,33 @@ function CourseBoard() {
       {loading && <LoadingAnimation />}
       <div className="container mx-auto">
         <div className="flex justify-between mb-4">
-          <Link
-            to={{
-              pathname: "/posts/course/new",
-              search: `?di=${domesticInternational}&status=PUBLIC`,
-            }}
-            className="text-blue-500">
-            여행코스 계획하기
-          </Link>
+        <button
+          onClick={() => {
+            window.location.href = `/posts/course/new?di=${domesticInternational}&status=PUBLIC`; // URL을 올바르게 설정
+          }}
+          className="bg-tripDuoMint font-bold text-white px-4 py-2 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300 flex items-center"
+        >
+          여행코스 계획하기
+        </button>
           <button
             onClick={handleDesiredCountry}
-            className="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-md shadow-md hover:bg-indigo-500 transition-all duration-300">
+            className="bg-tripDuoMint font-bold text-white px-4 py-2 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300 flex items-center">
             {pageTurn}
           </button>
         </div>
-        <h1 className="text-3xl font-bold text-center mb-8">{desiredCountry}</h1>
+        <h1 className="font-bold mb-4">{desiredCountry}</h1>
 
         {/* 검색 조건 입력 폼 */}
-        <div className="my-4 space-y-4">
-          {/* 국가와 도시를 한 행으로 배치 */}
-          <div className="flex items-center gap-4">
-            {domesticInternational === "International" && (
-              <input
-                type="text"
-                name="country"
-                value={searchCriteria.country}
-                onChange={handleSearchChange}
-                placeholder="국가"
-                className="border border-gray-300 rounded-md px-4 py-2 w-1/2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
-              />
-            )}
-
-            <input
-              type="text"
-              name="city"
-              value={searchCriteria.city}
-              onChange={handleSearchChange}
-              placeholder="도시"
-              className="border border-gray-300 rounded-md px-4 py-2 w-1/2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
-            />
-          </div>
-
+        <div className="my-4 space-y-4 p-4 w-1/2 bg-white rounded-lg shadow-md shadow-tripDuoMint border border-tripDuoGreen ">
           {/* 제목/작성자 선택 필드 */}
-          <div className="flex items-center gap-4">
+          <div className="flex gap-4">
             <select
               value={searchCriteria.condition}
               onChange={handleConditionChange}
-              className="border border-gray-300 rounded-md px-4 py-2 w-1/6 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300">
+              className="border border-tripDuoGreen text-sm rounded-md px-4 py-2 w-1/3 focus:outline-none focus:ring-2 focus:ring-tripDuoMint transition-all duration-300">
               <option value="title">제목</option>
               <option value="content">내용</option>
-              <option value="title_content">제목 + 내용</option>
+              <option value="title_content">제목 및 내용</option>
             </select>
 
             <input
@@ -447,20 +428,51 @@ function CourseBoard() {
               value={searchCriteria[searchCriteria.condition]}
               onChange={handleQueryChange}
               placeholder={searchCriteria.condition}
-              className="border border-gray-300 rounded-md px-4 py-2 w-5/6 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+              onKeyDown={handleKeyDown}
+              className="border border-tripDuoGreen text-sm rounded-md px-4 py-2 w-2/3 focus:outline-none focus:ring-2 focus:ring-tripDuoMint transition-all duration-300"
             />
           </div>
+          {/* 국가와 도시를 한 행으로 배치 */}
+          <div className="flex items-center gap-4 w-full">
+            {domesticInternational === "International" && (
+              <input
+                type="text"
+                name="country"
+                value={searchCriteria.country}
+                onChange={handleSearchChange}
+                onKeyDown={handleKeyDown}
+                placeholder="국가"
+                className="border text-sm border-tripDuoGreen rounded-md px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-tripDuoMint transition-all duration-300"
+              />
+            )}
 
-          {/* 날짜 선택 및 검색 버튼 */}
-          <div className="flex items-center space-x-2 mt-4">
+            <input
+              type="text"
+              name="city"
+              value={searchCriteria.city}
+              onChange={handleSearchChange}
+              onKeyDown={handleKeyDown}
+              placeholder="도시"
+              className="border text-sm border-tripDuoGreen rounded-md px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-tripDuoMint transition-all duration-300"
+            />
             <button
               onClick={() => setIsCalendarOpen(!isCalendarOpen)}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600 transition-all duration-300">
-              {selectedDateRange[0] && selectedDateRange[1]
-                ? `${selectedDateRange[0].toLocaleDateString()} ~ ${selectedDateRange[1].toLocaleDateString()}`
-                : "날짜 선택"}
+              className="bg-tripDuoMint text-white font-bold px-4 py-2 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300 flex items-center">
+              <span className="whitespace-nowrap">
+                {selectedDateRange[0] && selectedDateRange[1]
+                  ? `${selectedDateRange[0].getFullYear().toString().slice(-2)}${(selectedDateRange[0].getMonth() + 1)
+                      .toString()
+                      .padStart(2, "0")}${selectedDateRange[0]
+                      .getDate()
+                      .toString()
+                      .padStart(2, "0")} / ${selectedDateRange[1].getFullYear().toString().slice(-2)}${(
+                      selectedDateRange[1].getMonth() + 1
+                    )
+                      .toString()
+                      .padStart(2, "0")}${selectedDateRange[1].getDate().toString().padStart(2, "0")}`
+                  : "날짜 선택"}
+              </span>
             </button>
-
             {/* 캘린더 표시 여부에 따라 렌더링 */}
             <div ref={calendarRef}>
               {isCalendarOpen && (
@@ -513,25 +525,25 @@ function CourseBoard() {
                 </div>
               )}
             </div>
+            <div className="flex justify-end w-full items-center">
+              <button
+                onClick={handleSearch}
+                className="font-bold bg-tripDuoMint text-white px-4 py-2 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300">
+                검색
+              </button>
+            </div>
           </div>
-
-          <button
-            onClick={handleSearch}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600 transition-all duration-300 mt-4">
-            검색
-          </button>
         </div>
+
+        <div className="flex items-center space-x-2 mt-4"></div>
 
         {/* 검색 정렬 기준 다운바 */}
         <div className="my-4">
-          <label htmlFor="sortBy" className="mr-2">
-            정렬 기준:
-          </label>
           <select
             id="sortBy"
             value={sortBy}
             onChange={handleSortChange}
-            className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300">
+            className="flex justify-start w-1/6 border border-tripDuoGreen text-sm rounded-md px-5 py-2 focus:outline-none focus:ring-2 focus:ring-tripDuoMint transition-all duration-300">
             <option value="latest">최신순</option>
             <option value="viewCount">조회수순</option>
             <option value="likeCount">좋아요순</option>
