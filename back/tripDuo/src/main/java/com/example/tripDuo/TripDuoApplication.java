@@ -148,7 +148,89 @@ public class TripDuoApplication {
 		Post p12 = Post.builder().userProfileInfo(upi10).type(PostType.COURSE).title("course 6").content("내용입니다 12").country("대한민국").city("인천").viewCount(789L).likeCount(98L).rating(3.6F).status(PostStatus.CLOSED).build();
 		Post p13 = Post.builder().userProfileInfo(upi10).type(PostType.COURSE).title("course 7").content("내용입니다 13").country("대한민국").city("제주").viewCount(789L).likeCount(98L).rating(4.9F).status(PostStatus.CLOSED).build();
 		Post p14 = Post.builder().userProfileInfo(upi10).type(PostType.COURSE).title("course 8").content("내용입니다 14").country("대한민국").city("서울").viewCount(789L).likeCount(98L).rating(3.9F).status(PostStatus.CLOSED).build();
+		Post p15 = Post.builder().userProfileInfo(upi6).type(PostType.COURSE).title("도쿄에서 여행 메이트 구해요").content("도쿄 여행 같이 하실 분").country("일본").city("도쿄").viewCount(450L).likeCount(55L).status(PostStatus.OPEN).build();
+		Post p16 = Post.builder().userProfileInfo(upi2).type(PostType.COURSE).title("오사카 여행 메이트 구합니다").content("오사카 같이 여행해요").country("일본").city("오사카").viewCount(320L).likeCount(40L).status(PostStatus.OPEN).build();
+		Post p17 = Post.builder().userProfileInfo(upi3).type(PostType.COURSE).title("교토 여행 파트너 찾습니다").content("교토에서 같이 여행하실 분").country("일본").city("교토").viewCount(570L).likeCount(65L).status(PostStatus.OPEN).build();
+		Post p18 = Post.builder().userProfileInfo(upi4).type(PostType.COURSE).title("삿포로에서 메이트 모집").content("삿포로 여행 메이트 구해요").country("일본").city("삿포로").viewCount(420L).likeCount(50L).status(PostStatus.OPEN).build();
 
+		Post p19 = Post.builder().userProfileInfo(upi5).type(PostType.COURSE).title("베이징에서 함께 여행할 메이트").content("베이징에서 같이 하실 분 찾습니다").country("중국").city("베이징").viewCount(300L).likeCount(35L).status(PostStatus.OPEN).build();
+		Post p20 = Post.builder().userProfileInfo(upi6).type(PostType.COURSE).title("상하이 여행 메이트 구해요").content("상하이에서 여행 메이트 구합니다").country("중국").city("상하이").viewCount(510L).likeCount(75L).status(PostStatus.OPEN).build();
+		Post p21 = Post.builder().userProfileInfo(upi7).type(PostType.COURSE).title("광저우에서 여행 메이트 구합니다").content("광저우 같이 여행해요").country("중국").city("광저우").viewCount(280L).likeCount(45L).status(PostStatus.OPEN).build();
+		Post p22 = Post.builder().userProfileInfo(upi8).type(PostType.COURSE).title("시안에서 여행 메이트 구해요").content("시안에서 같이 여행하실 분 찾습니다").country("중국").city("시안").viewCount(410L).likeCount(60L).status(PostStatus.OPEN).build();
+
+		Post p23 = Post.builder().userProfileInfo(upi9).type(PostType.COURSE).title("델리 여행 메이트 찾습니다").content("델리에서 같이 여행할 분").country("인도").city("델리").viewCount(530L).likeCount(80L).status(PostStatus.OPEN).build();
+		Post p24 = Post.builder().userProfileInfo(upi10).type(PostType.COURSE).title("뭄바이에서 메이트 구해요").content("뭄바이 여행 메이트 구합니다").country("인도").city("뭄바이").viewCount(460L).likeCount(70L).status(PostStatus.OPEN).build();
+		Post p25 = Post.builder().userProfileInfo(upi6).type(PostType.COURSE).title("콜카타에서 메이트 구해요").content("콜카타에서 함께 여행하실 분").country("인도").city("콜카타").viewCount(400L).likeCount(65L).status(PostStatus.OPEN).build();
+		Post p26 = Post.builder().userProfileInfo(upi7).type(PostType.COURSE).title("벵갈루루에서 여행 메이트 찾습니다").content("벵갈루루에서 여행 메이트 구합니다").country("인도").city("벵갈루루").viewCount(320L).likeCount(40L).status(PostStatus.OPEN).build();
+
+		Post p27 = Post.builder().userProfileInfo(upi8).type(PostType.COURSE).title("바르셀로나에서 메이트 구합니다").content("바르셀로나 여행 같이 가실 분 찾습니다").country("스페인").city("바르셀로나").viewCount(510L).likeCount(90L).status(PostStatus.OPEN).build();
+		Post p28 = Post.builder().userProfileInfo(upi9).type(PostType.COURSE).title("그라나다에서 여행 메이트 구해요").content("그라나다 여행 메이트 구합니다").country("스페인").city("그라나다").viewCount(470L).likeCount(80L).status(PostStatus.OPEN).build();
+		Post p29 = Post.builder().userProfileInfo(upi6).type(PostType.COURSE).title("마드리드 여행 메이트 모집").content("마드리드에서 함께할 분 찾습니다").country("스페인").city("마드리드").viewCount(340L).likeCount(50L).status(PostStatus.OPEN).build();
+		Post p30 = Post.builder().userProfileInfo(upi7).type(PostType.COURSE).title("세비야 여행 파트너 구합니다").content("세비야에서 메이트 구해요").country("스페인").city("세비야").viewCount(290L).likeCount(45L).status(PostStatus.OPEN).build();
+
+		Post p31 = Post.builder().userProfileInfo(upi8).type(PostType.COURSE).title("런던에서 메이트 구해요").content("런던 여행 같이 하실 분").country("영국").city("런던").viewCount(580L).likeCount(85L).status(PostStatus.OPEN).build();
+		Post p32 = Post.builder().userProfileInfo(upi9).type(PostType.COURSE).title("맨체스터 여행 메이트 구합니다").content("맨체스터에서 메이트 찾습니다").country("영국").city("맨체스터").viewCount(350L).likeCount(55L).status(PostStatus.OPEN).build();
+		Post p33 = Post.builder().userProfileInfo(upi5).type(PostType.COURSE).title("버밍엄 여행 메이트 구해요").content("버밍엄에서 여행 메이트 구합니다").country("영국").city("버밍엄").viewCount(370L).likeCount(60L).status(PostStatus.OPEN).build();
+		Post p34 = Post.builder().userProfileInfo(upi2).type(PostType.COURSE).title("리버풀에서 여행 메이트 찾습니다").content("리버풀 여행 같이 가실 분").country("영국").city("리버풀").viewCount(430L).likeCount(70L).status(PostStatus.OPEN).build();
+
+		Post p35 = Post.builder().userProfileInfo(upi1).type(PostType.COURSE).title("베를린에서 메이트 구해요").content("베를린에서 함께 여행하실 분 찾습니다").country("독일").city("베를린").viewCount(620L).likeCount(95L).status(PostStatus.OPEN).build();
+		Post p36 = Post.builder().userProfileInfo(upi2).type(PostType.COURSE).title("뮌헨에서 여행 메이트 모집").content("뮌헨에서 여행 메이트 구해요").country("독일").city("뮌헨").viewCount(520L).likeCount(85L).status(PostStatus.OPEN).build();
+		Post p37 = Post.builder().userProfileInfo(upi3).type(PostType.COURSE).title("프랑크푸르트 여행 메이트 구합니다").content("프랑크푸르트 여행 메이트 구합니다").country("독일").city("프랑크푸르트").viewCount(490L).likeCount(80L).status(PostStatus.OPEN).build();
+		Post p38 = Post.builder().userProfileInfo(upi4).type(PostType.COURSE).title("함부르크에서 메이트 구합니다").content("함부르크에서 함께할 분 구해요").country("독일").city("함부르크").viewCount(470L).likeCount(75L).status(PostStatus.OPEN).build();
+
+		Post p39 = Post.builder().userProfileInfo(upi5).type(PostType.COURSE).title("파리 여행 메이트 구합니다").content("파리에서 함께 여행하실 분").country("프랑스").city("파리").viewCount(640L).likeCount(100L).status(PostStatus.OPEN).build();
+		Post p40 = Post.builder().userProfileInfo(upi6).type(PostType.COURSE).title("마르세유에서 메이트 구해요").content("마르세유에서 여행 메이트 구합니다").country("프랑스").city("마르세유").viewCount(420L).likeCount(60L).status(PostStatus.OPEN).build();
+		Post p41 = Post.builder().userProfileInfo(upi7).type(PostType.COURSE).title("리옹 여행 메이트 모집").content("리옹에서 메이트 구합니다").country("프랑스").city("리옹").viewCount(460L).likeCount(70L).status(PostStatus.OPEN).build();
+		Post p42 = Post.builder().userProfileInfo(upi8).type(PostType.COURSE).title("니스에서 메이트 찾습니다").content("니스에서 여행 메이트 구해요").country("프랑스").city("니스").viewCount(430L).likeCount(65L).status(PostStatus.OPEN).build();
+
+		Post p43 = Post.builder().userProfileInfo(upi9).type(PostType.COURSE).title("로마에서 메이트 구해요").content("로마에서 여행 메이트 구합니다").country("이탈리아").city("로마").viewCount(540L).likeCount(85L).status(PostStatus.OPEN).build();
+		Post p44 = Post.builder().userProfileInfo(upi3).type(PostType.COURSE).title("밀라노에서 메이트 구합니다").content("밀라노에서 함께 하실 분 찾습니다").country("이탈리아").city("밀라노").viewCount(370L).likeCount(55L).status(PostStatus.OPEN).build();
+		Post p45 = Post.builder().userProfileInfo(upi1).type(PostType.COURSE).title("베네치아 여행 메이트 구해요").content("베네치아에서 여행 메이트 구합니다").country("이탈리아").city("베네치아").viewCount(500L).likeCount(80L).status(PostStatus.OPEN).build();
+		Post p46 = Post.builder().userProfileInfo(upi2).type(PostType.COURSE).title("피렌체에서 여행 메이트 찾습니다").content("피렌체에서 여행 메이트 구해요").country("이탈리아").city("피렌체").viewCount(390L).likeCount(60L).status(PostStatus.OPEN).build();
+
+		Post p47 = Post.builder().userProfileInfo(upi3).type(PostType.COURSE).title("뉴욕에서 여행 메이트 구해요").content("뉴욕에서 함께 하실 분 찾습니다").country("미국").city("뉴욕").viewCount(620L).likeCount(90L).status(PostStatus.OPEN).build();
+		Post p48 = Post.builder().userProfileInfo(upi4).type(PostType.COURSE).title("로스앤젤레스에서 메이트 구해요").content("로스앤젤레스 여행 메이트 구해요").country("미국").city("로스앤젤레스").viewCount(560L).likeCount(85L).status(PostStatus.OPEN).build();
+		Post p49 = Post.builder().userProfileInfo(upi5).type(PostType.COURSE).title("시카고에서 메이트 구합니다").content("시카고에서 메이트 구해요").country("미국").city("시카고").viewCount(490L).likeCount(70L).status(PostStatus.OPEN).build();
+		Post p50 = Post.builder().userProfileInfo(upi6).type(PostType.COURSE).title("마이애미에서 메이트 모집").content("마이애미에서 메이트 구합니다").country("미국").city("마이애미").viewCount(470L).likeCount(65L).status(PostStatus.OPEN).build();
+		postRepo.save(p15);
+		postRepo.save(p16);
+		postRepo.save(p17);
+		postRepo.save(p18);
+		postRepo.save(p19);
+		postRepo.save(p20);
+		postRepo.save(p21);
+		postRepo.save(p22);
+		postRepo.save(p23);
+		postRepo.save(p24);
+		postRepo.save(p25);
+		postRepo.save(p26);
+		postRepo.save(p27);
+		postRepo.save(p28);
+		postRepo.save(p29);
+		postRepo.save(p30);
+		postRepo.save(p31);
+		postRepo.save(p32);
+		postRepo.save(p33);
+		postRepo.save(p34);
+		postRepo.save(p35);
+		postRepo.save(p36);
+		postRepo.save(p37);
+		postRepo.save(p38);
+		postRepo.save(p39);
+		postRepo.save(p40);
+		postRepo.save(p41);
+		postRepo.save(p42);
+		postRepo.save(p43);
+		postRepo.save(p44);
+		postRepo.save(p45);
+		postRepo.save(p46);
+		postRepo.save(p47);
+		postRepo.save(p48);
+		postRepo.save(p49);
+		postRepo.save(p50);
+
+		
+		
 		postRepo.save(p1);
 		postRepo.save(p2);
 		postRepo.save(p3);
