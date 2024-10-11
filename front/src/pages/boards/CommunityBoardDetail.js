@@ -128,12 +128,13 @@ function CommunityBoardDetail(props) {
         setContentHTML(res.data.dto.content);
 
         //현재 사용자의 postRating = id, postId, userId, rating
-        console.log(res.data.postRating)
+        console.log(res.data.postRating);
+        console.log(isRated)
         if (res.data.postRating === "") {
-          setRated(false);
+          setRated(false); 
         } else {
-          setRated(true)
-          setRatedInfo(res.data.postRating)
+          setRated(true);
+          setRatedInfo(res.data.postRating);
         }
 
         setWriterProfile(res.data.userProfileInfo);
@@ -151,7 +152,7 @@ function CommunityBoardDetail(props) {
         setTotalCommentPages(res.data.totalCommentPages);
       })
       .catch((error) => console.log(error));
-  }, [id, isRated]);
+  }, [id]);
 
   // 프로필 보기 클릭
   const handleClickProfile = () => {
@@ -398,7 +399,7 @@ function CommunityBoardDetail(props) {
 
   const handleUpdateRating = () => {
     axios
-      .put(`/api/v1/posts/${post.id}/${ratedInfo.id}`, { userId: userId, postId: post.id, rating: postRating })
+      .put(`/api/v1/posts/${post.id}/ratings/${ratedInfo.id}`, { userId: userId, postId: post.id, rating: postRating })
       .then((res) => {
         console.log(res.data);
         closeModal();
@@ -409,7 +410,7 @@ function CommunityBoardDetail(props) {
   const handleDeleteRating = () => {
     if (window.confirm) {
       axios
-        .delete(`/api/v1/posts/${post.id}/${ratedInfo.id}`)
+        .delete(`/api/v1/posts/${post.id}/ratings/${ratedInfo.id}`)
         .then((res) => {
           console.log(res.data);
           setRated(false);
@@ -515,7 +516,7 @@ function CommunityBoardDetail(props) {
               <div className="flex items-center">
                 <p className="mr-3 font-bold">
                   <FontAwesomeIcon icon={faStar} className={`w-6 h-6 text-yellow-400`} />
-                  {post.rating}
+                  {post.rating || 0}
                 </p>
                 {!isRated ? (
                   <p>
@@ -528,11 +529,10 @@ function CommunityBoardDetail(props) {
                 ) : (
                   <p>
                     <button
-                      className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
+                      className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100 mr-2"
                       onClick={openModal}>
-                      <FontAwesomeIcon icon={faStar} className={`w-6 h-6 text-yellow-400`} />
-                      {ratedInfo.rating}
-                      수정
+                      <FontAwesomeIcon icon={faStar} className={`w-4 h-4 text-yellow-400`} />
+                      {ratedInfo.rating || 0}
                     </button>
                     <button
                       className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
