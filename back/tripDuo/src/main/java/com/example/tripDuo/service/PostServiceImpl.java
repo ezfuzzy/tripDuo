@@ -151,8 +151,11 @@ public class PostServiceImpl implements PostService {
 			Long currentUserId = userRepo.findByUsername(username).getId();
 			existingDto.setLike(postLikeRepo.existsByPostIdAndUserId(existingDto.getId(), currentUserId));
 			existingDto.setRated(postRatingRepo.existsByPostIdAndUserId(existingDto.getId(), currentUserId));
-			
-			postRatingDto = PostRatingDto.toDto(postRatingRepo.findByPostIdAndUserId(existingDto.getId(), currentUserId));
+
+			PostRating postRating = postRatingRepo.findByPostIdAndUserId(existingDto.getId(), currentUserId);
+			if(postRating != null) {
+				postRatingDto = PostRatingDto.toDto(postRating);
+			}
 		}
 		
 		// 댓글 list 
@@ -168,11 +171,12 @@ public class PostServiceImpl implements PostService {
 		UserProfileInfoDto upiDto = UserProfileInfoDto.toDto(post.getUserProfileInfo(), PROFILE_PICTURE_CLOUDFRONT_URL);
 		existingDto.setViewCount(existingDto.getViewCount() + 1);
 		postRepo.save(Post.toEntity(existingDto, userProfileInfoRepo.findById(existingDto.getUserId()).get()));
+		System.out.println("333");
 		
 		return Map.of(
 				"dto", existingDto, 
 				"userProfileInfo", upiDto,
-				"postRating", postRatingDto,
+				"postRating", postRatingDto != null ? postRatingDto : "",
 				"commentList", commentList, 
 				"totalCommentPages", totalCommentPages
 		);
