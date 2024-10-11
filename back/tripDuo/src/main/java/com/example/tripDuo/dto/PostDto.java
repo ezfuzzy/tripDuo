@@ -47,6 +47,8 @@ public class PostDto {
     
     // ### for app ###
     
+    private String di;
+    
     private boolean isLike;
     
     private int pageNum = 1;
