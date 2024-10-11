@@ -267,7 +267,11 @@ function MateBoard() {
   const handlePostClick = (id) => {
     navigate(`/posts/mate/${id}/detail`)
   }
-
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch()
+    }
+  }
   // city 또는 country 값에 따른 이미지 파일명 변환 함수
   const getImageFileName = (city, country) => {
     const cityMapping = {
@@ -412,6 +416,7 @@ function MateBoard() {
               value={searchCriteria[searchCriteria.condition]}
               onChange={handleQueryChange}
               placeholder={searchCriteria.condition}
+              onKeyDown={handleKeyDown}
               className="border border-tripDuoGreen text-sm rounded-md px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-tripDuoMint transition-all duration-300"
             />
           </div>
@@ -423,6 +428,7 @@ function MateBoard() {
                 name="country"
                 value={searchCriteria.country}
                 onChange={handleSearchChange}
+                onKeyDown={handleKeyDown}
                 placeholder="국가"
                 className="border text-sm border-tripDuoGreen rounded-md px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-tripDuoMint transition-all duration-300"
               />
@@ -433,6 +439,7 @@ function MateBoard() {
               name="city"
               value={searchCriteria.city}
               onChange={handleSearchChange}
+              onKeyDown={handleKeyDown}
               placeholder="도시"
               className="border text-sm border-tripDuoGreen rounded-md px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-tripDuoMint transition-all duration-300"
             />
@@ -511,9 +518,6 @@ function MateBoard() {
 
         {/* 검색 정렬 기준 다운바 */}
         <div className="my-4">
-          <label htmlFor="sortBy" className="mr-2 text-sm">
-            정렬 기준:
-          </label>
           <select
             id="sortBy"
             value={sortBy}
