@@ -6,8 +6,9 @@ import "../css/Home.css"
 import axios from "axios"
 import { shallowEqual, useDispatch, useSelector } from "react-redux"
 import LoadingAnimation from "../components/LoadingAnimation"
-import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa"
 
 function Home() {
   const location = useLocation()
@@ -15,7 +16,7 @@ function Home() {
   const dispatch = useDispatch()
   const [writerProfiles, setWriterProfiles] = useState({})
   const [loading, setLoading] = useState(false)
-  const tripDuoGreen = '#006622'
+  const tripDuoGreen = "#006622"
   useEffect(() => {
     // 로딩 애니메이션을 0.5초 동안만 표시
     setLoading(true)
@@ -72,7 +73,7 @@ function Home() {
   const navigateToCommunity = (destination) => {
     navigate(`/posts/community?di=${destination}`)
   }
-  
+
   const navigateToPage = (path) => {
     navigate(path)
   }
@@ -164,20 +165,16 @@ function Home() {
 
           {/* 왼쪽(이전) 버튼 */}
           <button
-          onClick={handlePrev}
-          className="absolute left-[-40px] top-1/2 transform -translate-y-1/2 bg-green-600 text-white rounded-full p-0 text-3xl z-10 transition-transform duration-200 hover:scale-110 shadow-lg"
-          style={{ width: "50px", height: "50px", border: "2px solid white", backgroundColor: tripDuoGreen }}
-        >
-          <FontAwesomeIcon icon={faChevronLeft} />
-        </button>
+            onClick={handlePrev}
+            className="absolute left-[-40px] top-1/2 transform -translate-y-1/2 text-white rounded-full p-0 text-3xl z-10 transition-transform duration-200 hover:scale-110 ">
+            <FaChevronLeft className="text-tripDuoMint hover:text-tripDuoGreen transition duration-150 mx-auto" />
+          </button>
 
-        <button
-          onClick={handleNext}
-          className="absolute right-[-40px] top-1/2 transform -translate-y-1/2 bg-green-600 text-white rounded-full p-0 text-3xl z-10 transition-transform duration-200 hover:scale-110 shadow-lg"
-          style={{ width: "50px", height: "50px", border: "2px solid white", backgroundColor: tripDuoGreen }}
-        >
-          <FontAwesomeIcon icon={faChevronRight} />
-        </button>
+          <button
+            onClick={handleNext}
+            className="absolute right-[-40px] top-1/2 transform -translate-y-1/2 text-white rounded-full p-0 text-3xl z-10 transition-transform duration-200 hover:scale-110 ">
+            <FaChevronRight className="text-tripDuoMint hover:text-tripDuoGreen transition duration-150 mx-auto" />
+          </button>
 
           {/* 슬라이드 점들 */}
           <div className="flex justify-center mt-4">
@@ -206,7 +203,9 @@ function Home() {
                 alt="국내"
                 className="rounded-full border-2 border-white shadow-md"
               />
-              <span className="absolute inset-0 flex items-center justify-center text-white text-lg font-bold">국내</span>
+              <span className="absolute inset-0 flex items-center justify-center text-white text-lg font-bold">
+                국내
+              </span>
             </div>
             <div className="relative min-w-[80px] cursor-pointer" onClick={() => navigateToMate("International")}>
               <img
@@ -214,7 +213,9 @@ function Home() {
                 alt="해외"
                 className="rounded-full border-2 border-white shadow-md"
               />
-              <span className="absolute inset-0 flex items-center justify-center text-white text-lg font-bold">해외</span>
+              <span className="absolute inset-0 flex items-center justify-center text-white text-lg font-bold">
+                해외
+              </span>
             </div>
           </div>
         </div>
@@ -228,7 +229,9 @@ function Home() {
                 alt="국내"
                 className="rounded-full border-2 border-white shadow-md"
               />
-              <span className="absolute inset-0 flex items-center justify-center text-white text-lg font-bold">국내</span>
+              <span className="absolute inset-0 flex items-center justify-center text-white text-lg font-bold">
+                국내
+              </span>
             </div>
             <div className="relative min-w-[80px] cursor-pointer" onClick={() => navigateToCourse("International")}>
               <img
@@ -236,7 +239,9 @@ function Home() {
                 alt="해외"
                 className="rounded-full border-2 border-white shadow-md"
               />
-              <span className="absolute inset-0 flex items-center justify-center text-white text-lg font-bold">해외</span>
+              <span className="absolute inset-0 flex items-center justify-center text-white text-lg font-bold">
+                해외
+              </span>
             </div>
           </div>
         </div>
@@ -250,7 +255,9 @@ function Home() {
                 alt="국내"
                 className="rounded-full border-2 border-white shadow-md"
               />
-              <span className="absolute inset-0 flex items-center justify-center text-white text-lg font-bold">국내</span>
+              <span className="absolute inset-0 flex items-center justify-center text-white text-lg font-bold">
+                국내
+              </span>
             </div>
             <div className="relative min-w-[80px] cursor-pointer" onClick={() => navigateToCommunity("International")}>
               <img
@@ -258,7 +265,9 @@ function Home() {
                 alt="해외"
                 className="rounded-full border-2 border-white shadow-md"
               />
-              <span className="absolute inset-0 flex items-center justify-center text-white text-lg font-bold">해외</span>
+              <span className="absolute inset-0 flex items-center justify-center text-white text-lg font-bold">
+                해외
+              </span>
             </div>
           </div>
         </div>

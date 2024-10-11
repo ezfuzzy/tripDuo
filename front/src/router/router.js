@@ -23,7 +23,6 @@ import TravelCostCalculator from "../pages/Utilities/TravelCostCalculator"
 import TravelPlanner from "../pages/Utilities/TravelPlaner"
 import LocationRecommendations from "../pages/Utilities/LocationRecommendations"
 import ExchangeInfo from "../pages/Utilities/ExchangeInfo"
-import TravelDiary from "../pages/Utilities/TravelDiary"
 import LanguageCultureTips from "../pages/Utilities/LanguageCultureTips"
 import ExtraPage from "../pages/Utilities/ExtraPage"
 import CourseBoard from "../pages/boards/CourseBoard"
@@ -102,7 +101,6 @@ const routes = [
   { path: "/calculator", element: <TravelCostCalculator /> },
   { path: "/planner", element: <TravelPlanner /> },
   { path: "/recommendations", element: <LocationRecommendations /> },
-  { path: "/diary", element: <TravelDiary /> },
   { path: "/languageTip", element: <LanguageCultureTips /> },
   { path: "/extra", element: <ExtraPage /> },
   { path: "/alarm", element: <Alarm /> },
