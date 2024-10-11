@@ -462,7 +462,7 @@ function ChatRoom() {
                 ))}
             </MessageList>
             <MessageInput
-              attachButton="false" // 첨부파일 버튼 삭제
+              attachButton={false} // 첨부파일 버튼 삭제
               placeholder="메시지를 입력하세요..."
               value={newMessage}
               onChange={(val)=> setNewMessage(val)}
