@@ -51,13 +51,17 @@ function CommunityBoardDetail(props) {
   const navigate = useNavigate();
 
   const [post, setPost] = useState({ tags: [] });
-  const [isRecruited, setIsRecruited] = useState(false);
 
   // 작성자 프로필 설정
   const [writerProfile, setWriterProfile] = useState({});
 
   // 별점 버튼 설정
   const [isRated, setRated] = useState(false);
+  const [newPostRating, setNewPostRating] = useState(0); // post 에 새로 매기는 점수
+  
+  const [ratedInfo, setRatedInfo] = useState({}); // 사용자에 대한 postRating 관련 데이터
+  const [myRating, setMyRating] = useState(0); // 사용자가 매긴 점수
+  const [postRating, setPostRating] = useState(0); // post의 총점
 
   //덧글 관련 설정 ( to do )
   // 댓글 목록
@@ -81,9 +85,6 @@ function CommunityBoardDetail(props) {
 
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
 
-  const [postRating, setPostRating] = useState(0);
-
-  const [ratedInfo, setRatedInfo] = useState();
 
   // HTML 로 구성된 Content 관리
   const [contentHTML, setContentHTML] = useState(); // HTML 로 구성된 Content
@@ -127,16 +128,20 @@ function CommunityBoardDetail(props) {
         setPost(res.data.dto);
         setContentHTML(res.data.dto.content);
 
+        setPostRating(res.data.dto.rating || 0)
+
         //현재 사용자의 postRating = id, postId, userId, rating
         console.log(res.data.postRating);
+        setRatedInfo(res.data.postRating || {});
+        setMyRating(res.data.postRating.rating || "")
+        
+
         console.log(isRated)
         if (res.data.postRating === "") {
           setRated(false); 
         } else {
           setRated(true);
-          setRatedInfo(res.data.postRating);
         }
-
         setWriterProfile(res.data.userProfileInfo);
 
         //댓글 목록이 존재하는지 확인 후, 배열에 ref라는 방 추가
@@ -152,7 +157,7 @@ function CommunityBoardDetail(props) {
         setTotalCommentPages(res.data.totalCommentPages);
       })
       .catch((error) => console.log(error));
-  }, [id]);
+  }, [id, isRated, myRating]);
 
   // 프로필 보기 클릭
   const handleClickProfile = () => {
@@ -383,12 +388,12 @@ function CommunityBoardDetail(props) {
 
   // 별을 클릭했을 때 rating 을 저장
   const handleRating = (index) => {
-    setPostRating(index);
+    setNewPostRating(index);
   };
 
   const handlePostRating = () => {
     axios
-      .post(`/api/v1/posts/${post.id}/ratings`, { userId: userId, postId: post.id, rating: postRating })
+      .post(`/api/v1/posts/${post.id}/ratings`, { userId: userId, postId: post.id, rating: newPostRating })
       .then((res) => {
         console.log(res.data);
         closeModal();
@@ -399,9 +404,10 @@ function CommunityBoardDetail(props) {
 
   const handleUpdateRating = () => {
     axios
-      .put(`/api/v1/posts/${post.id}/ratings/${ratedInfo.id}`, { userId: userId, postId: post.id, rating: postRating })
+      .put(`/api/v1/posts/${post.id}/ratings/${ratedInfo.id}`, { id:ratedInfo.id, userId: userId, postId: post.id, rating: newPostRating })
       .then((res) => {
         console.log(res.data);
+        setMyRating(newPostRating)
         closeModal();
       })
       .catch((error) => console.log(error));
@@ -409,6 +415,7 @@ function CommunityBoardDetail(props) {
 
   const handleDeleteRating = () => {
     if (window.confirm) {
+      console.log(ratedInfo)
       axios
         .delete(`/api/v1/posts/${post.id}/ratings/${ratedInfo.id}`)
         .then((res) => {
@@ -516,7 +523,7 @@ function CommunityBoardDetail(props) {
               <div className="flex items-center">
                 <p className="mr-3 font-bold">
                   <FontAwesomeIcon icon={faStar} className={`w-6 h-6 text-yellow-400`} />
-                  {post.rating || 0}
+                  {postRating || ""}
                 </p>
                 {!isRated ? (
                   <p>
@@ -532,7 +539,7 @@ function CommunityBoardDetail(props) {
                       className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100 mr-2"
                       onClick={openModal}>
                       <FontAwesomeIcon icon={faStar} className={`w-4 h-4 text-yellow-400`} />
-                      {ratedInfo.rating || 0}
+                      {myRating || ""}
                     </button>
                     <button
                       className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
@@ -922,7 +929,7 @@ function CommunityBoardDetail(props) {
             <div key={index} onClick={() => handleRating(star)}>
               <FontAwesomeIcon
                 icon={faStar}
-                className={`w-6 h-6 cursor-pointer ${postRating >= star ? "text-yellow-400" : "text-gray-300"}`}
+                className={`w-6 h-6 cursor-pointer ${newPostRating >= star ? "text-yellow-400" : "text-gray-300"}`}
               />
             </div>
           ))}
