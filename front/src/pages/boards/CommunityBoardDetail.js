@@ -421,16 +421,17 @@ function CommunityBoardDetail(props) {
 
   // 별을 클릭했을 때 rating 을 저장
   const handleRating = (index) => {
-    setPostRating(index); 
+    setPostRating(index);
   };
 
-  const handlePostRating = ()=>{
-    axios.post(`/api/v1/posts/${post.id}/ratings`, {userId : userId, postId : post.id, rating : postRating})
-    .then(res=>{
-      console.log(res.data)
-    })
-    .catch(error=>console.log(error))
-  }
+  const handlePostRating = () => {
+    axios
+      .post(`/api/v1/posts/${post.id}/ratings`, { userId: userId, postId: post.id, rating: postRating })
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((error) => console.log(error));
+  };
   // ---------------------------------------------------- 채팅 관련
   const { stompClient, isConnected, messages, setMessages } = useWebSocket();
   const [subscribedRoomIds, setSubscribedRoomIds] = useState([]); // 내가 구독한 목록
@@ -525,6 +526,10 @@ function CommunityBoardDetail(props) {
                 }}>
                 Community
               </NavLink>
+              <div className="flex items-center">
+                <FontAwesomeIcon icon={faStar} className={`w-6 h-6 cursor-pointe text-yellow-400`} />
+                <p>{post.rating}</p>
+              </div>
               <button
                 className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
                 onClick={openModal}>
@@ -922,20 +927,22 @@ function CommunityBoardDetail(props) {
         style={customStyles}
         contentLabel="채팅방 생성"
         ariaHideApp={false}>
-        <div class="flex items-center  mb-5">
-        {[1, 2, 3, 4, 5].map((star, index) => (
-          <div key={index} onClick={() => handleRating(star)}>
-            <FontAwesomeIcon
-              icon={faStar}
-              className={`w-6 h-6 cursor-pointer ${
-                postRating >= star ? 'text-yellow-400' : 'text-gray-300'
-              }`}
-            />
-          </div>
-        ))}
+        <div className="flex items-center  mb-5">
+          {[1, 2, 3, 4, 5].map((star, index) => (
+            <div key={index} onClick={() => handleRating(star)}>
+              <FontAwesomeIcon
+                icon={faStar}
+                className={`w-6 h-6 cursor-pointer ${postRating >= star ? "text-yellow-400" : "text-gray-300"}`}
+              />
+            </div>
+          ))}
         </div>
         <div className="text-center">
-          <button onClick={handlePostRating} className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100">평가하기</button>
+          <button
+            onClick={handlePostRating}
+            className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100">
+            평가하기
+          </button>
         </div>
       </Modal>
     </>
