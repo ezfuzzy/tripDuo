@@ -106,9 +106,9 @@ function CommunityBoard() {
         let filtered = res.data.list;
         //국내 해외 필터링
         if (domesticInternational === "Domestic") {
-          filtered = filtered.filter((item) => item.country === "한국");
+          filtered = filtered.filter((item) => item.country === "대한민국");
         } else if (domesticInternational === "International") {
-          filtered = filtered.filter((item) => item.country !== "한국");
+          filtered = filtered.filter((item) => item.country !== "대한민국");
         }
         //필터링된 데이터를 상태에 저장한다
         setPageData(filtered);
