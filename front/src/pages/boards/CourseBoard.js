@@ -429,9 +429,8 @@ function CourseBoard() {
               onChange={handleConditionChange}
               className="border border-gray-300 rounded-md px-4 py-2 w-1/6 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300">
               <option value="title">제목</option>
-              <option value="writer">작성자</option>
               <option value="content">내용</option>
-              <option value="title+writer">제목 + 내용</option>
+              <option value="title_content">제목 + 내용</option>
             </select>
 
             <input
@@ -439,7 +438,7 @@ function CourseBoard() {
               name={searchCriteria.condition}
               value={searchCriteria[searchCriteria.condition]}
               onChange={handleQueryChange}
-              placeholder={searchCriteria.condition === "title" ? "제목" : "작성자"}
+              placeholder={searchCriteria.condition}
               className="border border-gray-300 rounded-md px-4 py-2 w-5/6 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
             />
           </div>
@@ -458,10 +457,10 @@ function CourseBoard() {
             <div ref={calendarRef}>
               {isCalendarOpen && (
                 <div className="absolute z-50 bg-white shadow-lg p-2">
-                  <button
+                   <button
                     onClick={handleDateReset}
-                    className="absolute top-2 right-2 bg-green-500 text-white px-3 py-1 rounded hover:bg-green-700 transition duration-150">
-                    날짜 리셋
+                    className="text text-sm absolute top-8 right-20 bg-tripDuoGreen text-white px-2 py-1 rounded hover:bg-green-700 transition duration-150">
+                    today
                   </button>
                   <Calendar
                     selectRange={true}
