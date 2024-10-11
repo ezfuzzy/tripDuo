@@ -99,7 +99,7 @@ function CommunityBoard() {
 
     // API 호출
     axios
-      .get("/api/v1/posts/mate", { params })
+      .get("/api/v1/posts/community", { params })
       .then((res) => {
         //필터링되어 돌아온 params를 받는다
         console.log(res.data);
@@ -114,7 +114,7 @@ function CommunityBoard() {
         setPageData(filtered);
         //페이지 제목을 변경한다
         setWhereAreYou(
-          domesticInternational === "International" ? "해외 여행 메이트 페이지" : "국내 여행 메이트 페이지"
+          domesticInternational === "International" ? "해외 커뮤니티 페이지" : "국내 커뮤니티 페이지"
         );
         //페이지 전환버튼을 변경한다
         setPageTurn(domesticInternational === "International" ? "to Domestic" : "to International");
@@ -126,7 +126,7 @@ function CommunityBoard() {
 
   // 해외 / 국내 전환시 호출
   useEffect(() => {
-    fetchFilteredPosts();
+    fetchFilteredPosts(); 
   }, [domesticInternational]);
 
   // -------------이벤트 관리부
