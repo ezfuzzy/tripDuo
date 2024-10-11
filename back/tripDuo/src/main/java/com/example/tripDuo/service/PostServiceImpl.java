@@ -148,6 +148,7 @@ public class PostServiceImpl implements PostService {
 
 		if(username != null && !username.equals("anonymousUser")) {
 			existingDto.setLike(postLikeRepo.existsByPostIdAndUserId(existingDto.getId(), userRepo.findByUsername(username).getId()));
+			existingDto.setLike(postRatingRepo.existsByPostIdAndUserId(existingDto.getId(), userRepo.findByUsername(username).getId()));			
 		}
 		
 		// 댓글 list 
