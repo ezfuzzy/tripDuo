@@ -29,7 +29,7 @@ function WishMate(props) {
                 .filter((post) => post.post.type === "MATE")
                 .map((post) => (
                   <li key={post.post.id} className="p-4 border rounded-lg shadow-md">
-                    <a href={`/posts/course/${post.post.id}/detail`} className="block">
+                    <a href={`/posts/mate/${post.post.id}/detail`} className="block">
                       <h4 className="text-xl font-semibold">{post.post.title}</h4>
                       <p className="text-gray-600">{post.post.description}</p>
                       <p className="text-sm text-gray-500">
