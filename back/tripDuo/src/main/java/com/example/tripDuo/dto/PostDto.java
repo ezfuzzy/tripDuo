@@ -48,6 +48,7 @@ public class PostDto {
     // ### for app ###
     
     private boolean isLike;
+    private boolean isRated;
     
     //private int startRowNum, endRowNum;
     private int pageNum = 1;
