@@ -5,22 +5,17 @@ import { shallowEqual, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
-  faCrown,
-  faDove,
-  faFaceLaugh,
   faFaceLaughSquint,
   faFaceMeh,
   faFaceSmile,
-  faFeather,
   faPersonCircleXmark,
-  faPlane,
   faUser,
-} from "@fortawesome/free-solid-svg-icons"
-import "../../css/MyProfile.css"
-import FollowModal from "../../components/FollowModal"
-import LoadingAnimation from "../../components/LoadingAnimation"
-import useWebSocket from "../../components/useWebSocket"
-import { reviewNegativeTagList, reviewPositiveTagList } from "../../constants/mapping"
+} from "@fortawesome/free-solid-svg-icons";
+import "../../css/MyProfile.css";
+import FollowModal from "../../components/FollowModal";
+import LoadingAnimation from "../../components/LoadingAnimation";
+import useWebSocket from "../../components/useWebSocket";
+import { ratingConfig, reviewNegativeTagList, reviewPositiveTagList } from "../../constants/mapping";
 
 // ###
 
@@ -28,17 +23,6 @@ import { reviewNegativeTagList, reviewPositiveTagList } from "../../constants/ma
 const maxLength = 3000;
 
 //--------------------------------------------------------------------------------------------------------------rating 관리 부
-// rating 비교 조건 데이터
-const ratingConfig = [
-  { min: 0, max: 1499, icon: faFeather, color: "gray" }, // 이코노미
-  { min: 1500, max: 2999, icon: faFeather, color: "blue" }, // 프리미엄 이코노미
-  { min: 3000, max: 4499, icon: faDove, color: "gray" }, // 비지니스
-  { min: 4500, max: 5999, icon: faDove, color: "blue" }, // 프리미엄 비지니스
-  { min: 6000, max: 7499, icon: faPlane, color: "gray" }, // 퍼스트
-  { min: 7500, max: 8999, icon: faPlane, color: "blue" }, // 프리미엄 퍼스트
-  { min: 9000, max: 10000, icon: faCrown, color: "yellow" }, // 로얄
-  { min: -Infinity, max: Infinity, icon: faUser, color: "black" }, // 기본값
-];
 
 function MyProfile(props) {
   // to do : cur_location, last_login
@@ -784,7 +768,7 @@ function MyProfile(props) {
                     {item.experience === "BAD" ? (
                       <FontAwesomeIcon className="w-7 h-7 text-orange-600 ml-10" icon={faFaceMeh} />
                     ) : item.experience === "GOOD" ? (
-                      <FontAwesomeIcon className="w-7 h-7 text-green-600 ml-10" icon={faFaceLaugh} />
+                      <FontAwesomeIcon className="w-7 h-7 text-green-600 ml-10" icon={faFaceSmile} />
                     ) : item.experience === "EXCELLENT" ? (
                       <FontAwesomeIcon className="w-7 h-7 text-cyan-600 ml-10" icon={faFaceLaughSquint} />
                     ) : (

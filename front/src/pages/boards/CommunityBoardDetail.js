@@ -1,14 +1,4 @@
-import {
-  faCrown,
-  faDove,
-  faEye,
-  faFeather,
-  faHeart,
-  faMessage,
-  faPlane,
-  faStar,
-  faUser,
-} from "@fortawesome/free-solid-svg-icons";
+import { faEye, faMessage, faStar, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import DOMPurify from "dompurify";
@@ -19,6 +9,7 @@ import { NavLink } from "react-router-dom";
 import useWebSocket from "../../components/useWebSocket";
 import LoadingAnimation from "../../components/LoadingAnimation";
 import Modal from "react-modal";
+import { ratingConfig } from "../../constants/mapping";
 
 //새로 등록한 댓글을 추가할 인덱스
 let commentIndex = 0;
@@ -90,17 +81,6 @@ function CommunityBoardDetail(props) {
   const cleanHTML = DOMPurify.sanitize(contentHTML); // HTML 클린징으로 보안처리
 
   //--------------------------------------------------------------------------------------------------------------rating 관리 부
-  // rating 비교 조건 데이터
-  const ratingConfig = [
-    { min: 0, max: 1499, icon: faFeather, color: "gray" }, // 이코노미
-    { min: 1500, max: 2999, icon: faFeather, color: "blue" }, // 프리미엄 이코노미
-    { min: 3000, max: 4499, icon: faDove, color: "gray" }, // 비지니스
-    { min: 4500, max: 5999, icon: faDove, color: "blue" }, // 프리미엄 비지니스
-    { min: 6000, max: 7499, icon: faPlane, color: "gray" }, // 퍼스트
-    { min: 7500, max: 8999, icon: faPlane, color: "blue" }, // 프리미엄 퍼스트
-    { min: 9000, max: 10000, icon: faCrown, color: "yellow" }, // 로얄
-    { min: -Infinity, max: Infinity, icon: faUser, color: "black" }, // 기본값
-  ];
 
   // rating 값에 따른 아이콘과 색상 계산 //
   const getRatingDetails = (ratings) => {
