@@ -22,7 +22,6 @@ function Home() {
     }, 400)
   }, [])
 
-  const [isLoading, setIsLoading] = useState(true) // 로딩 상태
   const isLoggedIn = localStorage.getItem("token") !== null // 토큰이 존재하는지 확인
 
   useEffect(() => {
@@ -55,6 +54,7 @@ function Home() {
         <MenuItems />
       </div>
 
+      {/* best posts */}
       <div className="my-12">
         <BestPosts />
       </div>
