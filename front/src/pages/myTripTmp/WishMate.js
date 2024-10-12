@@ -158,14 +158,17 @@ function WishMate(props) {
                         mixBlendMode: "multiply",
                       }}>
                       <a href={`/posts/mate/${post.post.id}/detail`} className="block">
-                        <h4 className="text-xl font-semibold">{post.post.title}</h4>
-
-                        <span className="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded mr-2">
-                          #{post.post.city}
-                        </span>
-                        <span className="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded">
-                          #{post.post.country}
-                        </span>
+                        <div className="md:flex justify-between">
+                          <h4 className="text-xl font-semibold">{post.post.title}</h4>
+                          <p>
+                            <span className="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded mr-2">
+                              #{post.post.city}
+                            </span>
+                            <span className="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded">
+                              #{post.post.country}
+                            </span>
+                          </p>
+                        </div>
                         <p className="text-sm text-gray-500">
                           작성일: {new Date(post.post.createdAt).toLocaleDateString()}
                         </p>
