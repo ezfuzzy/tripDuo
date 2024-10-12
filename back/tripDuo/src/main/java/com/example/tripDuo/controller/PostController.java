@@ -66,6 +66,11 @@ public class PostController {
 		return ResponseEntity.ok(postService.getPostList(postDto));
 	}	
 	
+	@GetMapping("/{postType:[a-zA-Z_]+}/home")
+	public ResponseEntity<Map<String, Object>> getPostListForHome() {
+		return ResponseEntity.ok(postService.getPostListForHome());
+	}
+	
 	@GetMapping("/{postId:[0-9]+}")
 	public ResponseEntity<Map<String, Object>> getPostDetailById(@PathVariable("postId") Long postId, PostDto postDto) {
 		// 글 자세히 보기 페이지에서 axios할 api end point 

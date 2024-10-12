@@ -49,6 +49,7 @@ import CommunityBoardEditForm from "../pages/boards/CommunityBoardEditForm"
 import ResetPassword from "../pages/ResetPassword"
 import ApiDocs from "../pages/admin/ApiDocs"
 import ReportBoard from "../pages/boards/ReportBoard"
+import TripDuoCarousel from "../components/TripDuoCarousel"
 
 // /users/:id
 // /users/:id/setting
@@ -93,7 +94,7 @@ const routes = [
 
   // ### 부가 기능 ###
   { path: "/checklist", element: <TravelChecklist /> },
-  { path: "/exchange", element: <ExchangeInfo /> },
+  { path: "/exchangeInfo", element: <ExchangeInfo /> },
   { path: "/safetyInfo", element: <TravelSafetyInfo /> },
   { path: "/calculator", element: <TravelCostCalculator /> },
   { path: "/recommendations", element: <LocationRecommendations /> },
@@ -103,6 +104,7 @@ const routes = [
 
   // ### etc ###
   { path: "/api-docs", element: <ApiDocs /> },
+  { path: "/test/test", element: <TripDuoCarousel /> },
 ]
 
 const protectedRoutes = [
@@ -131,11 +133,11 @@ const protectedRoutes = [
   { path: "/users/:id/profile/edit", element: <MyProfileForm /> },
 
   // ### my page 메뉴 설정 ###
-  { path: "/myPlace/:id", element: <MyPlace /> },
-  { path: "/myPlan/:id", element: <MyPlan /> },
-  { path: "/myRecord/:id", element: <MyRecord /> },
-  { path: "/wishMate/:id", element: <WishMate /> },
-  { path: "/likedCourse/:id", element: <LikedPostsPage /> },
+  { path: "/myPlace", element: <MyPlace /> },
+  { path: "/myPlan", element: <MyPlan /> },
+  { path: "/myRecord", element: <MyRecord /> },
+  { path: "/wishMate", element: <WishMate /> },
+  { path: "/likedCourse", element: <LikedPostsPage /> },
 
   // ### 개인정보 설정(보안, 인증정보) ###
   { path: "/auth/:id/changePassword", element: <ChangePassword /> },

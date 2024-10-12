@@ -16,6 +16,7 @@ public interface PostService {
 	public void writePost(PostDto dto);
 		
 	public Map<String, Object> getPostList(PostDto postDto); // 기본 getList
+	public Map<String, Object> getPostListForHome();
 	// getPostList - 페이징 + 검색
 	public PostDto getPostById(Long postId); // 간단한 
 //		public PostDto getPostByUsername(String username);

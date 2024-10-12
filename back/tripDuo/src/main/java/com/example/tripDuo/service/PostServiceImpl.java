@@ -24,6 +24,7 @@ import com.example.tripDuo.entity.PostLike;
 import com.example.tripDuo.entity.PostRating;
 import com.example.tripDuo.entity.UserProfileInfo;
 import com.example.tripDuo.entity.UserSavedCourse;
+import com.example.tripDuo.enums.PostType;
 import com.example.tripDuo.repository.PostCommentRepository;
 import com.example.tripDuo.repository.PostLikeRepository;
 import com.example.tripDuo.repository.PostRatingRepository;
@@ -84,6 +85,7 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public Map<String, Object> getPostList(PostDto postDto) {
 		
+		// sort는 프론트에서도 처리를 하긴 함
 		String sortBy = postDto.getSortBy() != null ? postDto.getSortBy() : "createdAt";
 		
 	    Sort sort = switch (sortBy) {
@@ -108,6 +110,40 @@ public class PostServiceImpl implements PostService {
 				"totalRowCount", totalRowCount, 
 				"totalPostPages", totalPostPages
 		);
+	}
+	
+	@Override
+	public Map<String, Object> getPostListForHome() {
+		
+		List<Post> domesticCoursePostList = getPostListMethod(PostType.COURSE, "Domestic");
+		List<Post> internationalCoursePostList = getPostListMethod(PostType.COURSE, "International");
+		List<Post> domesticMatePostList = getPostListMethod(PostType.MATE, "Domestic");
+		List<Post> internationalMatePostList = getPostListMethod(PostType.MATE, "International");
+		
+		return Map.of(
+				"domesticCoursePostList", domesticCoursePostList,
+				"internationalCoursePostList", internationalCoursePostList,
+				"domesticMatePostList", domesticMatePostList,
+				"internationalMatePostList", internationalMatePostList,
+				"PROFILE_PICTURE_CLOUDFRONT_URL", PROFILE_PICTURE_CLOUDFRONT_URL
+		);
+	}
+
+	
+	public List<Post> getPostListMethod(PostType postType, String di) {
+		
+		PostDto dtoForSearch = PostDto.builder()
+									.type(postType)
+									.di(di)
+									.build();
+		
+		Sort sort = Sort.by(Sort.Direction.DESC, "likeCount");
+		Pageable pageable = PageRequest.of(0, 4, sort);
+		
+		Page<Post> posts = postRepo.findAll(PostSpecification.searchPosts(dtoForSearch), pageable);
+		List<Post> postList = posts.stream().toList();
+		
+		return postList;
 	}
 	
 	/**
