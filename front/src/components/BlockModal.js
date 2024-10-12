@@ -1,9 +1,9 @@
-import { faCrown, faDove, faFeather, faPlane, faUser, faXmark } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { setActive } from "@material-tailwind/react/components/Tabs/TabsContext"
-import axios from "axios"
-import React, { useEffect, useState } from "react"
-import { useNavigate } from "react-router"
+import { faCrown, faDove, faFeather, faPlane, faUser, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { setActive } from "@material-tailwind/react/components/Tabs/TabsContext";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 
 // rating 비교 조건 데이터
 const ratingConfig = [
@@ -15,28 +15,28 @@ const ratingConfig = [
   { min: 7500, max: 8999, icon: faPlane, color: "blue" }, // 프리미엄 퍼스트
   { min: 9000, max: 10000, icon: faCrown, color: "yellow" }, // 로얄
   { min: -Infinity, max: Infinity, icon: faUser, color: "black" }, // 기본값
-]
+];
 
 function BlockModal({ id, onClose }) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const [blockedList, setBlockedList] = useState([])
+  const [blockedList, setBlockedList] = useState([]);
 
   // rating 값에 따른 아이콘과 색상 계산 //
   const getRatingDetails = (ratings) => {
     return (
       ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { icon: faUser, color: "black" }
-    ) // 기본값
-  }
+    ); // 기본값
+  };
 
   useEffect(() => {
     axios
       .get(`/api/v1/users/${id}/blockInfos`)
       .then((res) => {
-        setBlockedList(res.data)
+        setBlockedList(res.data);
       })
-      .catch((error) => console.log(error))
-  }, [id])
+      .catch((error) => console.log(error));
+  }, [id]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black bg-opacity-50">
@@ -60,13 +60,13 @@ function BlockModal({ id, onClose }) {
               <p className="text-center text-gray-500">차단한 사용자가 없습니다.</p>
             ) : (
               blockedList.map((blocked) => {
-                const { icon: ratingIcon, color: ratingColor } = getRatingDetails(blocked.ratings || 0)
+                const { icon: ratingIcon, color: ratingColor } = getRatingDetails(blocked.ratings || 0);
                 return (
                   <li
                     key={blocked.userId}
                     className="flex justify-between gap-x-6 py-4"
                     onClick={() => {
-                      navigate(`/users/${blocked.userId}/profile`)
+                      navigate(`/users/${blocked.userId}/profile`);
                     }}>
                     <div className="flex min-w-0 gap-x-4">
                       {blocked.profilePicture ? (
@@ -76,17 +76,11 @@ function BlockModal({ id, onClose }) {
                           className="h-12 w-12 flex-none rounded-full bg-gray-50"
                         />
                       ) : (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="currentColor"
-                          className="h-12 w-12 bi bi-person-circle"
-                          viewBox="0 0 16 16">
-                          <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-                          <path
-                            fillRule="evenodd"
-                            d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"
-                          />
-                        </svg>
+                        <img
+                          className="bi bi-person-circle w-12 h-12"
+                          src={`${process.env.PUBLIC_URL}/img/defaultImages/defaultProfilePicture.svg`}
+                          alt="default profile img"
+                        />
                       )}
                       <div className="min-w-0 flex-auto">
                         <p className="text-sm font-semibold leading-6 text-gray-900">{blocked.nickname}</p>
@@ -102,14 +96,14 @@ function BlockModal({ id, onClose }) {
                       <p className="text-sm leading-6 text-gray-900">{blocked.ratings}</p>
                     </div>
                   </li>
-                )
+                );
               })
             )}
           </ul>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default BlockModal
+export default BlockModal;

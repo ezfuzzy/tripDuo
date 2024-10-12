@@ -1,9 +1,9 @@
-import { useState, useCallback, useEffect, useRef } from "react"
-import { useDispatch, useSelector, shallowEqual } from "react-redux"
-import { NavLink, useLocation, useNavigate } from "react-router-dom"
-import AlertModal from "./AlertModal"
-import axios from "axios"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { useState, useCallback, useEffect, useRef } from "react";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import AlertModal from "./AlertModal";
+import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
   faBell,
@@ -17,54 +17,54 @@ import {
   faPersonThroughWindow,
   faPersonWalkingLuggage,
   faUser,
-} from "@fortawesome/free-solid-svg-icons"
+} from "@fortawesome/free-solid-svg-icons";
 
 function NavBar() {
-  const username = useSelector((state) => state.userData.username, shallowEqual)
-  const profilePicture = useSelector((state) => state.userData.profilePicture, shallowEqual)
-  const userId = useSelector((state) => state.userData.id, shallowEqual)
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const location = useLocation()
+  const username = useSelector((state) => state.userData.username, shallowEqual);
+  const profilePicture = useSelector((state) => state.userData.profilePicture, shallowEqual);
+  const userId = useSelector((state) => state.userData.id, shallowEqual);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const [alertShow, setAlertShow] = useState(false)
+  const [alertShow, setAlertShow] = useState(false);
   // off-canvas 메뉴 관리
-  const [openSections, setOpenSections] = useState({})
-  const [lastVisited, setLastVisited] = useState("/")
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [kakaoId, setKakaoId] = useState(null)
+  const [openSections, setOpenSections] = useState({});
+  const [lastVisited, setLastVisited] = useState("/");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [kakaoId, setKakaoId] = useState(null);
 
   // md 사이즈 이하에서 dropdown menu 관리
-  const [isDropdownOpen, setDropdownOpen] = useState(false)
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
 
   // off-canvas ref
-  const offcanvasRef = useRef(null)
+  const offcanvasRef = useRef(null);
   // drop-down ref
-  const dropdownRef = useRef(null)
+  const dropdownRef = useRef(null);
 
-  const [isOffCanvasOpen, setOffCanvasOpen] = useState(false)
+  const [isOffCanvasOpen, setOffCanvasOpen] = useState(false);
   // NavLink 공통 css
-  const offCanvasNavLinkStyle = "hover:bg-gray-100 cursor-pointer text-black no-underline"
+  const offCanvasNavLinkStyle = "hover:bg-gray-100 cursor-pointer text-black no-underline";
 
   useEffect(() => {
-    const token = localStorage.getItem("token")
-    const kakaoToken = localStorage.getItem("KakaoToken")
-    const KakaoId = localStorage.getItem("kakaoId")
+    const token = localStorage.getItem("token");
+    const kakaoToken = localStorage.getItem("KakaoToken");
+    const KakaoId = localStorage.getItem("kakaoId");
     if (token || kakaoToken || username) {
-      setIsLoggedIn(true)
+      setIsLoggedIn(true);
       if (KakaoId) {
-        setKakaoId(JSON.parse(KakaoId))
+        setKakaoId(JSON.parse(KakaoId));
       }
     } else {
-      setIsLoggedIn(false)
+      setIsLoggedIn(false);
     }
-  }, [username])
+  }, [username]);
 
   useEffect(() => {
     if (location.pathname === "/home-abroad" || location.pathname === "/") {
-      setLastVisited(location.pathname)
+      setLastVisited(location.pathname);
     }
-  }, [location.pathname])
+  }, [location.pathname]);
 
   // off-canvas 바깥 클릭 감지
   useEffect(() => {
@@ -74,37 +74,37 @@ function NavBar() {
         !offcanvasRef.current.contains(event.target) &&
         !event.target.closest(".offcanvas-toggle")
       ) {
-        setOffCanvasOpen(false)
+        setOffCanvasOpen(false);
       }
-    }
+    };
 
-    document.addEventListener("mousedown", handleOutsideCanvasClick)
+    document.addEventListener("mousedown", handleOutsideCanvasClick);
 
-    return () => document.removeEventListener("mousedown", handleOutsideCanvasClick)
-  }, [])
+    return () => document.removeEventListener("mousedown", handleOutsideCanvasClick);
+  }, []);
   // drop-down 바깥 클릭 감지
   useEffect(() => {
     const handleOutsideDropdownClick = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(false)
+        setDropdownOpen(false);
       }
-    }
+    };
 
-    document.addEventListener("mousedown", handleOutsideDropdownClick)
+    document.addEventListener("mousedown", handleOutsideDropdownClick);
 
-    return () => document.removeEventListener("mousedown", handleOutsideDropdownClick)
-  }, [])
+    return () => document.removeEventListener("mousedown", handleOutsideDropdownClick);
+  }, []);
 
   const toggleSection = (section) => {
     setOpenSections((prevState) => ({
       ...prevState,
       [section]: !prevState[section],
-    }))
-  }
+    }));
+  };
 
   const handleLogout = () => {
-    const kakaoToken = localStorage.getItem("KakaoToken")
-    const kakaoId = localStorage.getItem("kakaoId")
+    const kakaoToken = localStorage.getItem("KakaoToken");
+    const kakaoId = localStorage.getItem("kakaoId");
 
     if (kakaoToken && kakaoId) {
       axios
@@ -119,60 +119,60 @@ function NavBar() {
           }
         )
         .then((res) => {
-          console.log("카카오 로그아웃 성공:", res.data)
-          localStorage.removeItem("KakaoToken")
-          localStorage.removeItem("kakaoId")
-          completeLogout()
+          console.log("카카오 로그아웃 성공:", res.data);
+          localStorage.removeItem("KakaoToken");
+          localStorage.removeItem("kakaoId");
+          completeLogout();
         })
         .catch((error) => {
-          console.error("카카오 로그아웃 실패:", error)
-          alert("로그아웃에 실패했습니다.")
-        })
+          console.error("카카오 로그아웃 실패:", error);
+          alert("로그아웃에 실패했습니다.");
+        });
     } else {
-      completeLogout()
+      completeLogout();
     }
-  }
+  };
 
   const completeLogout = () => {
-    localStorage.clear()
-    dispatch({ type: "LOGOUT_USER", payload: null })
-    setIsLoggedIn(false)
-    navigate("/")
-    window.location.reload()
-  }
+    localStorage.clear();
+    dispatch({ type: "LOGOUT_USER", payload: null });
+    setIsLoggedIn(false);
+    navigate("/");
+    window.location.reload();
+  };
 
   const handleYes = () => {
-    setAlertShow(false)
-  }
+    setAlertShow(false);
+  };
 
   const handleLogin = useCallback(() => {
-    navigate("/login")
-  }, [navigate])
+    navigate("/login");
+  }, [navigate]);
 
   const handleLoginLogoutClick = () => {
     if (isLoggedIn) {
-      handleLogout()
-      setDropdownOpen(!isDropdownOpen)
+      handleLogout();
+      setDropdownOpen(!isDropdownOpen);
     } else {
-      handleLogin()
-      setDropdownOpen(!isDropdownOpen)
+      handleLogin();
+      setDropdownOpen(!isDropdownOpen);
     }
 
     if (offcanvasRef.current) {
-      setOffCanvasOpen(false)
+      setOffCanvasOpen(false);
     }
-  }
+  };
 
   const handleTripDuoClick = () => {
-    navigate(lastVisited)
-  }
+    navigate(lastVisited);
+  };
 
   // 링크 클릭시 off-canvas 닫기 로직
   const closeOffCanvas = () => {
     if (offcanvasRef.current) {
-      setOffCanvasOpen(false)
+      setOffCanvasOpen(false);
     }
-  }
+  };
 
   return (
     <>
@@ -203,7 +203,11 @@ function NavBar() {
                 {profilePicture ? (
                   <img src={profilePicture} className="w-8 h-8 rounded-full" alt="Profile" />
                 ) : (
-                  <FontAwesomeIcon icon={faUser} color="black" className="h-5 w-5" />
+                  <img
+                    className="bi bi-person-circle w-6 h-6"
+                    src={`${process.env.PUBLIC_URL}/img/defaultImages/defaultProfilePicture.svg`}
+                    alt="default profile img"
+                  />
                 )}
               </NavLink>
             </>
@@ -215,14 +219,14 @@ function NavBar() {
         {/* md 이하에서만 보여주는 icon */}
         <div ref={dropdownRef} className="md:hidden">
           <div className="pr-20">
-            <FontAwesomeIcon
+            <img
               onClick={(e) => {
-                e.stopPropagation()
-                setDropdownOpen(!isDropdownOpen)
+                e.stopPropagation();
+                setDropdownOpen(!isDropdownOpen);
               }}
-              icon={faUser}
-              color="black"
-              className="h-5 w-5 cursor-pointer"
+              className="bi bi-person-circle w-6 h-6 cursor-pointer"
+              src={`${process.env.PUBLIC_URL}/img/defaultImages/defaultProfilePicture.svg`}
+              alt="default profile img"
             />
           </div>
           {isDropdownOpen && (
@@ -236,8 +240,8 @@ function NavBar() {
                 <p className="block px-4 py-2 hover:bg-gray-100">
                   <button
                     onClick={() => {
-                      navigate(`/users/${userId}`)
-                      setDropdownOpen(!isDropdownOpen)
+                      navigate(`/users/${userId}`);
+                      setDropdownOpen(!isDropdownOpen);
                     }}>
                     마이 페이지
                   </button>
@@ -246,8 +250,8 @@ function NavBar() {
               <p className="block px-4 py-2 hover:bg-gray-100">
                 <button
                   onClick={() => {
-                    navigate("/chatRoom")
-                    setDropdownOpen(!isDropdownOpen)
+                    navigate("/chatRoom");
+                    setDropdownOpen(!isDropdownOpen);
                   }}>
                   채팅
                 </button>
@@ -264,7 +268,7 @@ function NavBar() {
             <NavLink
               className={`font-bold text-lg inline-flex items-center justify-center p-3 border-b-2 rounded-t-lg transition-all duration-300 ${
                 location.pathname.startsWith("/posts/course") && location.search.includes("di=Domestic")
-                ? "border-b-2 border-tripDuoGreen text-tripDuoGreen transform scale-105"
+                  ? "border-b-2 border-tripDuoGreen text-tripDuoGreen transform scale-105"
                   : "border-transparent hover:text-gray-600 hover:border-gray-300"
               } group`}
               to="/posts/course?di=Domestic"
@@ -277,7 +281,7 @@ function NavBar() {
             <NavLink
               className={`font-bold text-lg inline-flex items-center justify-center p-3 border-b-2 rounded-t-lg transition-all duration-300 ${
                 location.pathname.startsWith("/posts/course") && location.search.includes("di=International")
-                ? "border-b-2 border-tripDuoGreen text-tripDuoGreen transform scale-105"
+                  ? "border-b-2 border-tripDuoGreen text-tripDuoGreen transform scale-105"
                   : "border-transparent hover:text-gray-600 hover:border-gray-300"
               } group`}
               to="/posts/course?di=International"
@@ -495,7 +499,7 @@ function NavBar() {
         </div>
       </div>
     </>
-  )
+  );
 }
 
-export default NavBar
+export default NavBar;

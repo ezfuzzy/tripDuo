@@ -58,7 +58,7 @@ function CommunityBoardDetail(props) {
   // 별점 버튼 설정
   const [isRated, setRated] = useState(false);
   const [newPostRating, setNewPostRating] = useState(0); // post 에 새로 매기는 점수
-  
+
   const [ratedInfo, setRatedInfo] = useState({}); // 사용자에 대한 postRating 관련 데이터
   const [myRating, setMyRating] = useState(0); // 사용자가 매긴 점수
   const [postRating, setPostRating] = useState(0); // post의 총점
@@ -84,7 +84,6 @@ function CommunityBoardDetail(props) {
   const [editTexts, setEditTexts] = useState({});
 
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
-
 
   // HTML 로 구성된 Content 관리
   const [contentHTML, setContentHTML] = useState(); // HTML 로 구성된 Content
@@ -128,21 +127,20 @@ function CommunityBoardDetail(props) {
         setPost(res.data.dto);
         setContentHTML(res.data.dto.content);
 
-        setPostRating(res.data.dto.rating || 0) // 총점
+        setPostRating(res.data.dto.rating || 0); // 총점
 
         //현재 사용자의 postRating = id, postId, userId, rating
         console.log(res.data.postRating);
         setRatedInfo(res.data.postRating || {}); // 현재 사용자가 매긴 rating 의 정보
-        setMyRating(res.data.postRating.rating || "") // 현재 사용자가 매긴 rating 의 값 (과거 값)
-        
+        setMyRating(res.data.postRating.rating || ""); // 현재 사용자가 매긴 rating 의 값 (과거 값)
 
-        console.log(isRated)
+        console.log(isRated);
         if (res.data.postRating === "") {
-          setRated(false); 
+          setRated(false);
         } else {
           setRated(true);
         }
-        
+
         setWriterProfile(res.data.userProfileInfo);
 
         //댓글 목록이 존재하는지 확인 후, 배열에 ref라는 방 추가
@@ -405,10 +403,15 @@ function CommunityBoardDetail(props) {
 
   const handleUpdateRating = () => {
     axios
-      .put(`/api/v1/posts/${post.id}/ratings/${ratedInfo.id}`, { id:ratedInfo.id, userId: userId, postId: post.id, rating: newPostRating })
+      .put(`/api/v1/posts/${post.id}/ratings/${ratedInfo.id}`, {
+        id: ratedInfo.id,
+        userId: userId,
+        postId: post.id,
+        rating: newPostRating,
+      })
       .then((res) => {
         console.log(res.data);
-        setMyRating(newPostRating)
+        setMyRating(newPostRating);
         closeModal();
       })
       .catch((error) => console.log(error));
@@ -416,7 +419,7 @@ function CommunityBoardDetail(props) {
 
   const handleDeleteRating = () => {
     if (window.confirm) {
-      console.log(ratedInfo)
+      console.log(ratedInfo);
       axios
         .delete(`/api/v1/posts/${post.id}/ratings/${ratedInfo.id}`)
         .then((res) => {
@@ -587,17 +590,11 @@ function CommunityBoardDetail(props) {
                 {writerProfile.profilePicture ? (
                   <img src={writerProfile.profilePicture} className="w-20 h-20 rounded-full" alt="" />
                 ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
+                  <img
                     className="bi bi-person-circle w-20 h-20"
-                    viewBox="0 0 16 16">
-                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-                    <path
-                      fillRule="evenodd"
-                      d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.206 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"
-                    />
-                  </svg>
+                    src={`${process.env.PUBLIC_URL}/img/defaultImages/defaultProfilePicture.svg`}
+                    alt="default profile img"
+                  />
                 )}
                 <div>
                   <h3 className="text-base font-semibold leading-7 tracking-tight text-gray-900">
