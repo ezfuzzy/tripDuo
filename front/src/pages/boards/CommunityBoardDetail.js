@@ -128,12 +128,12 @@ function CommunityBoardDetail(props) {
         setPost(res.data.dto);
         setContentHTML(res.data.dto.content);
 
-        setPostRating(res.data.dto.rating || 0)
+        setPostRating(res.data.dto.rating || 0) // 총점
 
         //현재 사용자의 postRating = id, postId, userId, rating
         console.log(res.data.postRating);
-        setRatedInfo(res.data.postRating || {});
-        setMyRating(res.data.postRating.rating || "")
+        setRatedInfo(res.data.postRating || {}); // 현재 사용자가 매긴 rating 의 정보
+        setMyRating(res.data.postRating.rating || "") // 현재 사용자가 매긴 rating 의 값 (과거 값)
         
 
         console.log(isRated)
@@ -142,6 +142,7 @@ function CommunityBoardDetail(props) {
         } else {
           setRated(true);
         }
+        
         setWriterProfile(res.data.userProfileInfo);
 
         //댓글 목록이 존재하는지 확인 후, 배열에 ref라는 방 추가
