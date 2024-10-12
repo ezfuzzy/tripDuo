@@ -22,6 +22,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 public class ReportSpecification {
+
     // Specification 인터페이스는 동적 쿼리를 생성하기 위해 사용
     public static Specification<Report> searchReports(ReportDto reportDto) {
         // root는 쿼리의 FROM 절에 해당하는 엔티티를 나타내는 객체
@@ -60,24 +61,56 @@ public class ReportSpecification {
                 predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.type(), reportClass));
             }
 
-            // targetId 검색 조건
-            if (reportDto.getTargetId() != null) {
-                // criteriaBuilder.disjunction()는 여러 조건을 OR로 결합할 수 있는 빈 조건을 생성
-                Predicate targetIdPredicate = criteriaBuilder.disjunction();
-                targetIdPredicate = criteriaBuilder.or(targetIdPredicate,
-                    criteriaBuilder.equal(root.get("reportedUser").get("id"), reportDto.getTargetId()));
-                targetIdPredicate = criteriaBuilder.or(targetIdPredicate,
-                    criteriaBuilder.equal(root.get("reportedUserReview").get("id"), reportDto.getTargetId()));
-                targetIdPredicate = criteriaBuilder.or(targetIdPredicate,
-                    criteriaBuilder.equal(root.get("reportedPost").get("id"), reportDto.getTargetId()));
-                targetIdPredicate = criteriaBuilder.or(targetIdPredicate,
-                    criteriaBuilder.equal(root.get("reportedPostComment").get("id"), reportDto.getTargetId()));
-                targetIdPredicate = criteriaBuilder.or(targetIdPredicate,
-                    criteriaBuilder.equal(root.get("reportedChatRoom").get("id"), reportDto.getTargetId()));
-                targetIdPredicate = criteriaBuilder.or(targetIdPredicate,
-                    criteriaBuilder.equal(root.get("reportedChatMessage").get("id"), reportDto.getTargetId()));
-                
-                predicate = criteriaBuilder.and(predicate, targetIdPredicate);
+            // reportedUserId 검색 조건
+            if (reportDto.getReportedUserId() != null) {
+                Long reportedUserId = reportDto.getReportedUserId();
+                // 각 서브클래스에 따라 reportedUserId를 가져오는 조건 추가
+                Predicate userPredicate = criteriaBuilder.disjunction(); // OR 조건을 위한 Predicate
+
+                // ReportToUser
+                userPredicate = criteriaBuilder.or(userPredicate,
+                    criteriaBuilder.and(
+                        criteriaBuilder.equal(root.type(), ReportToUser.class),
+                        criteriaBuilder.equal(root.get("reportedUser").get("id"), reportedUserId)
+                    ));
+
+                // ReportToUserReview
+                userPredicate = criteriaBuilder.or(userPredicate,
+                    criteriaBuilder.and(
+                        criteriaBuilder.equal(root.type(), ReportToUserReview.class),
+                        criteriaBuilder.equal(root.get("reportedUserReview").get("reviewerUserProfileInfo").get("user").get("id"), reportedUserId)
+                    ));
+
+                // ReportToPost
+                userPredicate = criteriaBuilder.or(userPredicate,
+                    criteriaBuilder.and(
+                        criteriaBuilder.equal(root.type(), ReportToPost.class),
+                        criteriaBuilder.equal(root.get("reportedPost").get("userProfileInfo").get("user").get("id"), reportedUserId)
+                    ));
+
+                // ReportToPostComment
+                userPredicate = criteriaBuilder.or(userPredicate,
+                    criteriaBuilder.and(
+                        criteriaBuilder.equal(root.type(), ReportToPostComment.class),
+                        criteriaBuilder.equal(root.get("reportedPostComment").get("userProfileInfo").get("user").get("id"), reportedUserId)
+                    ));
+
+                // ReportToChatRoom
+                // userPredicate = criteriaBuilder.or(userPredicate,
+                // criteriaBuilder.and(
+                //     criteriaBuilder.equal(root.type(), ReportToChatRoom.class),
+                //     criteriaBuilder.equal()
+                // ));
+
+                // ReportToChatMessage
+                userPredicate = criteriaBuilder.or(userPredicate,
+                    criteriaBuilder.and(
+                        criteriaBuilder.equal(root.type(), ReportToChatMessage.class),
+                        criteriaBuilder.equal(root.get("reportedChatMessage").get("userProfileInfo").get("user").get("id"), reportedUserId)
+                    ));
+
+                // 최종 Predicate에 추가
+                predicate = criteriaBuilder.and(predicate, userPredicate);
             }
 
             // createdAt 검색 조건

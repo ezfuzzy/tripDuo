@@ -34,7 +34,9 @@ public class ReportDto {
     private Long targetId;
 
     // ### for app ###
+    private Long reportedUserId;
     private int pageNum = 1;
+    private int pageSize = 10;
     private String sortBy;
     private AccountStatus accountStatus;
     private YearMonth createdAtMonth;

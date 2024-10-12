@@ -51,8 +51,6 @@ public class ReportServiceImpl implements ReportService {
     private final ChatParticipantRepository chatParticipantRepo;
     private final ChatMessageRepository chatMessageRepo;
 
-    final int REPORT_PAGE_SIZE = 10;
-
     public ReportServiceImpl(ReportRepository reportRepo, UserRepository userRepo,
                              UserReviewRepository userReviewRepo, PostRepository postRepo,
                              PostCommentRepository postCommentRepo, ChatRoomRepository chatRoomRepo,
@@ -151,14 +149,15 @@ public class ReportServiceImpl implements ReportService {
 
     /**
      * getReportList: 신고 정보 가져오기
-     * 검색 가능 : status, createdAtMonth, targetType, targetId, pageNum
+     * 검색 가능 : reportStatus, createdAtMonth, targetType, reportedUserId, pageNum, pageSize
      * 정렬 가능 : sortBy=createdAt_asc, createdAt_desc
      * 
-     * ex) /api/v1/reports?status=UNPROCESSED& (생략 가능)
+     * ex) /api/v1/reports?reportStatus=UNPROCESSED& (생략 가능)
      *					   createdAtMonth=2024-10& (생략 가능)
      *					   targetType=USER& (생략 가능)
-     *					   targetId=1& (생략 가능)
+     *					   reportedUserId=1& (생략 가능)
      *					   pageNum=1& (생략시 1)
+     *                     pageSize=10& (생략시 10)
      *					   sortBy=createdAt_asc (생략시 createdAt_desc)
      * 
      * @param reportDto
@@ -166,6 +165,7 @@ public class ReportServiceImpl implements ReportService {
      */
     @Override
     public Map<String, Object> getReportList(ReportDto reportDto) {
+
 		// 정렬 기본값 설정
         String sortBy = reportDto.getSortBy() != null ? reportDto.getSortBy() : "createdAt_desc";
 
@@ -173,7 +173,7 @@ public class ReportServiceImpl implements ReportService {
         Sort sort = Sort.by(sortBy.equals("createdAt_asc") ? Sort.Direction.ASC : Sort.Direction.DESC, "createdAt");
 
 		// 페이지 번호 설정
-        Pageable pageable = PageRequest.of(reportDto.getPageNum() - 1, REPORT_PAGE_SIZE, sort);
+        Pageable pageable = PageRequest.of(reportDto.getPageNum() - 1, reportDto.getPageSize(), sort);
 
 		// 신고 정보 가져오기
         Page<Report> reports = reportRepo.findAll(ReportSpecification.searchReports(reportDto), pageable);
@@ -184,27 +184,31 @@ public class ReportServiceImpl implements ReportService {
                 .map(ReportDto::toDto)
                 .collect(Collectors.toList());
 
-        // targetTypeList, targetIdList, targetAccountStatusList 가져오기
+        // targetTypeList, reportedUserIdList, targetAccountStatusList 가져오기
         List<String> targetTypeList = reportDtoList.stream()
                 .map(ReportDto::getTargetType)
                 .collect(Collectors.toList());
 
-        List<Long> targetIdList = reportDtoList.stream()
-                .map(ReportDto::getTargetId)
+        List<Long> reportedUserIdList = reportList.stream()
+                .map(this::getreportedUserIdsFromReport)
                 .collect(Collectors.toList());
 
         List<AccountStatus> targetAccountStatusList = reportList.stream()
-        .map(this::getAccountStatusFromReport)
-        .collect(Collectors.toList());
+                .map(this::getAccountStatusFromReport)
+                .collect(Collectors.toList());
 
 		// 총 행 수, 페이지 수 계산
         long totalRowCount = reports.getTotalElements();
-        int totalReportPages = (int) Math.ceil((double) totalRowCount / REPORT_PAGE_SIZE);
+        int totalReportPages = (int) Math.ceil((double) totalRowCount / reportDto.getPageSize());
+        // 결과가 없으면 총 1페이지
+        if (totalReportPages == 0) {
+            totalReportPages = 1;
+        }
 
         return Map.of(
                 "list", reportList,
                 "targetTypeList", targetTypeList,
-                "targetIdList", targetIdList,
+                "reportedUserIdList", reportedUserIdList,
                 "targetAccountStatusList", targetAccountStatusList,
                 "pageNum", reportDto.getPageNum(),
                 "totalRowCount", totalRowCount,
@@ -212,8 +216,29 @@ public class ReportServiceImpl implements ReportService {
         );
     }
 
+    private Long getreportedUserIdsFromReport(Report report) {
+        // 신고 대상 작성자의 Id 가져오기
+        if (report instanceof ReportToUser r) {
+            return r.getReportedUser().getId();
+        } else if (report instanceof ReportToUserReview r) {
+            return r.getReportedUserReview().getReviewerUserProfileInfo().getUser().getId();
+        } else if (report instanceof ReportToPost r) {
+            return r.getReportedPost().getUserProfileInfo().getUser().getId();
+        } else if (report instanceof ReportToPostComment r) {
+            return r.getReportedPostComment().getUserProfileInfo().getUser().getId();
+        } else if (report instanceof ReportToChatRoom r) {
+            Long chatRoomId = r.getReportedChatRoom().getId();
+            ChatParticipant chatParticipant = chatParticipantRepo.findByChatRoomIdAndIsOwner(chatRoomId, true);
+            return chatParticipant.getUserProfileInfo().getUser().getId();
+        } else if (report instanceof ReportToChatMessage r) {
+            return r.getReportedChatMessage().getUserProfileInfo().getUser().getId();
+        } else {
+            return null; // 다른 서브클래스의 경우 null 반환
+        }
+    }
+
     private AccountStatus getAccountStatusFromReport(Report report) {
-        // 신고 대상 소유자의 계정 상태 가져오기
+        // 신고 대상 작성자의 계정 상태 가져오기
         if (report instanceof ReportToUser r) {
             return r.getReportedUser().getAccountStatus();
         } else if (report instanceof ReportToUserReview r) {
