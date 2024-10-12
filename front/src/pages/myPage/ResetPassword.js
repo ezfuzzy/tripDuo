@@ -16,6 +16,7 @@ function ResetPassword(props) {
   const [isCodeSent, setIsCodeSent] = useState(false)
   const [isVerified, setIsVerified] = useState(false)
 
+  const [phoneNumberForUsername, setPhoneNumberForUsername] = useState("")
   const [isCodeSentForUsername, setIsCodeSentForUsername] = useState(false)
   const [foundUsername, setFoundUsername] = useState("")
 
@@ -50,12 +51,16 @@ function ResetPassword(props) {
   }
 
   const phoneNumberHandleChange = (e) => {
-    const { value } = e.target
+    const { name, value } = e.target
     // 숫자만 추출
     const numericValue = value.replace(/\D/g, "")
     // 전화번호 형식으로 변환
     const formattedValue = formatPhoneNumber(numericValue)
-    setPhoneNumber(formattedValue)
+    if (name === "phoneNumber") {
+      setPhoneNumber(formattedValue)
+    } else {
+      setPhoneNumberForUsername(formattedValue)
+    }
 
     setIsVerified(false)
     updateIsAllChecked({ isVerified: false })
@@ -74,11 +79,17 @@ function ResetPassword(props) {
     return `${value.slice(0, 3)}-${value.slice(3, 7)}-${value.slice(7, 11)}`
   }
 
-  const sendVerificationCode = () => {
+  const sendVerificationCode = (type) => {
+    let inputPhoneNumber = ""
+    if (type === "username") {
+      inputPhoneNumber = phoneNumberForUsername.replace(/\D/g, "")
+    } else {
+      inputPhoneNumber = phoneNumber.replace(/\D/g, "")
+    }
+    console.log(inputPhoneNumber)
     //인증요청 전송 api
-
     axios
-      .post("/api/v1/auth/phone/forgot-credentials/send-code", { username, phoneNumber: phoneNumber.replace(/-/g, "") })
+      .post("/api/v1/auth/phone/forgot-credentials/send-code", { username, phoneNumber: inputPhoneNumber })
       .then((response) => {
         if (username === "") {
           setIsCodeSentForUsername(true)
@@ -93,11 +104,18 @@ function ResetPassword(props) {
       })
   }
 
-  const verifyPhoneNumber = () => {
+  const verifyPhoneNumber = (type) => {
+    let inputPhoneNumber = ""
+    if (type === "username") {
+      inputPhoneNumber = phoneNumberForUsername.replace(/\D/g, "")
+    } else {
+      inputPhoneNumber = phoneNumber.replace(/\D/g, "")
+    }
+
     //인증 확인 api
     axios
       .post("/api/v1/auth/phone/forgot-credentials/verify-code", {
-        phoneNumber: phoneNumber.replace(/-/g, ""),
+        phoneNumber: inputPhoneNumber,
         code: verificationCode,
       })
       .then((response) => {
@@ -108,7 +126,7 @@ function ResetPassword(props) {
         }
 
         axios
-          .post("/api/v1/auth/phone/forgot-credentials/find-username", phoneNumber.replace(/-/g, ""))
+          .post("/api/v1/auth/phone/forgot-credentials/find-username", inputPhoneNumber)
           .then((response) => {
             setFoundUsername(response.data)
             setUsername(response.data)
@@ -225,23 +243,23 @@ function ResetPassword(props) {
                   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white w-1/4 p-6 rounded-lg shadow-lg">
                       <h3 className="text-lg font-semibold">아이디 찾기</h3>
-                      <div className="sm:col-span-6">
+                      <div className="sm:col-span-6 mt-3">
                         <label htmlFor="phoneNumber" className="block text-sm font-semibold leading-6 text-gray-900">
                           휴대전화번호
                         </label>
                         <div className="mt-2.5 flex">
                           <input
-                            id="phoneNumber"
-                            name="phoneNumber"
+                            id="phoneNumberForUsername"
+                            name="phoneNumberForUsername"
                             type="tel"
-                            value={phoneNumber}
+                            value={phoneNumberForUsername}
                             onChange={phoneNumberHandleChange}
                             className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             required
                           />
                           <button
                             type="button"
-                            onClick={() => sendVerificationCode(getUnformattedPhoneNumber())}
+                            onClick={() => sendVerificationCode("username")}
                             className="ml-4 min-w-36 inline-flex justify-center rounded-md bg-indigo-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                             인증 코드 전송
                           </button>
@@ -266,17 +284,19 @@ function ResetPassword(props) {
                             />
                             <button
                               type="button"
-                              onClick={verifyPhoneNumber}
+                              onClick={() => verifyPhoneNumber("username")}
                               className="ml-4 min-w-24 inline-flex justify-center rounded-md bg-indigo-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                               인증 확인
                             </button>
                           </div>
                         </div>
                       )}
-                      <div className="text-2xl font-bold text-center mt-4 p-4 border border-gray-300 rounded-lg bg-gray-100">
-                        아이디 : <span className="text-tripDuoGreen">{foundUsername}</span>
-                      </div>
-                      <div>
+                      {foundUsername && (
+                        <div className="text-2xl font-bold text-center mt-4 p-4 border border-gray-300 rounded-lg bg-gray-100">
+                          아이디 : <span className="text-tripDuoGreen">{foundUsername}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-end">
                         <button
                           type="button"
                           onClick={() => setShowModal(false)}
@@ -310,7 +330,7 @@ function ResetPassword(props) {
                 />
                 <button
                   type="button"
-                  onClick={() => sendVerificationCode(getUnformattedPhoneNumber())}
+                  onClick={() => sendVerificationCode("password")}
                   className="ml-4 min-w-36 inline-flex justify-center rounded-md bg-indigo-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                   disabled={isVerified} // isVerified가 true일 때 버튼 비활성화
                 >
@@ -339,7 +359,7 @@ function ResetPassword(props) {
                   />
                   <button
                     type="button"
-                    onClick={verifyPhoneNumber}
+                    onClick={() => verifyPhoneNumber("password")}
                     className="ml-4 min-w-24 inline-flex justify-center rounded-md bg-indigo-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     disabled={isVerified} // isVerified가 true일 때 버튼 비활성화
                   >
