@@ -174,9 +174,9 @@ function MateBoard() {
         //페이지 제목을 변경한다
         let tempStr = "";
         if (domesticInternational === "Domestic") {
-          tempStr = "국내 여행 코스";
+          tempStr = "국내 여행 메이트";
         } else if (domesticInternational === "International") {
-          tempStr = "해외 여행 코스";
+          tempStr = "해외 여행 메이트";
         }
         setDesiredCountry(`${tempStr}`);
 
