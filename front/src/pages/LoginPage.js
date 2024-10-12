@@ -155,7 +155,7 @@ function LoginPage() {
           </Link>
         </p>
         <p className="mt-6 text-center">
-          비밀번호가 기억나지 않으신다면
+          아이디/비밀번호가 기억나지 않으신다면
           <Link as={NavLink} to="/auth/resetPassword" className="text-blue-500 hover:underline font-semibold">
             클릭
           </Link>
