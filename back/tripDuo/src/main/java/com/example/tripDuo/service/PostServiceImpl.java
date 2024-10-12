@@ -466,7 +466,7 @@ public class PostServiceImpl implements PostService {
 	    
 		Post existingPost = postRepo.findById(postRatingDto.getPostId())
 	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
-		
+		postRatingDto.setCreatedAt(LocalDateTime.now());
 		// 평점 db 저장
 		postRatingRepo.save(PostRating.toEntity(postRatingDto, existingPost));
 		
@@ -486,9 +486,14 @@ public class PostServiceImpl implements PostService {
 		Post existingPost = postRatingRepo.findById(ratingId).get().getPost();
 		
 		postRatingRepo.deleteById(ratingId);
+		Float rating = postRatingRepo.findAverageRatingByPostId(existingPost.getId());
 		
 		// post 평점 update
-		existingPost.updateRating(postRatingRepo.findAverageRatingByPostId(existingPost.getId()));
+		if(rating != null) {
+			existingPost.updateRating(rating);
+		} else {
+			existingPost.updateRating(0F);
+		}
 	}
 	
 }
