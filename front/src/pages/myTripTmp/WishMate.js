@@ -145,13 +145,27 @@ function WishMate(props) {
                       key={post.post.id}
                       className={`p-4 border rounded-lg shadow-md border border-green-600 hover:scale-102 transition duration-300 hover:shadow-xl`}
                       style={{
-                        backgroundImage: `url(${process.env.PUBLIC_URL + imagePath})`,
+                        backgroundImage: `linear-gradient(to right,
+                        rgba(255, 255, 255, 1) 0%, 
+                        rgba(255, 255, 255, 1) 20%, 
+                        rgba(255, 255, 255, 0.5) 40%, 
+                        rgba(255, 255, 255, 0) 60%, 
+                        rgba(255, 255, 255, 0) 80%),
+                        url(${imagePath})`,
                         backgroundSize: "cover", // 이미지 채우기
                         backgroundPosition: "center",
+                        // /* 혼합 모드 설정 */
+                        mixBlendMode: "multiply",
                       }}>
                       <a href={`/posts/mate/${post.post.id}/detail`} className="block">
                         <h4 className="text-xl font-semibold">{post.post.title}</h4>
-                        <p className="text-gray-600">{post.post.description}</p>
+
+                        <span className="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded mr-2">
+                          #{post.post.city}
+                        </span>
+                        <span className="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded">
+                          #{post.post.country}
+                        </span>
                         <p className="text-sm text-gray-500">
                           작성일: {new Date(post.post.createdAt).toLocaleDateString()}
                         </p>
