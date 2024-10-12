@@ -231,17 +231,22 @@ public class AuthServiceImpl implements AuthService {
 	
 	// 기존 유저 find username, reset password
 	@Override
-    public boolean sendVerificationCodeToPhoneForExistingUser(String phoneNumber) throws Exception {
+    public boolean sendVerificationCodeToPhoneForExistingUser(String username, String phoneNumber) throws Exception {
 		
 		// 0. 기존 휴대폰번호와 일치하는지 확인
         String encryptedPhoneNumber = encryptionUtil.encrypt(phoneNumber);
 		
         User foundUser = userRepo.findByEncryptedPhoneNumber(encryptedPhoneNumber);
-        
+
         if (foundUser == null) {
         	return false;
         }
-		// 1. 인증번호 생성
+
+        if(!username.isEmpty() && !foundUser.getUsername().equals(username)) {
+       		return false;
+        }
+
+        // 1. 인증번호 생성
 		String verificationCode = phoneNumberVerificationService.generateVerificationCode();
 
 		// 2. 인증번호와 휴대폰 번호를 저장

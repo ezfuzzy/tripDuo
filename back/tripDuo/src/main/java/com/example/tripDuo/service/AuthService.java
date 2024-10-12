@@ -12,7 +12,7 @@ public interface AuthService {
     public boolean sendVerificationCode(String phoneNumber);
     public boolean verifyPhoneNumber(String phoneNumber, String verificationCode);
     
-    public boolean sendVerificationCodeToPhoneForExistingUser(String phoneNumber) throws Exception;
+    public boolean sendVerificationCodeToPhoneForExistingUser(String username,  String phoneNumber) throws Exception;
     public boolean verifyEncryptedPhoneNumber(String phoneNumber, String verificationCode);
     
     public String findUsernameByPhoneNumber(String phoneNumber) throws Exception;
