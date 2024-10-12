@@ -15,37 +15,14 @@ import {
   faPersonCircleXmark,
   faPlane,
   faUser,
-} from "@fortawesome/free-solid-svg-icons";
-import "../../css/MyProfile.css";
-import FollowModal from "../../components/FollowModal";
-import LoadingAnimation from "../../components/LoadingAnimation";
-import useWebSocket from "../../components/useWebSocket";
+} from "@fortawesome/free-solid-svg-icons"
+import "../../css/MyProfile.css"
+import FollowModal from "../../components/FollowModal"
+import LoadingAnimation from "../../components/LoadingAnimation"
+import useWebSocket from "../../components/useWebSocket"
+import { reviewNegativeTagList, reviewPositiveTagList } from "../../constants/mapping"
 
 // ###
-
-const reviewPositiveTagList = [
-  { key: 1, keyword: "COMMUNICATION", text: "메시지에 항상 빠르게 답변해주어 소통이 원활했어요." },
-  { key: 2, keyword: "TRUST", text: "계획된 일정을 철저히 지켜 믿음직했어요." },
-  { key: 3, keyword: "ONTIME", text: "약속 시간을 잘 지켜 여유로운 여행을 즐길 수 있었어요." },
-  { key: 4, keyword: "MANNER", text: "친절하고 배려심 넘치는 태도로 편안하게 여행했어요." },
-  { key: 5, keyword: "FLEXIBLE", text: "변경된 계획에도 유연하게 대처하여 즐거운 여행이 되었어요." },
-  { key: 6, keyword: "ACTIVE", text: "적극적인 태도로 다양한 경험을 할 수 있도록 이끌어주었어요." },
-  { key: 7, keyword: "FRIENDLY", text: "함께 시간을 보내는 내내 즐거웠고, 좋은 친구를 얻은 기분이었어요." },
-  { key: 8, keyword: "PAY", text: "비용 분담에 있어 투명하고 공정하게 처리하여 신뢰가 갔어요." },
-  { key: 9, keyword: "CLEAN", text: "깔끔한 여행 스타일로 쾌적한 환경을 유지해주었어요." },
-];
-
-const reviewNegativeTagList = [
-  { key: 1, keyword: "COMMUNICATION", text: "메시지 답변이 느려서 소통에 어려움을 느꼈어요." },
-  { key: 2, keyword: "TRUST", text: "계획된 일정을 자주 변경하여 불안했어요." },
-  { key: 3, keyword: "ONTIME", text: "약속 시간에 자주 늦어 불편했어요." },
-  { key: 4, keyword: "MANNER", text: "무례한 언행으로 불쾌한 경험을 했어요." },
-  { key: 5, keyword: "FLEXIBLE", text: "변경된 상황에 대한 대처가 미흡하여 아쉬웠어요." },
-  { key: 6, keyword: "ACTIVE", text: "소극적인 태도로 여행에 대한 적극적인 참여가 부족했어요." },
-  { key: 7, keyword: "FRIENDLY", text: "함께 시간을 보내는 것이 불편했어요." },
-  { key: 8, keyword: "PAY", text: "비용 분담에 있어 불투명하고 불공정하여 신뢰가 떨어졌어요." },
-  { key: 9, keyword: "CLEAN", text: "개인 위생 관리가 부족하여 함께 여행하는 것이 불편했어요." },
-];
 
 // 리뷰 최대 글자수
 const maxLength = 3000;
@@ -520,17 +497,11 @@ function MyProfile(props) {
             {profile.profilePicture ? (
               <img src={profile.profilePicture} className="w-40 h-40 rounded-full shadow-lg" alt="" />
             ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
+              <img
                 className="bi bi-person-circle w-40 h-40"
-                viewBox="0 0 16 16">
-                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-                <path
-                  fillRule="evenodd"
-                  d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"
-                />
-              </svg>
+                src={`${process.env.PUBLIC_URL}/img/defaultImages/defaultProfilePicture.svg`}
+                alt="default profile img"
+              />
             )}
 
             <div className="mt-5 flex">
