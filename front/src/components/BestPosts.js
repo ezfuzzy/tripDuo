@@ -81,10 +81,10 @@ function BestPosts(props) {
                 </div>
                 <h4
                   className="font-bold text- cursor-pointer overflow-hidden whitespace-nowrap text-ellipsis"
-                  onClick={() => navigate(`/posts/${post.type.toLowerCase()}/${post.id}`)}>
+                  onClick={() => navigate(`/posts/${post.type.toLowerCase()}/${post.id}/detail`)}>
                   {post.title}
                 </h4>
-                <div className="flex justify-between items-center mt-2">
+                <div className="flex justify-between items-center mt-7">
                   {post.type === "COURSE" ? (
                     <span className="text-sm text-gray-600">⭐ {post.rating}</span>
                   ) : post.type === "MATE" ? (
@@ -92,11 +92,6 @@ function BestPosts(props) {
                       <FontAwesomeIcon icon={faHeart} className="h-4 w-4 mr-1" /> {post.likeCount}
                     </span>
                   ) : null}
-                  <button
-                    onClick={() => navigate(`/posts/${post.type.toLowerCase()}/${post.id}/detail`)}
-                    className="bg-tripDuoMint text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition duration-300">
-                    Move &gt;
-                  </button>
                 </div>
               </div>
             </div>
