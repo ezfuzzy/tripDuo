@@ -82,27 +82,27 @@ public class TripDuoApplication {
 		
 		String[] socialLinks = {"tictok+", "instagram+"};
 		
-		User u1 = User.builder().username("ezfz").password(encoder.encode("hysz")).encryptedPhoneNumber("010-3456-7890").role(UserRole.ADMIN).build(); 
+		User u1 = User.builder().username("ezfz").password(encoder.encode("hysz")).encryptedPhoneNumber("010-3456-7890").accountStatus(AccountStatus.INACTIVE).role(UserRole.ADMIN).build(); 
 		User savedUser1 = userRepo.save(u1);
 		UserProfileInfo upi1 = UserProfileInfo.builder().user(savedUser1).nickname("ezfz").age((long) 28).profilePicture("9a926641-7e7f-4d23-8a78-1fe301813ccd.jpg").socialLinks(socialLinks).gender(Gender.MALE).build();
 		upi1 = userProfileInfoRepo.save(upi1);
 		
-		User u2 = User.builder().username("aaaa").password(encoder.encode("aaaa")).encryptedPhoneNumber("010-3456-7890").role(UserRole.USER).build();
+		User u2 = User.builder().username("aaaa").password(encoder.encode("aaaa")).encryptedPhoneNumber("010-3456-7890").accountStatus(AccountStatus.INACTIVE).role(UserRole.USER).build();
 		User savedUser2 = userRepo.save(u2);
 		UserProfileInfo upi2 = UserProfileInfo.builder().user(savedUser2).nickname("a5").profilePicture("e68b541e-8fb9-4d13-8358-6d2111303fa6.png").gender(Gender.MALE).build();
 		upi2 = userProfileInfoRepo.save(upi2);
 
-		User u3 = User.builder().username("bbbb").password(encoder.encode("bbbb")).encryptedPhoneNumber("010-3456-7890").role(UserRole.USER).build();
+		User u3 = User.builder().username("bbbb").password(encoder.encode("bbbb")).encryptedPhoneNumber("010-3456-7890").accountStatus(AccountStatus.INACTIVE).role(UserRole.USER).build();
 		User savedUser3 = userRepo.save(u3);
 		UserProfileInfo upi3 = UserProfileInfo.builder().user(savedUser3).nickname("b5").gender(Gender.FEMALE).build();
 		upi3 = userProfileInfoRepo.save(upi3);
 
-		User u4 = User.builder().username("cccc").password(encoder.encode("cccc")).encryptedPhoneNumber("010-3456-7890").role(UserRole.USER).build();
+		User u4 = User.builder().username("cccc").password(encoder.encode("cccc")).encryptedPhoneNumber("010-3456-7890").accountStatus(AccountStatus.INACTIVE).role(UserRole.USER).build();
 		User savedUser4 = userRepo.save(u4);
 		UserProfileInfo upi4 = UserProfileInfo.builder().user(savedUser4).nickname("c5").gender(Gender.FEMALE).build();
 		upi4 = userProfileInfoRepo.save(upi4);
 
-		User u5 = User.builder().username("dddd").password(encoder.encode("dddd")).encryptedPhoneNumber("010-3456-7890").role(UserRole.USER).build();
+		User u5 = User.builder().username("dddd").password(encoder.encode("dddd")).encryptedPhoneNumber("010-3456-7890").accountStatus(AccountStatus.INACTIVE).role(UserRole.USER).build();
 		User savedUser5 = userRepo.save(u5);
 		UserProfileInfo upi5 = UserProfileInfo.builder().user(savedUser5).nickname("d5").gender(Gender.MALE).build();
 		upi5 = userProfileInfoRepo.save(upi5);

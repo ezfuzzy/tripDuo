@@ -48,8 +48,10 @@ import CommunityBoardDetail from "../pages/boards/CommunityBoardDetail"
 import CommunityBoardEditForm from "../pages/boards/CommunityBoardEditForm"
 import ResetPassword from "../pages/myPage/ResetPassword"
 import ApiDocs from "../pages/admin/ApiDocs"
-import ReportBoard from "../pages/boards/ReportBoard"
-import TripDuoCarousel from "../components/TripDuoCarousel"
+import ReportBoard from "../pages/admin/ReportBoard"
+import AdminDashboard from "../pages/admin/AdminHome"
+import UserBoard from '../pages/admin/UserBoard';
+import AdminLayout from "../components/AdminLayout"
 
 // /users/:id
 // /users/:id/setting
@@ -147,7 +149,15 @@ const protectedRoutes = [
   { path: "/chatroom/:id", element: <ChatRoom /> },
 
   // ### admin ###
-  { path: "/admin/report", element: <ReportBoard /> },
+  { path: "/admin-dashboard", element: <AdminDashboard /> },
+  { path: "/admin-dashboard/users", element: <UserBoard /> },
+  { path: "/admin-dashboard/reports", element: <ReportBoard /> },
+]
+
+const adminRoutes = [
+  { path: "", element: <AdminDashboard /> },
+  { path: "users", element: <UserBoard /> },
+  { path: "reports", element: <ReportBoard /> },
 ]
 
 const router = createBrowserRouter([
@@ -164,6 +174,14 @@ const router = createBrowserRouter([
       {
         element: <ProtectedRoute />, // 로그인을 요구하는 모든 경로를 ProtectedRoute로 감싸기
         children: protectedRoutes.map((route) => ({
+          path: route.path,
+          element: route.element,
+        })),
+      },
+      // Admin routes with layout
+      {
+        element: <AdminLayout />, // AdminLayout을 사용하여 사이드 바 포함
+        children: adminRoutes.map((route) => ({
           path: route.path,
           element: route.element,
         })),
