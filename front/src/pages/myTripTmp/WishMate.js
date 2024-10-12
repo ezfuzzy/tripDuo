@@ -20,10 +20,12 @@ function WishMate(props) {
 
   return (
     <>
-      <div>
+      <div className="container mx-auto p-4 max-w-[1024px]">
         {course ? (
           <>
-            <h3>관심 메이트 목록</h3>
+          <div className="py-5">
+            <p className="font-bold text-xl text-center">관심 메이트 목록</p>
+          </div>
             <ul className="space-y-4">
               {postList
                 .filter((post) => post.post.type === "MATE")
