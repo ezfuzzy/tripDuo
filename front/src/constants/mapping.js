@@ -11,7 +11,7 @@ export const menuItems = [
   { name: "해외 여행코스", imageSrc: "course-international.png", linkSrc: "/posts/course?di=International" },
   { name: "국내 메이트 찾기", imageSrc: "mate-domestic.png", linkSrc: "/posts/mate?di=Domestic" },
   { name: "해외 메이트 찾기", imageSrc: "mate-international.png", linkSrc: "/posts/mate?di=International" },
-  { name: "여행 계획 만들기", imageSrc: "make-schedule.png", linkSrc: "" },
+  { name: "여행 계획 만들기", imageSrc: "make-schedule.png", linkSrc: "/myPlan" },
   { name: "장소 저장하기", imageSrc: "save-place.png", linkSrc: "/myPlace" },
   { name: "여행 체크리스트", imageSrc: "checklist.png", linkSrc: "/checklist" },
   { name: "환율 정보", imageSrc: "exchange.png", linkSrc: "/exchangeInfo" },
