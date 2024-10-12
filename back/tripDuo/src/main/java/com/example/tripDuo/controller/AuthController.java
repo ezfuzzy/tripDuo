@@ -22,7 +22,8 @@ import jakarta.servlet.http.HttpServletRequest;
 public class AuthController {
 
 	private final AuthService authService;
-
+	ObjectMapper objectMapper = new ObjectMapper();
+	
 	public AuthController(AuthService authService) {
 		this.authService = authService;
 	}
@@ -75,15 +76,24 @@ public class AuthController {
 
 	// 기존 사용자가 휴대폰 인증을 하는 api 
 	@PostMapping("/phone/forgot-credentials/send-code")
-	public ResponseEntity<String> sendVerificationCodeToPhoneForExistingUser(@RequestBody String inputPhoneNumber) throws Exception {
+	public ResponseEntity<String> sendVerificationCodeToPhoneForExistingUser(@RequestBody String usernameWithPhoneNumber) throws Exception {
+
+		try {
+            JsonNode jsonNode = objectMapper.readTree(usernameWithPhoneNumber);
+
+            String username = jsonNode.get("username").asText();
+            String phoneNumber = jsonNode.get("phoneNumber").asText();
+
+            if(authService.sendVerificationCodeToPhoneForExistingUser(username, phoneNumber)) {
+    			return ResponseEntity.ok("Verification code is sent");
+    		} else {
+    			return ResponseEntity.badRequest().body("Invalid phone number");
+    		}
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Invalid JSON format.");
+        }
 		
-		String phoneNumber = inputPhoneNumber.substring(0, inputPhoneNumber.length()-1);
-		
-		if(authService.sendVerificationCodeToPhoneForExistingUser(phoneNumber)) {
-			return ResponseEntity.ok("Verification code is sent");
-		} else {
-			return ResponseEntity.badRequest().body("Invalid phone number");
-		}
 	}
 	
 	@PostMapping("/phone/forgot-credentials/verify-code")
@@ -112,7 +122,7 @@ public class AuthController {
 	@PostMapping("/phone/forgot-credentials/find-username")
 	public ResponseEntity<String> findUsername(@RequestBody String inputPhoneNumber) {
 		String phoneNumber = inputPhoneNumber.substring(0, inputPhoneNumber.length()-1);
-		
+		System.out.println(phoneNumber);
 		try {
 			return ResponseEntity.ok(authService.findUsernameByPhoneNumber(phoneNumber));
 		} catch (Exception error) {
