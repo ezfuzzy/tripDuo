@@ -52,6 +52,7 @@ import ReportBoard from "../pages/admin/ReportBoard"
 import AdminDashboard from "../pages/admin/AdminHome"
 import UserBoard from '../pages/admin/UserBoard';
 import AdminLayout from "../components/AdminLayout"
+import TripDuoCarousel from "../components/TripDuoCarousel"
 
 // /users/:id
 // /users/:id/setting
