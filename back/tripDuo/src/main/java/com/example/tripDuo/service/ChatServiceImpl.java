@@ -73,7 +73,7 @@ public class ChatServiceImpl implements ChatService {
 		List<UserFollow> userFollowDtos = new ArrayList<>();
 
 		for (UserFollow follow : followees) {
-			Long followeeId = follow.getFolloweeUserProfileInfo().getUser().getId();
+//			Long followeeId = follow.getFolloweeUserProfileInfo().getUser().getId();
 			userFollowDtos.add(follow);
 		}
 		return userFollowDtos;
