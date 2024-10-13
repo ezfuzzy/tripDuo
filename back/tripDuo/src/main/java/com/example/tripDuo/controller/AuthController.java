@@ -134,55 +134,72 @@ public class AuthController {
 	
 	// 토큰 발급
 	@GetMapping("/google/accessTokenCallback")
-	public ResponseEntity<String> googleAccessToken(String code, HttpServletRequest request) throws Exception {
-		String googleCode = code;
-		String googleToken = authService.GoogleAccessToken(googleCode);
-		return ResponseEntity.status(HttpStatus.OK).body(googleToken);
+	public ResponseEntity<String> googleAccessToken(String code) {
+		String googleToken = authService.GoogleAccessToken(code);
+
+		try {
+			return ResponseEntity.status(HttpStatus.OK).body(googleToken);
+		} catch (Exception error) {
+			return ResponseEntity.badRequest().body("invalid google access token");
+		}
 	}
 
 	@GetMapping("/googleLogin")
 	public ResponseEntity<String> googleInfo(@RequestHeader("Authorization") String token) {
 		String accessToken = token.replace("Bearer ", "");
+
 		OAuthToken oAuthToken = new OAuthToken();
 		oAuthToken.setAccess_token(accessToken);
-
 		String googleinfo = authService.GoogleSignUp(oAuthToken);
 
-		return ResponseEntity.status(HttpStatus.OK).body(googleinfo);
+		try {
+			return ResponseEntity.status(HttpStatus.OK).body(googleinfo);
+		} catch (Exception error) {
+			return ResponseEntity.badRequest().body("invalid google user");
+		}
 	}
 
 	// 토큰 발급
 	@GetMapping("/kakao/accessTokenCallback")
-	public ResponseEntity<String> kakaoAccessToken(String code, HttpServletRequest request, OAuthToken oAuthToken)
-			throws Exception {
-		String kakaoToken = authService.KakaogetAccessToken(request.getParameter("code"));
-		return ResponseEntity.status(HttpStatus.OK).body(kakaoToken);
+	public ResponseEntity<String> kakaoAccessToken(String code) {
+		String kakaoToken = authService.KakaogetAccessToken(code);
 
+		try {
+			return ResponseEntity.status(HttpStatus.OK).body(kakaoToken);
+		} catch (Exception error) {
+			return ResponseEntity.badRequest().body("invalid kakao access token");
+		}
 	}
 
 	// 유저 정보 가져오기
 	@GetMapping("/kakaoLogin")
 	public ResponseEntity<String> kakaoInfo(@RequestHeader("Authorization") String token) {
 		String accessToken = token.replace("Bearer ", "");
-		System.out.println("Extracted Access Token: " + accessToken); // 로그로 확인
 
 		OAuthToken oAuthToken = new OAuthToken();
 		oAuthToken.setAccess_token(accessToken);
-
 		String kakaoInfo = authService.KakaoSignUp(oAuthToken);
 
-		return ResponseEntity.status(HttpStatus.OK).body(kakaoInfo);
+		try {
+			return ResponseEntity.status(HttpStatus.OK).body(kakaoInfo);
+		} catch (Exception error) {
+			return ResponseEntity.badRequest().body("invalid kakao user");
+		}
 	}
 
 	@PostMapping("/kakaoLogout")
-	public ResponseEntity<String> kakaoLogout(@RequestHeader("Authorization") String authHeader, Long kakaoId) {
-		String accessToken = authHeader.replace("Bearer ", "");
+	public ResponseEntity<String> kakaoLogout(@RequestHeader("Authorization") String token, Long kakaoId) {
+		String accessToken = token.replace("Bearer ", "");
+
 		OAuthToken oAuthToken = new OAuthToken();
 		oAuthToken.setAccess_token(accessToken);
-
 		String kakaoLogout = authService.kakaoLogout(oAuthToken, kakaoId);
 
-		return ResponseEntity.status(HttpStatus.OK).body(kakaoLogout);
+		try {
+			return ResponseEntity.status(HttpStatus.OK).body(kakaoLogout);
+		} catch (Exception error) {
+			return ResponseEntity.badRequest().body("invalid google user");
+		}
 	}
 	
 
