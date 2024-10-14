@@ -50,7 +50,7 @@ import ResetPassword from "../pages/myPage/ResetPassword"
 import ApiDocs from "../pages/admin/ApiDocs"
 import ReportBoard from "../pages/admin/ReportBoard"
 import AdminDashboard from "../pages/admin/AdminHome"
-import UserBoard from '../pages/admin/UserBoard';
+import UserBoard from "../pages/admin/UserBoard"
 import AdminLayout from "../components/AdminLayout"
 import TripDuoCarousel from "../components/TripDuoCarousel"
 
@@ -148,17 +148,13 @@ const protectedRoutes = [
   // ### chat ###
   { path: "/chatroom", element: <ChatRoom /> },
   { path: "/chatroom/:id", element: <ChatRoom /> },
+]
 
+const adminRoutes = [
   // ### admin ###
   { path: "/admin-dashboard", element: <AdminDashboard /> },
   { path: "/admin-dashboard/users", element: <UserBoard /> },
   { path: "/admin-dashboard/reports", element: <ReportBoard /> },
-]
-
-const adminRoutes = [
-  { path: "", element: <AdminDashboard /> },
-  { path: "users", element: <UserBoard /> },
-  { path: "reports", element: <ReportBoard /> },
 ]
 
 const router = createBrowserRouter([
