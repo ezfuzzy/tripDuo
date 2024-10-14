@@ -1,4 +1,4 @@
-import { faEye, faEyeSlash, faGlasses, faTruckFieldUn } from "@fortawesome/free-solid-svg-icons"
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import axios from "axios"
 import React, { useState } from "react"
@@ -34,9 +34,6 @@ function ResetPassword(props) {
   const [isAllChecked, setIsAllChecked] = useState(false)
 
   const [showModal, setShowModal] = useState(false)
-
-  //실제 저장용 값('-' 제거)
-  const getUnformattedPhoneNumber = () => phoneNumber.replace(/\D/g, "")
 
   const updateIsAllChecked = (updates = {}) => {
     const newState = {
