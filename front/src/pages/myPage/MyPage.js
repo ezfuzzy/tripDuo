@@ -1,21 +1,22 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { shallowEqual, useSelector } from "react-redux";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import BlockModal from "../../components/BlockModal";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
-import { ratingConfig } from "../../constants/mapping";
+import axios from "axios"
+import { useEffect, useState } from "react"
+import { shallowEqual, useSelector } from "react-redux"
+import { Link, useNavigate, useParams } from "react-router-dom"
+import BlockModal from "../../components/BlockModal"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faUser } from "@fortawesome/free-solid-svg-icons"
+import { ratingConfig } from "../../constants/mapping"
 
 function MyPage() {
-  const userId = useSelector((state) => state.userData.id, shallowEqual); // 접속된 사용자의 id
-  const [profile, setProfile] = useState({});
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [imageData, setImageData] = useState(null);
+  const userId = useSelector((state) => state.userData.id, shallowEqual) // 접속된 사용자의 id
+  const userRole = useSelector((state) => state.loginStatus.role, shallowEqual)
+  const [profile, setProfile] = useState({})
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const [imageData, setImageData] = useState(null)
 
   // 차단 목록 모달 상태 관리
-  const [isBlockModalOpen, setBlockModalOpen] = useState(false);
+  const [isBlockModalOpen, setBlockModalOpen] = useState(false)
 
   //--------------------------------------------------------------------------------------------------------------rating 관리 부
   // rating 비교 조건 데이터
@@ -24,10 +25,10 @@ function MyPage() {
   const getRatingDetails = (ratings) => {
     return (
       ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { icon: faUser, color: "black" }
-    ); // 기본값
-  };
+    ) // 기본값
+  }
 
-  const { icon: ratingIcon, color: ratingColor } = getRatingDetails(profile.ratings || 0);
+  const { icon: ratingIcon, color: ratingColor } = getRatingDetails(profile.ratings || 0)
   //---------------------------------------------------------------------------------------------------------------rating 관리부
 
   // 접속된 사용자가 없거나 본인이 아니라면 home 으로 리다일렉트
@@ -36,33 +37,33 @@ function MyPage() {
       .get(`/api/v1/users/${id}`)
       .then((res) => {
         if (!userId || userId !== res.data.userProfileInfo.userId) {
-          alert("잘못된 접근입니다.");
-          navigate(`/`);
+          alert("잘못된 접근입니다.")
+          navigate(`/`)
         }
 
-        setProfile(res.data.userProfileInfo);
+        setProfile(res.data.userProfileInfo)
 
         if (res.data.userProfileInfo.profilePicture) {
-          setImageData(res.data.userProfileInfo.profilePicture);
+          setImageData(res.data.userProfileInfo.profilePicture)
         }
       })
-      .catch((error) => console.log(error));
-  }, [id, userId, navigate, ratingIcon]);
+      .catch((error) => console.log(error))
+  }, [id, userId, navigate, ratingIcon])
 
   //------------------------------------------------------------------------ 이벤트 관리부
   // 프로필 보기 클릭
   const handleClick = () => {
-    navigate(`/users/${id}/profile`);
-  };
+    navigate(`/users/${id}/profile`)
+  }
 
   // 차단 목록 모달 open
   const handleOpenBlockModal = () => {
-    setBlockModalOpen(true);
-  };
+    setBlockModalOpen(true)
+  }
   // 차단 목록 모달 close
   const handleCloseBlockModal = () => {
-    setBlockModalOpen(false);
-  };
+    setBlockModalOpen(false)
+  }
 
   const handleDeleteUser = () => {
     if (
@@ -73,11 +74,11 @@ function MyPage() {
       axios
         .delete(`/api/v1/users/${id}`)
         .then((res) => {
-          console.log(res.data);
+          console.log(res.data)
         })
-        .catch((error) => console.log(error));
+        .catch((error) => console.log(error))
     }
-  };
+  }
 
   return (
     <div className="container mx-auto p-4 max-w-[900px] shadow-md rounded-lg">
@@ -86,7 +87,7 @@ function MyPage() {
           type="button"
           className="mb-20 px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
           onClick={() => {
-            navigate(`/`);
+            navigate(`/`)
           }}>
           HOME
         </button>
@@ -170,6 +171,18 @@ function MyPage() {
             </h3>
             <p>좋아요를 누른 여행 계획을 볼 수 있습니다.</p>
           </li>
+          {userRole === "ADMIN" ? (
+            <li className="bg-white shadow-md rounded-lg p-4">
+              <h3>
+                <Link className="text-gray-500 hover:text-black text-decoration-none" to={`/admin-dashboard`}>
+                  <strong>ADMIN DASHBOARD</strong> 
+                </Link>
+              </h3>
+              <p>admin dashboard</p>
+            </li>
+          ) : (
+            ""
+          )}
         </ul>
       </div>
 
@@ -189,7 +202,7 @@ function MyPage() {
         <p className="py-2">내 활동 기록</p>
       </div>
     </div>
-  );
+  )
 }
 
-export default MyPage;
+export default MyPage
