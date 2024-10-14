@@ -17,6 +17,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
@@ -32,7 +33,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 @Entity
-@Table(name="posts") // 인덱스 추가 
+@Table(name="posts", indexes = {
+		@Index(name = "idx_posts_type", columnList = "type"),
+		@Index(name = "idx_posts_user_id", columnList = "user_id"),
+		@Index(name = "idx_posts_city", columnList = "city")
+})
 public class Post {
     
     @Id

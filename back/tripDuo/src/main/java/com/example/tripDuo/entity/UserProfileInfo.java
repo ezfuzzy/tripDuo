@@ -13,6 +13,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -26,7 +27,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 @Entity
-@Table(name="user_profile_infos") // 인덱스 추가 
+@Table(name="user_profile_infos", indexes = {
+		@Index(name = "idx_user_profile_infos_user_id", columnList = "user_id")
+}) 
 public class UserProfileInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

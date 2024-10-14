@@ -15,8 +15,6 @@ import com.example.tripDuo.service.AuthService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
