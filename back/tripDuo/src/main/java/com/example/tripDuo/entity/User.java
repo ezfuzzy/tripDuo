@@ -14,6 +14,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -27,7 +28,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 @Entity
-@Table(name="users") // 인덱스 추가 
+@Table(name="users", indexes = {
+		@Index(name = "idx_users_username", columnList = "username"),
+		@Index(name = "idx_users_encryted_phone_number", columnList = "encryptedPhoneNumber")
+}) 
 public class User {
     
     @Id
