@@ -5,7 +5,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,8 +23,6 @@ import com.example.tripDuo.dto.UserProfileInfoDto;
 import com.example.tripDuo.dto.UserReviewDto;
 import com.example.tripDuo.enums.FollowType;
 import com.example.tripDuo.service.UserService;
-
-import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -58,20 +55,6 @@ public class UserController {
 		} else {
 			return ResponseEntity.notFound().build(); // 유저가 없으면 404 반환
 		}
-	}
-
-	@GetMapping("/{userId:[0-9]+}/author")
-	public ResponseEntity<?> getUserProfileInfoByIdForPostDetailPage(@PathVariable Long userId) {
-		
-		try {
-			return ResponseEntity.ok(userService.getUserProfileInfoByIdForPostDetailPage(userId));
-		} catch (EntityNotFoundException e) {
-	        // 게시글이 존재하지 않는 경우에 대한 처리
-	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-	    } catch (Exception e) {
-	        // 기타 예외에 대한 처리
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-	    } 
 	}
 	
 	@GetMapping("/username/{username:[a-z0-9]+}")

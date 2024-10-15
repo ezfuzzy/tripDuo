@@ -23,6 +23,7 @@ import com.example.tripDuo.entity.User;
 import com.example.tripDuo.entity.UserFollow;
 import com.example.tripDuo.entity.UserProfileInfo;
 import com.example.tripDuo.entity.UserReview;
+import com.example.tripDuo.enums.AccountStatus;
 import com.example.tripDuo.enums.FollowType;
 import com.example.tripDuo.repository.UserFollowRepository;
 import com.example.tripDuo.repository.UserProfileInfoRepository;
@@ -116,7 +117,15 @@ public class UserServiceImpl implements UserService {
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 		
 		Long currentUserId = userRepo.findByUsername(username).getId();
-		
+		System.out.println("111");
+		User foundUser = userRepo.findById(userId)
+				.orElseThrow(() -> new EntityNotFoundException("User not found"));
+		System.out.println(foundUser.toString());
+		System.out.println("222");
+		if(foundUser.getAccountStatus() != AccountStatus.ACTIVE || foundUser.getDeletedAt() != null) {
+			return Map.of("message", "없는 사용자 입니다.");
+		}
+		System.out.println("333");
 		// 상대방이 나를 follow / block했는지
 		UserFollow myUserFollow = userFollowRepo
 				.findByFolloweeUserProfileInfo_User_IdAndFollowerUserProfileInfo_User_Id(
@@ -147,13 +156,12 @@ public class UserServiceImpl implements UserService {
 						"theirFollowType", theirFollowType
 					);
 		} else { // 차단 당하지 않았으면 정보를 불러온다
-			User user = userRepo.findById(userId)
-					.orElseThrow(() -> new EntityNotFoundException("User not found"));
+			
 			
 			Long follweeCount = userFollowRepo.countByFollowerUserProfileInfo_User_IdAndFollowType(userId, FollowType.FOLLOW);
 			Long follwerCount = userFollowRepo.countByFolloweeUserProfileInfo_User_IdAndFollowType(userId, FollowType.FOLLOW);
 			
-	        UserProfileInfo userProfileInfo = userProfileInfoRepo.findByUserId(user.getId());
+	        UserProfileInfo userProfileInfo = userProfileInfoRepo.findByUserId(foundUser.getId());
 	        
 	        UserProfileInfoDto upiDto = UserProfileInfoDto.toDto(userProfileInfo, PROFILE_PICTURE_CLOUDFRONT_URL);
 	        upiDto.setFolloweeCount(follweeCount);
@@ -178,17 +186,6 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
-	@Override
-	public UserProfileInfoDto getUserProfileInfoByIdForPostDetailPage(Long userId) {
-		
-		UserProfileInfo userProfileInfo = userProfileInfoRepo.findById(userId)
-					.orElseThrow(() -> new EntityNotFoundException("User not found"));
-		
-		UserProfileInfoDto upiDto = UserProfileInfoDto.toDto(userProfileInfo, PROFILE_PICTURE_CLOUDFRONT_URL);
-		
-		return upiDto;
-	}
-	
 	
 	@Override	
 	public UserProfileInfoDto getUserProfileInfoByUsername(String username) {
@@ -366,7 +363,7 @@ public class UserServiceImpl implements UserService {
 	public void deleteUser(Long userId) {
 		User user = userRepo.findById(userId)
 				.orElseThrow(() -> new EntityNotFoundException("User not found"));
-
+		
 		user.softDelete();
 	}
 	

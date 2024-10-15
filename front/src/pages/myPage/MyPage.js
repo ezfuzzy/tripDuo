@@ -1,6 +1,6 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
-import { shallowEqual, useSelector } from "react-redux"
+import { shallowEqual, useDispatch, useSelector } from "react-redux"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import BlockModal from "../../components/BlockModal"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -8,11 +8,12 @@ import { faUser } from "@fortawesome/free-solid-svg-icons"
 import { ratingConfig } from "../../constants/mapping"
 
 function MyPage() {
+  const navigate = useNavigate()
+
   const userId = useSelector((state) => state.userData.id, shallowEqual) // 접속된 사용자의 id
   const userRole = useSelector((state) => state.loginStatus.role, shallowEqual)
   const [profile, setProfile] = useState({})
   const { id } = useParams()
-  const navigate = useNavigate()
   const [imageData, setImageData] = useState(null)
 
   // 차단 목록 모달 상태 관리
@@ -74,7 +75,7 @@ function MyPage() {
       axios
         .delete(`/api/v1/users/${id}`)
         .then((res) => {
-          console.log(res.data)
+          navigate("/", { state: { needLogout: true } })
         })
         .catch((error) => console.log(error))
     }
@@ -175,7 +176,7 @@ function MyPage() {
             <li className="bg-white shadow-md rounded-lg p-4">
               <h3>
                 <Link className="text-gray-500 hover:text-black text-decoration-none" to={`/admin-dashboard`}>
-                  <strong>ADMIN DASHBOARD</strong> 
+                  <strong>ADMIN DASHBOARD</strong>
                 </Link>
               </h3>
               <p>admin dashboard</p>

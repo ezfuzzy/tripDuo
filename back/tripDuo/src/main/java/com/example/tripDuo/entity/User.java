@@ -78,7 +78,10 @@ public class User {
     	updatedAt = LocalDateTime.now();
     }
 
-    public void softDelete() { deletedAt = LocalDateTime.now(); }
+    public void softDelete() { 
+    	accountStatus = AccountStatus.INACTIVE;
+    	deletedAt = LocalDateTime.now();
+    }
 
     public void updateAccountStatus(AccountStatus newAccountStatus) {
         accountStatus = newAccountStatus;
