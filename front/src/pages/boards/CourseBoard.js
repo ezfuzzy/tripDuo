@@ -105,27 +105,13 @@ function CourseBoard() {
     axios
       .get("/api/v1/posts/course", { params })
       .then((res) => {
-        console.log(params)
         //필터링되어 돌아온 데이터
         let filtered = res.data.list
 
-        // 필터링된 데이터 개수 확인
-        console.log("필터링 전 데이터 개수:", res.data.list.length);
-        console.log("필터링 후 데이터 개수:", filtered.length);
-
-        //국내 해외 필터링
-        if (domesticInternational === "Domestic") {
-          filtered = filtered.filter((item) => item.country === "대한민국")
-        } else if (domesticInternational === "International") {
-          filtered = filtered.filter((item) => item.country !== "대한민국")
-        }
-
-        // 국내/해외에 따라 상태 값 관리
+        //페이지 정보 상태 값 관리
         setPageInfo((prevInfo) => {
           const combinedPosts = [
-            ...prevInfo.filter((item) =>
-              (domesticInternational === "Domestic" ? item.country === "대한민국" : item.country !== "대한민국")
-            ),
+            ...prevInfo,
             ...filtered
           ]
 

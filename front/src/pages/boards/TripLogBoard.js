@@ -107,19 +107,10 @@ function TripLogBoard() {
                 //필터링되어 돌아온 데이터
                 let filtered = res.data.list
 
-                //국내 해외 필터링
-                if (domesticInternational === "Domestic") {
-                    filtered = filtered.filter((item) => item.country === "대한민국")
-                } else if (domesticInternational === "International") {
-                    filtered = filtered.filter((item) => item.country !== "대한민국")
-                }
-
                 // 국내/해외에 따라 상태 값 관리
                 setPageInfo((prevInfo) => {
                     const combinedPosts = [
-                        ...prevInfo.filter((item) =>
-                            (domesticInternational === "Domestic" ? item.country === "대한민국" : item.country !== "대한민국")
-                        ),
+                        ...prevInfo,
                         ...filtered
                     ]
 
