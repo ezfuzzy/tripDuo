@@ -480,9 +480,7 @@ public class UserServiceImpl implements UserService {
 			revieweeProfileInfo.addRatings(rating);
 
 			// 리뷰 저장
-			userReviewRepo.save(userReview);
-
-			UserReview insertedUserReview = userReviewRepo.findByRevieweeIdAndReviewerUserProfileInfo_User_Id(userReviewDto.getRevieweeId(), userReviewDto.getReviewerId());
+			UserReview insertedUserReview = userReviewRepo.save(userReview);
 
 			// 리뷰 반환
 			return UserReviewDto.toDto(insertedUserReview, PROFILE_PICTURE_CLOUDFRONT_URL);
