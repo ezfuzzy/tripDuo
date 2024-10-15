@@ -1,6 +1,5 @@
 import { faUser, faXmark } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { setActive } from "@material-tailwind/react/components/Tabs/TabsContext"
 import axios from "axios"
 import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router"
@@ -26,8 +25,10 @@ function BlockModal({ id, onClose }) {
   }, [id])
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black bg-opacity-50">
-      <div className="relative w-1/4 max-w-4xl min-h-[400px] w-[300px] bg-white rounded-lg shadow-lg overflow-hidden top-1/4">
+    <div onClick={onClose} className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black bg-opacity-50">
+      <div
+        onClick={(event) => event.stopPropagation()} // 내부 클릭은 모달을 닫지 않음
+        className="relative w-1/4 max-w-4xl min-h-[400px] w-[300px] bg-white rounded-lg shadow-lg overflow-hidden top-1/4">
         {/* Header */}
         <div className="flex items-center justify-between p-3 border-b">
           <div className="text-sm font-medium text-center w-full">
@@ -51,7 +52,7 @@ function BlockModal({ id, onClose }) {
                 return (
                   <li
                     key={blocked.userId}
-                    className="flex justify-between gap-x-6 py-4"
+                    className="flex justify-between gap-x-6 py-4 cursor-pointer"
                     onClick={() => {
                       navigate(`/users/${blocked.userId}/profile`)
                     }}>
