@@ -190,6 +190,15 @@ function MateBoard() {
 
   // 해외 / 국내 전환시 호출
   useEffect(() => {
+    setSearchCriteria({
+      country: "",
+      city: "",
+      startDate: "",
+      endDate: "",
+      keyword: "",
+      condition: "title", // 기본 조건 설정
+    });
+  
     fetchFilteredPosts();
   }, [domesticInternational]);
 
@@ -203,10 +212,19 @@ function MateBoard() {
   const handleDesiredCountry = () => {
     const newDomesticInternational = domesticInternational === "International" ? "Domestic" : "International";
     setDomesticInternational(newDomesticInternational);
+    setSearchCriteria({
+      country: "",
+      city: "",
+      startDate: "",  // startDate 초기화
+      endDate: "",    // endDate 초기화
+      keyword: "",    // keyword 초기화
+      condition: "title",
+    });
     setSearchParams({
       ...searchCriteria,
       di: newDomesticInternational,
     });
+    window.location.reload();
   };
 
   // 새로운 검색을 시작하는 함수
