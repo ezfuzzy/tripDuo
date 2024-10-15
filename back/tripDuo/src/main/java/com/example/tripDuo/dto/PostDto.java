@@ -21,7 +21,7 @@ public class PostDto {
     
     private Long userId;
     private String writer;
-    private PostType type; // mate / course / 여행기 / 커뮤니티
+    private PostType type; // mate / course / trip_log / community
     private String title;
     
     private String content; // 메이트, 커뮤니티 게시글에만 있음
@@ -29,6 +29,8 @@ public class PostDto {
     
     private String country;
     private String city;
+    private String startDate;
+    private String endDate;
     
     private String[] tags;
     
@@ -36,7 +38,7 @@ public class PostDto {
     private Long likeCount;
     private Long commentCount;
     private Float rating;
-    private PostStatus status; // mate 모집(구인)중, 모집완료, 삭제됨 등
+    private PostStatus status; // OPEN, CLOSED, EXPIRED, PRIVATE, DELETED 
     
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -45,16 +47,17 @@ public class PostDto {
     
     // ### for app ###
     
+    private String di;
+    
     private boolean isLike;
     
-    private int startRowNum, endRowNum;
     private int pageNum = 1;
 
     private String condition = "";
     private String keyword = "";
-
-    private int prevNum, nextNum;
+    private String sortBy;
     
+    private String searchDateCondition; // includes : start, end 날짜를 포함하는, contained : start, end 안에 포함되는  
     
     // ### toDto ###
     
@@ -69,6 +72,8 @@ public class PostDto {
                 .postData(entity.getPostData())
                 .country(entity.getCountry())
                 .city(entity.getCity())
+                .startDate(entity.getStartDate())
+                .endDate(entity.getEndDate())
                 .tags(entity.getTags())
                 .viewCount(entity.getViewCount())
                 .likeCount(entity.getLikeCount())

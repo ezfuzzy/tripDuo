@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +18,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 @Entity
-@Table(name="places") // 인덱스 추가 
+@Table(name="places", indexes = {
+	@Index(name = "idx_places_map_place_id", columnList = "mapPlaceId")
+}) 
 public class Place {
 	
     @Id
@@ -30,7 +33,7 @@ public class Place {
     private String categoryGroupCode;
     private String categoryGroupName;
     private String categoryName;
-    private String placeId;
+    private String mapPlaceId;
     private String phone;
     private String placeName;
     private String placeUrl;
@@ -51,7 +54,7 @@ public class Place {
                 .categoryGroupCode(dto.getCategoryGroupCode())
                 .categoryGroupName(dto.getCategoryGroupName())
                 .categoryName(dto.getCategoryName())
-                .placeId(dto.getPlaceId())
+                .mapPlaceId (dto.getMapPlaceId())
                 .phone(dto.getPhone())
                 .placeName(dto.getPlaceName())
                 .placeUrl(dto.getPlaceUrl())

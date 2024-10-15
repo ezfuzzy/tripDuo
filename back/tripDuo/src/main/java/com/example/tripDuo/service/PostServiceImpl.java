@@ -1,5 +1,6 @@
 package com.example.tripDuo.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ import com.example.tripDuo.entity.PostComment;
 import com.example.tripDuo.entity.PostLike;
 import com.example.tripDuo.entity.PostRating;
 import com.example.tripDuo.entity.UserProfileInfo;
+import com.example.tripDuo.entity.UserSavedCourse;
 import com.example.tripDuo.enums.PostType;
 import com.example.tripDuo.repository.PostCommentRepository;
 import com.example.tripDuo.repository.PostLikeRepository;
@@ -29,14 +31,17 @@ import com.example.tripDuo.repository.PostRatingRepository;
 import com.example.tripDuo.repository.PostRepository;
 import com.example.tripDuo.repository.UserProfileInfoRepository;
 import com.example.tripDuo.repository.UserRepository;
+import com.example.tripDuo.repository.UserSavedCourseRepository;
+import com.example.tripDuo.repository.UserSavedPlaceRepository;
+import com.example.tripDuo.repository.UserVisitedPlaceRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class PostServiceImpl implements PostService {
 
-	@Value("${cloud.aws.cloudfront.url}")
-	private String cloudFrontUrl;
+	@Value("${cloud.aws.cloudfront.profile_picture_url}")
+	private String PROFILE_PICTURE_CLOUDFRONT_URL;
 	
 	private final PostRepository postRepo;
 	private final PostCommentRepository postCommentRepo;
@@ -46,38 +51,102 @@ public class PostServiceImpl implements PostService {
 	private final UserRepository userRepo;
 	private final UserProfileInfoRepository userProfileInfoRepo;
 
-	final int POST_PAGE_SIZE = 10;
+	private final UserVisitedPlaceRepository userVisitedPlaceRepo;
+	private final UserSavedPlaceRepository userSavedPlaceRepo;
+	private final UserSavedCourseRepository userSavedCourseRepo;
+	
+	final int POST_PAGE_SIZE = 12;
 	final int COMMENT_PAGE_SIZE = 10;
 	
 	public PostServiceImpl(PostRepository postRepo, PostCommentRepository postCommentRepo, 
 			PostLikeRepository postLikeRepo, PostRatingRepository postRatingRepo, 
-			UserRepository userRepo, UserProfileInfoRepository userProfileInfoRepo) {
+			UserRepository userRepo, UserProfileInfoRepository userProfileInfoRepo,
+			UserVisitedPlaceRepository userVisitedPlaceRepo,
+			UserSavedPlaceRepository userSavedPlaceRepo,
+			UserSavedCourseRepository userSavedCourseRepo) {
 		this.postRepo = postRepo;
 		this.postCommentRepo = postCommentRepo;
 		this.postLikeRepo = postLikeRepo;
 		this.postRatingRepo = postRatingRepo;
 		this.userRepo = userRepo;
 		this.userProfileInfoRepo = userProfileInfoRepo;
+		
+		this.userVisitedPlaceRepo = userVisitedPlaceRepo;
+		this.userSavedPlaceRepo = userSavedPlaceRepo;
+		this.userSavedCourseRepo = userSavedCourseRepo;
 	}
 	
 	/**
-	 * @date : 2024. 9. 13.
-	 * @user : 김민준
-	 * getPostList: post list 리턴
-	 * 
-	 * @param postType
+	 * getPostList: 검색, 정렬, 페이징처리가 된 post list 리턴
+	 * 				만약 postDto에 userId가 세팅되어있으면 그건 profile view page에서 호출한 것
+	 * @param postDto
 	 * @return
-	 * TODO : pageable과 condition 적용(검색)
 	 */
 	@Override
-	public List<PostDto> getPostList(PostType postType) {
-		// type별 get list 
-		return postRepo.findByTypeOrderByIdDesc(postType).stream().map(PostDto::toDto).toList();
+	public Map<String, Object> getPostList(PostDto postDto) {
+		
+		// sort는 프론트에서도 처리를 하긴 함
+		String sortBy = postDto.getSortBy() != null ? postDto.getSortBy() : "createdAt";
+		
+	    Sort sort = switch (sortBy) {
+	        case "viewCount" -> Sort.by(Sort.Direction.DESC, "viewCount");
+	        case "likeCount" -> Sort.by(Sort.Direction.DESC, "likeCount");
+	        case "rating" -> Sort.by(Sort.Direction.DESC, "rating");
+	        default -> Sort.by(Sort.Direction.DESC, "createdAt");
+	    };
+	    	    
+		Pageable pageable = PageRequest.of(postDto.getPageNum() - 1, POST_PAGE_SIZE, sort);
+		
+		Page<Post> posts = postRepo.findAll(PostSpecification.searchPosts(postDto), pageable);
+		List<PostDto> postList = posts.stream().map(PostDto::toDto).toList();
+		
+		// page객체는 페이징처리 전의 전체 데이터 개수를 가지고있음
+	    long totalRowCount = posts.getTotalElements();
+		int totalPostPages = (int) Math.ceil((double) totalRowCount / POST_PAGE_SIZE);
+		
+		return Map.of(
+				"list", postList, 
+				"pageNum", postDto.getPageNum(), 
+				"totalRowCount", totalRowCount, 
+				"totalPostPages", totalPostPages
+		);
+	}
+	
+	@Override
+	public Map<String, Object> getPostListForHome() {
+		
+		List<Post> domesticCoursePostList = getPostListMethod(PostType.COURSE, "Domestic");
+		List<Post> internationalCoursePostList = getPostListMethod(PostType.COURSE, "International");
+		List<Post> domesticMatePostList = getPostListMethod(PostType.MATE, "Domestic");
+		List<Post> internationalMatePostList = getPostListMethod(PostType.MATE, "International");
+		
+		return Map.of(
+				"domesticCoursePostList", domesticCoursePostList,
+				"internationalCoursePostList", internationalCoursePostList,
+				"domesticMatePostList", domesticMatePostList,
+				"internationalMatePostList", internationalMatePostList,
+				"PROFILE_PICTURE_CLOUDFRONT_URL", PROFILE_PICTURE_CLOUDFRONT_URL
+		);
 	}
 
+	
+	public List<Post> getPostListMethod(PostType postType, String di) {
+		
+		PostDto dtoForSearch = PostDto.builder()
+									.type(postType)
+									.di(di)
+									.build();
+		
+		Sort sort = Sort.by(Sort.Direction.DESC, "likeCount");
+		Pageable pageable = PageRequest.of(0, 4, sort);
+		
+		Page<Post> posts = postRepo.findAll(PostSpecification.searchPosts(dtoForSearch), pageable);
+		List<Post> postList = posts.stream().toList();
+		
+		return postList;
+	}
+	
 	/**
-	 * @date : 2024. 9. 14.
-	 * @user : 김민준
 	 * getPostById : post 수정 페이지에서 호출할 api. 기본 정보만 return
 	 *
 	 * @param postId
@@ -91,8 +160,6 @@ public class PostServiceImpl implements PostService {
 	}
 
 	/**
-	 * @date : 2024. 9. 14.
-	 * @user : 김민준
 	 * getPostDetailById : post 상세보기 페이지에서 호출할 api
 	 * 					   condition과 keyword 받은 다음에 다시 return
 	 *					   댓글 첫번째 페이지와 함께 리턴.
@@ -114,37 +181,42 @@ public class PostServiceImpl implements PostService {
 		existingDto.setKeyword(postDto.getKeyword());
 
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
-
+		PostRatingDto postRatingDto = null;
+		
 		if(username != null && !username.equals("anonymousUser")) {
-			existingDto.setLike(postLikeRepo.existsByPostIdAndUserId(existingDto.getId(), userRepo.findByUsername(username).getId()));
+			Long currentUserId = userRepo.findByUsername(username).getId();
+			existingDto.setLike(postLikeRepo.existsByPostIdAndUserId(existingDto.getId(), currentUserId));
+
+			PostRating postRating = postRatingRepo.findByPostIdAndUserId(existingDto.getId(), currentUserId);
+			if(postRating != null) {
+				postRatingDto = PostRatingDto.toDto(postRating);
+			}
 		}
 		
 		// 댓글 list 
 		Sort sort = Sort.by("parentCommentId").ascending().and(Sort.by("createdAt").ascending());
 		Pageable pageable = PageRequest.of(0, COMMENT_PAGE_SIZE, sort);
-		Page<PostComment> page = postCommentRepo.findByPostIdOrderByParentCommentIdAscCreatedAtAsc(postDto.getId(), pageable);
-		List<PostCommentDto> commentList = page.stream().map(PostCommentDto::toDto).toList();
+		Page<PostComment> comments = postCommentRepo.findByPostIdOrderByParentCommentIdAscCreatedAtAsc(postDto.getId(), pageable);
+		List<PostCommentDto> commentList = comments.stream().map(dtoItem -> PostCommentDto.toDto(dtoItem, PROFILE_PICTURE_CLOUDFRONT_URL)).toList();
 		
-		int totalCommentPages = (int) (existingDto.getCommentCount() / COMMENT_PAGE_SIZE);
+		int totalCommentPages = (int) Math.ceil(existingDto.getCommentCount() / (double) COMMENT_PAGE_SIZE);
 		
 		// view count + 1
 		
-		UserProfileInfoDto upiDto = UserProfileInfoDto.toDto(post.getUserProfileInfo(), cloudFrontUrl);
-		
-		existingDto.setViewCount(existingDto.getViewCount()+1);
+		UserProfileInfoDto upiDto = UserProfileInfoDto.toDto(post.getUserProfileInfo(), PROFILE_PICTURE_CLOUDFRONT_URL);
+		existingDto.setViewCount(existingDto.getViewCount() + 1);
 		postRepo.save(Post.toEntity(existingDto, userProfileInfoRepo.findById(existingDto.getUserId()).get()));
 		
 		return Map.of(
-			"dto", existingDto, 
-			"userProfileInfo", upiDto,
-			"commentList", commentList, 
-			"totalCommentPages", totalCommentPages
+				"dto", existingDto, 
+				"userProfileInfo", upiDto,
+				"postRating", postRatingDto != null ? postRatingDto : "",
+				"commentList", commentList, 
+				"totalCommentPages", totalCommentPages
 		);
 	}
 
 	/**
-	 * @date : 2024. 9. 14.
-	 * @user : 김민준
 	 * writePost : post 작성, userProfileInfo와 함께 저장
 	 *
 	 * @param postDto
@@ -156,8 +228,6 @@ public class PostServiceImpl implements PostService {
 	}
 
 	/**
-	 * @date : 2024. 9. 14.
-	 * @user : 김민준
 	 * updatePost : post 수정 메소드 - post의 모든 정보가 postDto에 담겨서 넘어옴
 	 *
 	 * @param postDto
@@ -167,10 +237,10 @@ public class PostServiceImpl implements PostService {
 		
 		UserProfileInfo userProfileInfo = userProfileInfoRepo.findById(postDto.getUserId())
 				.orElseThrow(() -> new EntityNotFoundException("Post not found"));
-
+		
 		// put mapping이니까 정보 삭제 안되게 ... 
 //		PostDto existingPost = PostDto.toDto(postRepo.findById(postDto.getId()).get());
-		
+		postDto.setUpdatedAt(LocalDateTime.now());
 		// 1. 만약 기존의 모든 정보가 그대로 넘어오면
 		postRepo.save(Post.toEntity(postDto, userProfileInfo));
 		
@@ -179,16 +249,18 @@ public class PostServiceImpl implements PostService {
 	}
 
 	/**
-	 * @date : 2024. 9. 14.
-	 * @user : 김민준
 	 * deletePost : post 삭제
 	 *
 	 * @param postId
-	 * TODO : soft 삭제 ?
 	 */
 	@Override
+	@Transactional
 	public void deletePost(Long postId) {
-		postRepo.deleteById(postId);
+		
+		Post existingPost = postRepo.findById(postId)
+	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+
+		existingPost.softDeletePost();
 	}
 	
 	// ### comment ###
@@ -197,31 +269,31 @@ public class PostServiceImpl implements PostService {
 
 	
 	/**
-	 * @date : 2024. 9. 13.
-	 * @user : 김민준
 	 * writeComment: comment 추가 post의 commentCount 갱신
 	 * 
 	 * @param postCommentDto
-	 * TODO : 댓글의 group_id, depth 설정 로직 생각 + 추가
 	 */
 	@Override
 	@Transactional
-	public void writeComment(PostCommentDto postCommentDto) {
+	public PostCommentDto writeComment(PostCommentDto postCommentDto) {
 		// 댓글의 parent comment id와 to username 은 front 에서 넘어옴
 		Post existingPost = postRepo.findById(postCommentDto.getPostId())
 	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
 		UserProfileInfo userProfileInfo = userProfileInfoRepo.findByUserId(postCommentDto.getUserId());
-
-		// 댓글 db 저장
-		postCommentRepo.save(PostComment.toEntity(postCommentDto, userProfileInfo));
 		
+		// 댓글 db 저장
+		PostComment postComment = postCommentRepo.save(PostComment.toEntity(postCommentDto, userProfileInfo));
+		if(postComment.getParentCommentId() == 0) {
+			postComment.setParentCommentId(postComment.getId());
+		}
+				
 		// post의 댓글 수 update
 		existingPost.setCommentCount(postCommentRepo.countByPostId(existingPost.getId()));
+		
+		return PostCommentDto.toDto(postComment, PROFILE_PICTURE_CLOUDFRONT_URL);
 	}
 
 	/**
-	 * @date : 2024. 9. 14.
-	 * @user : 김민준
 	 * getCommentList : postCommentDto에 postId와 pageNum이 설정되어서 넘어옴
 	 * 					pageNum에 해당하는 댓글 list return.
 	 *
@@ -237,22 +309,23 @@ public class PostServiceImpl implements PostService {
 	    Pageable pageable = PageRequest.of(postCommentDto.getPageNum() - 1, COMMENT_PAGE_SIZE, sort);
 
 	    // 댓글 페이지 조회
-	    Page<PostComment> page = postCommentRepo.findByPostIdOrderByParentCommentIdAscCreatedAtAsc(postCommentDto.getPostId(), pageable);
-	    List<PostCommentDto> commentList = page.stream().map(PostCommentDto::toDto).toList();
+	    Page<PostComment> comments = postCommentRepo.findByPostIdOrderByParentCommentIdAscCreatedAtAsc(postCommentDto.getPostId(), pageable);
+	    List<PostCommentDto> commentList = comments.stream().map(dtoItem -> PostCommentDto.toDto(dtoItem, PROFILE_PICTURE_CLOUDFRONT_URL)).toList();
 	    
 	    // 총 페이지 수 계산
-	    int totalCommentPages = page.getTotalPages();
+	    int totalCommentPages = comments.getTotalPages();
 
-	    // 결과 반환
-	    return Map.of(
-	        "commentList", commentList,
-	        "totalCommentPages", totalCommentPages
+	    
+	    Map<String, Object> map =  Map.of(
+		        "commentList", commentList,
+		        "totalCommentPages", totalCommentPages
 	    );
+	    
+	    // 결과 반환
+	    return map;
 	}
 	
 	/**
-	 * @date : 2024. 9. 13.
-	 * @user : 김민준
 	 * updateComment: comment 수정
 	 * 
 	 * @param postCommentDto
@@ -268,12 +341,9 @@ public class PostServiceImpl implements PostService {
 	}
 	
 	/**
-	 * @date : 2024. 9. 13.
-	 * @user : 김민준
-	 * deleteComment: comment 삭제 + post의 commentCount 갱신 
+	 * deleteComment: comment soft delete + post의 commentCount 갱신 
 	 * 
 	 * @param commentId
-	 * TODO : 실제로 삭제하는 것이 아닌 deletedAt 에 값을 설정
 	 */
 	@Override
 	@Transactional
@@ -281,15 +351,16 @@ public class PostServiceImpl implements PostService {
 		Post existingPost = postRepo.findById(postCommentRepo.findById(commentId).get().getPostId())
 	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
 		
-		postCommentRepo.deleteById(commentId);
+		PostComment existingPostComment = postCommentRepo.findById(commentId)
+				.orElseThrow(() -> new EntityNotFoundException("PostComment not found")); 
+		
+		existingPostComment.softDeletePostComment(); // dto에 코드 존재 - set deletedAt
 		existingPost.setCommentCount(postCommentRepo.countByPostId(existingPost.getId()));
 	}
 	
 	// ### like ### 
 
 	/**
-	 * @date : 2024. 9. 13.
-	 * @user : 김민준
 	 * addLikeToPost: post에 대한 like정보 추가 + post의 likeCount 갱신
 	 * 
 	 * @param postLikeDto
@@ -307,27 +378,49 @@ public class PostServiceImpl implements PostService {
 	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
 		
 		// 좋아요 db 저장
-		postLikeRepo.save(PostLike.toEntity(postLikeDto));
+		postLikeRepo.save(PostLike.toEntity(postLikeDto, existingPost));
 		
 		// post 좋아요 수 update
 		existingPost.setLikeCount(postLikeRepo.countByPostId(existingPost.getId()));
+		
+		
+		// 추후 좋아요 / 저장 나눌 예정
+		// 좋아요 누른 코스를 saved place에 저장
+		UserSavedCourse userSavedCourse = UserSavedCourse.builder()
+											.userId(postLikeDto.getUserId())
+											.course(existingPost)
+											.build();
+		
+		userSavedCourseRepo.save(userSavedCourse);
 	}
 	
 	/**
-	 * @date : 2024. 9. 13.
-	 * @user : 김민준
+	 * getLikedPostList: userId가 좋아요를 누른 post List 
+	 * 
+	 * @param userId
+	 * @returm
+	 */
+	public List<PostLike> getLikedPostList(Long userId) {
+		
+		return postLikeRepo.findByUserId(userId);
+	}
+
+	
+	/**
 	 * deleteLikeFromPost: post에 대한 like정보 삭제 + post의 likeCount 갱신 
 	 * 
 	 * @param likeId
 	 */
 	@Override
 	@Transactional
-	public void deleteLikeFromPost(Long likeId) {
+	public void deleteLikeFromPost(Long postId, Long userId) {
 		
-		Post existingPost = postRepo.findById(postLikeRepo.findById(likeId).get().getPostId())
+		Post existingPost = postRepo.findById(postId)
 	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
 		
-		postLikeRepo.deleteById(likeId);
+		postLikeRepo.deleteByPostIdAndUserId(postId, userId);
+		// 추후 좋아요 / 저장 나눌 예정
+		userSavedCourseRepo.deleteByCourse_IdAndUserId(postId, userId);
 		existingPost.setLikeCount(postLikeRepo.countByPostId(existingPost.getId()));
 	}
 
@@ -335,8 +428,6 @@ public class PostServiceImpl implements PostService {
 	// ### rating ###
 	
 	/**
-	 * @date : 2024. 9. 13.
-	 * @user : 김민준
 	 * addRatingToPost: post에 대한 rating정보 추가 + post의 rating 갱신 
 	 * 
 	 * @param postRatingDto
@@ -361,8 +452,6 @@ public class PostServiceImpl implements PostService {
 	}
 
 	/**
-	 * @date : 2024. 9. 13.
-	 * @user : 김민준
 	 * updateRatingForPost: post에 대한 rating정보를 update - rating 값이 바뀔 수 있으니 post테이블의 rating 갱신
 	 * 
 	 * @param postRatingDto
@@ -377,7 +466,7 @@ public class PostServiceImpl implements PostService {
 	    
 		Post existingPost = postRepo.findById(postRatingDto.getPostId())
 	            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
-		
+		postRatingDto.setCreatedAt(LocalDateTime.now());
 		// 평점 db 저장
 		postRatingRepo.save(PostRating.toEntity(postRatingDto, existingPost));
 		
@@ -386,8 +475,6 @@ public class PostServiceImpl implements PostService {
 	}
 	
 	/**
-	 * @date : 2024. 9. 13.
-	 * @user : 김민준
 	 * deleteRatingFromPost: post에 대한 rating정보를 삭제 + post의 rating 갱신
 	 * 
 	 * @param ratingId
@@ -399,9 +486,14 @@ public class PostServiceImpl implements PostService {
 		Post existingPost = postRatingRepo.findById(ratingId).get().getPost();
 		
 		postRatingRepo.deleteById(ratingId);
+		Float rating = postRatingRepo.findAverageRatingByPostId(existingPost.getId());
 		
 		// post 평점 update
-		existingPost.updateRating(postRatingRepo.findAverageRatingByPostId(existingPost.getId()));
+		if(rating != null) {
+			existingPost.updateRating(rating);
+		} else {
+			existingPost.updateRating(0F);
+		}
 	}
 	
 }

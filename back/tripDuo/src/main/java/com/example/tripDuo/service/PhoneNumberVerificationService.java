@@ -5,28 +5,24 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Service;
 
 /**
  * 휴대폰 번호로 인증번호를 전송하는 class
- * 해시한 6자리 문자열을 전송
- * TODO : 숫자 6자리로 변경
+ * 해시한 6자리 문자열(숫자)을 전송
  */
 @Service
 public class PhoneNumberVerificationService {
 	
 	private final ConcurrentHashMap<String, VerificationData> verificationMap = new ConcurrentHashMap<>();
 	private final SecureRandom secureRandom = new SecureRandom();
-	private static final int CODE_VALIDITY_DURATION = 1; // in minutes
+	private static final int CODE_VALIDITY_DURATION = 3; // in 3 minutes
 
 	public String generateVerificationCode() {
-		byte[] randomBytes = new byte[4]; // 6자리 숫자를 만들기 위해 4바이트 사용
-		secureRandom.nextBytes(randomBytes);
-		return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes).substring(0, 6);
+	    int verificationCode = secureRandom.nextInt(900000) + 100000; // 6자리 숫자 생성 (100000 ~ 999999)
+	    return String.valueOf(verificationCode);
 	}
 
 	public void storeVerificationCode(String phoneNumber, String code) {
@@ -37,19 +33,11 @@ public class PhoneNumberVerificationService {
 
 	public boolean verifyCode(String phoneNumber, String code) {
 		VerificationData data = verificationMap.get(phoneNumber);
-//		### test code
-//		System.out.println("[PhoneNumberVerificationService] verifyCode : " + phoneNumber + " ::: " + code);
-//		System.out.println(data); // data가 현재 null임 
-//		
-//		for (Map.Entry<String, VerificationData> entry : verificationMap.entrySet()) {
-//            System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue().getHashedCode());
-//        }
-//		
-//		System.out.println(verificationMap.toString());
 		
 		if (data != null && isCodeValid(data.getTimestamp())) {
 			return data.getHashedCode().equals(hashCode(code));
 		}
+		// 맞으면 삭제 + 일정 횟수 틀리면 삭제 
 		return false;
 	}
 

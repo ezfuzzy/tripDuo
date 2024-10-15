@@ -14,8 +14,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,30 +29,39 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 @Entity
-@Table(name="users") // 인덱스 추가 
+@Table(name="users", indexes = {
+		@Index(name = "idx_users_username", columnList = "username"),
+		@Index(name = "idx_users_encryted_phone_number", columnList = "encryptedPhoneNumber")
+}) 
 public class User {
     
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true, length = 20)
     private String username;
     
-    @Column(nullable = false)
+    @Column(nullable = false, length = 60)
     private String password;
     
-    @Column(nullable = false)
-    private String phoneNumber;
+    @Column(nullable = false, length = 30, unique = true)
+    private String encryptedPhoneNumber;
+    
+    @Email
+    @Column(nullable = false, length = 50, unique = true)
     private String email; // [note: "인증 받으면 email 로그인 사용 가능 ?? "]
     
     @Enumerated(EnumType.STRING)
+    @Column(length = 10)
     private VerificationStatus verificationStatus; // 인증 상태 enum [note: "unverified, verified, pending"]
     
     @Enumerated(EnumType.STRING)
+    @Column(length = 10)
     private AccountStatus accountStatus; // 관리자의 조치 enum [note: "active, inactive, suspended"]
               
     @Enumerated(EnumType.STRING)
+    @Column(length = 10)
     private UserRole role; // enum [note: "user, manager, admin"]
 
     private LocalDateTime createdAt; 
@@ -61,13 +73,27 @@ public class User {
         createdAt = LocalDateTime.now();
     }
 
+    @PreUpdate
+    public void onPreUpdate() {
+    	updatedAt = LocalDateTime.now();
+    }
+
+    public void softDelete() { 
+    	accountStatus = AccountStatus.INACTIVE;
+    	deletedAt = LocalDateTime.now();
+    }
+
+    public void updateAccountStatus(AccountStatus newAccountStatus) {
+        accountStatus = newAccountStatus;
+    }
+    
     public static User toEntity(UserDto dto) {
                 
         return User.builder()
                 .id(dto.getId())
                 .username(dto.getUsername())
                 .password(dto.getPassword())
-                .phoneNumber(dto.getPhoneNumber())
+                .encryptedPhoneNumber(dto.getEncryptedPhoneNumber())
                 .email(dto.getEmail())
                 .verificationStatus(dto.getVerificationStatus())
                 .accountStatus(dto.getAccountStatus())

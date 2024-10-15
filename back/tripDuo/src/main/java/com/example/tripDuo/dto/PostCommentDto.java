@@ -42,13 +42,19 @@ public class PostCommentDto {
     
     
     
-    public static PostCommentDto toDto(PostComment entity) {
+    public static PostCommentDto toDto(PostComment entity, String cloudFrontUrl) {
+    	
+    	String profilePictureUrl = entity.getUserProfileInfo().getProfilePicture();
+    	if(profilePictureUrl != null && !profilePictureUrl.isEmpty() && cloudFrontUrl != null && !cloudFrontUrl.isEmpty()) {
+    		profilePictureUrl = cloudFrontUrl + profilePictureUrl;
+    	}
+    	
         return PostCommentDto.builder()
             .id(entity.getId())
             .postId(entity.getPostId())
             .userId(entity.getUserProfileInfo() != null ? entity.getUserProfileInfo().getId() : null)
             .writer(entity.getUserProfileInfo() != null ? entity.getUserProfileInfo().getNickname() : null)
-            .profilePicture(entity.getUserProfileInfo() != null ? entity.getUserProfileInfo().getProfilePicture() : null)
+            .profilePicture(profilePictureUrl)
             .content(entity.getContent())
             .parentCommentId(entity.getParentCommentId())
             .toUsername(entity.getToUsername())

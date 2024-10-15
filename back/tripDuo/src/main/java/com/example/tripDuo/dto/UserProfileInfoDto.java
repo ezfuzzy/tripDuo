@@ -1,5 +1,7 @@
 package com.example.tripDuo.dto;
 
+import java.time.LocalDateTime;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.tripDuo.entity.UserProfileInfo;
@@ -32,21 +34,31 @@ public class UserProfileInfoDto {
     
     private String curLocation;
     
-    private String socialLinks; // > json 처리
+    private String[] socialLinks;
     
-    private Float ratings; // 지표 설정 
+    private Long ratings; // 지표 설정 
 
-    private String lastLogin; // 몇분전 접속
+    private LocalDateTime lastLogin; // 몇분전 접속
+    
+    // ### for app ###
     
     @JsonIgnore
     private MultipartFile profileImgForUpload;
-
+    
+    private Long followerCount;
+    private Long followeeCount;
+    
+    private String token;
+    
+    public void setLastLogin() {
+    	this.lastLogin = LocalDateTime.now();
+    }
     
     public static UserProfileInfoDto toDto(UserProfileInfo entity, String cloudFrontUrl) {
     	
     	String profilePictureUrl = entity.getProfilePicture();
     	if(profilePictureUrl != null && !profilePictureUrl.isEmpty() && cloudFrontUrl != null && !cloudFrontUrl.isEmpty()) {
-    		profilePictureUrl = cloudFrontUrl + "/" + profilePictureUrl;
+    		profilePictureUrl = cloudFrontUrl + profilePictureUrl;
     	}
     	
         return UserProfileInfoDto.builder()

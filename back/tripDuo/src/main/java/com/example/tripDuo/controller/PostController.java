@@ -18,6 +18,7 @@ import com.example.tripDuo.dto.PostCommentDto;
 import com.example.tripDuo.dto.PostDto;
 import com.example.tripDuo.dto.PostLikeDto;
 import com.example.tripDuo.dto.PostRatingDto;
+import com.example.tripDuo.entity.PostLike;
 import com.example.tripDuo.enums.PostType;
 import com.example.tripDuo.service.PostService;
 
@@ -33,7 +34,7 @@ public class PostController {
 		this.postService = postService;
 	}
 
-	@PostMapping("/{postType:[a-zA-Z]+}")
+	@PostMapping("/{postType:[a-zA-Z_]+}")
 	public ResponseEntity<String> writePost(@PathVariable("postType") String postType, @RequestBody PostDto postDto){
 		
 		PostType postTypeEnum;
@@ -42,15 +43,15 @@ public class PostController {
         	postTypeEnum = PostType.fromString(postType);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Invalid post type: " + postType);
-        }
-
+        }      
+        
         postDto.setType(postTypeEnum);
 		postService.writePost(postDto);
 		return ResponseEntity.ok(postDto.toString());
 	}
 	
-	@GetMapping("/{postType:[a-zA-Z]+}")
-	public ResponseEntity<List<PostDto>> getPostList(@PathVariable("postType") String postType, PostDto postDto) {
+	@GetMapping("/{postType:[a-zA-Z_]+}")
+	public ResponseEntity<Map<String, Object>> getPostList(@PathVariable("postType") String postType, PostDto postDto) {
 		
 		PostType postTypeEnum;
 		
@@ -62,9 +63,13 @@ public class PostController {
         
         postDto.setType(postTypeEnum);
         
-        // TODO - postDto 로 list 가져오기 
-		return ResponseEntity.ok(postService.getPostList(postTypeEnum));
+		return ResponseEntity.ok(postService.getPostList(postDto));
 	}	
+	
+	@GetMapping("/{postType:[a-zA-Z_]+}/home")
+	public ResponseEntity<Map<String, Object>> getPostListForHome() {
+		return ResponseEntity.ok(postService.getPostListForHome());
+	}
 	
 	@GetMapping("/{postId:[0-9]+}")
 	public ResponseEntity<Map<String, Object>> getPostDetailById(@PathVariable("postId") Long postId, PostDto postDto) {
@@ -125,11 +130,10 @@ public class PostController {
 	// ### comment ###	
 	
 	@PostMapping("/{postId:[0-9]+}/comments")
-	public ResponseEntity<String> writeComment(@RequestBody PostCommentDto postCommentDto) {
+	public ResponseEntity<?> writeComment(@RequestBody PostCommentDto postCommentDto) {
 		
 		try {
-			postService.writeComment(postCommentDto);
-			return ResponseEntity.ok("Comment is written successfully");
+			return ResponseEntity.ok(postService.writeComment(postCommentDto));
 		} catch (EntityNotFoundException e) {
 	        // 게시글이 존재하지 않는 경우에 대한 처리
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -154,10 +158,7 @@ public class PostController {
 		try {
 			postService.updateComment(postCommentDto);
 			return ResponseEntity.ok("Comment is updated successfully");
-		} catch (EntityNotFoundException e) {
-	        // 게시글이 존재하지 않는 경우에 대한 처리
-	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-	    } catch (Exception e) {
+		} catch (Exception e) {
 	        // 기타 예외에 대한 처리
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
 	    } 
@@ -198,11 +199,16 @@ public class PostController {
 	    }
 	}
 	
-	@DeleteMapping("/{postId:[0-9]+}/likes/{likeId:[0-9]+}")
-	public ResponseEntity<String> deleteLikeFromPost(@PathVariable("likeId") Long likeId) {
+	@GetMapping("/{userId:[0-9]+}/likes")
+	public ResponseEntity<List<PostLike>> getLikedPostList(@PathVariable("userId") Long userId) {
+		return ResponseEntity.ok(postService.getLikedPostList(userId));
+	}
+	
+	@DeleteMapping("/{postId:[0-9]+}/likes/{userId:[0-9]+}")
+	public ResponseEntity<String> deleteLikeFromPost(@PathVariable("postId") Long postId, @PathVariable("userId") Long userId) {
 
 		try {
-	        postService.deleteLikeFromPost(likeId);
+	        postService.deleteLikeFromPost(postId, userId);
 	        return ResponseEntity.ok("Like is deleted successfully");
 	    } catch (EntityNotFoundException e) {
 	        // 게시글이 존재하지 않는 경우에 대한 처리

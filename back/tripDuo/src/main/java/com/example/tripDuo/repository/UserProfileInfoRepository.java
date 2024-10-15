@@ -6,6 +6,6 @@ import com.example.tripDuo.entity.UserProfileInfo;
 
 public interface UserProfileInfoRepository extends JpaRepository<UserProfileInfo, Long>{
 	UserProfileInfo findByUserId(Long userId);
-	
+	void deleteByUserId(Long userId);
 	boolean existsByNickname(String nickname);
 }

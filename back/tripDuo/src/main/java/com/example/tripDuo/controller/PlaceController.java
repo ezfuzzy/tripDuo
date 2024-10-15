@@ -2,7 +2,6 @@ package com.example.tripDuo.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,25 +30,25 @@ public class PlaceController {
 		return ResponseEntity.ok(placeService.getPlaceList());
 	}
 	
-	@GetMapping("/{id:[0-9]+}")
-	public ResponseEntity<PlaceDto> getPost(@PathVariable("id") Long id) {
-		return ResponseEntity.ok(placeService.getPlaceById(id));
+	@GetMapping("/{postId:[0-9]+}")
+	public ResponseEntity<PlaceDto> getPlace(@PathVariable("postId") Long postId) {
+		return ResponseEntity.ok(placeService.getPlaceById(postId));
 	}
 	
 	@PostMapping
-	public ResponseEntity<String> writePost(@RequestBody PlaceDto dto){
-		placeService.addPlace(dto);
-		return ResponseEntity.ok(dto.toString());
+	public ResponseEntity<String> addPlace(@RequestBody PlaceDto postDto){
+		placeService.addPlace(postDto);
+		return ResponseEntity.ok(postDto.toString());
 	}
 	
-	@PutMapping("/{id}")
-	public ResponseEntity<PlaceDto> editPost(@PathVariable("id") Long id, @RequestBody PlaceDto dto){
-		return ResponseEntity.ok(placeService.updatePlace(dto));
+	@PutMapping("/{postId}")
+	public ResponseEntity<PlaceDto> updatePlace(@PathVariable("postId") Long postId, @RequestBody PlaceDto postDto){
+		return ResponseEntity.ok(placeService.updatePlace(postDto));
 	}
 	
-	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deletePost(@PathVariable("id") Long id){
-		placeService.deletePlace(id);
+	@DeleteMapping("/{postId}")
+	public ResponseEntity<String> deletePost(@PathVariable("postId") Long postId){
+		placeService.deletePlace(postId);
 		return ResponseEntity.ok("deleted");
 	}
 }

@@ -2,6 +2,9 @@ package com.example.tripDuo.entity;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import com.example.tripDuo.dto.PostDto;
 import com.example.tripDuo.enums.PostStatus;
 import com.example.tripDuo.enums.PostType;
@@ -14,6 +17,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
@@ -29,7 +33,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 @Entity
-@Table(name="posts") // 인덱스 추가 
+@Table(name="posts", indexes = {
+		@Index(name = "idx_posts_type", columnList = "type"),
+		@Index(name = "idx_posts_user_id", columnList = "user_id"),
+		@Index(name = "idx_posts_city", columnList = "city")
+})
 public class Post {
     
     @Id
@@ -46,16 +54,17 @@ public class Post {
     @Column(nullable = false)
     private String title;    
     
-    @Column(nullable = false)
     private String content; // 메이트, 커뮤니티 게시글에만 있음
     
-//    @Convert(converter = JsonNodeConverter.class)  // converter
-    @Column(length = 10000)
+    @JdbcTypeCode(SqlTypes.JSON) // jsonb 타입을 명시
+    @Column(columnDefinition = "jsonb")  // DB에 jsonb 타입으로 지정
     private JsonNode postData; // 코스, 여행기 게시글에만 있음
     
     private String country;
     private String city;
-
+    private String startDate;
+    private String endDate;
+    
     @Column(columnDefinition = "TEXT[]")
     private String[] tags;
 
@@ -88,8 +97,13 @@ public class Post {
         this.rating = rating;
     }
     
+    public void softDeletePost() {
+    	deletedAt = LocalDateTime.now();
+    	status = PostStatus.DELETED;
+    }
+    
     public static Post toEntity(PostDto dto, UserProfileInfo userProfileInfo) {
-    	
+        
         return Post.builder()
                 .id(dto.getId())
                 .userProfileInfo(userProfileInfo)
@@ -99,11 +113,13 @@ public class Post {
                 .postData(dto.getPostData())
                 .country(dto.getCountry())
                 .city(dto.getCity())
+                .startDate(dto.getStartDate())
+                .endDate(dto.getEndDate())
                 .tags(dto.getTags())
                 .viewCount(dto.getViewCount() != null ? dto.getViewCount() : 0L)
                 .likeCount(dto.getLikeCount() != null ? dto.getLikeCount() : 0L)
                 .commentCount(dto.getCommentCount() != null ? dto.getCommentCount() : 0L)
-                .rating(dto.getRating() != null ? dto.getCommentCount() : 0.0f)
+                .rating(dto.getRating() != null ? dto.getRating() : 0.0f)
                 .status(dto.getStatus())
                 .createdAt(dto.getCreatedAt())
                 .updatedAt(dto.getUpdatedAt())

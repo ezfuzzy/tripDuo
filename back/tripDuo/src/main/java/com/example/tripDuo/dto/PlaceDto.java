@@ -1,5 +1,7 @@
 package com.example.tripDuo.dto;
 
+import java.time.LocalDateTime;
+
 import com.example.tripDuo.entity.Place;
 
 import lombok.AllArgsConstructor;
@@ -21,7 +23,7 @@ public class PlaceDto {
     private String categoryGroupCode;
     private String categoryGroupName;
     private String categoryName;
-    private String placeId;
+    private String mapPlaceId;
     private String phone;
     private String placeName;
     private String placeUrl;
@@ -35,6 +37,12 @@ public class PlaceDto {
     // ### image, 설명, 특징, 태그 ...
     
     
+    // ### for app ### 
+    
+    private Long userId;
+    private String userMemo;
+    private LocalDateTime visitDate;
+    
     // toDto 메소드
     public static PlaceDto toDto(Place entity) {
         return PlaceDto.builder()
@@ -43,7 +51,7 @@ public class PlaceDto {
                 .categoryGroupCode(entity.getCategoryGroupCode())
                 .categoryGroupName(entity.getCategoryGroupName())
                 .categoryName(entity.getCategoryName())
-                .placeId(entity.getPlaceId())
+                .mapPlaceId(entity.getMapPlaceId())
                 .phone(entity.getPhone())
                 .placeName(entity.getPlaceName())
                 .placeUrl(entity.getPlaceUrl())

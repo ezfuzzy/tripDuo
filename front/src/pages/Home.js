@@ -1,183 +1,160 @@
-import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Button, Card, Form, ListGroup, Dropdown } from "react-bootstrap";
-import { useNavigate, useLocation } from "react-router-dom";
-import "../css/Home.css";
+import React, { useEffect, useState } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
+import "keen-slider/keen-slider.min.css"
+import "../css/Home.css"
+import { useDispatch } from "react-redux"
+import LoadingAnimation from "../components/LoadingAnimation"
+import TripDuoCarousel from "../components/TripDuoCarousel"
+import MenuItems from "../components/MenuItems"
+import BestPosts from "../components/BestPosts"
 
 function Home() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [selectedOption, setSelectedOption] = useState("국내");
+  const location = useLocation()
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    if (location.pathname === "/home-abroad") {
-      setSelectedOption("해외");
-    } else {
-      setSelectedOption("국내");
+    // 로딩 애니메이션을 0.5초 동안만 표시
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false)
+    }, 400)
+  }, [])
+
+  const isLoggedIn = localStorage.getItem("token") !== null // 토큰이 존재하는지 확인
+
+  useEffect(() => {
+    if (location.state && location.state.needLogout) {
+      // 로그아웃 처리
+      dispatch({ type: "LOGOUT_USER", payload: null })
+      localStorage.clear()
+
+      // 상태 초기화 (새로고침 효과)
+      navigate("/", { replace: true })
     }
-  }, [location.pathname]);
-
-  // 상태 관리
-  const [searchParams, setSearchParams] = useState({
-    location: "",
-    dateRange: "",
-    travelStyle: "",
-  });
-
-  const handleSelect = (eventKey) => {
-    setSelectedOption(eventKey === "Home" ? "국내" : "해외");
-    if (eventKey === "Home") {
-      navigate("/");
-    } else if (eventKey === "international") {
-      navigate("/home-abroad");
-    }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setSearchParams((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSearch = () => {
-    // 검색 로직을 여기에 추가하세요.
-    console.log("Searching with params:", searchParams);
-    navigate("/search-results", { state: searchParams }); // 검색 결과 페이지로 이동
-  };
+  }, [location, dispatch, navigate])
 
   return (
-    <Container>
-      {/* 상단에 국내/해외 선택 드롭다운 */}
-      <Row className="justify-content-end" style={{ paddingTop: "10px" }}>
-        <Col xs="auto">
-          <Dropdown onSelect={handleSelect}>
-            <Dropdown.Toggle
-              variant="secondary"
-              id="dropdown-basic"
-              size="sm"
-              style={{ width: "60px", padding: "5px 5px" }}>
-              {selectedOption}
-            </Dropdown.Toggle>
+    <div className="container mx-auto px-8 bg-white min-h-screen">
+      {loading && <LoadingAnimation duration={0.3} />}
+      <div className="my-3 relative">
+        <header className="py-8 text-center">
+          <h1 className="mt-2 text-gray-600 font-bold text-xl">여행 메이트와 여행 계획을 한번에!</h1>
+        </header>
+        <div className="relative">
+          <TripDuoCarousel />
+        </div>
+      </div>
 
-            <Dropdown.Menu>
-              <Dropdown.Item eventKey="Home">국내</Dropdown.Item>
-              <Dropdown.Item eventKey="international">해외</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        </Col>
-      </Row>
-      {/* 메인 검색 바 */}
-      <Row className="my-4">
-        <Col md={8} className="mx-auto">
-          <h2>여행 메이트 찾기</h2>
-          <Form>
-            <Form.Group controlId="formLocation">
-              <Form.Label>여행지</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="여행지를 입력하세요..."
-                name="location"
-                value={searchParams.location}
-                onChange={handleInputChange}
+      <div className="my-3 h-8" />
+
+      {/* menu icons */}
+      <div>
+        <MenuItems />
+      </div>
+
+      {/* best posts */}
+      <div className="my-12">
+        <BestPosts />
+      </div>
+
+      <div className="my-12">
+        <h3 className="text-xl font-semibold mb-4 text-tripDuoGreen">국내 추천 여행지(추후 구현)</h3>
+        {!isLoggedIn && ( // 로그인하지 않은 경우에만 보이도록 수정
+          <p className="text-gray-600 text-sm text-left mb-4">로그인하시면, 고객님만을 위한 여행지를 추천해드립니다.</p>
+        )}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {[1, 2, 3, 4].map((product) => (
+            <div key={product} className="bg-white shadow-2xl rounded-lg overflow-hidden">
+              <img
+                src={`https://picsum.photos/200/150?random=${product + 5}`}
+                alt={`여행지 ${product}`}
+                className="w-full h-32 object-cover"
               />
-            </Form.Group>
-            <Form.Group controlId="formDateRange" className="mt-3">
-              <Form.Label>여행 기간</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="여행 기간을 입력하세요..."
-                name="dateRange"
-                value={searchParams.dateRange}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-            <Form.Group controlId="formTravelStyle" className="mt-3">
-              <Form.Label>여행 스타일</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="여행 스타일을 입력하세요..."
-                name="travelStyle"
-                value={searchParams.travelStyle}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-            <Button variant="primary" className="mt-3" onClick={handleSearch}>
-              검색
-            </Button>
-          </Form>
-        </Col>
-      </Row>
+              <div className="p-4">
+                <h4 className="font-bold">{`여행지 ${product}`}</h4>
+                <p className="text-gray-600">여행지 이름</p>
+                <div className="flex justify-end">
+                  <button className="mt-2 bg-tripDuoMint text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition duration-300">
+                    더 보기
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
 
-      {/* 추천 여행 메이트 */}
-      <Row className="my-4">
-        <Col>
-          <h3>추천 여행 메이트</h3>
-          <Row>
-            {/* 예시로 3명의 여행 메이트 카드 표시 */}
-            {[1, 2, 3].map((mate) => (
-              <Col md={4} key={mate} className="mb-3">
-                <Card>
-                  <Card.Img variant="top" src={`https://picsum.photos/200/150?random=${mate}`} />
-                  <Card.Body>
-                    <Card.Title>여행 메이트 {mate}</Card.Title>
-                    <Card.Text>이 메이트는 {mate}번 여행 스타일을 선호합니다.</Card.Text>
-                    <Button variant="primary">프로필 보기</Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        </Col>
-      </Row>
+      {/* 부가기능 */}
+      <div>
+        <h3 className="text-xl font-semibold mb-4 text-tripDuoGreen">여행을 쉽고 간편하게</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="bg-white shadow-2xl rounded-lg overflow-hidden">
+            <img
+              src="https://picsum.photos/200/150?random=11"
+              alt="여행 체크리스트"
+              className="w-full h-32 object-cover"
+            />
+            <div className="p-4">
+              <h4 className="font-bold text-lg">여행 체크리스트</h4>
+              <div className="flex justify-end">
+                <button
+                  onClick={() => navigate("/checklist")}
+                  className="mt-2 bg-tripDuoMint text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition duration-300">
+                  Move &gt;
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white shadow-2xl rounded-lg overflow-hidden">
+            <img src="https://picsum.photos/200/150?random=14" alt="여행 플레너" className="w-full h-32 object-cover" />
+            <div className="p-4">
+              <h4 className="font-bold text-lg">가고싶은 장소 저장하기</h4>
+              <div className="flex justify-end">
+                <button
+                  onClick={() => navigate("/planner")}
+                  className="mt-2 bg-tripDuoMint text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition duration-300">
+                  Move &gt;
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white shadow-2xl rounded-lg overflow-hidden">
+            <img src="https://picsum.photos/200/150?random=12" alt="환율 정보" className="w-full h-32 object-cover" />
 
-      {/* 인기 여행지 섹션 */}
-      <Row className="my-4">
-        <Col>
-          <h3>인기 여행지</h3>
-          <Row>
-            {[1, 2, 3].map((dest) => (
-              <Col md={4} key={dest} className="mb-3">
-                <Card>
-                  <Card.Img variant="top" src={`https://picsum.photos/200/150?random=${dest + 3}`} />
-                  <Card.Body>
-                    <Card.Title>여행지 {dest}</Card.Title>
-                    <Card.Text>이 여행지는 {dest}번 여행 스타일과 잘 어울립니다.</Card.Text>
-                    <Button variant="primary">더 알아보기</Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        </Col>
-      </Row>
-
-      {/* 사용자 리뷰 및 성공 사례 */}
-      <Row className="my-4">
-        <Col>
-          <h3>사용자 리뷰 및 성공 사례</h3>
-          <ListGroup>
-            <ListGroup.Item>리뷰 1: 이 사이트를 통해 최고의 여행 메이트를 만났어요!</ListGroup.Item>
-            <ListGroup.Item>리뷰 2: 함께한 여행이 잊을 수 없는 추억이 되었어요.</ListGroup.Item>
-            <ListGroup.Item>리뷰 3: 다음 여행도 여기서 메이트를 구할 거예요!</ListGroup.Item>
-          </ListGroup>
-        </Col>
-      </Row>
-
-      {/* 뉴스레터 가입 */}
-      <Row className="my-4">
-        <Col md={8} className="mx-auto">
-          <h3>뉴스레터 가입</h3>
-          <Form>
-            <Form.Group controlId="formNewsletter">
-              <Form.Label>이메일 주소</Form.Label>
-              <Form.Control type="email" placeholder="이메일을 입력하세요..." />
-            </Form.Group>
-            <Button variant="primary" className="mt-3">
-              가입하기
-            </Button>
-          </Form>
-        </Col>
-      </Row>
-    </Container>
-  );
+            <div className="p-4">
+              <h4 className="font-bold text-lg">환율 정보</h4>
+              <div className="flex justify-end">
+                <button
+                  onClick={() => navigate("/exchange")}
+                  className="mt-2 bg-tripDuoMint text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition duration-300">
+                  Move &gt;
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white shadow-2xl rounded-lg overflow-hidden">
+            <img
+              src="https://picsum.photos/200/150?random=13"
+              alt="여행 경비 계산기"
+              className="w-full h-32 object-cover"
+            />
+            <div className="p-4">
+              <h4 className="font-bold text-lg">여행 경비 계산기</h4>
+              <div className="flex justify-end">
+                <button
+                  onClick={() => navigate("/calculator")}
+                  className="mt-2 bg-tripDuoMint text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition duration-300">
+                  Move &gt;
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
 
-export default Home;
+export default Home

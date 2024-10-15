@@ -24,7 +24,7 @@ public class PostLikeDto {
     public static PostLikeDto toEntity(PostLike entity){
         return PostLikeDto.builder()
             .id(entity.getId())
-            .postId(entity.getPostId())
+            .postId(entity.getPost().getId())
             .userId(entity.getUserId())
             .createdAt(entity.getCreatedAt())
             .build();

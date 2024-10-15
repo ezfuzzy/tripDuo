@@ -12,9 +12,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,7 +28,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 @Entity
-@Table(name="post_comments")
+@Table(name="post_comments", indexes = {
+		@Index(name = "idx_post_comments_post_id", columnList = "postId")
+})
 public class PostComment {
 
     @Id
@@ -56,6 +60,20 @@ public class PostComment {
         createdAt = LocalDateTime.now();
     }
 
+    @PreUpdate
+    public void onPreUpdate() {
+    	updatedAt = LocalDateTime.now();
+    }
+    
+    public void setParentCommentId(long parentCommentId) {
+    	this.parentCommentId = parentCommentId;
+    }
+    
+    public void softDeletePostComment() {
+    	deletedAt = LocalDateTime.now();
+    	status = CommentStatus.DELETED;
+    }
+    
     public static PostComment toEntity(PostCommentDto dto, UserProfileInfo userProfileInfo) {
         return PostComment.builder()
             .id(dto.getId())

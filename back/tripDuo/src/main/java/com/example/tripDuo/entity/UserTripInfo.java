@@ -1,6 +1,15 @@
 package com.example.tripDuo.entity;
 
-import jakarta.persistence.*;
+import java.util.List;
+
+import com.example.tripDuo.dto.UserTripInfoDto;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,9 +28,6 @@ public class UserTripInfo {
 
     private long userId;
 
-    private Long maxBudget;
-    private Long minBudget;
-
     @Column(columnDefinition = "TEXT[]")
     private String[] tripStyle;
 
@@ -29,11 +35,22 @@ public class UserTripInfo {
     private String[] languages;
     private Boolean smoking;
 
-    @Column(columnDefinition = "TEXT[]")
-    private String[] savedPlaces;
-
-    @Column(columnDefinition = "TEXT[]")
-    private String[] savedCourses;
+    private List<Long> visitedPlaces;
+    private List<Long> savedPlaces;
+    private List<Long> savedCourses;
 
     // toEntity
+    static public UserTripInfo toEntity(UserTripInfoDto dto) {
+    	
+        return UserTripInfo.builder()
+                .id(dto.getId())
+                .userId(dto.getUserId())
+                .tripStyle(dto.getTripStyle())
+                .languages(dto.getLanguages())
+                .smoking(dto.getSmoking())
+                .visitedPlaces(dto.getVisitedPlaces())
+                .savedPlaces(dto.getSavedPlaces())
+                .savedCourses(dto.getSavedCourses())
+                .build();
+    }
 }

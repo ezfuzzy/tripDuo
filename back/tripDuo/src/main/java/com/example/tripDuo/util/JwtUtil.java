@@ -30,6 +30,9 @@ public class JwtUtil {
 	@Value("${jwt.expiration}")
 	private long expiration;
 
+	@Value("${cloud.aws.cloudfront.profile_picture_url}")
+	private String PROFILE_PICTURE_CLOUDFRONT_URL;
+	
 	public JwtUtil(UserRepository userRepo, UserProfileInfoRepository userProfileInfoRepo) {
 		this.userRepo = userRepo;
 		this.userProfileInfoRepo = userProfileInfoRepo;
@@ -37,6 +40,10 @@ public class JwtUtil {
 	
 	public String extractUsername(String token) {
 		return extractClaim(token, Claims::getSubject);
+	}
+	
+	public String extractIssuer(String token) {
+		return extractClaim(token, Claims::getIssuer);
 	}
 
 	public Date extractExpiration(String token) {
@@ -61,11 +68,18 @@ public class JwtUtil {
 
 		User user = userRepo.findByUsername(username);
 		UserProfileInfo userProfileInfo = userProfileInfoRepo.findByUserId(user.getId()); 
+
+		String profilePictureUrl = "";
+		if(userProfileInfo.getProfilePicture() != null && !userProfileInfo.getProfilePicture().isEmpty()) {
+			profilePictureUrl = PROFILE_PICTURE_CLOUDFRONT_URL + userProfileInfo.getProfilePicture();
+		}
 		
 		claims.put("id", user.getId());
 		claims.put("username", user.getUsername());
 		claims.put("nickname", userProfileInfo.getNickname());
-		claims.put("profilePicture", userProfileInfo.getProfilePicture());
+		claims.put("profilePicture", profilePictureUrl);
+		claims.put("role", user.getRole());
+		
 		return createToken(claims, username);
 	}
 
@@ -74,6 +88,7 @@ public class JwtUtil {
 		return Jwts.builder().
 				setClaims(claims)
 				.setSubject(subject)
+		        .setIssuer("tripDuo.com")            
 				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + expiration))
 				.signWith(SignatureAlgorithm.HS256, secret)
@@ -82,7 +97,10 @@ public class JwtUtil {
 
 	public Boolean validateToken(String token, UserDetails userDetails) {
 		final String username = extractUsername(token);
-
-		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+		final String issuer = extractIssuer(token);
+		
+		return (username.equals(userDetails.getUsername()) 
+				&& !isTokenExpired(token)
+				&& issuer.equals(issuer));
 	}
 }

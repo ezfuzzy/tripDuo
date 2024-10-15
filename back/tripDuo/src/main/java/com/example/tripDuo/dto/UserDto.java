@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.example.tripDuo.entity.User;
 import com.example.tripDuo.enums.AccountStatus;
+import com.example.tripDuo.enums.Gender;
 import com.example.tripDuo.enums.UserRole;
 import com.example.tripDuo.enums.VerificationStatus;
 
@@ -24,9 +25,7 @@ public class UserDto {
     private String newPassword;
     private String confirmPassword;
     
-    private String nickname;
-    
-    private String phoneNumber;
+    private String encryptedPhoneNumber;
     private String email; // [note: "인증 받으면 email 로그인 사용 가능"]
 
     private VerificationStatus verificationStatus; // [note: "인증 상태"]
@@ -37,14 +36,21 @@ public class UserDto {
     private LocalDateTime createdAt; 
     private LocalDateTime updatedAt; 
     private LocalDateTime deletedAt; //  [note:"soft delete 지원?"]
-        
+
+    
+    // ### for app ###
+    
+    private String nickname;
+    private Long age;
+    private Gender gender;
+    
     public static UserDto toDto(User entity) {
     	
         return UserDto.builder()
                 .id(entity.getId())
                 .username(entity.getUsername())
                 .password(entity.getPassword())
-                .phoneNumber(entity.getPhoneNumber())
+                .encryptedPhoneNumber(entity.getEncryptedPhoneNumber())
                 .email(entity.getEmail())
                 .verificationStatus(entity.getVerificationStatus())
                 .accountStatus(entity.getAccountStatus())

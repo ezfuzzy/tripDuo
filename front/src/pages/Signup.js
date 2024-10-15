@@ -17,8 +17,9 @@ function Signup() {
       alert("회원가입을 위해선 약관동의가 필요합니다.");
       navigate("/agreement");
     }
-  }, [])
+  }, [termsService, termsPrivacy, essential, navigate])
 
+  //상태관리
   const [username, setUsername] = useState('')
   const [nickname, setNickname] = useState('')
   const [isValidUsername, setIsValidUsername] = useState(false)
@@ -42,14 +43,16 @@ function Signup() {
   const [hasNumber, setHasNumber] = useState(false)
   const [hasSpecialChar, setHasSpecialChar] = useState(false)
   const [isValidLength, setIsValidLength] = useState(false)
+
   const [showUsernameValidateMessage, setShowUsernameValidateMessage] = useState(false)
   const [showPasswordValidateMessage, setShowPasswordValidateMessage] = useState(false)
   const [showConfirmPasswordValidateMessage, setShowConfirmPasswordValidateMessage] = useState(false)
   const [showNicknameValidateMessage, setShowNicknameValidateMessage] = useState(false)
   const [showEmailValidateMessage, setShowEmailValidateMessage] = useState(false)
 
+  const [age, setAge] = useState("")
+  const [gender, setGender] = useState("")
   const [email, setEmail] = useState('')
-
   const [phoneNumber, setPhoneNumber] = useState('')
   const [verificationCode, setVerificationCode] = useState('')
   const [isCodeSent, setIsCodeSent] = useState(false)
@@ -57,30 +60,20 @@ function Signup() {
 
   const [isAllChecked, setIsAllChecked] = useState(false)
 
-
-  const validateUsername = (value) => {
-    // 아이디 : 영어 소문자와 숫자로 이루어진 6~16자리
-    const regex = /^[a-z0-9]{6,16}$/
-    return regex.test(value) || value === ""
-  }
-  //비밀번호 일치 여부 검사
+  //유효성 검사 함수
+  // 아이디 : 영어 소문자와 숫자로 이루어진 6~16자리
+  const validateUsername = (value) => /^[a-z0-9]{6,16}$/.test(value) || value === ""
+  // 닉네임 : 한글, 영어 대소문자, 숫자로 이루어진 2~16자리
+  const validateNickname = (value) => /^[가-힣a-zA-Z0-9]{2,16}$/.test(value) || value === ""
+  // 이메일 : 이메일 형식
+  const validateEmail = (value) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value) || value === ""
+  // 비밀번호 일치 여부 검사
   const validateConfirmPassword = (value) => password === value || value === ""
 
   //비밀번호 보이기/숨기기
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword)
-  };
-
-  const validateNickname = (value) => {
-    // 닉네임 : 한글, 영어 대소문자, 숫자로 이루어진 2~16자리
-    const regex = /^[가-힣a-zA-Z0-9]{2,16}$/
-    return regex.test(value) || value === ""
-  }
-  const validateEmail = (value) => {
-    // 이메일 : 이메일 형식
-    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-    return regex.test(value) || value === ""
-  }
+  const togglePasswordVisibility = () => setShowPassword(!showPassword)
+  
+  //모든 유효성 검사 통과했는지 검사
   const updateIsAllChecked = (updates = {}) => {
     const newState = {
       isValidUsername,
@@ -93,9 +86,7 @@ function Signup() {
       isNicknameUnique,
       ...updates
     }
-  
-    const allChecked = Object.values(newState).every(Boolean)
-    setIsAllChecked(allChecked)
+    setIsAllChecked(Object.values(newState).every(Boolean))
   }
 
   //아이디, 닉네임 중복검사
@@ -103,8 +94,8 @@ function Signup() {
     axios.post(`/api/v1/users/check/${type}`, value, {
       headers: { 'Content-Type': 'text/plain' },
     })
-      .then((response) => {
-        if (response.data) {
+      .then((res) => {
+        if (res.data) {
           setExist(true)
           updateIsAllChecked({ [type === 'username' ? 'isUsernameUnique' : 'isNicknameUnique']: false })
         } else {
@@ -120,34 +111,37 @@ function Signup() {
       })
   }
 
+  //아이디 중복 확인
   const handleCheckUsername = () => {
     if (isValidUsername) {
       checkAvailability('username', username, setIsUsernameExist, setIsUsernameUnique)
-    } else{
+    } else {
       alert("아이디 형식에 맞지 않습니다")
       updateIsAllChecked({ isUsernameUnique: false })
     }
   }
 
+  //닉네임 중복 확인
   const handleCheckNickname = () => {
     if (isValidNickname) {
       checkAvailability('nickname', nickname, setIsNicknameExist, setIsNicknameUnique)
-    } else{
+    } else {
       alert("닉네임 형식에 맞지 않습니다")
       updateIsAllChecked({ isNicknameUnique: false })
     }
   }
 
+  //아이디 입력 핸들러
   const usernameHandleChange = (e) => {
     const value = e.target.value
     setUsername(value)
     const validUsername = validateUsername(value)
     setIsValidUsername(validUsername)
     setShowUsernameValidateMessage(value !== "" && !validUsername)
-   
     updateIsAllChecked({ isValidUsername: validUsername, isUsernameUnique: false })
   }
 
+  //비밀번호 입력 핸들러 및 유효성 검사
   const passwordHandleChange = (e) => {
     const value = e.target.value
     setPassword(value)
@@ -174,7 +168,8 @@ function Signup() {
 
     updateIsAllChecked({ isValidPassword: validPassword })
   }
-  //비밀번호 확인
+
+  //비밀번호 확인 핸들러
   const confirmPasswordHandleChange = (e) => {
     const value = e.target.value
     setConfirmPassword(value)
@@ -184,27 +179,25 @@ function Signup() {
     // 비밀번호 확인이 입력되지 않은 경우 메시지 숨기기
     setShowConfirmPasswordValidateMessage(value !== "" && !passwordMatched)
 
-    updateIsAllChecked({ isPasswordMatched: passwordMatched})
+    updateIsAllChecked({ isPasswordMatched: passwordMatched })
   }
 
+  //닉네임 입력 핸들러
   const nicknameHandleChange = (e) => {
     const value = e.target.value
     setNickname(value)
     const validNickname = validateNickname(value)
     setIsValidNickname(validNickname)
     setShowNicknameValidateMessage(value !== "" && !validNickname)
-
-    updateIsAllChecked({ isValidNickname: validNickname})
+    updateIsAllChecked({ isValidNickname: validNickname })
   }
 
+  //전화번호 입력 핸들러
   const phoneNumberHandleChange = (e) => {
-    const { value } = e.target;
-    // 숫자만 추출
-    const numericValue = value.replace(/\D/g, '');
-    // 전화번호 형식으로 변환
-    const formattedValue = formatPhoneNumber(numericValue);
+    const { value } = e.target
+    const numericValue = value.replace(/\D/g, '') // 숫자만 추출
+    const formattedValue = formatPhoneNumber(numericValue) // 전화번호 형식으로 변환
     setPhoneNumber(formattedValue)
-
     updateIsAllChecked()
   }
   //전화번호 포맷처리 함수
@@ -217,45 +210,49 @@ function Signup() {
   //실제 저장용 값('-' 제거)
   const getUnformattedPhoneNumber = () => phoneNumber.replace(/\D/g, '')
 
+  //이메일 입력 핸들러
   const emailHandleChange = (e) => {
     const value = e.target.value
     const validEmail = validateEmail(value)
     setEmail(value)
     setIsValidEmail(validEmail)
     setShowEmailValidateMessage(value !== "" && !validEmail)
-
-    updateIsAllChecked({isValidEmail: validEmail})
+    updateIsAllChecked({ isValidEmail: validEmail })
   }
 
+  //인증코드 입력 핸들러
   const verificationCodeHandleChange = (e) => {
     setVerificationCode(e.target.value)
     updateIsAllChecked()
   }
 
+  //인증코드 전송
   const sendVerificationCode = () => {
-    //인증요청 전송 api
     axios.post('/api/v1/auth/phone/send-code', phoneNumber)
-      .then((response) => {
+      .then(() => {
         setIsCodeSent(true)
         alert('인증 코드가 전송되었습니다.')
       })
-      .catch((error) => {
+      .catch(() => {
         alert('인증 코드 전송에 실패했습니다.')
       })
   }
+
+  //휴대폰 번호 인증 확인
   const verifyPhoneNumber = () => {
     //인증 확인 api
-    axios.post('/api/v1/auth/phone/verify-code', { phoneNumber, code:verificationCode })
-      .then((response) => {
+    axios.post('/api/v1/auth/phone/verify-code', { phoneNumber, code: verificationCode })
+      .then(() => {
         setIsVerified(true)
-        updateIsAllChecked({isVerified: true})
+        updateIsAllChecked({ isVerified: true })
         alert('휴대폰 번호가 성공적으로 인증되었습니다.')
       })
-      .catch((error) => {
+      .catch(() => {
         alert('인증 코드가 잘못되었습니다.')
       })
   }
 
+  //JWT토큰 처리 후 로그인 상태 저장
   const processToken = (token) => {
     if (token.startsWith("Bearer+")) {
       localStorage.setItem("token", token)
@@ -279,30 +276,34 @@ function Signup() {
     }
   }
 
+  //회원가입 처리
   const handleSignUp = (e) => {
     e.preventDefault()
-    if(!isAllChecked){
+    if (!isAllChecked) {
       alert("모든 항목을 올바르게 입력해주세요.")
       return
     }
-    //회원가입 api
+    
     axios.post(`/api/v1/auth/signup`, {
       username,
       password,
       confirmPassword,
       nickname,
-      phoneNumber: getUnformattedPhoneNumber(),
-      email })
-      .then((response) => {
-        processToken(response.data)
+      encryptedPhoneNumber: getUnformattedPhoneNumber(),
+      age,
+      gender,
+      email
+    })
+      .then((res) => {
+        processToken(res.data)
       })
-      .catch((error) => {
-        console.error('회원가입에 실패하였습니다');
+      .catch(() => {
+        alert('회원가입에 실패하였습니다');
       })
   }
 
   return (
-    <div className="isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
+    <div className="isolate bg-white px-6 py-24 sm:py-24 lg:px-8">
       <div className="mx-auto max-w-2xl text-center">
         <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">회원가입</h2>
       </div>
@@ -439,8 +440,49 @@ function Signup() {
                 이미 사용중인 닉네임 입니다.
               </p>
             )}
-
           </div>
+
+          {/* 나이 입력 필드 */}
+          <div className="sm:col-span-3">
+            <label htmlFor="age" className="block text-sm font-semibold leading-6 text-gray-900">
+              Age
+            </label>
+            <input
+              id="age"
+              name="age"
+              type="number"
+              value={age}
+              onChange={(e) => setAge(e.target.value)}
+              className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            />
+          </div>
+
+          {/* 성별 선택 필드 */}
+          <div className="sm:col-span-3">
+            <label htmlFor="gender" className="block text-sm font-semibold leading-6 text-gray-900">
+              Gender
+            </label>
+            <select
+              id="gender"
+              name="gender"
+              value={gender}
+              onChange={(e) => setGender(e.target.value)}
+              className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            >
+              <option value="">Select Gender</option>
+              <option value="MALE">MALE</option>
+              <option value="FEMALE">FEMALE</option>
+            </select>
+          </div>
+
+          {/* 안내 메시지 추가 */}
+          <div className="sm:col-span-6">
+            <p style={{ marginTop: '-15px' }} className="text-sm text-gray-600">
+              성별, 나이를 입력해야 모든 기능을 이용하실 수 있습니다.
+            </p>
+          </div>
+
+
           <div className="sm:col-span-6">
             <label htmlFor="email" className="block text-sm font-semibold leading-6 text-gray-900">
               Email
