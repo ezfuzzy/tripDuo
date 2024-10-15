@@ -1,12 +1,10 @@
-import { faCrown, faDove, faFeather, faPlane, faUser } from "@fortawesome/free-solid-svg-icons";
-
 export const carouselItems = [
   { name: "item1", imageSrc: "KOR_01.jpg", linkSrc: "/posts/course?di=Domestic" },
   { name: "item2", imageSrc: "AUS_01.jpg", linkSrc: "/posts/course?di=International" },
   { name: "item3", imageSrc: "RUS_01.jpg", linkSrc: "/posts/mate?di=Domestic" },
   { name: "item4", imageSrc: "USA_01.jpg", linkSrc: "/posts/mate?di=International" },
   { name: "item5", imageSrc: "BRA_01.jpg", linkSrc: "/checklist" },
-];
+]
 
 export const menuItems = [
   { name: "국내 여행코스", imageSrc: "course-domestic.png", linkSrc: "/posts/course?di=Domestic" },
@@ -17,7 +15,7 @@ export const menuItems = [
   { name: "장소 저장하기", imageSrc: "save-place.png", linkSrc: "/myPlace" },
   { name: "여행 체크리스트", imageSrc: "checklist.png", linkSrc: "/checklist" },
   { name: "환율 정보", imageSrc: "exchange.png", linkSrc: "/exchangeInfo" },
-];
+]
 
 export const reviewPositiveTagList = [
   { key: 1, keyword: "COMMUNICATION", text: "메시지에 항상 빠르게 답변해주어 소통이 원활했어요." },
@@ -29,7 +27,7 @@ export const reviewPositiveTagList = [
   { key: 7, keyword: "FRIENDLY", text: "함께 시간을 보내는 내내 즐거웠고, 좋은 친구를 얻은 기분이었어요." },
   { key: 8, keyword: "PAY", text: "비용 분담에 있어 투명하고 공정하게 처리하여 신뢰가 갔어요." },
   { key: 9, keyword: "CLEAN", text: "깔끔한 여행 스타일로 쾌적한 환경을 유지해주었어요." },
-];
+]
 
 export const reviewNegativeTagList = [
   { key: 1, keyword: "COMMUNICATION", text: "메시지 답변이 느려서 소통에 어려움을 느꼈어요." },
@@ -41,7 +39,7 @@ export const reviewNegativeTagList = [
   { key: 7, keyword: "FRIENDLY", text: "함께 시간을 보내는 것이 불편했어요." },
   { key: 8, keyword: "PAY", text: "비용 분담에 있어 불투명하고 불공정하여 신뢰가 떨어졌어요." },
   { key: 9, keyword: "CLEAN", text: "개인 위생 관리가 부족하여 함께 여행하는 것이 불편했어요." },
-];
+]
 
 export const cityMapping = {
   // 대한민국
@@ -119,7 +117,7 @@ export const cityMapping = {
   요하네스버그: "ZAF_Johannesburg_01",
   더반: "ZAF_Durban_01",
   프리토리아: "ZAF_Pretoria_01",
-};
+}
 
 export const countryMapping = {
   대한민국: "KOR_01",
@@ -137,7 +135,7 @@ export const countryMapping = {
   호주: "AUS_01",
   러시아: "RUS_01",
   "남아프리카 공화국": "ZAF_01",
-};
+}
 
 //테스트 데이터
 export const citiesByCountry = {
@@ -156,15 +154,15 @@ export const citiesByCountry = {
   러시아: ["모스크바", "상트페테르부르크", "노보시비르스크", "예카테린부르크"],
   "남아프리카 공활국": ["케이프타운", "요하네스버그", "더반", "프리토리아"],
   // Add more countries and cities as needed
-};
+}
 
 export const ratingConfig = [
-  { min: 0, max: 1499, icon: faFeather, color: "gray" }, // 이코노미
-  { min: 1500, max: 2999, icon: faFeather, color: "blue" }, // 프리미엄 이코노미
-  { min: 3000, max: 4499, icon: faDove, color: "gray" }, // 비지니스
-  { min: 4500, max: 5999, icon: faDove, color: "blue" }, // 프리미엄 비지니스
-  { min: 6000, max: 7499, icon: faPlane, color: "gray" }, // 퍼스트
-  { min: 7500, max: 8999, icon: faPlane, color: "blue" }, // 프리미엄 퍼스트
-  { min: 9000, max: 10000, icon: faCrown, color: "yellow" }, // 로얄
-  { min: -Infinity, max: Infinity, icon: faUser, color: "black" }, // 기본값
-];
+  { min: 0, max: 1499, imageSrc: "economy-01.svg" }, // 이코노미
+  { min: 1500, max: 2999, imageSrc: "economy-02.svg" }, // 프리미엄 이코노미
+  { min: 3000, max: 4499, imageSrc: "business-01.svg" }, // 비지니스
+  { min: 4500, max: 5999, imageSrc: "business-02.svg" }, // 프리미엄 비지니스
+  { min: 6000, max: 7499, imageSrc: "first-01.svg" }, // 퍼스트
+  { min: 7500, max: 8999, imageSrc: "first-02.svg" }, // 프리미엄 퍼스트
+  { min: 9000, max: 10000, imageSrc: "royal-01.svg" }, // 로얄
+  { min: -Infinity, max: Infinity, imageSrc: "default.svg" }, // 기본값
+]
