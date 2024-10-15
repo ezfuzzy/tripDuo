@@ -305,7 +305,7 @@ function NavBar() {
           <li className="mx-2">
             <NavLink
               className={`font-bold text-lg inline-flex items-center justify-center p-3 border-b-2 rounded-t-lg transition-all duration-300 ${
-                location.pathname === "/posts/mate"
+                location.pathname === "/posts/community"
                   ? "border-b-2 border-tripDuoGreen text-tripDuoGreen transform scale-105"
                   : "border-transparent hover:text-gray-600 hover:border-gray-300"
               } group`}
