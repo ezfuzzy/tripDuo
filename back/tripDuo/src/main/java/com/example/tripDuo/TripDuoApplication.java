@@ -2,6 +2,9 @@ package com.example.tripDuo;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -40,6 +43,8 @@ import com.example.tripDuo.repository.UserFollowRepository;
 import com.example.tripDuo.repository.UserProfileInfoRepository;
 import com.example.tripDuo.repository.UserRepository;
 import com.example.tripDuo.util.EncryptionUtil;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @PropertySource(value = "classpath:custom.properties")
 @SpringBootApplication
@@ -79,6 +84,8 @@ public class TripDuoApplication {
 	
 	@Autowired
 	private EncryptionUtil encryptionUtil;
+	
+	ObjectMapper objectMapper = new ObjectMapper();
 	
 	@EventListener(ApplicationReadyEvent.class)
 	public void init() throws Exception {
@@ -136,22 +143,22 @@ public class TripDuoApplication {
 		UserProfileInfo upi10 = UserProfileInfo.builder().user(savedUser10).nickname("user09").age((long) 35).ratings((long) 6700).gender(Gender.MALE).profileMessage("안녕하세요5").curLocation("광주").build();
 		upi10 = userProfileInfoRepo.save(upi10);
 		
-		User u11 = User.builder().username("user6").password(encoder.encode("password6")).encryptedPhoneNumber(encryptionUtil.encrypt("01067890123")).email("user6@example.com").verificationStatus(VerificationStatus.VERIFIED).accountStatus(AccountStatus.ACTIVE).role(UserRole.USER).build();
+		User u11 = User.builder().username("user06").password(encoder.encode("password6")).encryptedPhoneNumber(encryptionUtil.encrypt("01067890123")).email("user6@example.com").verificationStatus(VerificationStatus.VERIFIED).accountStatus(AccountStatus.ACTIVE).role(UserRole.USER).build();
 		User savedUser11 = userRepo.save(u11);
 		UserProfileInfo upi11 = UserProfileInfo.builder().user(savedUser11).nickname("user10").age((long) 35).ratings((long) 6700).gender(Gender.MALE).profileMessage("안녕하세요5").curLocation("광주").build();
 		upi11 = userProfileInfoRepo.save(upi11);
 		
-		User u12 = User.builder().username("user7").password(encoder.encode("password7")).encryptedPhoneNumber(encryptionUtil.encrypt("01078901234")).email("user7@example.com").verificationStatus(VerificationStatus.VERIFIED).accountStatus(AccountStatus.ACTIVE).role(UserRole.USER).build();
+		User u12 = User.builder().username("user07").password(encoder.encode("password7")).encryptedPhoneNumber(encryptionUtil.encrypt("01078901234")).email("user7@example.com").verificationStatus(VerificationStatus.VERIFIED).accountStatus(AccountStatus.ACTIVE).role(UserRole.USER).build();
 		User savedUser12 = userRepo.save(u12);
 		UserProfileInfo upi12 = UserProfileInfo.builder().user(savedUser12).nickname("user11").age((long) 35).ratings((long) 6700).gender(Gender.MALE).profileMessage("안녕하세요5").curLocation("광주").build();
 		upi12 = userProfileInfoRepo.save(upi12);
 		
-		User u13 = User.builder().username("user8").password(encoder.encode("password8")).encryptedPhoneNumber(encryptionUtil.encrypt("01089012345")).email("user8@example.com").verificationStatus(VerificationStatus.VERIFIED).accountStatus(AccountStatus.ACTIVE).role(UserRole.USER).build();
+		User u13 = User.builder().username("user08").password(encoder.encode("password8")).encryptedPhoneNumber(encryptionUtil.encrypt("01089012345")).email("user8@example.com").verificationStatus(VerificationStatus.VERIFIED).accountStatus(AccountStatus.ACTIVE).role(UserRole.USER).build();
 		User savedUser13 = userRepo.save(u13);
 		UserProfileInfo upi13 = UserProfileInfo.builder().user(savedUser13).nickname("user12").age((long) 35).ratings((long) 6700).gender(Gender.MALE).profileMessage("안녕하세요5").curLocation("광주").build();
 		upi13 = userProfileInfoRepo.save(upi13);
 		
-		User u14 = User.builder().username("user9").password(encoder.encode("password9")).encryptedPhoneNumber(encryptionUtil.encrypt("01090123456")).email("user9@example.com").verificationStatus(VerificationStatus.VERIFIED).accountStatus(AccountStatus.ACTIVE).role(UserRole.USER).build();
+		User u14 = User.builder().username("user09").password(encoder.encode("password9")).encryptedPhoneNumber(encryptionUtil.encrypt("01090123456")).email("user9@example.com").verificationStatus(VerificationStatus.VERIFIED).accountStatus(AccountStatus.ACTIVE).role(UserRole.USER).build();
 		User savedUser14 = userRepo.save(u14);
 		UserProfileInfo upi14 = UserProfileInfo.builder().user(savedUser14).nickname("user13").age((long) 35).ratings((long) 6700).gender(Gender.MALE).profileMessage("안녕하세요5").curLocation("광주").build();
 		upi14 = userProfileInfoRepo.save(upi14);
@@ -169,8 +176,148 @@ public class TripDuoApplication {
 		Post p5 = Post.builder().userProfileInfo(upi10).type(PostType.MATE).title("같이 와인밭 가보실분ㅜㅜ 패키지라 2인 이상 필수에요").content("내용입니다 555").country("프랑스").city("파리").viewCount(567L).likeCount(128L).status(PostStatus.OPEN).build();
 		Post p6 = Post.builder().userProfileInfo(upi6).type(PostType.MATE).title("스페인 혼자가는데 무서워서 같이 가실 메이트 구해요").content("내용입니다 666").country("스페인").city("바르셀로나").viewCount(789L).likeCount(98L).status(PostStatus.CLOSED).build();
 		
-		Post p7 = Post.builder().userProfileInfo(upi6).type(PostType.COURSE).title("course 1").content("내용입니다 666").country("중국").city("상하이").status(PostStatus.CLOSED).build();
-		Post p8 = Post.builder().userProfileInfo(upi7).type(PostType.COURSE).title("course 2").content("내용입니다 666").country("영국").city("런던").viewCount(789L).likeCount(98L).rating(4.5F).status(PostStatus.CLOSED).build();
+		Map<String, Object> place7_1 = new HashMap<>();
+		place7_1.put("id", "10808261");
+		place7_1.put("phone", "1661-2626");
+		place7_1.put("dayIndex", 0);
+		place7_1.put("position", Map.of("La", 126.49272304493574, "Ma", 33.50683984835887));
+		place7_1.put("placeMemo", "9시 도착");
+		place7_1.put("place_url", "http://place.map.kakao.com/10808261");
+		place7_1.put("placeIndex", 0);
+		place7_1.put("place_name", "제주국제공항");
+		place7_1.put("address_name", "제주특별자치도 제주시 용담이동 2002");
+		place7_1.put("category_name", "교통,수송 > 교통시설 > 공항");
+		place7_1.put("road_address_name", "제주특별자치도 제주시 공항로 2");
+
+		Map<String, Object> place7_2 = new HashMap<>();
+		place7_2.put("id", "55095867");
+		place7_2.put("phone", "");
+		place7_2.put("dayIndex", 0);
+		place7_2.put("position", Map.of("La", 126.396035021153, "Ma", 33.4192918926001));
+		place7_2.put("placeMemo", "10시 하우스오브레퓨즈 전시구경");
+		place7_2.put("place_url", "http://place.map.kakao.com/55095867");
+		place7_2.put("placeIndex", 1);
+		place7_2.put("place_name", "하우스오브레퓨즈");
+		place7_2.put("address_name", "제주특별자치도 제주시 애월읍 유수암리 2819");
+		place7_2.put("category_name", "문화,예술 > 문화시설");
+		place7_2.put("road_address_name", "제주특별자치도 제주시 애월읍 하소로 735");
+
+		Map<String, Object> day1 = new HashMap<>();
+		day1.put("places", List.of(place7_1, place7_2));
+		day1.put("dayMemo", "먹고 자고 싸돌아다니고");
+
+		List<Map<String, Object>> postDataList = List.of(day1);
+		JsonNode postDataJson7 = objectMapper.convertValue(postDataList, JsonNode.class);
+
+		Post p7 = Post.builder()
+		        .userProfileInfo(upi10)  // 실제 UserProfileInfo 객체를 넣어야 합니다.
+		        .type(PostType.COURSE)
+		        .title("제주도 1박2일 빡빡한 일정")
+		        .content(null)
+		        .country("대한민국")
+		        .city("제주")
+		        .startDate("2024-10-24T15:00:00.000Z")
+		        .endDate("2024-10-26T14:59:59.999Z")
+		        .postData(postDataJson7)  // JSON으로 변환된 배열 형태의 postData
+		        .tags(new String[] {"#체력", "#시간은돈", "#금요일연차"})
+		        .viewCount(666L)
+		        .likeCount(666L)
+		        .commentCount(0L)
+		        .rating(0.0F)
+		        .status(PostStatus.PUBLIC)
+		        .createdAt(LocalDateTime.of(2024, 10, 12, 16, 37, 4, 177342))
+		        .build();
+		
+		Map<String, Object> place8_1 = new HashMap<>();
+		place8_1.put("id", "1756449505");
+		place8_1.put("phone", "02-777-7376");
+		place8_1.put("dayIndex", 0);
+		place8_1.put("position", Map.of("La", 126.985832385269, "Ma", 37.5644547619695));
+		place8_1.put("placeMemo", "시작은 남산에서 가까운 번화가인 명동에서! 명동성당 근처 맛집이니 방문해보자.");
+		place8_1.put("place_url", "http://place.map.kakao.com/1756449505");
+		place8_1.put("placeIndex", 0);
+		place8_1.put("place_name", "명동고로케");
+		place8_1.put("address_name", "서울 중구 명동1가 6-1");
+		place8_1.put("category_name", "음식점 > 간식");
+		place8_1.put("road_address_name", "서울 중구 명동11길 9");
+
+		Map<String, Object> place8_2 = new HashMap<>();
+		place8_2.put("id", "8246127");
+		place8_2.put("phone", "02-6358-5533");
+		place8_2.put("dayIndex", 0);
+		place8_2.put("position", Map.of("La", 126.99443158318867, "Ma", 37.559311690784995));
+		place8_2.put("placeMemo", "고즈넉한 분위기를 즐기며 찻집에서 여유로운 시간을..");
+		place8_2.put("place_url", "http://place.map.kakao.com/8246127");
+		place8_2.put("placeIndex", 1);
+		place8_2.put("place_name", "남산골한옥마을");
+		place8_2.put("address_name", "서울 중구 필동2가 84-1");
+		place8_2.put("category_name", "여행 > 관광,명소");
+		place8_2.put("road_address_name", "서울 중구 퇴계로34길 28");
+
+		Map<String, Object> place8_3 = new HashMap<>();
+		place8_3.put("id", "1642591897");
+		place8_3.put("phone", "02-777-7929");
+		place8_3.put("dayIndex", 0);
+		place8_3.put("position", Map.of("La", 126.985746661115, "Ma", 37.5569494480227));
+		place8_3.put("placeMemo", "남산의 명물 돈까스. 어느 돈까스 집을 가야할지 모르겠다면 여기로!");
+		place8_3.put("place_url", "http://place.map.kakao.com/1642591897");
+		place8_3.put("placeIndex", 2);
+		place8_3.put("place_name", "101번지 남산돈까스 본점");
+		place8_3.put("address_name", "서울 중구 남산동2가 49-24");
+		place8_3.put("category_name", "음식점 > 일식 > 돈까스,우동");
+		place8_3.put("road_address_name", "서울 중구 소파로 101");
+
+		Map<String, Object> place8_4 = new HashMap<>();
+		place8_4.put("id", "8233285");
+		place8_4.put("phone", "02-753-2403");
+		place8_4.put("dayIndex", 0);
+		place8_4.put("position", Map.of("La", 126.98403099725546, "Ma", 37.55658072049463));
+		place8_4.put("placeMemo", "대표적인 이동수단. 왕복표를 사는게 이득이다.");
+		place8_4.put("place_url", "http://place.map.kakao.com/8233285");
+		place8_4.put("placeIndex", 3);
+		place8_4.put("place_name", "남산케이블카");
+		place8_4.put("address_name", "서울 중구 회현동1가 산 1-19");
+		place8_4.put("category_name", "여행 > 관광,명소 > 케이블카");
+		place8_4.put("road_address_name", "서울 중구 소파로 83");
+
+		Map<String, Object> place8_5 = new HashMap<>();
+		place8_5.put("id", "1629378951");
+		place8_5.put("phone", "02-3455-9277");
+		place8_5.put("dayIndex", 0);
+		place8_5.put("position", Map.of("La", 126.988230622132, "Ma", 37.5513049702718));
+		place8_5.put("placeMemo", "전망대 이용시간 월~금,일 : 오전10시~ 오후11시, 토: 오전10시~오후12시");
+		place8_5.put("place_url", "http://place.map.kakao.com/1629378951");
+		place8_5.put("placeIndex", 4);
+		place8_5.put("place_name", "N서울타워");
+		place8_5.put("address_name", "서울 용산구 용산동2가 산 1-3");
+		place8_5.put("category_name", "여행 > 관광,명소 > 전망대");
+		place8_5.put("road_address_name", "서울 용산구 남산공원길 105");
+
+		Map<String, Object> day8_1 = new HashMap<>();
+		day8_1.put("places", List.of(place8_1, place8_2, place8_3, place8_4, place8_5));
+		day8_1.put("dayMemo", "서울 남산 탐방 코스");
+
+		List<Map<String, Object>> postDataList8 = List.of(day8_1);
+		JsonNode postDataJson8 = objectMapper.convertValue(postDataList8, JsonNode.class);
+
+		Post p8 = Post.builder()
+		        .userProfileInfo(upi11)  // 실제 UserProfileInfo 객체를 넣어야 합니다.
+		        .type(PostType.COURSE)
+		        .title("서울 남산 1일 코스")
+		        .content(null)
+		        .country("대한민국")
+		        .city("서울")
+		        .startDate("2024-11-10T09:00:00.000Z")
+		        .endDate("2024-11-10T18:00:00.000Z")
+		        .postData(postDataJson8)
+		        .tags(new String[] {"#서울여행", "#남산", "#맛집탐방", "#전망대"})
+		        .viewCount(777L)
+		        .likeCount(777L)
+		        .commentCount(0L)
+		        .rating(0.0F)
+		        .status(PostStatus.PUBLIC)
+		        .createdAt(LocalDateTime.now())
+		        .build();
 		Post p9 = Post.builder().userProfileInfo(upi8).type(PostType.COURSE).title("course 3").content("내용입니다 666").country("프랑스").city("파리").viewCount(789L).likeCount(98L).rating(3.3F).status(PostStatus.DELETED).build();
 		Post p10 = Post.builder().userProfileInfo(upi9).type(PostType.COURSE).title("course 4").content("내용입니다 666").country("미국").city("로스앤젤레스").viewCount(789L).likeCount(98L).rating(4.7F).status(PostStatus.CLOSED).build();
 		Post p11 = Post.builder().userProfileInfo(upi10).type(PostType.COURSE).title("course 5").content("내용입니다 666").country("호주").city("멜버른").viewCount(789L).likeCount(98L).rating(4.8F).status(PostStatus.CLOSED).build();
