@@ -132,7 +132,7 @@ public class AuthServiceImpl implements AuthService {
 		// ### username, nickname, password 유효성 체크 ###
 		
 		String usernamePattern = "^[a-z0-9]{6,16}$";
-        String nicknamePattern = "^[가-힣a-zA-Z0-9]{4,16}$";
+        String nicknamePattern = "^(?=.*[가-힣])(?!.*[^a-zA-Z가-힣0-9])[a-zA-Z가-힣0-9]{2,8}$|^(?!.*[가-힣])(?!.*[^a-zA-Z0-9])[a-zA-Z0-9]{4,16}$\r\n";
         String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,22}$";
 
 		if(!Pattern.matches(usernamePattern, userDto.getUsername()) || 
