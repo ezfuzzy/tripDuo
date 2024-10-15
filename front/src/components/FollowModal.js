@@ -138,11 +138,7 @@ function FollowModal({ id, ff, onClose }) {
                 <p className="text-center text-gray-500">팔로워가 없습니다.</p>
               ) : (
                 followerList.map((follower) => {
-<<<<<<< HEAD
                   const imageSrc = getRatingDetails(follower.ratings || 0)
-=======
-                  const { icon: ratingIcon, color: ratingColor } = getRatingDetails(follower.ratings || 0)
->>>>>>> c9829fa (add: block/follow 모달 리스트 외부 클릭시 닫기)
                   return (
                     <li
                       key={follower.userId}
