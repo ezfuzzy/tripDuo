@@ -19,7 +19,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '17'
-          distribution: 'oracle'
+          distribution: 'temurin'
 
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
