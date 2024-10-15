@@ -100,8 +100,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<UserProfileInfo> getUserProfileInfoList() {
-		return userProfileInfoRepo.findAll(); 
+	public Map<String, Object> getUserProfileInfoList() {
+		List<UserProfileInfo> userProfileInfoList = userProfileInfoRepo.findAll();
+		
+		return Map.of(
+					"userList", userProfileInfoList,
+					"cloudfrontUrl", PROFILE_PICTURE_CLOUDFRONT_URL
+				);
 	}
 
 	
@@ -525,7 +530,7 @@ public class UserServiceImpl implements UserService {
 		UserReview updatedUserReview = userReviewRepo.findByRevieweeIdAndReviewerUserProfileInfo_User_Id(userReviewDto.getRevieweeId(), userReviewDto.getReviewerId());
 
 		// 수정된 리뷰 반환
-		return userReviewDto.toDto(updatedUserReview, PROFILE_PICTURE_CLOUDFRONT_URL);
+		return UserReviewDto.toDto(updatedUserReview, PROFILE_PICTURE_CLOUDFRONT_URL);
 	}
 	
 	/**
