@@ -1,20 +1,20 @@
-import { faEye, faMessage, faStar, faUser } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import axios from "axios";
-import DOMPurify from "dompurify";
-import React, { createRef, useEffect, useRef, useState } from "react";
-import { shallowEqual, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-import { NavLink } from "react-router-dom";
-import useWebSocket from "../../components/useWebSocket";
-import LoadingAnimation from "../../components/LoadingAnimation";
-import Modal from "react-modal";
-import { ratingConfig } from "../../constants/mapping";
+import { faEye, faMessage, faStar, faUser } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import axios from "axios"
+import DOMPurify from "dompurify"
+import React, { createRef, useEffect, useRef, useState } from "react"
+import { shallowEqual, useSelector } from "react-redux"
+import { useNavigate, useParams } from "react-router"
+import { NavLink } from "react-router-dom"
+import useWebSocket from "../../components/useWebSocket"
+import LoadingAnimation from "../../components/LoadingAnimation"
+import Modal from "react-modal"
+import { ratingConfig } from "../../constants/mapping"
 
 //새로 등록한 댓글을 추가할 인덱스
-let commentIndex = 0;
+let commentIndex = 0
 //댓글 글자수 제한
-const maxLength = 3000;
+const maxLength = 3000
 
 // 모달 스타일 설정
 const customStyles = {
@@ -26,59 +26,59 @@ const customStyles = {
     marginRight: "-50%",
     transform: "translate(-50%, -50%)",
   },
-};
+}
 
 function CommunityBoardDetail(props) {
   //로딩 상태 추가
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
 
-  const { id } = useParams(); // 게시물 번호
+  const { id } = useParams() // 게시물 번호
   // 로그인된 유저 정보
-  const userId = useSelector((state) => state.userData.id, shallowEqual); // 로그인된 user의 id
-  const username = useSelector((state) => state.userData.username, shallowEqual); // 로그인된 username
-  const nickname = useSelector((state) => state.userData.nickname, shallowEqual); // 로그인된 유저의 nickname
-  const profilePicture = useSelector((state) => state.userData.profilePicture, shallowEqual); // 로그인된 유저의 profilePicture
+  const userId = useSelector((state) => state.userData.id, shallowEqual) // 로그인된 user의 id
+  const username = useSelector((state) => state.userData.username, shallowEqual) // 로그인된 username
+  const nickname = useSelector((state) => state.userData.nickname, shallowEqual) // 로그인된 유저의 nickname
+  const profilePicture = useSelector((state) => state.userData.profilePicture, shallowEqual) // 로그인된 유저의 profilePicture
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
-  const [post, setPost] = useState({ tags: [] });
+  const [post, setPost] = useState({ tags: [] })
 
   // 작성자 프로필 설정
-  const [writerProfile, setWriterProfile] = useState({});
+  const [writerProfile, setWriterProfile] = useState({})
 
   // 별점 버튼 설정
-  const [isRated, setRated] = useState(false);
-  const [newPostRating, setNewPostRating] = useState(0); // post 에 새로 매기는 점수
+  const [isRated, setRated] = useState(false)
+  const [newPostRating, setNewPostRating] = useState(0) // post 에 새로 매기는 점수
 
-  const [ratedInfo, setRatedInfo] = useState({}); // 사용자에 대한 postRating 관련 데이터
-  const [myRating, setMyRating] = useState(0); // 사용자가 매긴 점수
-  const [postRating, setPostRating] = useState(0); // post의 총점
+  const [ratedInfo, setRatedInfo] = useState({}) // 사용자에 대한 postRating 관련 데이터
+  const [myRating, setMyRating] = useState(0) // 사용자가 매긴 점수
+  const [postRating, setPostRating] = useState(0) // post의 총점
 
   //덧글 관련 설정 ( to do )
   // 댓글 목록
-  const [commentList, setCommentList] = useState([]);
+  const [commentList, setCommentList] = useState([])
   //댓글의 현재 페이지 번호
-  const [pageNum, setPageNum] = useState(1);
+  const [pageNum, setPageNum] = useState(1)
   //댓글 전체의 페이지 개수
-  const [totalCommentPages, setTotalCommentPages] = useState(0);
+  const [totalCommentPages, setTotalCommentPages] = useState(0)
   //현재 로딩중인지 여부
-  const [isCommentLoading, setCommentLoading] = useState(false);
+  const [isCommentLoading, setCommentLoading] = useState(false)
   //원글의 댓글 내용 상태값
-  const [commentInnerText, setCommentInnerText] = useState("");
+  const [commentInnerText, setCommentInnerText] = useState("")
   //dropdown 상태 정의
-  const [dropdownIndex, setDropdownIndex] = useState(null);
+  const [dropdownIndex, setDropdownIndex] = useState(null)
   //dropdown 참조값
-  const dropdownRefs = useRef([]);
+  const dropdownRefs = useRef([])
   // 각 답글 폼 상태를 관리하는 배열
-  const [replyTexts, setReplyTexts] = useState({});
+  const [replyTexts, setReplyTexts] = useState({})
   // 각 수정 폼 상태를 관리하는 배열
-  const [editTexts, setEditTexts] = useState({});
+  const [editTexts, setEditTexts] = useState({})
 
-  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
+  const [isModalOpen, setIsModalOpen] = useState(false) // 모달 상태
 
   // HTML 로 구성된 Content 관리
-  const [contentHTML, setContentHTML] = useState(); // HTML 로 구성된 Content
-  const cleanHTML = DOMPurify.sanitize(contentHTML); // HTML 클린징으로 보안처리
+  const [contentHTML, setContentHTML] = useState() // HTML 로 구성된 Content
+  const cleanHTML = DOMPurify.sanitize(contentHTML) // HTML 클린징으로 보안처리
 
   //--------------------------------------------------------------------------------------------------------------rating 관리 부
 
@@ -86,62 +86,62 @@ function CommunityBoardDetail(props) {
   const getRatingDetails = (ratings) => {
     return (
       ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { icon: faUser, color: "black" }
-    ); // 기본값
-  };
+    ) // 기본값
+  }
 
-  const { icon: ratingIcon, color: ratingColor } = getRatingDetails(writerProfile.ratings || 0);
+  const { icon: ratingIcon, color: ratingColor } = getRatingDetails(writerProfile.ratings || 0)
   //---------------------------------------------------------------------------------------------------------------rating 관리부
 
   useEffect(() => {
     // 로딩 애니메이션을 0.5초 동안만 표시
-    setLoading(true);
+    setLoading(true)
     setTimeout(() => {
-      setLoading(false);
-    }, 700);
+      setLoading(false)
+    }, 700)
 
     axios
       .get(`/api/v1/posts/${id}`)
       .then((res) => {
-        console.log(res.data);
+        console.log(res.data)
 
-        setPost(res.data.dto);
-        setContentHTML(res.data.dto.content);
+        setPost(res.data.dto)
+        setContentHTML(res.data.dto.content)
 
-        setPostRating(res.data.dto.rating || 0); // 총점
+        setPostRating(res.data.dto.rating || 0) // 총점
 
         //현재 사용자의 postRating = id, postId, userId, rating
-        console.log(res.data.postRating);
-        setRatedInfo(res.data.postRating || {}); // 현재 사용자가 매긴 rating 의 정보
-        setMyRating(res.data.postRating.rating || ""); // 현재 사용자가 매긴 rating 의 값 (과거 값)
+        console.log(res.data.postRating)
+        setRatedInfo(res.data.postRating || {}) // 현재 사용자가 매긴 rating 의 정보
+        setMyRating(res.data.postRating.rating || "") // 현재 사용자가 매긴 rating 의 값 (과거 값)
 
-        console.log(isRated);
+        console.log(isRated)
         if (res.data.postRating === "") {
-          setRated(false);
+          setRated(false)
         } else {
-          setRated(true);
+          setRated(true)
         }
 
-        setWriterProfile(res.data.userProfileInfo);
+        setWriterProfile(res.data.userProfileInfo)
 
         //댓글 목록이 존재하는지 확인 후, 배열에 ref라는 방 추가
         const list = Array.isArray(res.data.commentList)
           ? res.data.commentList.map((item) => {
-              item.ref = createRef();
-              return item;
+              item.ref = createRef()
+              return item
             })
-          : [];
+          : []
         //댓글 목록
-        setCommentList(list);
+        setCommentList(list)
 
-        setTotalCommentPages(res.data.totalCommentPages);
+        setTotalCommentPages(res.data.totalCommentPages)
       })
-      .catch((error) => console.log(error));
-  }, [id, isRated, myRating]);
+      .catch((error) => console.log(error))
+  }, [id, isRated, myRating])
 
   // 프로필 보기 클릭
   const handleClickProfile = () => {
-    navigate(`/users/${writerProfile.id}/profile`);
-  };
+    navigate(`/users/${writerProfile.id}/profile`)
+  }
 
   // --------------댓글 관련 이벤트
   // 답글 텍스트 상태 업데이트
@@ -149,28 +149,28 @@ function CommunityBoardDetail(props) {
     setReplyTexts((prev) => ({
       ...prev,
       [index]: value,
-    }));
-  };
+    }))
+  }
 
   // 수정 텍스트 상태 업데이트
   const handleEditTextChange = (index, value) => {
     setEditTexts((prev) => ({
       ...prev,
       [index]: value,
-    }));
-  };
+    }))
+  }
 
   // 드롭다운 토글 함수
   const toggleDropdown = (e, index) => {
-    e.stopPropagation();
+    e.stopPropagation()
     if (dropdownIndex === index) {
       // 같은 인덱스를 다시 클릭하면 드롭다운을 닫음
-      setDropdownIndex(null);
+      setDropdownIndex(null)
     } else {
       // 새로운 인덱스를 클릭하면 해당 드롭다운을 열음
-      setDropdownIndex(index);
+      setDropdownIndex(index)
     }
-  };
+  }
 
   // 부모 요소에 클릭 이벤트를 추가하여 드롭다운 닫기 처리
   const handleClickOutside = (event) => {
@@ -179,20 +179,20 @@ function CommunityBoardDetail(props) {
       dropdownRefs.current[dropdownIndex] &&
       !dropdownRefs.current[dropdownIndex].contains(event.target)
     ) {
-      setDropdownIndex(null);
+      setDropdownIndex(null)
     }
-  };
+  }
 
   // 신고 처리 함수
   const handleReportComment = (commentId) => {
     // 신고 기능 구현
-    alert(`댓글 ID ${commentId}가 신고되었습니다.`);
+    alert(`댓글 ID ${commentId}가 신고되었습니다.`)
     // 추가로 서버에 신고 요청을 보내는 로직을 여기에 추가
-  };
+  }
 
   //댓글 등록
   const handleCommentSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     //댓글 정보
     const data = {
@@ -204,29 +204,29 @@ function CommunityBoardDetail(props) {
       // parentCommentId: e.target.parentCommentId.value,
       toUsername: e.target.toUsername?.value || "",
       status: "PUBLIC",
-    };
+    }
 
     axios
       .post(`/api/v1/posts/${post.id}/comments`, data)
       .then((res) => {
-        console.log(res.data);
+        console.log(res.data)
         //방금 저장한 댓글의 정보
-        const newComment = res.data;
+        const newComment = res.data
         //댓글의 정보에 ref라는 방을 추가하고 거기에 참조값을 담을 object넣어준다
-        newComment.ref = createRef();
+        newComment.ref = createRef()
         //새로운 배열을 만들면서 기존 배열에 저장된 아이템을 펼쳐 놓아서 상태값을 변경
-        setCommentList([...commentList, newComment]);
+        setCommentList([...commentList, newComment])
         //댓글 입력한 textarea 초기화
-        setCommentInnerText("");
+        setCommentInnerText("")
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   //답글 등록
   const handleReplySubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     const data = {
       postId: id,
       userId: userId,
@@ -236,34 +236,34 @@ function CommunityBoardDetail(props) {
       toUsername: e.target.toUsername.value,
       parentCommentId: e.target.parentCommentId.value,
       status: "PUBLIC",
-    };
+    }
 
     axios
       .post(`/api/v1/posts/${post.id}/comments`, data)
       .then((res) => {
-        console.log(res.data);
+        console.log(res.data)
         //방금 저장한 댓글의 정보
-        const newComment = res.data;
+        const newComment = res.data
         //댓글의 정보에 ref라는 방을 추가하고 거기에 참조값을 담을 object넣어준다
-        newComment.ref = createRef();
+        newComment.ref = createRef()
         //이 댓글을 commentIndex에 끼워 넣기
-        commentList.splice(commentIndex, 0, res.data);
+        commentList.splice(commentIndex, 0, res.data)
         //새로운 배열을 만들면서 기존 배열에 저장된 아이템을 펼쳐 놓아서 상태값을 변경
-        setCommentList([...commentList]);
+        setCommentList([...commentList])
         //댓글 입력한 textarea 초기화
-        e.target.content.value = "";
+        e.target.content.value = ""
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   //댓글 삭제
   const handleDeleteComment = (commentId, ref) => {
     axios
       .delete(`/api/v1/posts/${id}/comments/${commentId}`)
       .then((res) => {
-        ref.current.querySelector(".commentSource").outerHTML = "<p>삭제된 댓글입니다</p>";
+        ref.current.querySelector(".commentSource").outerHTML = "<p>삭제된 댓글입니다</p>"
         /*
             commentId.current는 li요소의 참조값
             commentId.current.querySelector("dl")은 li요소의 자손 중에서 dl요소를 찾아서 참조값 가져오기
@@ -271,14 +271,14 @@ function CommunityBoardDetail(props) {
           */
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   //댓글 수정 버튼
   const handleUpdateComment = (e) => {
-    e.preventDefault();
-    const action = e.target.action;
+    e.preventDefault()
+    const action = e.target.action
     const updatedData = {
       id: e.target.commentId.value,
       postId: e.target.id.value,
@@ -290,7 +290,7 @@ function CommunityBoardDetail(props) {
       toUsername: e.target.toUsername.value,
       status: "PUBLIC",
       createdAt: e.target.createdAt.value,
-    };
+    }
     axios
       .put(action, updatedData)
       .then((res) => {
@@ -301,85 +301,85 @@ function CommunityBoardDetail(props) {
             return {
               ...item,
               content: e.target.content.value,
-            };
+            }
           }
-          return item;
-        });
+          return item
+        })
         //새로운 배열로 상태값 변경
-        setCommentList(newCommentList);
+        setCommentList(newCommentList)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   //댓글 더보기 버튼
   const handleMoreComment = () => {
     //현재 댓글의 페이지가 마지막 페이지인지 여부를 알아내서
-    const isLast = pageNum >= totalCommentPages;
+    const isLast = pageNum >= totalCommentPages
     //만일 마지막 페이지라면
     if (isLast) {
-      alert("댓글의 마지막 페이지 입니다");
+      alert("댓글의 마지막 페이지 입니다")
     } else {
       //마지막 페이지가 아니라면
       //로딩 상태로 바꿔준다
-      setCommentLoading(true);
+      setCommentLoading(true)
       //요청할 댓글의 게시물id
-      const postId = id;
+      const postId = id
       //요청할 댓글의 페이지
-      const page = pageNum + 1;
+      const page = pageNum + 1
       //서버에 데이터 추가 요청
       axios
         .get(`/api/v1/posts/${postId}/comments?pageNum=${page}`)
         .then((res) => {
-          console.log(res.data);
+          console.log(res.data)
           //res.data에는 댓글 목록과 전체 페이지 개수가 들어있다.
           //댓글 목록에 ref를 추가한 새로운 배열을 얻어내서
           const newList = res.data.commentList.map((item) => {
-            item.ref = createRef();
-            return item;
-          });
+            item.ref = createRef()
+            return item
+          })
           //현재까지 출력된 댓글 목록에 새로운 댓글 목록을 추가해 새로운 배열로 상태값 변경
           //댓글 목록 데이터 변경하기
-          setCommentList([...commentList, ...newList]);
-          setTotalCommentPages(res.data.totalCommentPages);
+          setCommentList([...commentList, ...newList])
+          setTotalCommentPages(res.data.totalCommentPages)
           //증가된 페이지 번호도 반영
-          setPageNum(page);
+          setPageNum(page)
 
-          setCommentLoading(false);
+          setCommentLoading(false)
         })
         .catch((error) => {
-          console.log(error);
-          setCommentLoading(false);
-        });
+          console.log(error)
+          setCommentLoading(false)
+        })
     }
-  };
+  }
 
   // 모달 열기
   const openModal = (type) => {
-    setIsModalOpen(true);
-  };
+    setIsModalOpen(true)
+  }
 
   // 모달 닫기
   const closeModal = () => {
-    setIsModalOpen(false);
-  };
+    setIsModalOpen(false)
+  }
 
   // 별을 클릭했을 때 rating 을 저장
   const handleRating = (index) => {
-    setNewPostRating(index);
-  };
+    setNewPostRating(index)
+  }
 
   const handlePostRating = () => {
     axios
       .post(`/api/v1/posts/${post.id}/ratings`, { userId: userId, postId: post.id, rating: newPostRating })
       .then((res) => {
-        console.log(res.data);
-        closeModal();
-        setRated(true);
+        console.log(res.data)
+        closeModal()
+        setRated(true)
       })
-      .catch((error) => console.log(error));
-  };
+      .catch((error) => console.log(error))
+  }
 
   const handleUpdateRating = () => {
     axios
@@ -390,35 +390,35 @@ function CommunityBoardDetail(props) {
         rating: newPostRating,
       })
       .then((res) => {
-        console.log(res.data);
-        setMyRating(newPostRating);
-        closeModal();
+        console.log(res.data)
+        setMyRating(newPostRating)
+        closeModal()
       })
-      .catch((error) => console.log(error));
-  };
+      .catch((error) => console.log(error))
+  }
 
   const handleDeleteRating = () => {
     if (window.confirm) {
-      console.log(ratedInfo);
+      console.log(ratedInfo)
       axios
         .delete(`/api/v1/posts/${post.id}/ratings/${ratedInfo.id}`)
         .then((res) => {
-          console.log(res.data);
-          setRated(false);
-          alert("별점을 삭제하였습니다.");
+          console.log(res.data)
+          setRated(false)
+          alert("별점을 삭제하였습니다.")
         })
-        .catch((error) => console.log(error));
+        .catch((error) => console.log(error))
     }
-  };
+  }
   // ---------------------------------------------------- 채팅 관련
-  const { stompClient, isConnected, messages, setMessages } = useWebSocket();
-  const [subscribedRoomIds, setSubscribedRoomIds] = useState([]); // 내가 구독한 목록
+  const { stompClient, isConnected, messages, setMessages } = useWebSocket()
+  const [subscribedRoomIds, setSubscribedRoomIds] = useState([]) // 내가 구독한 목록
 
   const handleClickChat = () => {
-    console.log("채팅 버튼 클릭");
-    console.log("1번" + userId);
+    console.log("채팅 버튼 클릭")
+    console.log("1번" + userId)
 
-    console.log("2번" + writerProfile.id);
+    console.log("2번" + writerProfile.id)
     axios
       .post("/api/chat/rooms", {
         ownerId: userId, // 방 생성자를 명시
@@ -427,66 +427,66 @@ function CommunityBoardDetail(props) {
         title: `${username}님과${writerProfile.nickname}님의 채팅`,
       })
       .then((res) => {
-        const chatRoomId = res.data;
-        navigate(`/chatroom/${chatRoomId.id}`);
-        alert("채팅방 생성.");
+        const chatRoomId = res.data
+        navigate(`/chatroom/${chatRoomId.id}`)
+        alert("채팅방 생성.")
 
-        selectRoom(chatRoomId.id); // 방 선택
+        selectRoom(chatRoomId.id) // 방 선택
       })
       .catch((error) => {
-        console.log(error);
-        alert("채팅방 생성에 실패했습니다.");
-      });
-  };
+        console.log(error)
+        alert("채팅방 생성에 실패했습니다.")
+      })
+  }
 
   // 채팅방 선택시 메시지 불러오기
   const selectRoom = (roomId) => {
     if (!stompClient || !stompClient.connected) {
-      console.error("WebSocket not connected yet");
-      return;
+      console.error("WebSocket not connected yet")
+      return
     }
 
-    navigate(`/chatroom/${roomId}`);
+    navigate(`/chatroom/${roomId}`)
 
     axios
       .get(`/api/chat/rooms/${roomId}`)
       .then((res) => {
-        const chatMessageroom = res.data;
-        console.log("Response:", res.data);
+        const chatMessageroom = res.data
+        console.log("Response:", res.data)
 
         const chatMessagetopic =
           chatMessageroom.type === "ONE_ON_ONE"
             ? `/user/private/${chatMessageroom.id}`
-            : `/topic/group/${chatMessageroom.id}`;
+            : `/topic/group/${chatMessageroom.id}`
 
         stompClient.subscribe(chatMessagetopic, (message) => {
-          const parsedMessage = JSON.parse(message.body);
-          setMessages((prevMessages) => [...prevMessages, parsedMessage]);
-        });
+          const parsedMessage = JSON.parse(message.body)
+          setMessages((prevMessages) => [...prevMessages, parsedMessage])
+        })
 
         const newRoomTopic =
           chatMessageroom.type === "ONE_ON_ONE"
             ? `/user/newroom/private/${chatMessageroom.id}`
-            : `/topic/newroom/group/${chatMessageroom.id}`;
+            : `/topic/newroom/group/${chatMessageroom.id}`
         stompClient.subscribe(newRoomTopic, (message) => {
-          const parsedMessage = JSON.parse(message.body);
-          setMessages((prevMessages) => [...prevMessages, parsedMessage]);
-        });
+          const parsedMessage = JSON.parse(message.body)
+          setMessages((prevMessages) => [...prevMessages, parsedMessage])
+        })
       })
 
       .catch((error) => {
-        console.error("Error fetching room info:", error.response ? error.response.data : error.message);
-      });
+        console.error("Error fetching room info:", error.response ? error.response.data : error.message)
+      })
 
     axios
       .get(`/api/chat/rooms/${roomId}/getMessages`)
       .then((response) => {
-        setMessages(response.data);
+        setMessages(response.data)
       })
       .catch((error) => {
-        console.error("Error fetching messages:", error);
-      });
-  };
+        console.error("Error fetching messages:", error)
+      })
+  }
 
   return (
     <>
@@ -509,28 +509,33 @@ function CommunityBoardDetail(props) {
                   <FontAwesomeIcon icon={faStar} className={`w-6 h-6 text-yellow-400`} />
                   {postRating || ""}
                 </p>
-                {!isRated ? (
-                  <p>
-                    <button
-                      className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
-                      onClick={openModal}>
-                      별점
-                    </button>
-                  </p>
-                ) : (
-                  <p>
-                    <button
-                      className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100 mr-2"
-                      onClick={openModal}>
-                      <FontAwesomeIcon icon={faStar} className={`w-4 h-4 text-yellow-400`} />
-                      {myRating || ""}
-                    </button>
-                    <button
-                      className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
-                      onClick={handleDeleteRating}>
-                      삭제
-                    </button>
-                  </p>
+                {/* 작성자는 별점 작성 랜더링 하지 않는다 */}
+                {userId !== post.userId && (
+                  <div>
+                    {!isRated ? (
+                      <p>
+                        <button
+                          className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
+                          onClick={openModal}>
+                          별점
+                        </button>
+                      </p>
+                    ) : (
+                      <p>
+                        <button
+                          className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100 mr-2"
+                          onClick={openModal}>
+                          <FontAwesomeIcon icon={faStar} className={`w-4 h-4 text-yellow-400`} />
+                          {myRating || ""}
+                        </button>
+                        <button
+                          className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
+                          onClick={handleDeleteRating}>
+                          삭제
+                        </button>
+                      </p>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
@@ -621,13 +626,13 @@ function CommunityBoardDetail(props) {
                       axios
                         .delete(`/api/v1/posts/${id}`)
                         .then((res) => {
-                          alert("글 삭제 성공");
+                          alert("글 삭제 성공")
                           // 국/해외 페이지 별 리다일렉트
                           post.country === "대한민국"
                             ? navigate(`/posts/community?di=Domestic`)
-                            : navigate(`/posts/community?di=International`);
+                            : navigate(`/posts/community?di=International`)
                         })
-                        .catch((error) => console.log(error));
+                        .catch((error) => console.log(error))
                     }}>
                     삭제
                   </button>
@@ -738,8 +743,8 @@ function CommunityBoardDetail(props) {
                                     <button
                                       className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
                                       onClick={() => {
-                                        setDropdownIndex(null);
-                                        handleReportComment(item.id);
+                                        setDropdownIndex(null)
+                                        handleReportComment(item.id)
                                       }}>
                                       신고
                                     </button>
@@ -748,17 +753,17 @@ function CommunityBoardDetail(props) {
                                         <button
                                           className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
                                           onClick={() => {
-                                            setDropdownIndex(null);
-                                            const updateForm = item.ref.current.querySelector(".updateCommentForm");
-                                            updateForm.classList.remove("hidden");
+                                            setDropdownIndex(null)
+                                            const updateForm = item.ref.current.querySelector(".updateCommentForm")
+                                            updateForm.classList.remove("hidden")
                                           }}>
                                           수정
                                         </button>
                                         <button
                                           className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
                                           onClick={() => {
-                                            setDropdownIndex(null);
-                                            handleDeleteComment(item.id, item.ref);
+                                            setDropdownIndex(null)
+                                            handleDeleteComment(item.id, item.ref)
                                           }}>
                                           삭제
                                         </button>
@@ -779,15 +784,15 @@ function CommunityBoardDetail(props) {
                             <button
                               className="ml-4 text-blue-500 hover:text-blue-700 text-sm"
                               onClick={(e) => {
-                                const text = e.target.innerText;
-                                const replyForm = item.ref.current.querySelector(".replyCommentForm");
+                                const text = e.target.innerText
+                                const replyForm = item.ref.current.querySelector(".replyCommentForm")
 
                                 if (text === "답글") {
-                                  e.target.innerText = "취소";
-                                  replyForm.classList.remove("hidden");
+                                  e.target.innerText = "취소"
+                                  replyForm.classList.remove("hidden")
                                 } else {
-                                  e.target.innerText = "답글";
-                                  replyForm.classList.add("hidden");
+                                  e.target.innerText = "답글"
+                                  replyForm.classList.add("hidden")
                                 }
                               }}>
                               답글
@@ -814,7 +819,7 @@ function CommunityBoardDetail(props) {
                                 value={replyTexts[index] || ""}
                                 maxLength={maxLength}
                                 onChange={(e) => {
-                                  handleReplyTextChange(index, e.target.value);
+                                  handleReplyTextChange(index, e.target.value)
                                 }}
                               />
                               <div className="char-limit absolute top-2 right-2 text-gray-500 text-sm">
@@ -826,9 +831,9 @@ function CommunityBoardDetail(props) {
                                 type="submit"
                                 className="text-blue-500 hover:text-blue-700 font-semibold"
                                 onClick={() => {
-                                  commentIndex = index + 1;
-                                  const replyForm = item.ref.current.querySelector(".replyCommentForm");
-                                  replyForm.classList.add("hidden");
+                                  commentIndex = index + 1
+                                  const replyForm = item.ref.current.querySelector(".replyCommentForm")
+                                  replyForm.classList.add("hidden")
                                 }}>
                                 답글 등록
                               </button>
@@ -863,8 +868,8 @@ function CommunityBoardDetail(props) {
                                 type="submit"
                                 className="text-blue-500 hover:text-blue-700 font-semibold"
                                 onClick={() => {
-                                  const updateForm = item.ref.current.querySelector(".updateCommentForm");
-                                  updateForm.classList.add("hidden");
+                                  const updateForm = item.ref.current.querySelector(".updateCommentForm")
+                                  updateForm.classList.add("hidden")
                                 }}>
                                 수정 확인
                               </button>
@@ -921,7 +926,7 @@ function CommunityBoardDetail(props) {
         </div>
       </Modal>
     </>
-  );
+  )
 }
 
-export default CommunityBoardDetail;
+export default CommunityBoardDetail
