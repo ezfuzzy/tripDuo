@@ -81,7 +81,13 @@ function BestPosts(props) {
                 </div>
                 <h4
                   className="font-bold text- cursor-pointer overflow-hidden whitespace-nowrap text-ellipsis"
-                  onClick={() => navigate(`/posts/${post.type.toLowerCase()}/${post.id}/detail`)}>
+                  onClick={() => {
+                    const di =
+                      postList === postLists.domesticCourse || postList === postLists.domesticMate
+                        ? "Domestic"
+                        : "International";
+                    navigate(`/posts/${post.type.toLowerCase()}/${post.id}/detail?di=${di}`);
+                  }}>
                   {post.title}
                 </h4>
                 <div className="flex justify-between items-center mt-7">
