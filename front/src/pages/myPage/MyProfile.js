@@ -419,40 +419,8 @@ function MyProfile(props) {
     setEditTexts((prev) => ({
       ...prev,
       [index]: value,
-    }))
-  }
-
-  // ---------------------------------------------------- 채팅 관련
-  const { stompClient, isConnected } = useWebSocket()
-
-  const handleClickChat = () => {
-    console.log("채팅 버튼 클릭")
-    console.log("1번" + userId)
-    if (isConnected) {
-      console.log("웹 소켓 연결 정상")
-    } else {
-      console.log("웹 소켓 비정상")
-    }
-    console.log("2번" + id)
-    axios
-      .post("/api/chat/rooms", {
-        ownerId: userId, // 방 생성자를 명시
-        participantsList: [userId, id], // 대화 참가자 목록
-        type: "ONE_ON_ONE",
-        title: `${nickname}님과${profile.nickname}님의 채팅`,
-      })
-      .then((res) => {
-        const newRoom = res.data
-
-        alert("채팅방 생성.")
-
-        navigate(`/chatroom/${newRoom.id}`, { state: { chatRooms: newRoom } })
-      })
-      .catch((error) => {
-        console.log(error)
-        alert("채팅방 생성에 실패했습니다.")
-      })
-  }
+    }));
+  };
 
   return (
     <div className="container mx-auto p-4 max-w-[900px] shadow-md rounded-lg">
@@ -582,11 +550,6 @@ function MyProfile(props) {
                 <button className={followButtonClasses} onClick={handleClickFollow}>
                   {followingStatus && <FontAwesomeIcon icon={faCheck} />}
                   &nbsp;팔로우
-                </button>
-                <button
-                  onClick={handleClickChat}
-                  className="px-4 py-2 text-sm font-medium rounded-md bg-green-500 text-white">
-                  &nbsp;Message
                 </button>
                 <div id="toast_message" ref={toastMessageRef}>
                   {profile.nickname}님을 팔로우하기 시작합니다
