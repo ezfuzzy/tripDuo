@@ -24,12 +24,10 @@ function MyPage() {
 
   // rating 값에 따른 아이콘과 색상 계산 //
   const getRatingDetails = (ratings) => {
-    return (
-      ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { icon: faUser, color: "black" }
-    ) // 기본값
+    return ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { imageSrc: "default.svg" } // 기본값
   }
 
-  const { icon: ratingIcon, color: ratingColor } = getRatingDetails(profile.ratings || 0)
+  const imageSrc = getRatingDetails(profile.ratings || 0)
   //---------------------------------------------------------------------------------------------------------------rating 관리부
 
   // 접속된 사용자가 없거나 본인이 아니라면 home 으로 리다일렉트
@@ -49,7 +47,7 @@ function MyPage() {
         }
       })
       .catch((error) => console.log(error))
-  }, [id, userId, navigate, ratingIcon])
+  }, [id, userId, navigate, imageSrc])
 
   //------------------------------------------------------------------------ 이벤트 관리부
   // 프로필 보기 클릭
@@ -97,7 +95,7 @@ function MyPage() {
       <div className="m-3 flex justify-center">
         <div className="flex items-center gap-x-6 m-3">
           {imageData ? (
-            <img src={imageData} className="w-20 h-20 rounded-full shadow-lg" />
+            <img src={imageData} className="w-20 h-20 rounded-full shadow-lg" alt="profile" />
           ) : (
             <img
               className="bi bi-person-circle w-20 h-20"
@@ -106,10 +104,17 @@ function MyPage() {
             />
           )}
           <div>
-            <h3 className="text-base font-semibold leading-7 tracking-tight text-gray-900">
-              <FontAwesomeIcon icon={ratingIcon} color={ratingColor} className="mr-2"></FontAwesomeIcon>
-              {profile.nickname}
-            </h3>
+            <div className="flex items-center">
+              <img
+                className="w-6 h-6 mr-2"
+                src={`${process.env.PUBLIC_URL}/img/userRatingImages/${imageSrc.imageSrc}`}
+                alt="user rating"
+                title={`${imageSrc.imageSrc.replace(".svg", "")}`}
+              />
+              <span className="text-base font-semibold leading-7 tracking-tight text-gray-900">
+                {profile.nickname}
+              </span>
+            </div>
             <p className="text-sm font-semibold leading-6 text-green-600">
               {profile.gender} / {profile.age}
             </p>
