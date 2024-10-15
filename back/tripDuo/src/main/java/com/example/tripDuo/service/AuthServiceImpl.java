@@ -1,5 +1,6 @@
 package com.example.tripDuo.service;
 
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.json.JSONObject;
@@ -92,6 +93,9 @@ public class AuthServiceImpl implements AuthService {
 	@Value("${kakao.redirect.uri}")
 	private String KAKAO_REDIRECT_URI;
 	
+	@Value("${cloud.aws.cloudfront.profile_picture_url}")
+	private String PROFILE_PICTURE_CLOUDFRONT_URL;
+	
 	public AuthServiceImpl(JwtUtil jwtUtil, AuthenticationManager authManager, 
 			PasswordEncoder encoder, UserRepository userRepo, 
 			UserProfileInfoRepository userProfileInfoRepo,
@@ -111,28 +115,43 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public String login(UserDto userDto) throws Exception {
+	public Map<String, Object> login(UserDto userDto) throws Exception {
 
+		UserProfileInfoDto foundUserProfileInfoDto = null;
+		
 		try {
 			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDto.getUsername(),
 					userDto.getPassword());
 
 			authManager.authenticate(authToken);
 			User foundUser = userRepo.findByUsername(userDto.getUsername());
+			foundUserProfileInfoDto = UserProfileInfoDto.toDto(userProfileInfoRepo.findById(foundUser.getId()).get(), PROFILE_PICTURE_CLOUDFRONT_URL);
+			
 			if(foundUser.getAccountStatus() != AccountStatus.ACTIVE) {
 				if(foundUser.getDeletedAt() != null) {
-					return "아이디 또는 비밀번호가 틀립니다";
+					return Map.of(
+								"message", "아이디 또는 비밀번호가 틀립니다"
+							);
 				} else {
-					return "정지되었거나 비활성화된 계정입니다";
+					return Map.of(
+							"message", "정지되었거나 비활성화된 계정입니다"
+						);
 				}
 					
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "아이디 또는 비밀번호가 틀렸습니다"; // id or password is wrong
+			return Map.of(
+					"message", "아이디 또는 비밀번호가 틀립니다"
+				);
 		}
+		
 		String token = jwtUtil.generateToken(userDto.getUsername());
-		return "Bearer+" + token;
+		
+		return Map.of(
+					"token", "Bearer+" + token,
+					"userProfileInfo", foundUserProfileInfoDto
+				);
 	}
 
 	@Override
