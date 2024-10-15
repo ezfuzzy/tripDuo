@@ -1,82 +1,75 @@
-import {
-  faCircleExclamation,
-  faEye,
-  faHeart,
-  faMessage,
-  faShareNodes,
-  faUser,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import axios from "axios";
-import DOMPurify from "dompurify";
-import moment from "moment";
-import React, { createRef, useEffect, useRef, useState } from "react";
-import Calendar from "react-calendar";
-import { shallowEqual, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-import { NavLink } from "react-router-dom";
-import useWebSocket from "../../components/useWebSocket";
-import LoadingAnimation from "../../components/LoadingAnimation";
-import { ratingConfig } from "../../constants/mapping";
+import { faCircleExclamation, faEye, faHeart, faMessage, faShareNodes, faUser } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import axios from "axios"
+import DOMPurify from "dompurify"
+import moment from "moment"
+import React, { createRef, useEffect, useRef, useState } from "react"
+import Calendar from "react-calendar"
+import { shallowEqual, useSelector } from "react-redux"
+import { useNavigate, useParams } from "react-router"
+import { NavLink } from "react-router-dom"
+import useWebSocket from "../../components/useWebSocket"
+import LoadingAnimation from "../../components/LoadingAnimation"
+import { ratingConfig } from "../../constants/mapping"
 
 //새로 등록한 댓글을 추가할 인덱스
-let commentIndex = 0;
+let commentIndex = 0
 //댓글 글자수 제한
-const maxLength = 3000;
+const maxLength = 3000
 
 function MateBoardDetail(props) {
   //로딩 상태 추가
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
 
-  const { id } = useParams(); // 게시물 번호
+  const { id } = useParams() // 게시물 번호
   // 로그인된 유저 정보
-  const userId = useSelector((state) => state.userData.id, shallowEqual); // 로그인된 user의 id
-  const username = useSelector((state) => state.userData.username, shallowEqual); // 로그인된 username
-  const nickname = useSelector((state) => state.userData.nickname, shallowEqual); // 로그인된 유저의 nickname
-  const profilePicture = useSelector((state) => state.userData.profilePicture, shallowEqual); // 로그인된 유저의 profilePicture
+  const userId = useSelector((state) => state.userData.id, shallowEqual) // 로그인된 user의 id
+  const username = useSelector((state) => state.userData.username, shallowEqual) // 로그인된 username
+  const nickname = useSelector((state) => state.userData.nickname, shallowEqual) // 로그인된 유저의 nickname
+  const profilePicture = useSelector((state) => state.userData.profilePicture, shallowEqual) // 로그인된 유저의 profilePicture
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
-  const [post, setPost] = useState({ tags: [] });
-  const [isRecruited, setIsRecruited] = useState(false);
+  const [post, setPost] = useState({ tags: [] })
+  const [isRecruited, setIsRecruited] = useState(false)
 
   // 작성자 프로필 설정
-  const [writerProfile, setWriterProfile] = useState({});
+  const [writerProfile, setWriterProfile] = useState({})
 
   //좋아요 버튼 설정
-  const [isLiked, setLiked] = useState(false);
+  const [isLiked, setLiked] = useState(false)
 
   //덧글 관련 설정 ( to do )
   // 댓글 목록
-  const [commentList, setCommentList] = useState([]);
+  const [commentList, setCommentList] = useState([])
   //댓글의 현재 페이지 번호
-  const [pageNum, setPageNum] = useState(1);
+  const [pageNum, setPageNum] = useState(1)
   //댓글 전체의 페이지 개수
-  const [totalCommentPages, setTotalCommentPages] = useState(0);
+  const [totalCommentPages, setTotalCommentPages] = useState(0)
   //현재 로딩중인지 여부
-  const [isCommentLoading, setCommentLoading] = useState(false);
+  const [isCommentLoading, setCommentLoading] = useState(false)
   //원글의 댓글 내용 상태값
-  const [commentInnerText, setCommentInnerText] = useState("");
+  const [commentInnerText, setCommentInnerText] = useState("")
   //dropdown 상태 정의
-  const [dropdownIndex, setDropdownIndex] = useState(null);
+  const [dropdownIndex, setDropdownIndex] = useState(null)
   //dropdown 참조값
-  const dropdownRefs = useRef([]);
+  const dropdownRefs = useRef([])
   // 각 답글 폼 상태를 관리하는 배열
-  const [replyTexts, setReplyTexts] = useState({});
+  const [replyTexts, setReplyTexts] = useState({})
   // 각 수정 폼 상태를 관리하는 배열
-  const [editTexts, setEditTexts] = useState({});
+  const [editTexts, setEditTexts] = useState({})
 
   // 선택된 날짜
-  const [selectedDateRange, setSelectedDateRange] = useState([null, null]);
+  const [selectedDateRange, setSelectedDateRange] = useState([null, null])
 
   // HTML 로 구성된 Content 관리
-  const [contentHTML, setContentHTML] = useState(); // HTML 로 구성된 Content
-  const cleanHTML = DOMPurify.sanitize(contentHTML); // HTML 클린징으로 보안처리
+  const [contentHTML, setContentHTML] = useState() // HTML 로 구성된 Content
+  const cleanHTML = DOMPurify.sanitize(contentHTML) // HTML 클린징으로 보안처리
 
   // 버튼 스타일 - 신청 전/후 색상 변경
   const likeButtonClasses = `px-4 py-2 text-sm font-medium rounded-md ${
     isRecruited ? "bg-gray-200 text-gray-800" : "bg-green-500 text-white"
-  }`;
+  }`
 
   //--------------------------------------------------------------------------------------------------------------rating 관리 부
 
@@ -84,51 +77,51 @@ function MateBoardDetail(props) {
   const getRatingDetails = (ratings) => {
     return (
       ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { icon: faUser, color: "black" }
-    ); // 기본값
-  };
+    ) // 기본값
+  }
 
-  const { icon: ratingIcon, color: ratingColor } = getRatingDetails(writerProfile.ratings || 0);
+  const { icon: ratingIcon, color: ratingColor } = getRatingDetails(writerProfile.ratings || 0)
   //---------------------------------------------------------------------------------------------------------------rating 관리부
 
   useEffect(() => {
     // 로딩 애니메이션을 0.5초 동안만 표시
-    setLoading(true);
+    setLoading(true)
     setTimeout(() => {
-      setLoading(false);
-    }, 700);
+      setLoading(false)
+    }, 700)
 
     axios
       .get(`/api/v1/posts/${id}`)
       .then((res) => {
-        console.log(res.data);
+        console.log(res.data)
 
-        setPost(res.data.dto);
-        setContentHTML(res.data.dto.content);
-        setLiked(res.data.dto.like);
+        setPost(res.data.dto)
+        setContentHTML(res.data.dto.content)
+        setLiked(res.data.dto.like)
 
-        setWriterProfile(res.data.userProfileInfo);
+        setWriterProfile(res.data.userProfileInfo)
 
-        setSelectedDateRange([res.data.dto.startDate, res.data.dto.endDate]);
+        setSelectedDateRange([res.data.dto.startDate, res.data.dto.endDate])
 
         //댓글 목록이 존재하는지 확인 후, 배열에 ref라는 방 추가
         const list = Array.isArray(res.data.commentList)
           ? res.data.commentList.map((item) => {
-              item.ref = createRef();
-              return item;
+              item.ref = createRef()
+              return item
             })
-          : [];
+          : []
         //댓글 목록
-        setCommentList(list);
+        setCommentList(list)
 
-        setTotalCommentPages(res.data.totalCommentPages);
+        setTotalCommentPages(res.data.totalCommentPages)
       })
-      .catch((error) => console.log(error));
-  }, [id]);
+      .catch((error) => console.log(error))
+  }, [id])
 
   // 프로필 보기 클릭
   const handleClickProfile = () => {
-    navigate(`/users/${writerProfile.id}/profile`);
-  };
+    navigate(`/users/${writerProfile.id}/profile`)
+  }
 
   //좋아요 버튼 클릭
   const handleLike = () => {
@@ -141,58 +134,58 @@ function MateBoardDetail(props) {
             userId: userId,
           })
           .then((res) => {
-            setLiked(true);
+            setLiked(true)
             //view 페이지에서만 숫자 변경
             setPost({
               ...post,
               likeCount: post.likeCount + 1,
-            });
+            })
           })
           .catch((error) => {
-            console.log(error);
-            alert(error.response.data);
-          });
+            console.log(error)
+            alert(error.response.data)
+          })
       } else if (isLiked) {
         // isLiked = true 좋아요 누름
         axios
           .delete(`/api/v1/posts/${id}/likes/${userId}`)
           .then((res) => {
-            setLiked(false);
+            setLiked(false)
             //view 페이지에서만 숫자 변경
             setPost({
               ...post,
               likeCount: post.likeCount - 1,
-            });
+            })
           })
           .catch((error) => {
-            console.log(error);
-            alert(error.response.data);
-          });
+            console.log(error)
+            alert(error.response.data)
+          })
       }
     } else {
-      alert("로그인을 해주세요");
+      alert("로그인을 해주세요")
     }
-  };
+  }
 
   // 게시물 신고
   const handleReportPost = () => {
     const data = {
       content: "신고 테스트",
-    };
+    }
     if (window.confirm("해당 게시물을 신고하시겠습니까")) {
       axios
         .post(`/api/v1/reports/${post.id}/post/${userId}`, data)
         .then((res) => {
-          console.log(res.data);
+          console.log(res.data)
           if (res.data.isSuccess) {
-            alert("해당 게시물에 대한 신고가 접수되었습니다.");
+            alert("해당 게시물에 대한 신고가 접수되었습니다.")
           } else {
-            alert(res.data.message);
+            alert(res.data.message)
           }
         })
-        .catch((error) => console.log(error));
+        .catch((error) => console.log(error))
     }
-  };
+  }
 
   // --------------댓글 관련 이벤트
   // 답글 텍스트 상태 업데이트
@@ -200,28 +193,28 @@ function MateBoardDetail(props) {
     setReplyTexts((prev) => ({
       ...prev,
       [index]: value,
-    }));
-  };
+    }))
+  }
 
   // 수정 텍스트 상태 업데이트
   const handleEditTextChange = (index, value) => {
     setEditTexts((prev) => ({
       ...prev,
       [index]: value,
-    }));
-  };
+    }))
+  }
 
   // 드롭다운 토글 함수
   const toggleDropdown = (e, index) => {
-    e.stopPropagation();
+    e.stopPropagation()
     if (dropdownIndex === index) {
       // 같은 인덱스를 다시 클릭하면 드롭다운을 닫음
-      setDropdownIndex(null);
+      setDropdownIndex(null)
     } else {
       // 새로운 인덱스를 클릭하면 해당 드롭다운을 열음
-      setDropdownIndex(index);
+      setDropdownIndex(index)
     }
-  };
+  }
 
   // 부모 요소에 클릭 이벤트를 추가하여 드롭다운 닫기 처리
   const handleClickOutside = (event) => {
@@ -230,33 +223,33 @@ function MateBoardDetail(props) {
       dropdownRefs.current[dropdownIndex] &&
       !dropdownRefs.current[dropdownIndex].contains(event.target)
     ) {
-      setDropdownIndex(null);
+      setDropdownIndex(null)
     }
-  };
+  }
 
   // 댓글 신고 처리 함수
   const handleReportComment = (commentId) => {
     const data = {
       content: "신고 테스트",
-    };
+    }
     if (window.confirm("해당 리뷰를 신고하시겠습니까")) {
       axios
         .post(`/api/v1/reports/${commentId}/post_comment/${userId}`, data)
         .then((res) => {
-          console.log(res.data);
+          console.log(res.data)
           if (res.data.isSuccess) {
-            alert("해당 사용자에 대한 신고가 접수되었습니다.");
+            alert("해당 사용자에 대한 신고가 접수되었습니다.")
           } else {
-            alert(res.data.message);
+            alert(res.data.message)
           }
         })
-        .catch((error) => console.log(error));
+        .catch((error) => console.log(error))
     }
-  };
+  }
 
   //댓글 등록
   const handleCommentSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     //댓글 정보
     const data = {
@@ -268,29 +261,29 @@ function MateBoardDetail(props) {
       // parentCommentId: e.target.parentCommentId.value,
       toUsername: e.target.toUsername?.value || "",
       status: "PUBLIC",
-    };
+    }
 
     axios
       .post(`/api/v1/posts/${post.id}/comments`, data)
       .then((res) => {
-        console.log(res.data);
+        console.log(res.data)
         //방금 저장한 댓글의 정보
-        const newComment = res.data;
+        const newComment = res.data
         //댓글의 정보에 ref라는 방을 추가하고 거기에 참조값을 담을 object넣어준다
-        newComment.ref = createRef();
+        newComment.ref = createRef()
         //새로운 배열을 만들면서 기존 배열에 저장된 아이템을 펼쳐 놓아서 상태값을 변경
-        setCommentList([...commentList, newComment]);
+        setCommentList([...commentList, newComment])
         //댓글 입력한 textarea 초기화
-        setCommentInnerText("");
+        setCommentInnerText("")
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   //답글 등록
   const handleReplySubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     const data = {
       postId: id,
       userId: userId,
@@ -300,34 +293,34 @@ function MateBoardDetail(props) {
       toUsername: e.target.toUsername.value,
       parentCommentId: e.target.parentCommentId.value,
       status: "PUBLIC",
-    };
+    }
 
     axios
       .post(`/api/v1/posts/${post.id}/comments`, data)
       .then((res) => {
-        console.log(res.data);
+        console.log(res.data)
         //방금 저장한 댓글의 정보
-        const newComment = res.data;
+        const newComment = res.data
         //댓글의 정보에 ref라는 방을 추가하고 거기에 참조값을 담을 object넣어준다
-        newComment.ref = createRef();
+        newComment.ref = createRef()
         //이 댓글을 commentIndex에 끼워 넣기
-        commentList.splice(commentIndex, 0, res.data);
+        commentList.splice(commentIndex, 0, res.data)
         //새로운 배열을 만들면서 기존 배열에 저장된 아이템을 펼쳐 놓아서 상태값을 변경
-        setCommentList([...commentList]);
+        setCommentList([...commentList])
         //댓글 입력한 textarea 초기화
-        e.target.content.value = "";
+        e.target.content.value = ""
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   //댓글 삭제
   const handleDeleteComment = (commentId, ref) => {
     axios
       .delete(`/api/v1/posts/${id}/comments/${commentId}`)
       .then((res) => {
-        ref.current.querySelector(".commentSource").outerHTML = "<p>삭제된 댓글입니다</p>";
+        ref.current.querySelector(".commentSource").outerHTML = "<p>삭제된 댓글입니다</p>"
         /*
             commentId.current는 li요소의 참조값
             commentId.current.querySelector("dl")은 li요소의 자손 중에서 dl요소를 찾아서 참조값 가져오기
@@ -335,14 +328,14 @@ function MateBoardDetail(props) {
           */
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   //댓글 수정 버튼
   const handleUpdateComment = (e) => {
-    e.preventDefault();
-    const action = e.target.action;
+    e.preventDefault()
+    const action = e.target.action
     const updatedData = {
       id: e.target.commentId.value,
       postId: e.target.id.value,
@@ -354,7 +347,7 @@ function MateBoardDetail(props) {
       toUsername: e.target.toUsername.value,
       status: "PUBLIC",
       createdAt: e.target.createdAt.value,
-    };
+    }
     axios
       .put(action, updatedData)
       .then((res) => {
@@ -365,71 +358,71 @@ function MateBoardDetail(props) {
             return {
               ...item,
               content: e.target.content.value,
-            };
+            }
           }
-          return item;
-        });
+          return item
+        })
         //새로운 배열로 상태값 변경
-        setCommentList(newCommentList);
+        setCommentList(newCommentList)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   //댓글 더보기 버튼
   const handleMoreComment = () => {
     //현재 댓글의 페이지가 마지막 페이지인지 여부를 알아내서
-    const isLast = pageNum >= totalCommentPages;
+    const isLast = pageNum >= totalCommentPages
     //만일 마지막 페이지라면
     if (isLast) {
-      alert("댓글의 마지막 페이지 입니다");
+      alert("댓글의 마지막 페이지 입니다")
     } else {
       //마지막 페이지가 아니라면
       //로딩 상태로 바꿔준다
-      setCommentLoading(true);
+      setCommentLoading(true)
       //요청할 댓글의 게시물id
-      const postId = id;
+      const postId = id
       //요청할 댓글의 페이지
-      const page = pageNum + 1;
+      const page = pageNum + 1
       //서버에 데이터 추가 요청
       axios
         .get(`/api/v1/posts/${postId}/comments?pageNum=${page}`)
         .then((res) => {
-          console.log(res.data);
+          console.log(res.data)
           //res.data에는 댓글 목록과 전체 페이지 개수가 들어있다.
           //댓글 목록에 ref를 추가한 새로운 배열을 얻어내서
           const newList = res.data.commentList.map((item) => {
-            item.ref = createRef();
-            return item;
-          });
+            item.ref = createRef()
+            return item
+          })
           //현재까지 출력된 댓글 목록에 새로운 댓글 목록을 추가해 새로운 배열로 상태값 변경
           //댓글 목록 데이터 변경하기
-          setCommentList([...commentList, ...newList]);
-          setTotalCommentPages(res.data.totalCommentPages);
+          setCommentList([...commentList, ...newList])
+          setTotalCommentPages(res.data.totalCommentPages)
           //증가된 페이지 번호도 반영
-          setPageNum(page);
+          setPageNum(page)
 
-          setCommentLoading(false);
+          setCommentLoading(false)
         })
         .catch((error) => {
-          console.log(error);
-          setCommentLoading(false);
-        });
+          console.log(error)
+          setCommentLoading(false)
+        })
     }
-  };
+  }
   // ---------------------------------------------------- 채팅 관련
-  const { stompClient, isConnected } = useWebSocket();
+  const { stompClient, isConnected } = useWebSocket()
 
   const handleClickChat = () => {
-    console.log("채팅 버튼 클릭");
-    console.log("1번" + userId);
+    console.log("채팅 버튼 클릭")
+    console.log("1번" + userId)
     if (isConnected) {
-      console.log("웹 소켓 연결 정상");
+      console.log("웹 소켓 연결 정상")
     } else {
-      console.log("웹 소켓 비정상");
+      console.log("웹 소켓 비정상")
     }
-    console.log("2번" + writerProfile.id);
+    console.log("2번" + writerProfile.id)
     axios
       .post("/api/chat/rooms", {
         ownerId: userId, // 방 생성자를 명시
@@ -438,28 +431,28 @@ function MateBoardDetail(props) {
         title: `${username}님과${writerProfile.nickname}님의 채팅`,
       })
       .then((res) => {
-        const newRoom = res.data;
+        const newRoom = res.data
 
-        alert("채팅방 생성.");
+        alert("채팅방 생성.")
 
-        navigate(`/chatroom/${newRoom.id}`, { state: { chatRooms: newRoom } });
+        navigate(`/chatroom/${newRoom.id}`, { state: { chatRooms: newRoom } })
       })
       .catch((error) => {
-        console.log(error);
-        alert("채팅방 생성에 실패했습니다.");
-      });
-  };
+        console.log(error)
+        alert("채팅방 생성에 실패했습니다.")
+      })
+  }
 
   //프로필 링크 복사
   const handleCopy = () => {
-    const tmpText = `localhost:3000/posts/mate/${post.id}/detail`;
+    const tmpText = `localhost:3000/posts/mate/${post.id}/detail`
     navigator.clipboard
       .writeText(tmpText)
       .then(() => {
-        alert("클립보드에 복사되었습니다.");
+        alert("클립보드에 복사되었습니다.")
       })
-      .catch((error) => console.log(error));
-  };
+      .catch((error) => console.log(error))
+  }
 
   return (
     <div className="container mx-auto p-4 max-w-[900px]">
@@ -500,9 +493,9 @@ function MateBoardDetail(props) {
           </div>
 
           {/* title */}
-          <h5 className="m-3 mb-10 text-2xl">
-            <strong>{post.title}</strong>
-            {/* title / 좋아요 버튼 / 좋아요,조회수, 덧글수 */}
+          <div className="m-3 mb-10 text-2xl">
+            <p>
+              <strong>{post.title}</strong>
             {/* 내 게시물이 아닌경우에만 좋아요 버튼 보여주기 */}
             {userId !== post.userId && (
               <button
@@ -515,8 +508,10 @@ function MateBoardDetail(props) {
                 {isLiked ? "unLike" : "Like"}
               </button>
             )}
+            </p>
+            {/* title / 좋아요 버튼 / 좋아요,조회수, 덧글수 */}
             {/* 조회수, 좋아요, 덧글 수 */}
-            <span className="ml-10 text-sm text-gray-500 space-x-3">
+            <span className=" text-sm text-gray-500 space-x-3">
               <span>
                 <FontAwesomeIcon icon={faEye} className="h-5 w-5 mr-2" />
                 {post.viewCount}
@@ -530,7 +525,7 @@ function MateBoardDetail(props) {
                 {post.commentCount}
               </span>
             </span>
-          </h5>
+          </div>
 
           {/* 프로필 */}
           <div className="container mb-10">
@@ -558,7 +553,7 @@ function MateBoardDetail(props) {
                   onClick={handleClickChat}
                   type="button"
                   className="text-white bg-gray-500 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-3 py-2.5 me-2 mb-2 ">
-                  채팅 test
+                  채팅
                 </button>
                 <button
                   type="button"
@@ -610,13 +605,13 @@ function MateBoardDetail(props) {
                     axios
                       .delete(`/api/v1/posts/${id}`)
                       .then((res) => {
-                        alert("글 삭제 성공");
+                        alert("글 삭제 성공")
                         // 국/해외 페이지 별 리다일렉트
                         post.country === "대한민국"
                           ? navigate(`/posts/mate?di=Domestic`)
-                          : navigate(`/posts/mate?di=International`);
+                          : navigate(`/posts/mate?di=International`)
                       })
-                      .catch((error) => console.log(error));
+                      .catch((error) => console.log(error))
                   }}>
                   삭제
                 </button>
@@ -728,8 +723,8 @@ function MateBoardDetail(props) {
                                     <button
                                       className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
                                       onClick={() => {
-                                        setDropdownIndex(null);
-                                        handleReportComment(item.id);
+                                        setDropdownIndex(null)
+                                        handleReportComment(item.id)
                                       }}>
                                       신고
                                     </button>
@@ -739,17 +734,17 @@ function MateBoardDetail(props) {
                                       <button
                                         className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
                                         onClick={() => {
-                                          setDropdownIndex(null);
-                                          const updateForm = item.ref.current.querySelector(".updateCommentForm");
-                                          updateForm.classList.remove("hidden");
+                                          setDropdownIndex(null)
+                                          const updateForm = item.ref.current.querySelector(".updateCommentForm")
+                                          updateForm.classList.remove("hidden")
                                         }}>
                                         수정
                                       </button>
                                       <button
                                         className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
                                         onClick={() => {
-                                          setDropdownIndex(null);
-                                          handleDeleteComment(item.id, item.ref);
+                                          setDropdownIndex(null)
+                                          handleDeleteComment(item.id, item.ref)
                                         }}>
                                         삭제
                                       </button>
@@ -770,15 +765,15 @@ function MateBoardDetail(props) {
                           <button
                             className="ml-4 text-blue-500 hover:text-blue-700 text-sm"
                             onClick={(e) => {
-                              const text = e.target.innerText;
-                              const replyForm = item.ref.current.querySelector(".replyCommentForm");
+                              const text = e.target.innerText
+                              const replyForm = item.ref.current.querySelector(".replyCommentForm")
 
                               if (text === "답글") {
-                                e.target.innerText = "취소";
-                                replyForm.classList.remove("hidden");
+                                e.target.innerText = "취소"
+                                replyForm.classList.remove("hidden")
                               } else {
-                                e.target.innerText = "답글";
-                                replyForm.classList.add("hidden");
+                                e.target.innerText = "답글"
+                                replyForm.classList.add("hidden")
                               }
                             }}>
                             답글
@@ -805,7 +800,7 @@ function MateBoardDetail(props) {
                               value={replyTexts[index] || ""}
                               maxLength={maxLength}
                               onChange={(e) => {
-                                handleReplyTextChange(index, e.target.value);
+                                handleReplyTextChange(index, e.target.value)
                               }}
                             />
                             <div className="char-limit absolute top-2 right-2 text-gray-500 text-sm">
@@ -817,9 +812,9 @@ function MateBoardDetail(props) {
                               type="submit"
                               className="text-blue-500 hover:text-blue-700 font-semibold"
                               onClick={() => {
-                                commentIndex = index + 1;
-                                const replyForm = item.ref.current.querySelector(".replyCommentForm");
-                                replyForm.classList.add("hidden");
+                                commentIndex = index + 1
+                                const replyForm = item.ref.current.querySelector(".replyCommentForm")
+                                replyForm.classList.add("hidden")
                               }}>
                               답글 등록
                             </button>
@@ -854,8 +849,8 @@ function MateBoardDetail(props) {
                               type="submit"
                               className="text-blue-500 hover:text-blue-700 font-semibold"
                               onClick={() => {
-                                const updateForm = item.ref.current.querySelector(".updateCommentForm");
-                                updateForm.classList.add("hidden");
+                                const updateForm = item.ref.current.querySelector(".updateCommentForm")
+                                updateForm.classList.add("hidden")
                               }}>
                               수정 확인
                             </button>
@@ -886,7 +881,7 @@ function MateBoardDetail(props) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default MateBoardDetail;
+export default MateBoardDetail
