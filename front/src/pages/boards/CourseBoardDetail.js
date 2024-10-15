@@ -78,6 +78,14 @@ const CourseBoardDetail = () => {
   const [kakaoMapCenterLocation, setKakaoMapCenterLocation] = useState({ Ma: 37.5665, La: 126.978 })
   //구글 지도의 중심 좌표를 저장하는 상태값
   const [googleMapCenterLocation, setGoogleMapCenterLocation] = useState({ Ma: 37.5665, La: 126.978 })
+  // map 객체를 저장할 상태값
+  const [kakaoMap, setKakaoMap] = useState(null)
+  // SavedPlacesGoogleMapComponent를 참조할 ref 생성
+  const savedPlacesGoogleMapComponentRef = useRef(null);
+  
+  //infowWindow 상태값 관리
+  const [currentInfoWindow, setCurrentInfoWindow] = useState(null)
+
   //댓글 목록을 상태값으로 관리
   const [commentList, setCommentList] = useState([])
   //댓글의 현재 페이지 번호
@@ -155,7 +163,6 @@ const CourseBoardDetail = () => {
         if (postData.postData !== null) {
           const places = postData.postData.reduce((acc, day) => acc.concat(day.places), [])
 
-          console.log(places)
           setAllPlaces(places)
 
           // 첫 번째 장소로 지도 중심 설정
@@ -254,10 +261,42 @@ const CourseBoardDetail = () => {
 
   //장소명 눌렀을 때 실행되는 함수
   const handlePlaceClick = (place) => {
+    console.log(place)
     if (place.position && place.position.Ma !== undefined && place.position.La !== undefined) {
       setKakaoMapCenterLocation({ Ma: place.position.Ma, La: place.position.La })
+
+      // 기존의 열린 infoWindow가 있다면 닫기
+      if (currentInfoWindow) {
+        currentInfoWindow.close();
+      }
+
+      // 새로운 infoWindow 생성
+      const infoWindow = new window.kakao.maps.InfoWindow({
+        content: `
+          <div style="padding:10px;font-size:12px;display:flex;flex-direction:column;align-items:flex-start;width:100%;max-width:600px;height:100%;">
+              <div style="margin-bottom: 8px; display: flex; justify-content: space-between; width: 100%;">
+                  <strong>${place.place_name}</strong>
+              </div>
+              <div style="margin-bottom: 8px;">${place.address_name}</div>
+              <div style="margin-bottom: 8px;">전화번호: ${place.phone || '정보 없음'}</div>
+              <div style="margin-bottom: 16px;"><a href="${place.place_url}" target="_blank">장소 링크</a></div>
+          </div>
+      `,
+      });
+
+      // 새로운 infoWindow 열기
+      const markerPosition = new window.kakao.maps.LatLng(place.position.Ma, place.position.La);
+      infoWindow.open(kakaoMap, new window.kakao.maps.Marker({ position: markerPosition, map: kakaoMap }));
+
+      // 새로운 infoWindow를 상태로 저장
+      setCurrentInfoWindow(infoWindow);
+
     } else {
-      setGoogleMapCenterLocation({ Ma: place.Ma, La: place.La })
+      // setGoogleMapCenterLocation({ Ma: place.Ma, La: place.La })
+      // Google Map의 infoWindow 열기
+    if (savedPlacesGoogleMapComponentRef.current) {
+      savedPlacesGoogleMapComponentRef.current.openInfoWindowAtPlace(place); // SavedPlacesGoogleMapComponent에서 제공하는 함수 호출
+    }
     }
   }
 
@@ -329,7 +368,6 @@ const CourseBoardDetail = () => {
     axios
       .post(`/api/v1/posts/${post.id}/comments`, data)
       .then((res) => {
-        console.log(res.data)
         //방금 저장한 댓글의 정보
         const newComment = res.data
         //댓글의 정보에 ref라는 방을 추가하고 거기에 참조값을 담을 object넣어준다
@@ -362,7 +400,6 @@ const CourseBoardDetail = () => {
     axios
       .post(`/api/v1/posts/${post.id}/comments`, data)
       .then((res) => {
-        console.log(res.data)
         //방금 저장한 댓글의 정보
         const newComment = res.data
         //댓글의 정보에 ref라는 방을 추가하고 거기에 참조값을 담을 object넣어준다
@@ -453,7 +490,6 @@ const CourseBoardDetail = () => {
       axios
         .get(`/api/v1/posts/${postId}/comments?pageNum=${page}`)
         .then((res) => {
-          console.log(res.data)
           //res.data에는 댓글 목록과 전체 페이지 개수가 들어있다.
           //댓글 목록에 ref를 추가한 새로운 배열을 얻어내서
           const newList = res.data.commentList.map((item) => {
@@ -755,9 +791,9 @@ const CourseBoardDetail = () => {
         </div>
         <div>
           {domesticInternational === "Domestic" ? (
-            <SavedPlacesKakaoMapComponent savedPlaces={allPlaces} centerLocation={kakaoMapCenterLocation} />
+            <SavedPlacesKakaoMapComponent savedPlaces={allPlaces} centerLocation={kakaoMapCenterLocation} onMapReady={setKakaoMap} />
           ) : (
-            <SavedPlacesGoogleMapComponent savedPlaces={allPlaces} centerLocation={googleMapCenterLocation} />
+            <SavedPlacesGoogleMapComponent savedPlaces={allPlaces} centerLocation={googleMapCenterLocation} ref={savedPlacesGoogleMapComponentRef} />
           )}
         </div>
 
