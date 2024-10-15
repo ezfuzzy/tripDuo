@@ -553,11 +553,12 @@ function CommunityBoardDetail(props) {
             </div>
 
             {/* title */}
-            <h5 className="m-3 mb-10 text-2xl">
-              <strong>{post.title}</strong>
-              {/* title / 좋아요 버튼 / 좋아요,조회수, 덧글수 */}
+            <div className="m-3 mb-10 text-2xl">
+              <p>
+                <strong>{post.title}</strong>
+              </p>
               {/* 조회수, 좋아요, 덧글 수 */}
-              <span className="ml-10 text-sm text-gray-500 space-x-3">
+              <span className="text-sm text-gray-500 space-x-3">
                 <span>
                   <FontAwesomeIcon icon={faEye} className="h-5 w-5 mr-2" />
                   {post.viewCount}
@@ -567,7 +568,8 @@ function CommunityBoardDetail(props) {
                   {post.commentCount}
                 </span>
               </span>
-            </h5>
+              {/* title / 좋아요 버튼 / 좋아요,조회수, 덧글수 */}
+            </div>
 
             {/* 프로필 */}
             <div className="container mb-10">
