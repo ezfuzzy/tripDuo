@@ -9,7 +9,6 @@ import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.dto.UserFollowDto;
 import com.example.tripDuo.dto.UserProfileInfoDto;
 import com.example.tripDuo.dto.UserReviewDto;
-import com.example.tripDuo.entity.UserProfileInfo;
 
 public interface UserService {
 
@@ -23,7 +22,7 @@ public interface UserService {
 	public UserDto getUserByEmail(String email);
 
 	// ### getUserProfileInfo ###
-	public List<UserProfileInfo> getUserProfileInfoList();
+	public Map<String, Object> getUserProfileInfoList();
 	public Map<String, Object> getUserProfileInfoById(Long userId);
 	public UserProfileInfoDto getUserProfileInfoByIdForPostDetailPage(Long userId);
 	public UserProfileInfoDto getUserProfileInfoByUsername(String username); 

@@ -22,7 +22,6 @@ import com.example.tripDuo.dto.UserDto;
 import com.example.tripDuo.dto.UserFollowDto;
 import com.example.tripDuo.dto.UserProfileInfoDto;
 import com.example.tripDuo.dto.UserReviewDto;
-import com.example.tripDuo.entity.UserProfileInfo;
 import com.example.tripDuo.enums.FollowType;
 import com.example.tripDuo.service.UserService;
 
@@ -44,7 +43,7 @@ public class UserController {
 	}
 	
 	@GetMapping("/profile-info")
-	public ResponseEntity<List<UserProfileInfo>> userProfileInfoList() {
+	public ResponseEntity<Map<String, Object>> userProfileInfoList() {
 		return ResponseEntity.ok(userService.getUserProfileInfoList());
 	}
 	
