@@ -75,12 +75,10 @@ function MateBoardDetail(props) {
 
   // rating 값에 따른 아이콘과 색상 계산 //
   const getRatingDetails = (ratings) => {
-    return (
-      ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { icon: faUser, color: "black" }
-    ) // 기본값
+    return ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { imageSrc: "default.svg" } // 기본값
   }
 
-  const { icon: ratingIcon, color: ratingColor } = getRatingDetails(writerProfile.ratings || 0)
+  const imageSrc = getRatingDetails(writerProfile.ratings || 0)
   //---------------------------------------------------------------------------------------------------------------rating 관리부
 
   useEffect(() => {
@@ -540,8 +538,13 @@ function MateBoardDetail(props) {
                 />
               )}
               <div>
-                <h3 className="text-base font-semibold leading-7 tracking-tight text-gray-900">
-                  <FontAwesomeIcon icon={ratingIcon} color={ratingColor}></FontAwesomeIcon>
+                <h3 className=" flex text-base font-semibold leading-7 tracking-tight text-gray-900">
+                <img
+                  className="w-6 h-6 mr-2"
+                  src={`${process.env.PUBLIC_URL}/img/userRatingImages/${imageSrc.imageSrc}`}
+                  alt="user rating"
+                  title={`${imageSrc.imageSrc.replace(".svg", "")}`}
+                />
                   {writerProfile.nickname}
                 </h3>
                 <p className="text-sm font-semibold leading-6 text-indigo-600">
