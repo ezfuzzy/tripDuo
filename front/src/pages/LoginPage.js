@@ -83,6 +83,9 @@ function LoginPage() {
       .post("/api/v1/auth/login", loginData)
       .then((res) => {
         processToken(res.data)
+        if (!res.data.startsWith("Bearer+")) {
+          setError(res.data)
+        }
       })
       .catch(() => {
         setError("로그인에 실패했습니다.")

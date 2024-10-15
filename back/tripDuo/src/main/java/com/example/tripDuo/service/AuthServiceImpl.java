@@ -28,6 +28,7 @@ import com.example.tripDuo.entity.Oauth;
 import com.example.tripDuo.entity.User;
 import com.example.tripDuo.entity.UserProfileInfo;
 import com.example.tripDuo.entity.UserTripInfo;
+import com.example.tripDuo.enums.AccountStatus;
 import com.example.tripDuo.enums.UserRole;
 import com.example.tripDuo.repository.OauthRepository;
 import com.example.tripDuo.repository.UserProfileInfoRepository;
@@ -117,9 +118,18 @@ public class AuthServiceImpl implements AuthService {
 					userDto.getPassword());
 
 			authManager.authenticate(authToken);
+			User foundUser = userRepo.findByUsername(userDto.getUsername());
+			if(foundUser.getAccountStatus() != AccountStatus.ACTIVE) {
+				if(foundUser.getDeletedAt() != null) {
+					return "아이디 또는 비밀번호가 틀립니다";
+				} else {
+					return "정지되었거나 비활성화된 계정입니다";
+				}
+					
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "fail to login"; // id or password is wrong
+			return "아이디 또는 비밀번호가 틀렸습니다"; // id or password is wrong
 		}
 		String token = jwtUtil.generateToken(userDto.getUsername());
 		return "Bearer+" + token;
