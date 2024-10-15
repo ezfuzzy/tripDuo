@@ -45,8 +45,10 @@ function FollowModal({ id, ff, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black bg-opacity-50">
-      <div className="relative w-1/4 max-w-4xl min-h-[400px] w-[300px] bg-white rounded-lg shadow-lg overflow-hidden top-1/4">
+    <div onClick={onClose} className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black bg-opacity-50">
+      <div
+        onClick={(event) => event.stopPropagation()} // 내부 클릭은 모달을 닫지 않음
+        className="relative w-1/4 max-w-4xl min-h-[400px] w-[300px] bg-white rounded-lg shadow-lg overflow-hidden top-1/4">
         {/* Header */}
         <div className="flex items-center justify-between p-3 border-b">
           <div className="text-sm font-medium text-center w-full">
@@ -136,7 +138,11 @@ function FollowModal({ id, ff, onClose }) {
                 <p className="text-center text-gray-500">팔로워가 없습니다.</p>
               ) : (
                 followerList.map((follower) => {
+<<<<<<< HEAD
                   const imageSrc = getRatingDetails(follower.ratings || 0)
+=======
+                  const { icon: ratingIcon, color: ratingColor } = getRatingDetails(follower.ratings || 0)
+>>>>>>> c9829fa (add: block/follow 모달 리스트 외부 클릭시 닫기)
                   return (
                     <li
                       key={follower.userId}
