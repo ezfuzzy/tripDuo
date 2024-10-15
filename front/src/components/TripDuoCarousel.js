@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useKeenSlider } from "keen-slider/react"
 import "keen-slider/keen-slider.min.css"
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa"
@@ -24,6 +24,17 @@ const TripDuoCarousel = () => {
     },
     loop: true,
   })
+
+  // 자동 슬라이드 전환
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (instanceRef.current) {
+        instanceRef.current.next()
+      }
+    }, 5000)
+
+    return () => clearInterval(interval) // 컴포넌트 언마운트 시 인터벌 클리어
+  }, [instanceRef])
 
   // 버튼을 클릭했을 때 실행할 함수 정의
   const handlePrev = () => {
