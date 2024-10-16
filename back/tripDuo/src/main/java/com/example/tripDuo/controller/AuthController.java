@@ -1,5 +1,7 @@
 package com.example.tripDuo.controller;
 
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -143,12 +145,12 @@ public class AuthController {
 	}
 
 	@GetMapping("/googleLogin")
-	public ResponseEntity<String> googleInfo(@RequestHeader("Authorization") String token) {
+	public ResponseEntity<?> googleInfo(@RequestHeader("Authorization") String token) {
 		String accessToken = token.replace("Bearer ", "");
 
 		OAuthToken oAuthToken = new OAuthToken();
 		oAuthToken.setAccess_token(accessToken);
-		String googleinfo = authService.GoogleSignUp(oAuthToken);
+		Map<String, Object> googleinfo = authService.GoogleSignUp(oAuthToken);
 
 		try {
 			return ResponseEntity.status(HttpStatus.OK).body(googleinfo);
@@ -171,12 +173,12 @@ public class AuthController {
 
 	// 유저 정보 가져오기
 	@GetMapping("/kakaoLogin")
-	public ResponseEntity<String> kakaoInfo(@RequestHeader("Authorization") String token) {
+	public ResponseEntity<?> kakaoInfo(@RequestHeader("Authorization") String token) {
 		String accessToken = token.replace("Bearer ", "");
 
 		OAuthToken oAuthToken = new OAuthToken();
 		oAuthToken.setAccess_token(accessToken);
-		String kakaoInfo = authService.KakaoSignUp(oAuthToken);
+		Map<String, Object>  kakaoInfo = authService.KakaoSignUp(oAuthToken);
 
 		try {
 			return ResponseEntity.status(HttpStatus.OK).body(kakaoInfo);
