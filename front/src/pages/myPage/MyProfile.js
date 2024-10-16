@@ -305,7 +305,10 @@ function MyProfile(props) {
 
   // 프로필 사용자 신고
   const handleReportUser = () => {
-    const data = { content: "신고 테스트" }
+    const data = { 
+      content: "신고 테스트",
+      reportedUserId: id,
+    }
     if (window.confirm("사용자를 신고하시겠습니까")) {
       axios
         .post(`/api/v1/reports/${id}/user/${userId}`, data)
@@ -353,9 +356,10 @@ function MyProfile(props) {
   }
 
   // 리뷰 신고 처리 함수
-  const handleReportReview = (reviewId) => {
+  const handleReportReview = (reviewId, index) => {
     const data = {
       content: "신고 테스트",
+      reportedUserId: reviewList[index].reviewerId,
     }
     if (window.confirm("해당 리뷰를 신고하시겠습니까")) {
       axios
@@ -766,7 +770,7 @@ function MyProfile(props) {
                     ) : (
                       // 리뷰 신고
                       <p
-                        onClick={() => handleReportReview(item.id)}
+                        onClick={() => handleReportReview(item.id, index)}
                         className="text-xs text-gray-500 ml-auto mr-4 cursor-pointer">
                         신고
                       </p>

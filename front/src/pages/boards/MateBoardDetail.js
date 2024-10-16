@@ -197,6 +197,27 @@ function MateBoardDetail(props) {
   }
 
   // --------------댓글 관련 이벤트
+  // 댓글 신고 처리 함수
+  const handleReportComment = (commentId, index) => {
+    const data = {
+      content: "신고 테스트",
+      reportedUserId: commentList[index].reviewerId,
+    }
+    if (window.confirm("해당 리뷰를 신고하시겠습니까")) {
+      axios
+        .post(`/api/v1/reports/${commentId}/post_comment/${userId}`, data)
+        .then((res) => {
+          console.log(res.data)
+          if (res.data.isSuccess) {
+            alert("해당 사용자에 대한 신고가 접수되었습니다.")
+          } else {
+            alert(res.data.message)
+          }
+        })
+        .catch((error) => console.log(error))
+    }
+  }
+  
   // 답글 텍스트 상태 업데이트
   const handleReplyTextChange = (index, value) => {
     setReplyTexts((prev) => ({
@@ -237,26 +258,6 @@ function MateBoardDetail(props) {
   }
 
 
-  // 댓글 신고 처리 함수
-  const handleReportComment = (commentId, index) => {
-    const data = {
-      content: "신고 테스트",
-      reportedUserId: commentList[index].reviewerId,
-    }
-    if (window.confirm("해당 리뷰를 신고하시겠습니까")) {
-      axios
-        .post(`/api/v1/reports/${commentId}/post_comment/${userId}`, data)
-        .then((res) => {
-          console.log(res.data)
-          if (res.data.isSuccess) {
-            alert("해당 사용자에 대한 신고가 접수되었습니다.")
-          } else {
-            alert(res.data.message)
-          }
-        })
-        .catch((error) => console.log(error))
-    }
-  }
 
   //댓글 등록
   const handleCommentSubmit = (e) => {

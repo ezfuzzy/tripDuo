@@ -1,4 +1,4 @@
-import { faEye, faMessage, faStar, faUser } from "@fortawesome/free-solid-svg-icons"
+import { faCircleExclamation, faEye, faMessage, faShareNodes, faStar, faUser } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import axios from "axios"
 import DOMPurify from "dompurify"
@@ -145,7 +145,6 @@ function CommunityBoardDetail(props) {
       document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [dropdownIndex])
-  
 
   // 프로필 보기 클릭
   const handleClickProfile = () => {
@@ -192,11 +191,45 @@ function CommunityBoardDetail(props) {
     }
   }
 
-  // 신고 처리 함수
-  const handleReportComment = (commentId) => {
-    // 신고 기능 구현
-    alert(`댓글 ID ${commentId}가 신고되었습니다.`)
-    // 추가로 서버에 신고 요청을 보내는 로직을 여기에 추가
+  const handleReportPost = () => {
+    const data = {
+      content: "신고 테스트",
+      reportedUserId: post.userId,
+    }
+    if (window.confirm("해당 게시물을 신고하시겠습니까")) {
+      axios
+        .post(`/api/v1/reports/${post.id}/post/${userId}`, data)
+        .then((res) => {
+          console.log(res.data)
+          if (res.data.isSuccess) {
+            alert("해당 게시물에 대한 신고가 접수되었습니다.")
+          } else {
+            alert(res.data.message)
+          }
+        })
+        .catch((error) => console.log(error))
+    }
+  }
+  // --------------------------------------------------------------------------------------
+  // 댓글 신고 처리 함수
+  const handleReportComment = (commentId, index) => {
+    const data = {
+      content: "신고 테스트",
+      reportedUserId: commentList[index].reviewerId,
+    }
+    if (window.confirm("해당 리뷰를 신고하시겠습니까")) {
+      axios
+        .post(`/api/v1/reports/${commentId}/post_comment/${userId}`, data)
+        .then((res) => {
+          console.log(res.data)
+          if (res.data.isSuccess) {
+            alert("해당 사용자에 대한 신고가 접수되었습니다.")
+          } else {
+            alert(res.data.message)
+          }
+        })
+        .catch((error) => console.log(error))
+    }
   }
 
   //댓글 등록
@@ -497,6 +530,17 @@ function CommunityBoardDetail(props) {
       })
   }
 
+  //프로필 링크 복사
+  const handleCopy = () => {
+    const tmpText = `localhost:3000/posts/community/${post.id}/detail`
+    navigator.clipboard
+      .writeText(tmpText)
+      .then(() => {
+        alert("클립보드에 복사되었습니다.")
+      })
+      .catch((error) => console.log(error))
+  }
+
   return (
     <>
       <div className="container mx-auto p-4 max-w-[900px]">
@@ -522,7 +566,7 @@ function CommunityBoardDetail(props) {
                 {userId !== post.userId && (
                   <div>
                     {!isRated ? (
-                      <p>
+                      <p className="mr-2">
                         <button
                           className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
                           onClick={openModal}>
@@ -530,7 +574,7 @@ function CommunityBoardDetail(props) {
                         </button>
                       </p>
                     ) : (
-                      <p>
+                      <p className="mr-2">
                         <button
                           className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100 mr-2"
                           onClick={openModal}>
@@ -546,6 +590,15 @@ function CommunityBoardDetail(props) {
                     )}
                   </div>
                 )}
+                <div className="ml-auto text-sm text-gray-600">
+                  <span className="cursor-pointer" onClick={handleCopy}>
+                    <FontAwesomeIcon icon={faShareNodes} /> 공유
+                  </span>{" "}
+                  &nbsp;
+                  <span className="cursor-pointer" onClick={handleReportPost}>
+                    <FontAwesomeIcon icon={faCircleExclamation} /> 신고
+                  </span>
+                </div>
               </div>
             </div>
 
