@@ -42,10 +42,7 @@ jobs:
 
       - name: Build React App
         run: |
-          sudo dd if=/dev/zero of=/mnt/swapfile bs=1M count=2048
-          sudo mkswap /mnt/swapfile
-          sudo swapon /mnt/swapfile
-          cd front
+          cd /home/ec2-user/tripDuo/front
           npm install
           NODE_OPTIONS="--max_old_space_size=4096" npm run build
 
