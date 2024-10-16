@@ -64,11 +64,11 @@ function GoogleAuthLogin() {
       }
 
       dispatch({ type: "LOGIN_USER", payload: { userData, loginStatus } })
-      axios.defaults.headers.common["Authorization"] = data.oken
+      axios.defaults.headers.common["Authorization"] = data.token
 
       // WebSocket 연결
       connectWebSocket()
-      
+
       if(data.isLoginChecked){
         navigate("/")
       }else if (!data.isLoginChecked){
