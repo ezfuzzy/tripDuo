@@ -244,7 +244,7 @@ const CourseBoardForm = () => {
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder={status==="PRIVATE" && "MyPage에서 확인 가능한 게시물입니다."}
+                placeholder={status==="PRIVATE" ? "MyPage에서 확인 가능한 게시물입니다." : ""}
               />
             </div>
 
