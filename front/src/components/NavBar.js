@@ -181,12 +181,12 @@ function NavBar() {
       {/* 글로벌 네비게이션 바 */}
       <nav className="bg-white p-4 shadow-md flex justify-between items-center relative">
         {/* Off-canvas toggle button */}
-        <button type="button" className="text-gray-600 pl-20" onClick={() => setOffCanvasOpen(true)}>
+        <button type="button" className="text-gray-600 pl-4" onClick={() => setOffCanvasOpen(true)}>
           <FontAwesomeIcon icon={faBars} className="h-5 w-5 mr-2" />
         </button>
 
         <button
-          className="font-bold text-2xl absolute left-1/2 transform -translate-x-1/2"
+          className="font-bold text-2xl"
           onClick={handleTripDuoClick}>
           <img className="w-24 h-auto" src="/img/TripDuologo.png" alt="logo" />
         </button>
@@ -212,25 +212,29 @@ function NavBar() {
               </NavLink>
             </>
           )}
-          <button className="font-bold text-gray-800 pr-20" onClick={handleLoginLogoutClick}>
+          <button className="font-bold text-gray-800 pr-4" onClick={handleLoginLogoutClick}>
             {isLoggedIn ? "로그아웃" : "로그인/회원가입"}
           </button>
         </div>
         {/* md 이하에서만 보여주는 icon */}
         <div ref={dropdownRef} className="md:hidden">
-          <div className="pr-20">
+          <div className="pr-4">
             <img
               onClick={(e) => {
                 e.stopPropagation()
                 setDropdownOpen(!isDropdownOpen)
               }}
-              className="bi bi-person-circle w-6 h-6 cursor-pointer"
-              src={`${process.env.PUBLIC_URL}/img/defaultImages/defaultProfilePicture.svg`}
+              className={`bi bi-person-circle ${profilePicture ? "w-8 h-8" : "w-6 h-6"} cursor-pointer rounded-full`}
+              src={
+                profilePicture
+                  ? profilePicture
+                  : `${process.env.PUBLIC_URL}/img/defaultImages/defaultProfilePicture.svg`
+              }
               alt="default profile img"
             />
           </div>
           {isDropdownOpen && (
-            <div className="absolute right-20 top-10 mt-2 w-42 bg-white shadow divide-y divide-gray-100 rounded-lg py-2 z-10">
+            <div className="absolute right-4 top-10 mt-2 w-42 bg-white shadow divide-y divide-gray-100 rounded-lg py-2 z-10">
               <p className="block px-4 py-2 hover:bg-gray-100 ">
                 <button className="font-bold text-gray-800" onClick={handleLoginLogoutClick}>
                   {isLoggedIn ? "로그아웃" : "로그인/회원가입"}
