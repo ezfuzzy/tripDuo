@@ -64,15 +64,21 @@ function LikedPostsPage(props) {
                       }}>
                       <a href={`/posts/course/${post.post.id}/detail`} className="block">
                         <div className="md:flex justify-between">
-                          <h4 className="text-xl font-semibold">{post.post.title}</h4>
-                          <p>
-                            <span className="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded mr-2">
-                              #{post.post.city}
-                            </span>
-                            <span className="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded">
-                              #{post.post.country}
-                            </span>
-                          </p>
+                          <div>
+                            <h4 className="text-xl font-semibold">{post.post.title}</h4>
+                          </div>
+                          <div className="flex md:flex-col md:min-w-32 md:space-y-2">
+                            <p>
+                              <span className="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded mr-2">
+                                #{post.post.city}
+                              </span>
+                            </p>
+                            <p>
+                              <span className="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded">
+                                #{post.post.country}
+                              </span>
+                            </p>
+                          </div>
                         </div>
                         <p className="text-sm text-gray-500">
                           작성일: {new Date(post.post.createdAt).toLocaleDateString()}
