@@ -55,7 +55,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "
           cd /home/ec2-user/tripDuo/front &&
-          rm -rf /home/ec2-user/tripDuo/front/build &&
+          sudo rm -rf /home/ec2-user/tripDuo/front/build &&
           npm cache clean --force &&
           npm install &&
           NODE_OPTIONS='--max_old_space_size=4096' npm run build
