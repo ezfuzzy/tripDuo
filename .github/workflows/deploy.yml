@@ -59,7 +59,7 @@ jobs:
 
       - name: Deploy Docker container and nginx service restart 
         run: |
-          ssh -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "
           sudo systemctl restart nginx && 
           sudo docker stop tripduo-container || true &&
           sudo docker rm tripduo-container || true &&
