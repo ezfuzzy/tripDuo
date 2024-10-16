@@ -141,6 +141,14 @@ function CourseBoard() {
 
   // 해외 / 국내 전환시 호출
   useEffect(() => {
+    setSearchCriteria({
+      country: "",
+      city: "",
+      startDate: "",
+      endDate: "",
+      keyword: "",
+      condition: "title", // 기본 조건 설정
+    });
     setPageInfo([])
     setCurrentPage(1)
     fetchFilteredPosts(1)
@@ -174,10 +182,19 @@ function CourseBoard() {
   const handleDesiredCountry = () => {
     const newDomesticInternational = domesticInternational === "International" ? "Domestic" : "International"
     setDomesticInternational(newDomesticInternational)
+    setSearchCriteria({
+      country: "",
+      city: "",
+      startDate: "",
+      endDate: "",
+      keyword: "",
+      condition: "title", // 기본 조건 설정
+    });
     setSearchParams({
       ...searchCriteria,
       di: newDomesticInternational,
     })
+    window.location.reload();
   }
 
   // 새로운 검색을 시작하는 함수
