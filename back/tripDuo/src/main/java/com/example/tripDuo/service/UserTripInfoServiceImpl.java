@@ -124,6 +124,7 @@ UserTripInfo.toEntity(UserTripInfoDto dto, UserTripInfo userTripInfoDto, Place p
 														.userId(placeDto.getUserId())
 														.userMemo(placeDto.getUserMemo())
 														.place(place)
+														.di(placeDto.getDi())
 														.build();
 		
 		return userSavedPlaceRepo.save(userSavedPlace);

@@ -28,7 +28,7 @@ public class PlaceDto {
     private String placeName;
     private String placeUrl;
     private String roadAddressName;
-
+    
     private double latitude;
     private double longitude;
     
@@ -42,6 +42,8 @@ public class PlaceDto {
     private Long userId;
     private String userMemo;
     private LocalDateTime visitDate;
+    private String di;
+    
     
     // toDto 메소드
     public static PlaceDto toDto(Place entity) {
