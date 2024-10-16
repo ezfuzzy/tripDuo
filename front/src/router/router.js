@@ -18,11 +18,9 @@ import MateBoardEditForm from "../pages/boards/MateBoardEditForm"
 import MateBoardDetail from "../pages/boards/MateBoardDetail"
 import TravelChecklist from "../pages/Utilities/TravelChecklist"
 import TravelSafetyInfo from "../pages/Utilities/TravelSafetyInfo"
-import TravelCostCalculator from "../pages/Utilities/TravelCostCalculator"
 import LocationRecommendations from "../pages/Utilities/LocationRecommendations"
 import ExchangeInfo from "../pages/Utilities/ExchangeInfo"
 import LanguageCultureTips from "../pages/Utilities/LanguageCultureTips"
-import ExtraPage from "../pages/Utilities/ExtraPage"
 import CourseBoard from "../pages/boards/CourseBoard"
 import CourseBoardForm from "../pages/boards/CourseBoardForm"
 import CourseBoardDetail from "../pages/boards/CourseBoardDetail"
@@ -32,7 +30,6 @@ import MyPlan from "../pages/myTripTmp/MyPlan"
 import MyRecord from "../pages/myTripTmp/MyRecord"
 import WishMate from "../pages/myTripTmp/WishMate"
 import LikedPostsPage from "../pages/myTripTmp/LikedPostsPage"
-import Alarm from "../pages/Alarm"
 import ChatRoom from "../components/ChatRoom"
 import MyPage from "../pages/myPage/MyPage"
 
@@ -99,11 +96,8 @@ const routes = [
   { path: "/checklist", element: <TravelChecklist /> },
   { path: "/exchangeInfo", element: <ExchangeInfo /> },
   { path: "/safetyInfo", element: <TravelSafetyInfo /> },
-  { path: "/calculator", element: <TravelCostCalculator /> },
   { path: "/recommendations", element: <LocationRecommendations /> },
   { path: "/languageTip", element: <LanguageCultureTips /> },
-  { path: "/extra", element: <ExtraPage /> },
-  { path: "/alarm", element: <Alarm /> },
 
   // ### etc ###
   { path: "/api-docs", element: <ApiDocs /> },
