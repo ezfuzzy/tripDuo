@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 
-const SaveLocationPage = ({ onSave }) => {
+const KakaoSaveLocationPage = ({ onSave }) => {
   const mapRef = useRef(null);
   const [map, setMap] = useState(null);
   const [selectedPlace, setSelectedPlace] = useState(null);
@@ -223,4 +223,4 @@ const SaveLocationPage = ({ onSave }) => {
   );
 };
 
-export default SaveLocationPage;
+export default KakaoSaveLocationPage;

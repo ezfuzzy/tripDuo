@@ -33,15 +33,16 @@ const SavedPlacesGoogleMapComponent = forwardRef(({ savedPlaces, centerLocation,
 
   const createInfoWindowContent = (place) => {
     return `
-      <div style="padding:10px;font-size:12px;display:flex;flex-direction:column;align-items:flex-start;width:150px;">
+      <div style="padding:10px;font-size:12px;display:flex;flex-direction:column;align-items:flex-start;width:100%;max-width:600px;height:auto;">
         <div style="margin-bottom: 8px; display: flex; justify-content: space-between; width: 100%;">
           <strong>${place.place_name}</strong>
         </div>
-        <div style="margin-bottom: 8px;">${place.road_address_name || ''}</div>
-        <a href="${place.place_url}" target="_blank" style="color:blue;text-decoration:underline;">상세보기</a>
+        <div style="margin-bottom: 8px;">${place.road_address_name}</div>
+        <div style="margin-bottom: 16px;"><a href="${place.place_url}" target="_blank">장소 링크</a></div>
       </div>
     `;
   };
+  
 
   const displaySavedPlaces = () => {
     if (map && savedPlaces.length > 0) {
