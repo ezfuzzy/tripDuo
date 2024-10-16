@@ -26,7 +26,11 @@ function ExchangeInfo() {
     const rates = await fetchExchangeRate(selectedCurrency) // 선택된 화폐의 환율 가져오기
     if (rates) {
       const convertedAmount = Math.round(item.amount * rates["KRW"]) // 원화로 변환 및 반올림
-      const newItem = { name: item.name, amount: convertedAmount, currency: "KRW" } // 원화로 변환된 항목
+      const newItem = {
+        name: item.name,
+        amount: convertedAmount,
+        currency: selectedCurrency, // 사용된 화폐 추가
+      }
       const newDays = [...days]
       newDays[dayIndex].items.push(newItem) // 해당 날짜에 항목 추가
       setDays(newDays)
@@ -39,6 +43,17 @@ function ExchangeInfo() {
 
   const calculateOverallTotal = () => {
     return days.reduce((acc, day) => acc + calculateTotalForDay(day), 0) // 전체 총 금액 계산
+  }
+
+  const deleteDay = (dayIndex) => {
+    const newDays = days.filter((_, index) => index !== dayIndex)
+    setDays(newDays)
+  }
+
+  const setToday = (dayIndex) => {
+    const newDays = [...days]
+    newDays[dayIndex].date = new Date().toISOString().split("T")[0] // 오늘 날짜로 설정
+    setDays(newDays)
   }
 
   return (
@@ -92,32 +107,12 @@ function ExchangeInfo() {
               placeholder="항목 (ex: 의류)"
               className="mb-2 p-2 border border-tripDuoGreen rounded w-full focus:ring focus:ring-tripDuoMint"
               id={`item-${dayIndex}`}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  const itemName = e.target.value
-                  const amount = Number(document.getElementById(`amount-${dayIndex}`).value)
-                  const item = { name: itemName, amount: amount, currency: selectedCurrency }
-                  addItem(dayIndex, item) // 항목 추가
-                  e.target.value = "" // 항목 입력 필드 초기화
-                  document.getElementById(`amount-${dayIndex}`).value = "" // 금액 입력 필드 초기화
-                }
-              }}
             />
             <input
               type="number"
               placeholder="금액"
               className="mb-2 p-2 border border-tripDuoGreen rounded w-full focus:ring focus:ring-tripDuoMint"
               id={`amount-${dayIndex}`}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  const itemName = document.getElementById(`item-${dayIndex}`).value
-                  const amount = Number(e.target.value)
-                  const item = { name: itemName, amount: amount, currency: selectedCurrency }
-                  addItem(dayIndex, item) // 항목 추가
-                  document.getElementById(`item-${dayIndex}`).value = "" // 항목 입력 필드 초기화
-                  e.target.value = "" // 금액 입력 필드 초기화
-                }
-              }}
             />
             <button
               onClick={() => {
@@ -134,12 +129,19 @@ function ExchangeInfo() {
             <div className="mt-2 max-h-40 overflow-y-auto border-t pt-2">
               {day.items.map((item, index) => (
                 <div key={index} className="p-2 border-b">
-                  {item.name} | {Math.round(item.amount)} 원
+                  {item.name} | {Math.round(item.amount)} 원 ({item.currency}) {/* 사용된 화폐 표시 */}
                 </div>
               ))}
             </div>
             <h4 className="mt-2 text-lg font-semibold">당일 총 금액: {Math.round(calculateTotalForDay(day))} 원</h4>{" "}
             {/* 당일 총 금액 표시 */}
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={() => deleteDay(dayIndex)}
+                className="p-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-300">
+                삭제
+              </button>
+            </div>
           </div>
         ))}
       </div>
