@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-function ExtraPage() {
+function UtilHome() {
   const utilities = [
-    { title: '체크리스트', path: '/checklist' },
-    { title: '환율 정보', path: '/exchange' },
-    { title: '여행경비 계산기', path: '/calculator' },
-    { title: '여행 플래너', path: '/planner' },
+    { title: '체크리스트', path: '/utils/checklist' },
+    { title: '환율 정보', path: '/utils/exchange' },
+    { title: '여행경비 계산기', path: '/utils/calculator' },
+    { title: '여행 플래너', path: '/utils/planner' },
   ];
 
   return (
@@ -25,5 +25,5 @@ function ExtraPage() {
   );
 }
 
-export default ExtraPage;
+export default UtilHome;
 
