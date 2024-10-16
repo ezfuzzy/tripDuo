@@ -106,7 +106,7 @@ function MyProfile(props) {
         // is Blocked?
         if (res.data.theirFollowType === "BLOCK") {
           alert("해당 사용자가 당신을 차단하여 더 이상 프로필을 볼 수 없습니다.")
-          navigate("/")
+          // navigate("/")
         } else if (res.data.theirFollowType === "FOLLOW") {
           setFollowing(true)
         }
@@ -192,10 +192,12 @@ function MyProfile(props) {
             setBlockStatue(true)
             //뷰 페이지 설정
             setFollowingStatus(false)
-            setProfile({
-              ...profile,
-              followerCount: profile.followerCount - 1,
-            })
+            if (followingStatus === true) {
+              setProfile({
+                ...profile,
+                followerCount: profile.followerCount - 1,
+              })
+            }
             dropdownMenuRef.current.classList.toggle("hidden") // dropdown 메뉴 숨김
           })
           .catch((error) => console.log(error))
