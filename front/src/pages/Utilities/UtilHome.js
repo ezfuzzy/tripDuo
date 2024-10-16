@@ -1,29 +1,34 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react"
+import { Link } from "react-router-dom"
 
 function UtilHome() {
   const utilities = [
-    { title: '체크리스트', path: '/utils/checklist' },
-    { title: '환율 정보', path: '/utils/exchange' },
-    { title: '여행경비 계산기', path: '/utils/calculator' },
-    { title: '여행 플래너', path: '/utils/planner' },
-  ];
+    {
+      title: "여행 준비 체크리스트",
+      path: "/utils/checklist",
+      content: "체크리스트를 통해 빠짐없는 즐거운 여행을 즐기세요!",
+    },
+    { title: "환율 정보 확인", path: "/utils/exchangeInfo", content: "오늘의 환율 정보는?" },
+    { title: "여행 경비 계산", path: "/utils/calculator", content: "여행 경비를 계산해드려요!" },
+  ]
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {utilities.map((utility, index) => (
-          <li key={index} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-            <Link to={utility.path} className="block p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-2">{utility.title}</h3>
-              <p className="text-gray-600">자세히 보기</p>
+      <h1 className="text-3xl font-bold text-center text-gray-800">여행을 함께하는 tripDuo</h1>
+      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
+        {utilities.map((item, index) => (
+          <li
+            key={index}
+            className="bg-white rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 transition duration-500 border-2 border-tripDuoGreen">
+            <Link to={item.path} className="block p-6">
+              <h3 className="text-xl font-bold text-gray-800 mb-2">{item.title}</h3>
+              <p>{item.content}</p>
             </Link>
           </li>
         ))}
       </ul>
     </div>
-  );
+  )
 }
 
-export default UtilHome;
-
+export default UtilHome

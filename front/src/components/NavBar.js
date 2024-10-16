@@ -185,12 +185,6 @@ function NavBar() {
           <FontAwesomeIcon icon={faBars} className="h-5 w-5 mr-2" />
         </button>
 
-        <button
-          className="font-bold text-2xl"
-          onClick={handleTripDuoClick}>
-          <img className="w-24 h-auto" src="/img/TripDuologo.png" alt="logo" />
-        </button>
-
         {/* md 이상에서만 보여주는 icon */}
         <div className="hidden md:flex space-x-4">
           {isLoggedIn && (
@@ -262,6 +256,14 @@ function NavBar() {
               </p>
             </div>
           )}
+        </div>
+        {/* TripDuo 로고는 항상 가로 정중앙에 위치 */}
+        <div className="absolute left-1/2 transform -translate-x-1/2">
+          <button
+            className="font-bold text-2xl"
+            onClick={handleTripDuoClick}>
+            <img className="w-24 h-auto" src="/img/TripDuologo.png" alt="logo" />
+          </button>
         </div>
       </nav>
 
