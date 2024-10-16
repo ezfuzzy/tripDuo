@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import com.example.tripDuo.dto.UserSavedPlaceDto;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -37,6 +36,7 @@ public class UserSavedPlace {
     @JoinColumn(name = "place_id", nullable = false)
     private Place place;
 
+    private String di;
     private LocalDateTime createdAt;
     
     @PrePersist
@@ -52,6 +52,7 @@ public class UserSavedPlace {
                 .userId(dto.getUserId())
                 .userMemo(dto.getUserMemo())
                 .place(place)
+                .di(dto.getDi())
                 .createdAt(dto.getCreatedAt())
                 .build();
     }

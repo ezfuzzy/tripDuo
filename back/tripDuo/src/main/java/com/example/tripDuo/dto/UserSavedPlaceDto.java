@@ -20,6 +20,7 @@ public class UserSavedPlaceDto {
     private String userMemo;
     private Long placeId;
     private String placeName;
+    private String di;
     private LocalDateTime createdAt;
     
     //	toDto
@@ -31,6 +32,7 @@ public class UserSavedPlaceDto {
                 .userMemo(entity.getUserMemo())
                 .placeId(entity.getPlace() != null ? entity.getPlace().getId() : null)
                 .placeName(entity.getPlace() != null ? entity.getPlace().getPlaceName() : null)
+                .di(entity.getDi())
                 .createdAt(entity.getCreatedAt())
                 .build();
     }
