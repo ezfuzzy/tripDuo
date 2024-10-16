@@ -10,6 +10,11 @@ function UtilHome() {
     },
     { title: "환율 정보 확인", path: "/utils/exchangeInfo", content: "오늘의 환율 정보는?" },
     { title: "여행 경비 계산", path: "/utils/calculator", content: "여행 경비를 계산해드려요!" },
+    {
+      title: "해외여행 안전 정보",
+      path: "/utils/safetyInfo",
+      content: "안전 정보를 꼭 확인하고 여행 계획을 세우세요!",
+    },
   ]
 
   return (
