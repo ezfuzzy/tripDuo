@@ -1,11 +1,9 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
-import { shallowEqual, useDispatch, useSelector } from "react-redux"
+import { shallowEqual, useSelector } from "react-redux"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import BlockModal from "../../components/BlockModal"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faUser } from "@fortawesome/free-solid-svg-icons"
-import { ratingConfig } from "../../constants/mapping"
+import { myPageMenuList, ratingConfig } from "../../constants/mapping"
 
 function MyPage() {
   const navigate = useNavigate()
@@ -129,72 +127,27 @@ function MyPage() {
 
       {/* 마이 페이지 메뉴 */}
       <h1 className="text-3xl font-bold my-10 text-center">My Page</h1>
-      <div className="borderbox">
+      <div className="borderBox">
         <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center mx-10">
-          <li className="bg-white shadow-md rounded-lg p-4 cursor-pointer border border-green-600 hover:scale-102 transition duration-300 hover:shadow-xl group">
-            <Link className="text-tripDuoGreen group-hover:text-tripDuoMint text-decoration-none" to={`/myPlan`}>
-              <strong className="text-2xl">Travel Plan</strong>(여행 계획)
-            </Link>
-
-            <p className="text-xs">
-              여행을 계획하거나
-              <br />
-              계획한 여행들을 확인하실 수 있습니다.
-            </p>
-          </li>
-          <li className="bg-white shadow-md rounded-lg p-4 cursor-pointer border border-green-600 hover:scale-102 transition duration-300 hover:shadow-xl group">
-            <Link className="text-tripDuoGreen group-hover:text-tripDuoMint text-decoration-none" to={`/myRecord`}>
-              <strong className="text-2xl">Travel Record</strong>(여행 기록)
-            </Link>
-
-            <p className="text-xs">
-              <br />
-              고객님의 여행 기록을 확인하실 수 있습니다.
-            </p>
-          </li>
-          <li className="bg-white shadow-md rounded-lg p-4 cursor-pointer border border-green-600 hover:scale-102 transition duration-300 hover:shadow-xl group">
-            <Link className="text-tripDuoGreen group-hover:text-tripDuoMint text-decoration-none" to={`/wishMate`}>
-              <strong className="text-2xl">Wish Mate</strong>(관심 메이트)
-            </Link>
-
-            <p className="text-xs">
-              <br />
-              관심 메이트로 등록하신 여행 메이트를 확인하실 수 있습니다.
-            </p>
-          </li>
-          <li className="bg-white shadow-md rounded-lg p-4 cursor-pointer border border-green-600 hover:scale-102 transition duration-300 hover:shadow-xl group">
-            <Link className="text-tripDuoGreen group-hover:text-tripDuoMint text-decoration-none" to={`/myPlace`}>
-              <strong className="text-2xl">My Place</strong>(마이 플레이스)
-            </Link>
-
-            <p className="text-xs">
-              <br />
-              관심있는 지역, 음식점들을 관리할 수 있습니다.
-            </p>
-          </li>
-          <li className="bg-white shadow-md rounded-lg p-4 cursor-pointer border border-green-600 hover:scale-102 transition duration-300 hover:shadow-xl group">
-            <Link className="text-tripDuoGreen group-hover:text-tripDuoMint text-decoration-none" to={`/likedCourse`}>
-              <strong className="text-2xl">Liked Courses</strong>(관심 여행 계획)
-            </Link>
-
-            <p className="text-xs">
-              <br />
-              좋아요를 누른 여행 계획을 볼 수 있습니다.
-            </p>
-          </li>
-          {userRole === "ADMIN" ? (
-            <li className="bg-white shadow-md rounded-lg p-4 cursor-pointer border border-green-600 hover:scale-102 transition duration-300 hover:shadow-xl group">
+          {myPageMenuList.map((menuItem, idx) => {
+            if (menuItem.title.startsWith("ADMIN") && userRole !== "ADMIN") {
+              return null
+            }
+            return (
               <Link
                 className="text-tripDuoGreen group-hover:text-tripDuoMint text-decoration-none"
-                to={`/admin-dashboard`}>
-                <strong className="text-2xl">ADMIN DASHBOARD</strong>
-              </Link>
+                to={`${menuItem.link}`}>
+                <li
+                  key={idx}
+                  className="bg-white shadow-md rounded-lg p-4 cursor-pointer border border-green-600 hover:scale-102 transition duration-300 hover:shadow-xl group">
+                  <strong className="text-2xl">{menuItem.title}</strong>
+                  {menuItem.subTitle}
 
-              <p className="text-xs">admin dashboard</p>
-            </li>
-          ) : (
-            ""
-          )}
+                  <p className="text-sm sm:text-xs mt-3">{menuItem.content}</p>
+                </li>
+              </Link>
+            )
+          })}
         </ul>
       </div>
 
