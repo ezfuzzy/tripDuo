@@ -110,14 +110,14 @@ function MyPlace() {
                 // 장소 저장 후 placesInfo 상태 업데이트
                 setPlacesInfo(prevPlacesInfo => [
                     ...prevPlacesInfo,
-                    { place: placeInfo }
+                    res.data
                 ])
 
                 // 저장된 장소의 좌표로 지도 중심 이동
                 setKakaoMapCenterLocation({ Ma: placeInfo.latitude, La: placeInfo.longitude })
 
                 // 메모 저장 시 해당 장소 메모도 업데이트
-                setSelectedPlaceMemo(placeInfo.userMemo)
+                setSelectedPlaceMemo(placesInfo.userMemo)
 
                 // 장소 저장 후 검색 컴포넌트를 닫습니다.
                 setShowPlaceSearch(false)
@@ -175,7 +175,7 @@ function MyPlace() {
                             MyPage
                         </button>
                         <button
-                            onClick={() => navigate("/myPlace2")}
+                            onClick={() => navigate("/private/myPlace2")}
                             className="text-white bg-tripDuoMint hover:bg-tripDuoGreen focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
                             해외
                         </button>
