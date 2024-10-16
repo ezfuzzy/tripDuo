@@ -116,6 +116,16 @@ function MateBoardDetail(props) {
       .catch((error) => console.log(error))
   }, [id])
 
+  useEffect(() => {
+    // 마운트될 때 클릭 이벤트를 추가
+    document.addEventListener("mousedown", handleClickOutside)
+
+    // 언마운트될 때 이벤트 리스너 제거
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [dropdownIndex])
+
   // 프로필 보기 클릭
   const handleClickProfile = () => {
     navigate(`/users/${writerProfile.id}/profile`)
@@ -169,6 +179,7 @@ function MateBoardDetail(props) {
   const handleReportPost = () => {
     const data = {
       content: "신고 테스트",
+      reportedUserId: post.userId,
     }
     if (window.confirm("해당 게시물을 신고하시겠습니까")) {
       axios
@@ -225,10 +236,12 @@ function MateBoardDetail(props) {
     }
   }
 
+
   // 댓글 신고 처리 함수
-  const handleReportComment = (commentId) => {
+  const handleReportComment = (commentId, index) => {
     const data = {
       content: "신고 테스트",
+      reportedUserId: commentList[index].reviewerId,
     }
     if (window.confirm("해당 리뷰를 신고하시겠습니까")) {
       axios
@@ -494,18 +507,18 @@ function MateBoardDetail(props) {
           <div className="m-3 mb-10 text-2xl">
             <p>
               <strong>{post.title}</strong>
-            {/* 내 게시물이 아닌경우에만 좋아요 버튼 보여주기 */}
-            {userId !== post.userId && (
-              <button
-                className={`mx-3 ${
-                  isLiked ? "bg-pink-600" : "bg-pink-400"
-                } text-white active:bg-emerald-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
-                type="button"
-                onClick={handleLike}>
-                <FontAwesomeIcon icon={faHeart} className="mr-2" />
-                {isLiked ? "unLike" : "Like"}
-              </button>
-            )}
+              {/* 내 게시물이 아닌경우에만 좋아요 버튼 보여주기 */}
+              {userId !== post.userId && (
+                <button
+                  className={`mx-3 ${
+                    isLiked ? "bg-pink-600" : "bg-pink-400"
+                  } text-white active:bg-emerald-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
+                  type="button"
+                  onClick={handleLike}>
+                  <FontAwesomeIcon icon={faHeart} className="mr-2" />
+                  {isLiked ? "unLike" : "Like"}
+                </button>
+              )}
             </p>
             {/* title / 좋아요 버튼 / 좋아요,조회수, 덧글수 */}
             {/* 조회수, 좋아요, 덧글 수 */}
@@ -539,12 +552,12 @@ function MateBoardDetail(props) {
               )}
               <div>
                 <h3 className=" flex text-base font-semibold leading-7 tracking-tight text-gray-900">
-                <img
-                  className="w-6 h-6 mr-2"
-                  src={`${process.env.PUBLIC_URL}/img/userRatingImages/${imageSrc.imageSrc}`}
-                  alt="user rating"
-                  title={`${imageSrc.imageSrc.replace(".svg", "")}`}
-                />
+                  <img
+                    className="w-6 h-6 mr-2"
+                    src={`${process.env.PUBLIC_URL}/img/userRatingImages/${imageSrc.imageSrc}`}
+                    alt="user rating"
+                    title={`${imageSrc.imageSrc.replace(".svg", "")}`}
+                  />
                   {writerProfile.nickname}
                 </h3>
                 <p className="text-sm font-semibold leading-6 text-indigo-600">
@@ -727,7 +740,7 @@ function MateBoardDetail(props) {
                                       className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
                                       onClick={() => {
                                         setDropdownIndex(null)
-                                        handleReportComment(item.id)
+                                        handleReportComment(item.id, index)
                                       }}>
                                       신고
                                     </button>

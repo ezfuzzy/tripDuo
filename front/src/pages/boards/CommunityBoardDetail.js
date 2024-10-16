@@ -136,6 +136,17 @@ function CommunityBoardDetail(props) {
       .catch((error) => console.log(error))
   }, [id, isRated, myRating])
 
+  useEffect(() => {
+    // 마운트될 때 클릭 이벤트를 추가
+    document.addEventListener("mousedown", handleClickOutside)
+
+    // 언마운트될 때 이벤트 리스너 제거
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [dropdownIndex])
+  
+
   // 프로필 보기 클릭
   const handleClickProfile = () => {
     navigate(`/users/${writerProfile.id}/profile`)
