@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react"
 import axios from "axios"
 
+const axiosInstanceForSafetyInfo = axios.create({
+  baseURL: "https://www.travel-advisory.info/api",
+})
+
 function TravelSafetyInfo() {
   const [safetyInfo, setSafetyInfo] = useState([])
   const [filteredInfo, setFilteredInfo] = useState([])
@@ -11,7 +15,7 @@ function TravelSafetyInfo() {
   useEffect(() => {
     const fetchSafetyInfo = async () => {
       try {
-        const response = await axios.get("https://www.travel-advisory.info/api")
+        const response = await axiosInstanceForSafetyInfo.get("")
         const countries = response.data.data
         const safetyArray = Object.values(countries)
 
