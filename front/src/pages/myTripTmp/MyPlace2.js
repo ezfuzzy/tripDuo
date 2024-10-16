@@ -42,11 +42,9 @@ function MyPlace2() {
             }
         })
             .then(res => {
-                console.log(res.data)
                 const savedPlacesList = res.data
 
                 if (savedPlacesList.length > 0) {
-                    console.log("첫 savedPlacesList:", savedPlacesList)
                     setPlacesInfo(savedPlacesList)
                     setGoogleMapCenterLocation({
                         Ma: savedPlacesList[0].place.latitude,
@@ -102,6 +100,7 @@ function MyPlace2() {
 
         axios.post(`/api/v1/users/${loggedInUserId}/trips/saved-places`, placeInfo)
             .then(res => {
+                console.log(res.data)
                 // 장소 저장 후 placesInfo 상태 업데이트
                 setPlacesInfo(prevPlacesInfo => [
                     ...prevPlacesInfo,
@@ -110,9 +109,9 @@ function MyPlace2() {
 
                 // 저장된 장소의 좌표로 지도 중심 이동
                 setGoogleMapCenterLocation({ Ma: placeInfo.latitude, La: placeInfo.longitude })
-
+  
                 // 메모 저장 시 해당 장소 메모도 업데이트
-                setSelectedPlaceMemo(placeInfo.userMemo)
+                setSelectedPlaceMemo(placesInfo.userMemo)
 
                 // 장소 저장 후 검색 컴포넌트를 닫습니다.
                 setShowPlaceSearch(false)
@@ -126,7 +125,7 @@ function MyPlace2() {
         return {
             La: placeItem.place.longitude || 0,
             Ma: placeItem.place.latitude || 0,
-            address_name: placeItem.place.addressName || "",
+            road_address_name: placeItem.place.addressName || "",
             dayIndex: placeItem.dayIndex || 0,  // dayIndex -> 기본값 0
             id: placeItem.place.mapPlaceId || "",  // mapPlaceId 또는 id -> id
             placeIndex: 0,  // 기본값 0
@@ -145,6 +144,8 @@ function MyPlace2() {
             setGoogleMapCenterLocation({ Ma: placeItem.place.latitude, La: placeItem.place.longitude })
             savedPlacesGoogleMapComponentRef.current.openInfoWindowAtPlace(transformedPlaceItem);
         }
+        
+        setSelectedPlaceMemo(placeItem.userMemo || "메모가 없습니다.");
     };
 
     return (
@@ -160,7 +161,7 @@ function MyPlace2() {
                             MyPage
                         </button>
                         <button
-                            onClick={() => navigate(`/myPlace?di="Domestic"`)}
+                            onClick={() => navigate("/private/myPlace")}
                             className="text-white bg-tripDuoMint hover:bg-tripDuoGreen focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
                             국내
                         </button>
