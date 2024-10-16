@@ -104,9 +104,9 @@ public class UserTripController {
 	}
 	
 	@GetMapping("/saved-places")
-	public ResponseEntity<?> getSavedPlaceList(@PathVariable("userId") Long userId) {
+	public ResponseEntity<?> getSavedPlaceList(@PathVariable("userId") Long userId, String di) {
 		try {
-			return ResponseEntity.ok(userTripInfoService.getSavedPlaceList(userId));
+			return ResponseEntity.ok(userTripInfoService.getSavedPlaceList(userId, di));
 		} catch (Exception error) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}

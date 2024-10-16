@@ -24,7 +24,7 @@ public interface UserTripInfoService {
 	
 	// ### saved places ###
 	public UserSavedPlace savePlaceToMyTripInfo(PlaceDto placeDto);
-	public List<UserSavedPlace> getSavedPlaceList(Long userId);
+	public List<UserSavedPlace> getSavedPlaceList(Long userId, String di);
 	public void updateUserSavedPlace(UserSavedPlaceDto userSavedPlaceDto);
 	public void deletePlaceFromMyTripInfo(Long userSavedPlaceId);
 	

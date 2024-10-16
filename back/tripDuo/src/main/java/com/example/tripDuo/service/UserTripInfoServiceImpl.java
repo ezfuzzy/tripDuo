@@ -130,9 +130,9 @@ UserTripInfo.toEntity(UserTripInfoDto dto, UserTripInfo userTripInfoDto, Place p
 	}
 	
 	@Override
-	public List<UserSavedPlace> getSavedPlaceList(Long userId) {
+	public List<UserSavedPlace> getSavedPlaceList(Long userId, String di) {
 		
-		return userSavedPlaceRepo.findByUserId(userId);
+		return userSavedPlaceRepo.findByUserIdAndDi(userId, di);
 	}
 
 	
