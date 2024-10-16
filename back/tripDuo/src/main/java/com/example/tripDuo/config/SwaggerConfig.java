@@ -11,7 +11,7 @@ public class SwaggerConfig {
 	@Bean
 	OpenAPI customOpenAPI() {
 		Info info=new Info()
-				.title("TripDuo API 문서 입니다")
+				.title("TripDuo API documentation")
 				.version("1.0")
 				.description("api with swagger");
 		
