@@ -2,12 +2,7 @@ package com.example.tripDuo.entity;
 
 import com.example.tripDuo.dto.PlaceDto;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,15 +23,32 @@ public class Place {
 	private Long id;
 	
     // ### kakaoMap, googleMap 에서 제공하는 정보 ###
-    
+
+    @Column(length = 50)
     private String addressName;
+
+    @Column(length = 50)
     private String categoryGroupCode;
+
+    @Column(length = 50)
     private String categoryGroupName;
+
+    @Column(length = 50)
     private String categoryName;
+
+    @Column(length = 50)
     private String mapPlaceId;
+
+    @Column(length = 50)
     private String phone;
+
+    @Column(length = 50)
     private String placeName;
+
+    @Column(length = 50)
     private String placeUrl;
+
+    @Column(length = 50)
     private String roadAddressName;
 
     private double latitude;

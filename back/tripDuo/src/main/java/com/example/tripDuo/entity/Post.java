@@ -49,20 +49,28 @@ public class Post {
     private UserProfileInfo userProfileInfo;
     
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
     private PostType type;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30)
     private String title;    
-    
+
+    @Column(length = 3000)
     private String content; // 메이트, 커뮤니티 게시글에만 있음
     
     @JdbcTypeCode(SqlTypes.JSON) // jsonb 타입을 명시
     @Column(columnDefinition = "jsonb")  // DB에 jsonb 타입으로 지정
     private JsonNode postData; // 코스, 여행기 게시글에만 있음
-    
+
+    @Column(nullable = false, length = 30)
     private String country;
+    @Column(length = 30)
     private String city;
+
+    @Column(length = 20)
     private String startDate;
+
+    @Column(length = 20)
     private String endDate;
     
     @Column(columnDefinition = "TEXT[]")
@@ -74,6 +82,7 @@ public class Post {
     private float rating;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 10)
     private PostStatus status;
 
     private LocalDateTime createdAt;

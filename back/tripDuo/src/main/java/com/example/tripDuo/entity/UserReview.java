@@ -6,19 +6,7 @@ import com.example.tripDuo.dto.UserReviewDto;
 import com.example.tripDuo.enums.ReviewExperience;
 import com.example.tripDuo.enums.ReviewTag;
 
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -43,10 +31,12 @@ public class UserReview {
 	@ManyToOne
 	@JoinColumn(name = "reviewer_id", nullable = false) // 리뷰 하는 사람 (리뷰어)
 	private UserProfileInfo reviewerUserProfileInfo;
-	
+
+	@Column(length = 100)
 	private String content;
 	
 	@Enumerated(EnumType.STRING)
+	@Column(length = 10)
 	private ReviewExperience experience;
 	
 	@Enumerated(EnumType.STRING)

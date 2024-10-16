@@ -1,12 +1,6 @@
 package com.example.tripDuo.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,7 +19,10 @@ public class Oauth {
 	@ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+	@Column(nullable = false, length = 10)
 	private String oauth_provider;
+	@Column(nullable = false, length = 30)
 	private String oauth_id;
 	
 }

@@ -5,18 +5,7 @@ import java.time.LocalDateTime;
 import com.example.tripDuo.dto.UserFollowDto;
 import com.example.tripDuo.enums.FollowType;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,6 +34,7 @@ public class UserFollow {
     private UserProfileInfo followerUserProfileInfo;
 	
     @Enumerated(EnumType.STRING)
+	@Column(nullable = false, length = 10)
 	private FollowType followType;
 	
 	private LocalDateTime createdAt;
