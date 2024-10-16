@@ -21,11 +21,11 @@ public interface AuthService {
     
     public User KakaoFindId(String username);
     public String KakaogetAccessToken(String code);
-    public String KakaoSignUp(OAuthToken kakaoToken);
+    public Map<String, Object> KakaoSignUp(OAuthToken kakaoToken);
     public String kakaoLogout(OAuthToken oAuthToken, Long kakaoId);
     
     public String GoogleAccessToken(String code);
-    public String GoogleSignUp(OAuthToken googleToken)  ;
+    public Map<String, Object> GoogleSignUp(OAuthToken googleToken)  ;
     
 
 }

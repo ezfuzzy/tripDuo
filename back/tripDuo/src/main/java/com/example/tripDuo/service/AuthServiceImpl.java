@@ -392,7 +392,7 @@ public class AuthServiceImpl implements AuthService {
 	 * @return TODO
 	 */
 	@Override
-	public String KakaoSignUp(OAuthToken kakaoToken) {
+	public Map<String, Object> KakaoSignUp(OAuthToken kakaoToken) {
 		RestTemplate rt2 = new RestTemplate();
 		HttpHeaders headers2 = new HttpHeaders();
 		headers2.add("Authorization", "Bearer " + kakaoToken.getAccess_token());
@@ -426,9 +426,12 @@ public class AuthServiceImpl implements AuthService {
 						.role(UserRole.USER)
 						.build();
 
+		boolean isLoginChecked = false;
+
 		User existingUser = userRepo.findByUsername(user.getUsername());
 		if (existingUser != null) {
 			System.out.println("이미 존재하는 유저입니다.");
+			isLoginChecked =true;
 		} else {
 			// 5. 유저가 없을 경우 저장
 			user = userRepo.save(user);
@@ -464,7 +467,8 @@ public class AuthServiceImpl implements AuthService {
 
 		System.out.println("kakaoInfo2: " + kakaoInfo2.toString()); // 보기 좋게 출력
 		String token = jwtUtil.generateToken(user.getUsername());
-		return "Bearer+" + token;
+		return Map.of("token", "Bearer+" + token,
+				"isLoginChecked", isLoginChecked);
 	}
 
 	// 카카오 로그아웃
@@ -560,7 +564,7 @@ public class AuthServiceImpl implements AuthService {
 	 * @return TODO
 	 */
 	@Override
-	public String GoogleSignUp(OAuthToken googleToken) {
+	public Map<String, Object> GoogleSignUp(OAuthToken googleToken) {
 		RestTemplate rt2 = new RestTemplate();
 		HttpHeaders headers2 = new HttpHeaders();
 		headers2.add("Authorization", "Bearer " + googleToken.getAccess_token());
@@ -589,7 +593,6 @@ public class AuthServiceImpl implements AuthService {
 			e.printStackTrace();
 		}
 
-
 		User user = User.builder()
 						.username("google_" + googleProfile.getEmail().split("@")[0])
 						.password(encoder.encode(OAUTHPASSWORD))
@@ -597,10 +600,13 @@ public class AuthServiceImpl implements AuthService {
 						.email(googleProfile.getEmail())
 						.role(UserRole.USER)
 						.build();
-
+		
+		boolean isLoginChecked = false;
+		
 		User existingUser = userRepo.findByUsername(user.getUsername());
 		if (existingUser != null) {
 			System.out.println("이미 존재하는 유저입니다.");
+			isLoginChecked =true;
 		} else {
 			user = userRepo.save(user);
 			System.out.println("새로운 유저가 저장되었습니다.");
@@ -632,7 +638,8 @@ public class AuthServiceImpl implements AuthService {
 
 		System.out.println("googleInfo2: " + googleInfo2.toString()); // 보기 좋게 출력
 		String token = jwtUtil.generateToken(user.getUsername());
-		return "Bearer+" + token;
+		return Map.of("token", "Bearer+" + token,
+				"isLoginChecked", isLoginChecked);
 	}
 
 }
