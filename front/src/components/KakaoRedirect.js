@@ -74,7 +74,7 @@ function KakaoRedirect(props) {
       // WebSocket 연결
       connectWebSocket()
 
-      navigate("/")
+      navigate("/completedSignup", { state: { isAllChecked : true } })
       window.location.reload()
     }
   }
