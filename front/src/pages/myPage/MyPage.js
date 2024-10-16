@@ -135,11 +135,10 @@ function MyPage() {
             }
             return (
               <Link
+                key={idx}
                 className="text-tripDuoGreen group-hover:text-tripDuoMint text-decoration-none"
                 to={`${menuItem.link}`}>
-                <li
-                  key={idx}
-                  className="bg-white shadow-md rounded-lg p-4 cursor-pointer border border-green-600 hover:scale-102 transition duration-300 hover:shadow-xl group">
+                <li className="bg-white shadow-md rounded-lg p-4 cursor-pointer border border-green-600 hover:scale-102 transition duration-300 hover:shadow-xl group">
                   <strong className="text-2xl">{menuItem.title}</strong>
                   {menuItem.subTitle}
 
