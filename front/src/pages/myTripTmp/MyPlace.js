@@ -33,7 +33,11 @@ function MyPlace() {
         setTimeout(() => {
             setLoading(false)
         }, 700)
-        axios.get(`/api/v1/users/${loggedInUserId}/trips/saved-places`)
+        axios.get(`/api/v1/users/${loggedInUserId}/trips/saved-places`, {
+            params: {
+                di: "Domestic"
+            }
+        })
             .then(res => {
                 console.log(res.data)
                 const savedPlacesList = res.data
@@ -97,13 +101,15 @@ function MyPlace() {
             longitude: parseFloat(place.x), // x를 longitude로 변환
             userId: loggedInUserId,
             userMemo: place.placeMemo || "",
+            di: "Domestic"
         }
 
         axios.post(`/api/v1/users/${loggedInUserId}/trips/saved-places`, placeInfo)
             .then(res => {
+
                 // 장소 저장 후 placesInfo 상태 업데이트
-                setPlacesInfo(prevPlaces => [
-                    ...prevPlaces,
+                setPlacesInfo(prevPlacesInfo => [
+                    ...prevPlacesInfo,
                     { place: placeInfo }
                 ])
 

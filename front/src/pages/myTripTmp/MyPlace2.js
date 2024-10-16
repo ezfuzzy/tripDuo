@@ -36,11 +36,17 @@ function MyPlace2() {
         setTimeout(() => {
             setLoading(false)
         }, 700)
-        axios.get(`/api/v1/users/${loggedInUserId}/trips/saved-places`)
+        axios.get(`/api/v1/users/${loggedInUserId}/trips/saved-places`, {
+            params: {
+                di: "International"
+            }
+        })
             .then(res => {
+                console.log(res.data)
                 const savedPlacesList = res.data
 
                 if (savedPlacesList.length > 0) {
+                    console.log("첫 savedPlacesList:", savedPlacesList)
                     setPlacesInfo(savedPlacesList)
                     setGoogleMapCenterLocation({
                         Ma: savedPlacesList[0].place.latitude,
@@ -91,14 +97,15 @@ function MyPlace2() {
             longitude: place.geometry.location.lng(),
             userId: loggedInUserId,
             userMemo: place.placeMemo || "",
+            di: "International"
         }
 
         axios.post(`/api/v1/users/${loggedInUserId}/trips/saved-places`, placeInfo)
             .then(res => {
                 // 장소 저장 후 placesInfo 상태 업데이트
-                setPlacesInfo(prevPlaces => [
-                    ...prevPlaces,
-                    { place: placeInfo }
+                setPlacesInfo(prevPlacesInfo => [
+                    ...prevPlacesInfo,
+                    res.data
                 ])
 
                 // 저장된 장소의 좌표로 지도 중심 이동
