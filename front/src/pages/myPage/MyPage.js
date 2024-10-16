@@ -111,9 +111,7 @@ function MyPage() {
                 alt="user rating"
                 title={`${imageSrc.imageSrc.replace(".svg", "")}`}
               />
-              <span className="text-base font-semibold leading-7 tracking-tight text-gray-900">
-                {profile.nickname}
-              </span>
+              <span className="text-base font-semibold leading-7 tracking-tight text-gray-900">{profile.nickname}</span>
             </div>
             <p className="text-sm font-semibold leading-6 text-green-600">
               {profile.gender} / {profile.age}
@@ -130,61 +128,69 @@ function MyPage() {
       </div>
 
       {/* 마이 페이지 메뉴 */}
-      <h1 className="text-3xl font-bold m-4">My Page</h1>
+      <h1 className="text-3xl font-bold my-10 text-center">My Page</h1>
       <div className="borderbox">
-        <ul className="grid grid-cols-2 gap-4">
-          <li className="bg-white shadow-md rounded-lg p-4">
-            <h3>
-              <Link className="text-gray-500 hover:text-black text-decoration-none" to={`/myPlan`}>
-                <strong>Travel Plan</strong>(여행 계획)
-              </Link>
-            </h3>
-            <p>
+        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center mx-10">
+          <li className="bg-white shadow-md rounded-lg p-4 cursor-pointer border border-green-600 hover:scale-102 transition duration-300 hover:shadow-xl group">
+            <Link className="text-tripDuoGreen group-hover:text-tripDuoMint text-decoration-none" to={`/myPlan`}>
+              <strong className="text-2xl">Travel Plan</strong>(여행 계획)
+            </Link>
+
+            <p className="text-xs">
               여행을 계획하거나
               <br />
               계획한 여행들을 확인하실 수 있습니다.
             </p>
           </li>
-          <li className="bg-white shadow-md rounded-lg p-4">
-            <h3>
-              <Link className="text-gray-500 hover:text-black text-decoration-none" to={`/myRecord`}>
-                <strong>Travel Record</strong>(여행 기록)
-              </Link>
-            </h3>
-            <p>고객님의 여행 기록을 확인하실 수 있습니다.</p>
+          <li className="bg-white shadow-md rounded-lg p-4 cursor-pointer border border-green-600 hover:scale-102 transition duration-300 hover:shadow-xl group">
+            <Link className="text-tripDuoGreen group-hover:text-tripDuoMint text-decoration-none" to={`/myRecord`}>
+              <strong className="text-2xl">Travel Record</strong>(여행 기록)
+            </Link>
+
+            <p className="text-xs">
+              <br />
+              고객님의 여행 기록을 확인하실 수 있습니다.
+            </p>
           </li>
-          <li className="bg-white shadow-md rounded-lg p-4">
-            <h3>
-              <Link className="text-gray-500 hover:text-black text-decoration-none" to={`/wishMate`}>
-                <strong>Wish Mate</strong>(관심 메이트)
-              </Link>
-            </h3>
-            <p>관심 메이트로 등록하신 여행 메이트를 확인하실 수 있습니다.</p>
+          <li className="bg-white shadow-md rounded-lg p-4 cursor-pointer border border-green-600 hover:scale-102 transition duration-300 hover:shadow-xl group">
+            <Link className="text-tripDuoGreen group-hover:text-tripDuoMint text-decoration-none" to={`/wishMate`}>
+              <strong className="text-2xl">Wish Mate</strong>(관심 메이트)
+            </Link>
+
+            <p className="text-xs">
+              <br />
+              관심 메이트로 등록하신 여행 메이트를 확인하실 수 있습니다.
+            </p>
           </li>
-          <li className="bg-white shadow-md rounded-lg p-4">
-            <h3>
-              <Link className="text-gray-500 hover:text-black text-decoration-none" to={`/myPlace`}>
-                <strong>My Place</strong>(마이 플레이스)
-              </Link>
-            </h3>
-            <p>관심있는 지역, 음식점들을 관리할 수 있습니다.</p>
+          <li className="bg-white shadow-md rounded-lg p-4 cursor-pointer border border-green-600 hover:scale-102 transition duration-300 hover:shadow-xl group">
+            <Link className="text-tripDuoGreen group-hover:text-tripDuoMint text-decoration-none" to={`/myPlace`}>
+              <strong className="text-2xl">My Place</strong>(마이 플레이스)
+            </Link>
+
+            <p className="text-xs">
+              <br />
+              관심있는 지역, 음식점들을 관리할 수 있습니다.
+            </p>
           </li>
-          <li className="bg-white shadow-md rounded-lg p-4">
-            <h3>
-              <Link className="text-gray-500 hover:text-black text-decoration-none" to={`/likedCourse`}>
-                <strong>Liked Courses</strong>(관심 여행 계획)
-              </Link>
-            </h3>
-            <p>좋아요를 누른 여행 계획을 볼 수 있습니다.</p>
+          <li className="bg-white shadow-md rounded-lg p-4 cursor-pointer border border-green-600 hover:scale-102 transition duration-300 hover:shadow-xl group">
+            <Link className="text-tripDuoGreen group-hover:text-tripDuoMint text-decoration-none" to={`/likedCourse`}>
+              <strong className="text-2xl">Liked Courses</strong>(관심 여행 계획)
+            </Link>
+
+            <p className="text-xs">
+              <br />
+              좋아요를 누른 여행 계획을 볼 수 있습니다.
+            </p>
           </li>
           {userRole === "ADMIN" ? (
-            <li className="bg-white shadow-md rounded-lg p-4">
-              <h3>
-                <Link className="text-gray-500 hover:text-black text-decoration-none" to={`/admin-dashboard`}>
-                  <strong>ADMIN DASHBOARD</strong>
-                </Link>
-              </h3>
-              <p>admin dashboard</p>
+            <li className="bg-white shadow-md rounded-lg p-4 cursor-pointer border border-green-600 hover:scale-102 transition duration-300 hover:shadow-xl group">
+              <Link
+                className="text-tripDuoGreen group-hover:text-tripDuoMint text-decoration-none"
+                to={`/admin-dashboard`}>
+                <strong className="text-2xl">ADMIN DASHBOARD</strong>
+              </Link>
+
+              <p className="text-xs">admin dashboard</p>
             </li>
           ) : (
             ""
@@ -194,18 +200,20 @@ function MyPage() {
 
       {isBlockModalOpen && <BlockModal id={id} onClose={handleCloseBlockModal} />}
 
-      <div className="mt-20 space-y-3">
+      <div className="my-20 space-y-3 text-center">
+        <p className="text-2xl my-5">
+          <strong>계정 관리</strong>
+        </p>
         <p>
-          <strong className="py-2 hover:bg-gray-100 cursor-pointer" onClick={handleOpenBlockModal}>
+          <strong className="p-2 hover:bg-gray-100 cursor-pointer" onClick={handleOpenBlockModal}>
             차단 목록
           </strong>
         </p>
         <p>
-          <strong className="py-2 hover:bg-gray-100 cursor-pointer" onClick={handleDeleteUser}>
+          <strong className="p-2 hover:bg-gray-100 cursor-pointer" onClick={handleDeleteUser}>
             회원 탈퇴
           </strong>
         </p>
-        <p className="py-2">내 활동 기록</p>
       </div>
     </div>
   )
