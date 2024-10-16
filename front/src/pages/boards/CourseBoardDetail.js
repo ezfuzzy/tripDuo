@@ -19,6 +19,7 @@ import SavedPlacesKakaoMapComponent from "../../components/SavedPlacesKakaoMapCo
 import SavedPlacesGoogleMapComponent from "../../components/SavedPlacesGoogleMapComponent"
 import LoadingAnimation from "../../components/LoadingAnimation"
 import Modal from "react-modal"
+import { ratingConfig } from "../../constants/mapping"
 
 //새로 등록한 댓글을 추가할 인덱스
 let commentIndex = 0
@@ -35,7 +36,7 @@ const customStyles = {
     marginRight: "-50%",
     transform: "translate(-50%, -50%)",
   },
-};
+}
 
 const CourseBoardDetail = () => {
   //로딩 상태 추가
@@ -54,17 +55,17 @@ const CourseBoardDetail = () => {
   const [isLiked, setIsLiked] = useState(false)
 
   // 별점 버튼 설정
-  const [isRated, setRated] = useState(false);
+  const [isRated, setRated] = useState(false)
   // post 에 새로 매기는 점수
-  const [newPostRating, setNewPostRating] = useState(0);
+  const [newPostRating, setNewPostRating] = useState(0)
   // 로그인된 사용자에 대한 postRating 관련 데이터
-  const [ratedInfo, setRatedInfo] = useState({});
+  const [ratedInfo, setRatedInfo] = useState({})
   // 로그인된 사용자가 매긴 점수
-  const [myRating, setMyRating] = useState(0);
+  const [myRating, setMyRating] = useState(0)
   // 게시물의 rating 총점
-  const [postRating, setPostRating] = useState(0);
+  const [postRating, setPostRating] = useState(0)
   // rating 모달 관리
-  const [isRatingModalOpened, setIsRatingModalOpened] = useState(false);
+  const [isRatingModalOpened, setIsRatingModalOpened] = useState(false)
 
   //글 하나의 정보 상태값으로 관리
   const [post, setPost] = useState({ tags: [], postData: [{ dayMemo: "", places: [""] }] })
@@ -105,26 +106,12 @@ const CourseBoardDetail = () => {
   const navigate = useNavigate()
 
   //--------------------------------------------------------------------------------------------------------------rating 관리 부
-  // rating 비교 조건 데이터
-  const ratingConfig = [
-    { min: 0, max: 1499, icon: faFeather, color: "gray" }, // 이코노미
-    { min: 1500, max: 2999, icon: faFeather, color: "blue" }, // 프리미엄 이코노미
-    { min: 3000, max: 4499, icon: faDove, color: "gray" }, // 비지니스
-    { min: 4500, max: 5999, icon: faDove, color: "blue" }, // 프리미엄 비지니스
-    { min: 6000, max: 7499, icon: faPlane, color: "gray" }, // 퍼스트
-    { min: 7500, max: 8999, icon: faPlane, color: "blue" }, // 프리미엄 퍼스트
-    { min: 9000, max: 10000, icon: faCrown, color: "yellow" }, // 로얄
-    { min: -Infinity, max: Infinity, icon: faUser, color: "black" }, // 기본값
-  ]
-
   // rating 값에 따른 아이콘과 색상 계산 //
   const getRatingDetails = (ratings) => {
-    return (
-      ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { icon: faUser, color: "black" }
-    ) // 기본값
+    return ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { imageSrc: "default.svg" } // 기본값
   }
 
-  const { icon: ratingIcon, color: ratingColor } = getRatingDetails(writerProfile.ratings || 0)
+  const imageSrc = getRatingDetails(writerProfile.ratings || 0)
   //--------------------------------------------------------------------------------------------------------------
   useEffect(() => {
     // 로딩 애니메이션을 0.5초 동안만 표시
@@ -155,13 +142,13 @@ const CourseBoardDetail = () => {
 
         //rating 관련 정보
         setPostRating(res.data.dto.rating || 0) // 총점
-        setRatedInfo(res.data.postRating || {}); // 현재 사용자가 매긴 rating 의 정보
+        setRatedInfo(res.data.postRating || {}) // 현재 사용자가 매긴 rating 의 정보
         setMyRating(res.data.postRating.rating || "") // 현재 사용자가 매긴 rating 의 값 (과거 값)
         //현재 사용자가 rating을 매겼는지 여부
         if (res.data.postRating === "") {
-          setRated(false);
+          setRated(false)
         } else {
-          setRated(true);
+          setRated(true)
         }
 
         //장소 정보
@@ -182,9 +169,9 @@ const CourseBoardDetail = () => {
         //댓글 목록이 존재하는지 확인 후, 배열에 ref라는 방 추가
         const list = Array.isArray(res.data.commentList)
           ? res.data.commentList.map((item) => {
-            item.ref = createRef()
-            return item
-          })
+              item.ref = createRef()
+              return item
+            })
           : []
         //댓글 목록
         setCommentList(list)
@@ -510,8 +497,8 @@ const CourseBoardDetail = () => {
 
   //rating 모달 열기
   const openRatingModal = (type) => {
-    setIsRatingModalOpened(true);
-  };
+    setIsRatingModalOpened(true)
+  }
 
   //rating 모달 닫기
   const closeRatingModal = () => {
@@ -520,30 +507,35 @@ const CourseBoardDetail = () => {
 
   //별을 클릭했을 때 rating 을 저장
   const handleRating = (index) => {
-    setNewPostRating(index);
-  };
+    setNewPostRating(index)
+  }
 
   //별점 등록
   const handlePostRating = () => {
     axios
       .post(`/api/v1/posts/${post.id}/ratings`, { userId: loggedInUserId, postId: post.id, rating: newPostRating })
       .then((res) => {
-        closeRatingModal();
-        setRated(true);
+        closeRatingModal()
+        setRated(true)
       })
-      .catch((error) => console.log(error));
-  };
+      .catch((error) => console.log(error))
+  }
 
   //별점 수정
   const handleUpdateRating = () => {
     axios
-      .put(`/api/v1/posts/${post.id}/ratings/${ratedInfo.id}`, { id: ratedInfo.id, userId: loggedInUserId, postId: post.id, rating: newPostRating })
+      .put(`/api/v1/posts/${post.id}/ratings/${ratedInfo.id}`, {
+        id: ratedInfo.id,
+        userId: loggedInUserId,
+        postId: post.id,
+        rating: newPostRating,
+      })
       .then((res) => {
         setMyRating(newPostRating)
-        closeRatingModal();
+        closeRatingModal()
       })
-      .catch((error) => console.log(error));
-  };
+      .catch((error) => console.log(error))
+  }
 
   //별점 삭제
   const handleDeleteRating = () => {
@@ -551,12 +543,12 @@ const CourseBoardDetail = () => {
       axios
         .delete(`/api/v1/posts/${post.id}/ratings/${ratedInfo.id}`)
         .then((res) => {
-          setRated(false);
-          alert("별점을 삭제하였습니다.");
+          setRated(false)
+          alert("별점을 삭제하였습니다.")
         })
-        .catch((error) => console.log(error));
+        .catch((error) => console.log(error))
     }
-  };
+  }
 
   return (
     <div className="container mx-auto p-4 max-w-[1024px]">
@@ -624,17 +616,17 @@ const CourseBoardDetail = () => {
             {post.startDate === null
               ? "설정하지 않았습니다."
               : new Date(post.startDate).toLocaleDateString("ko-KR", {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-              })}
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                })}
             {post.endDate === null
               ? ""
               : ` ~ ${new Date(post.endDate).toLocaleDateString("ko-KR", {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-              })}`}
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                })}`}
           </span>
         </div>
 
@@ -677,21 +669,20 @@ const CourseBoardDetail = () => {
             {writerProfile.profilePicture ? (
               <img src={writerProfile.profilePicture} className="w-20 h-20 rounded-full" alt="" />
             ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
+              <img
                 className="bi bi-person-circle w-20 h-20"
-                viewBox="0 0 16 16">
-                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-                <path
-                  fillRule="evenodd"
-                  d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.206 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"
-                />
-              </svg>
+                src={`${process.env.PUBLIC_URL}/img/defaultImages/defaultProfilePicture.svg`}
+                alt="default profile img"
+              />
             )}
             <div>
-              <h3 className="text-base font-semibold leading-7 tracking-tight text-gray-900">
-                <FontAwesomeIcon icon={ratingIcon} color={ratingColor}></FontAwesomeIcon>
+              <h3 className=" flex text-base font-semibold leading-7 tracking-tight text-gray-900">
+                <img
+                  className="w-6 h-6 mr-2"
+                  src={`${process.env.PUBLIC_URL}/img/userRatingImages/${imageSrc.imageSrc}`}
+                  alt="user rating"
+                  title={`${imageSrc.imageSrc.replace(".svg", "")}`}
+                />
                 {writerProfile.nickname}
               </h3>
               <p className="text-sm font-semibold leading-6 text-indigo-600">
@@ -705,8 +696,9 @@ const CourseBoardDetail = () => {
               {/* title / 좋아요 버튼 / 좋아요, 조회수 */}
               {!isWriter && (
                 <button
-                  className={`mx-3 ${isLiked ? "bg-pink-600" : "bg-pink-400"
-                    } text-white active:bg-emerald-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
+                  className={`mx-3 ${
+                    isLiked ? "bg-pink-600" : "bg-pink-400"
+                  } text-white active:bg-emerald-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
                   type="button"
                   onClick={handleLike}>
                   <FontAwesomeIcon icon={faHeart} className="mr-2" />
@@ -1022,8 +1014,9 @@ const CourseBoardDetail = () => {
         {/* 댓글 더보기 버튼 */}
         <div className="grid grid-cols-1 md:grid-cols-2 mx-auto mb-5">
           <button
-            className={`bg-green-500 text-white py-2 px-4 rounded ${isCommentListLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
-              }`}
+            className={`bg-green-500 text-white py-2 px-4 rounded ${
+              isCommentListLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
+            }`}
             disabled={isCommentListLoading}
             onClick={handleMoreComment}>
             {isCommentListLoading ? (
