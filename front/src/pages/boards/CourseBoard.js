@@ -99,7 +99,7 @@ function CourseBoard() {
       condition: searchCriteria.condition || null,
       sortBy,
       pageNum,
-      pageSize: 12
+      pageSize: 12,
     }
 
     axios
@@ -110,14 +110,11 @@ function CourseBoard() {
 
         //페이지 정보 상태 값 관리
         setPageInfo((prevInfo) => {
-          const combinedPosts = [
-            ...prevInfo,
-            ...filtered
-          ]
+          const combinedPosts = [...prevInfo, ...filtered]
 
           // 중복 제거 (id를 기준으로)
           const uniquePosts = combinedPosts.reduce((acc, currentPost) => {
-            if (!acc.some(post => post.id === currentPost.id)) {
+            if (!acc.some((post) => post.id === currentPost.id)) {
               acc.push(currentPost)
             }
             return acc
@@ -197,7 +194,7 @@ function CourseBoard() {
     // 정렬 기준에 따라 pageData를 정렬
     let sortedData = [...pageInfo]
     if (newSortBy === "latest") {
-      sortedData.sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt))
+      sortedData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     } else if (newSortBy === "viewCount") {
       sortedData.sort((a, b) => b.viewCount - a.viewCount)
     } else if (newSortBy === "likeCount") {
@@ -300,8 +297,6 @@ function CourseBoard() {
 
   // city 또는 country 값에 따른 이미지 파일명 변환 함수
   const getImageFileName = (city, country) => {
-    
-
     // city 값이 있으면 city에 맞는 이미지, 없으면 country에 맞는 이미지 반환
     if (city && cityMapping[city]) {
       return cityMapping[city]
@@ -380,7 +375,7 @@ function CourseBoard() {
               placeholder="도시"
               className="border text-sm border-tripDuoGreen rounded-md px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-tripDuoMint transition-all duration-300"
             />
-            
+
             {/* 날짜 선택 및 검색 버튼 */}
             <button
               onClick={() => setIsCalendarOpen(!isCalendarOpen)}
@@ -388,15 +383,15 @@ function CourseBoard() {
               <span className="whitespace-nowrap">
                 {selectedDateRange[0] && selectedDateRange[1]
                   ? `${selectedDateRange[0].getFullYear().toString().slice(-2)}${(selectedDateRange[0].getMonth() + 1)
-                    .toString()
-                    .padStart(2, "0")}${selectedDateRange[0]
+                      .toString()
+                      .padStart(2, "0")}${selectedDateRange[0]
                       .getDate()
                       .toString()
                       .padStart(2, "0")} / ${selectedDateRange[1].getFullYear().toString().slice(-2)}${(
-                        selectedDateRange[1].getMonth() + 1
-                      )
-                        .toString()
-                        .padStart(2, "0")}${selectedDateRange[1].getDate().toString().padStart(2, "0")}`
+                      selectedDateRange[1].getMonth() + 1
+                    )
+                      .toString()
+                      .padStart(2, "0")}${selectedDateRange[1].getDate().toString().padStart(2, "0")}`
                   : "날짜 선택"}
               </span>
             </button>
@@ -488,17 +483,17 @@ function CourseBoard() {
                     {post.startDate === null
                       ? ""
                       : new Date(post.startDate).toLocaleDateString("ko-KR", {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                      })}
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                        })}
                     {post.endDate === null
                       ? ""
                       : ` ~ ${new Date(post.endDate).toLocaleDateString("ko-KR", {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                      })}`}
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                        })}`}
                   </p>
                   <p className="text-sm text-right text-green-800 font-semibold">
                     {post.country} - {post.city}

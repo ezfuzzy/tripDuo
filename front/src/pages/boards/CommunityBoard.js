@@ -168,7 +168,7 @@ function CommunityBoard() {
     // 정렬 기준에 따라 pageData를 정렬
     const sortedData = [...pageData].sort((a, b) => {
       if (e.target.value === "latest") {
-        return new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt)
+        return new Date(b.createdAt) - new Date(a.createdAt)
       } else if (e.target.value === "viewCount") {
         return b.viewCount - a.viewCount
       }

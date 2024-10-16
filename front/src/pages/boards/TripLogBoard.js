@@ -207,7 +207,7 @@ function TripLogBoard() {
     // 정렬 기준에 따라 pageData를 정렬
     let sortedData = [...pageInfo]
     if (newSortBy === "latest") {
-      sortedData.sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt))
+      sortedData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     } else if (newSortBy === "viewCount") {
       sortedData.sort((a, b) => b.viewCount - a.viewCount)
     } else if (newSortBy === "likeCount") {
