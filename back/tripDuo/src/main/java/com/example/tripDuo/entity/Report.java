@@ -39,7 +39,7 @@ public abstract class Report {
     private Long id;
 	
 	private long reporterId; // 신고한 유저 id
-	private long reportedUserUserId;
+	private long reportedContentOwnerId;
     
 	private String content;
 	

@@ -9,12 +9,13 @@ const ReportBoard = () => {
   const [currentPage, setCurrentPage] = useState(1) // 현재 페이지
   const [pageSize, setPageSize] = useState(10) // 페이지당 행 수
   const [modalOpen, setModalOpen] = useState(false) // 모달 열림 여부
-  const [reportStatus, setReportStatus] = useState("") // 선택된 신고 상태
-  const [accountStatus, setAccountStatus] = useState("") // 선택된 계정 상태
   const [totalReportPages, setTotalReportPages] = useState() // 총 페이지 수
 
   const [selectedYear, setSelectedYear] = useState("") // 선택된 년도
   const [selectedMonth, setSelectedMonth] = useState("") // 선택된 월
+
+  const [reportStatus, setReportStatus] = useState("") // 선택된 신고 상태
+  const [accountStatus, setAccountStatus] = useState("") // 선택된 계정 상태
 
   // 검색 조건
   const [searchCriteria, setSearchCriteria] = useState({
@@ -54,7 +55,7 @@ const ReportBoard = () => {
     getReports() // 신고 목록 가져오기
   }
 
-  const getReports = () => {
+  const getReports = async () => {
     const params = {
       reportedUserId: searchCriteria.reportedUserId || null,
       reportStatus: searchCriteria.reportStatus || null,
@@ -64,18 +65,16 @@ const ReportBoard = () => {
       pageSize: pageSize,
     }
 
-    axios
-      .get("/api/v1/reports", { params })
-      .then((response) => {
-        console.log(response.data)
-        setReports(response.data.list) // 신고 정보 업데이트
-        setTargetTypes(response.data.targetTypeList) // 대상 정보 업데이트
-        setTargetAccountStatus(response.data.targetAccountStatusList) // 소유자 계정 상태 정보 업데이트
-        setTotalReportPages(response.data.totalReportPages) // 총 페이지 수 업데이트
-      })
-      .catch((error) => {
-        console.error("신고 목록을 가져오는 데 실패했습니다:", error)
-      })
+    try {
+      const response = await axios.get("/api/v1/reports", { params })
+      console.log(response.data)
+      setReports(response.data.list) // 신고 정보 업데이트
+      setTargetTypes(response.data.targetTypeList) // 대상 정보 업데이트
+      setTargetAccountStatus(response.data.targetAccountStatusList) // 소유자 계정 상태 정보 업데이트
+      setTotalReportPages(response.data.totalReportPages) // 총 페이지 수 업데이트
+    } catch (error) {
+      console.error("신고 목록을 가져오는 데 실패했습니다:", error)
+    }
   }
 
   useEffect(() => {
@@ -233,21 +232,33 @@ const ReportBoard = () => {
         </select>
 
         <div className="overflow-x-auto mt-3">
-          <table className="min-w-full border border-gray-300">
+          <table className="min-w-full border border-gray-300" style={{ tableLayout: "fixed" }}>
             <thead>
               <tr className="bg-gray-200">
-                <th className="border border-gray-300 px-4 py-2">id</th>
-                <th className="border border-gray-300 px-4 py-2">신고자 id</th>
-                <th className="border border-gray-300 px-4 py-2">대상</th>
-                <th className="border border-gray-300 px-4 py-2">상태</th>
-                <th className="border border-gray-300 px-4 py-2">소유자 id</th>
-                <th className="border border-gray-300 px-4 py-2">
+                <th className="border border-gray-300 px-4 py-2" style={{ width: "5%" }}>
+                  id
+                </th>
+                <th className="border border-gray-300 px-4 py-2" style={{ width: "10%" }}>
+                  신고자 id
+                </th>
+                <th className="border border-gray-300 px-4 py-2" style={{ width: "10%" }}>
+                  대상
+                </th>
+                <th className="border border-gray-300 px-4 py-2" style={{ width: "10%" }}>
+                  상태
+                </th>
+                <th className="border border-gray-300 px-4 py-2" style={{ width: "10%" }}>
+                  소유자 id
+                </th>
+                <th className="border border-gray-300 px-4 py-2" style={{ width: "10%" }}>
                   소유자
                   <br />
                   계정 상태
                 </th>
-                <th className="border border-gray-300 px-4 py-2">날짜</th>
-                <th className="border border-gray-300 px-4 py-2"></th>
+                <th className="border border-gray-300 px-4 py-2" style={{ width: "25%" }}>
+                  날짜
+                </th>
+                <th className="border border-gray-300 px-4 py-2" style={{ width: "20%" }}></th>
               </tr>
             </thead>
             <tbody>
@@ -271,7 +282,7 @@ const ReportBoard = () => {
                     {report.status === "PENDING" && "보류 중"}
                   </td>
 
-                  <td className="border border-gray-300 px-4 py-2">{report.reportedUserUserId}</td>
+                  <td className="border border-gray-300 px-4 py-2">{report.reportedContentOwnerId}</td>
 
                   <td className="border border-gray-300 px-4 py-2">
                     {targetAccountStatus[index] === "ACTIVE" && "활성"}
@@ -303,7 +314,7 @@ const ReportBoard = () => {
                         onClose={() => setModalOpen(false)}
                         onConfirm={handleProcessReport}
                         report={selectedReport} // 선택된 신고 정보를 모달에 전달
-                        setStatus={setReportStatus}
+                        setReportStatus={setReportStatus}
                         setAccountStatus={setAccountStatus}
                       />
                     )}
@@ -339,11 +350,24 @@ const ReportBoard = () => {
 }
 
 // 모달 컴포넌트
-const ReportModal = ({ isOpen, onClose, onConfirm, report, setStatus, setAccountStatus }) => {
+const ReportModal = ({ isOpen, onClose, onConfirm, report, setReportStatus, setAccountStatus }) => {
+  // 모달이 열릴 때 상태 초기화
+  useEffect(() => {
+    setReportStatus(report.infos.status) // 현재 신고 상태로 초기화
+    setAccountStatus(report.targetAccountStatus) // 현재 계정 상태로 초기화
+  }, [report, setReportStatus, setAccountStatus])
+
   if (!isOpen) return null
 
+  const handleModalOutClick = (e) => {
+    // 모달 바깥을 클릭했을 때만 닫기
+    if (e.target === e.currentTarget) {
+      onClose()
+    }
+  }
+
   return (
-    <div className="modal fixed inset-0 flex items-center justify-center z-50">
+    <div className="modal fixed inset-0 flex items-center justify-center z-50" onClick={handleModalOutClick}>
       <div className="modal-content bg-white p-4 rounded shadow-lg relative">
         {/* 닫기 SVG 아이콘 */}
         <svg
@@ -478,8 +502,9 @@ const ReportModal = ({ isOpen, onClose, onConfirm, report, setStatus, setAccount
                   <input
                     type="radio"
                     name="reportStatus"
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
+                    //value={status}
+                    //checked={report.infos.status === status}
+                    onChange={() => setReportStatus(status)}
                     className="mr-2"
                   />
                   {status === "PROCESSED" && "처리됨"}
@@ -506,8 +531,9 @@ const ReportModal = ({ isOpen, onClose, onConfirm, report, setStatus, setAccount
                   <input
                     type="radio"
                     name="accountStatus"
-                    value={status}
-                    onChange={(e) => setAccountStatus(e.target.value)}
+                    //value={status}
+                    //checked={report.targetAccountStatus === status}
+                    onChange={() => setAccountStatus(status)}
                     className="mr-2"
                   />
                   {status === "ACTIVE" && "활성"}

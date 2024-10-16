@@ -66,7 +66,7 @@ public class ReportSpecification {
             // reportedUserId 검색 조건
             if (reportDto.getReportedUserId() != null) {
                 predicate = criteriaBuilder.and(predicate,
-                    criteriaBuilder.equal(root.get("reportedUserUserId"), reportDto.getReportedUserId()));
+                    criteriaBuilder.equal(root.get("reportedContentOwnerId"), reportDto.getReportedUserId()));
             }
 
             // createdAt 검색 조건
