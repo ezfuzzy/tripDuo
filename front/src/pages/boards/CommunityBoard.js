@@ -23,8 +23,6 @@ function CommunityBoard() {
   const [searchCriteria, setSearchCriteria] = useState({
     country: "",
     city: "",
-    startDate: "",
-    endDate: "",
     keyword: "",
     condition: "title", // 검색 옵션: 제목 또는 작성자
   })
@@ -96,8 +94,6 @@ function CommunityBoard() {
       di: domesticInternational || null,
       country: searchCriteria.country || null,
       city: searchCriteria.city || null,
-      startDate: searchCriteria.startDate || null,
-      endDate: searchCriteria.endDate || null,
       keyword: searchCriteria.keyword || null,
       condition: searchCriteria.condition || null,
       sortBy,
@@ -132,6 +128,12 @@ function CommunityBoard() {
 
   // 해외 / 국내 전환시 호출
   useEffect(() => {
+    setSearchCriteria({
+      country: "",
+      city: "",
+      keyword: "",
+      condition: "title", // 기본 조건 설정
+    });
     fetchFilteredPosts()
   }, [domesticInternational])
 
@@ -144,10 +146,17 @@ function CommunityBoard() {
   const handleDesiredCountry = () => {
     const newDomesticInternational = domesticInternational === "International" ? "Domestic" : "International"
     setDomesticInternational(newDomesticInternational)
+    setSearchCriteria({
+      country: "",
+      city: "",
+      keyword: "",
+      condition: "title", // 기본 조건 설정
+    });
     setSearchParams({
       ...searchCriteria,
       di: newDomesticInternational,
     })
+    window.location.reload();
   }
 
   // 새로운 검색을 시작하는 함수
