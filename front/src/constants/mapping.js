@@ -171,8 +171,8 @@ export const myPageMenuList = [
   { title: "Trip plan", subTitle: "(여행 계획)", content: "여행 계획을 세우고, 세운 여행 계획들을 확인할 수 있습니다.", link: "/private/myPlan", },
   { title: "Trip log", subTitle: "(여행 기록)", content: "작성한 여행 기록을 확인할 수 있습니다.", link: "/private/myTripLog", },
   { title: "Wish Mate", subTitle: "(관심 메이트)", content: "좋아요한 메이트 게시글을 확인할 수 있습니다.", link: "/private/wishMate", },
-  { title: "My Place", subTitle: "(관심 여행 계획)", content: "좋아요한 여행 계획을 확인할 수 있습니다.", link: "/private/myPlace", },
-  { title: "Liked Course", subTitle: "(마이 플레이스)", content: "가고싶은 장소를 저장하고, 확인할 수 있습니다.", link: "/private/likedCourse", },
+  { title: "My Place", subTitle: "(마이 플레이스)", content: "가고싶은 장소를 저장하고, 확인할 수 있습니다.", link: "/private/myPlace", },
+  { title: "Liked Course", subTitle: "(관심 여행 계획)", content: "좋아요한 여행 계획을 확인할 수 있습니다.", link: "/private/likedCourse", },
   { title: "Toolbox", subTitle: "(부가 기능 site map)", content: "부가 기능", link: "/utils", },
   { title: "ADMIN DASHBOARD", subTitle: "", content: "admin dashboard", link: "/admin-dashboard", },
 ]
