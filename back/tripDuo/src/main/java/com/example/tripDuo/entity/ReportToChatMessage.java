@@ -28,6 +28,7 @@ public class ReportToChatMessage extends Report {
         return ReportToChatMessage.builder()
                 .id(dto.getId())
                 .reporterId(dto.getReporterId() != null ? dto.getReporterId() : 0L)
+                .reportedUserUserId(dto.getReportedUserId() != null ? dto.getReportedUserId() : 0L)
                 .content(dto.getContent())
                 .status(dto.getReportStatus())
                 .createdAt(dto.getCreatedAt())
