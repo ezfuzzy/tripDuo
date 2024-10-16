@@ -95,12 +95,13 @@ const GoogleSaveLocationPage = ({ onSave }) => {
             const infoWindow = new window.google.maps.InfoWindow({
               content: createInfoWindowContent(place),
             });
-
             marker.addListener("click", () => {
-              closeInfoWindows();
+              closeInfoWindows()
+
               setSelectedPlace({
                 ...place,
                 position: place.geometry.location,
+                place_url: `https://www.google.com/maps/place/?q=place_id:${place.place_id}`,
               });
               infoWindow.open(map, marker);
             });
@@ -117,9 +118,12 @@ const GoogleSaveLocationPage = ({ onSave }) => {
   };
 
   const handleSave = (place) => {
+
     if (place) {
+      setSelectedPlace(place)
+
       const placeToSave = {
-        ...place,
+        ...selectedPlace,
         placeMemo, // 메모 추가
       };
       onSave(placeToSave); // 선택된 장소와 메모를 외부 컴포넌트로 전달
@@ -190,6 +194,7 @@ const GoogleSaveLocationPage = ({ onSave }) => {
                 const placeData = {
                   ...place,
                   position: selectedPosition,
+                  place_url: `https://www.google.com/maps/place/?q=place_id:${place.place_id}`,
                 };
 
                 setSelectedPlace(placeData);

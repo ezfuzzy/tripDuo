@@ -95,6 +95,7 @@ function MyPlace2() {
             longitude: place.geometry.location.lng(),
             userId: loggedInUserId,
             userMemo: place.placeMemo || "",
+            placeUrl: place.place_url,
             di: "International"
         }
 
