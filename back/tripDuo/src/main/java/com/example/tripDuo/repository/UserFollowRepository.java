@@ -16,7 +16,7 @@ public interface UserFollowRepository extends JpaRepository<UserFollow, Long> {
 	
 	// add 할 때 기존 값이 있는지 찾는 메소드 
 	UserFollow findByFolloweeUserProfileInfo_User_IdAndFollowerUserProfileInfo_User_Id(Long followeeUserId, Long followerUserId);
-	
+	void deleteByFolloweeUserProfileInfo_User_IdAndFollowerUserProfileInfo_User_IdAndFollowType(Long follweeUserId, Long followerUserId, FollowType followType);
 	// get 할 때 팔로워/팔로이 정보들을 가져오는 메소드
 	List<UserFollow> findByFolloweeUserProfileInfo_User_IdAndFollowType(Long userId, FollowType followType);
 	List<UserFollow> findByFollowerUserProfileInfo_User_IdAndFollowType(Long userId, FollowType followType);

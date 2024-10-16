@@ -425,6 +425,10 @@ public class UserServiceImpl implements UserService {
 			UserFollow userFollow = UserFollow.toEntity(userFollowDto, followeeProfileInfo, followerProfileInfo);
 			userFollowRepo.save(userFollow);
 		}
+
+		if (userFollowDto.getFollowType() != FollowType.BLOCK) {
+			userFollowRepo.deleteByFolloweeUserProfileInfo_User_IdAndFollowerUserProfileInfo_User_IdAndFollowType(userFollowDto.getFollowerUserId(), userFollowDto.getFolloweeUserId(), userFollowDto.getFollowType());
+		}
 	}
 
 	/**
