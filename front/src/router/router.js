@@ -51,6 +51,7 @@ import UserBoard from "../pages/admin/UserBoard"
 import AdminLayout from "../components/AdminLayout"
 import MyPlace2 from "../pages/myTripTmp/MyPlace2"
 import UtilHome from "../pages/Utilities/UtilHome"
+import TravelCostCaculator from "../pages/Utilities/TravelCostCalculator"
 
 // /users/:id
 // /users/:id/setting
@@ -100,6 +101,7 @@ const routes = [
   { path: "/utils/safetyInfo", element: <TravelSafetyInfo /> },
   { path: "/utils/recommendations", element: <LocationRecommendations /> },
   { path: "/utils/languageTip", element: <LanguageCultureTips /> },
+  { path: "/caculator", element: <TravelCostCaculator /> },
   
   // ### etc ###
 ]
