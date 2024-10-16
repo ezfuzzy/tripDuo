@@ -50,6 +50,7 @@ import AdminDashboard from "../pages/admin/AdminHome"
 import UserBoard from "../pages/admin/UserBoard"
 import AdminLayout from "../components/AdminLayout"
 import TripDuoCarousel from "../components/TripDuoCarousel"
+import MyPlace2 from "../pages/myTripTmp/MyPlace2"
 
 // /users/:id
 // /users/:id/setting
@@ -131,6 +132,7 @@ const protectedRoutes = [
 
   // ### my page 메뉴 설정 ###
   { path: "/myPlace", element: <MyPlace /> },
+  { path: "/myPlace2", element: <MyPlace2 /> },
   { path: "/myPlan", element: <MyPlan /> },
   { path: "/myRecord", element: <MyRecord /> },
   { path: "/wishMate", element: <WishMate /> },
