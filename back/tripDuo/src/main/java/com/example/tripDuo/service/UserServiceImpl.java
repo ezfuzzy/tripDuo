@@ -363,6 +363,10 @@ public class UserServiceImpl implements UserService {
 		User user = userRepo.findById(userId)
 				.orElseThrow(() -> new EntityNotFoundException("User not found"));
 		
+		//findByFolloweeUserProfileInfo_User_IdAndFollowerUserProfileInfo_User_Id
+		userFollowRepo.deleteAllByFolloweeUserProfileInfo_User_Id(userId);
+		userFollowRepo.deleteAllByFollowerUserProfileInfo_User_Id(userId);
+		
 		user.softDelete();
 	}
 	
