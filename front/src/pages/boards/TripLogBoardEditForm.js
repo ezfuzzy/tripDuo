@@ -32,6 +32,7 @@ const TripLogBoardEditForm = () => {
         tags: [],
         status: status
     })
+    const [tagInput, setTagInput] = useState("")
 
     const navigate = useNavigate()
     const { id } = useParams()  // URL에서 게시물 ID를 가져옴
@@ -55,9 +56,26 @@ const TripLogBoardEditForm = () => {
     //태그 입력
     const handleTagInput = (e) => {
         const value = e.target.value
+
+        // 태그 길이 15자로 제한
+        if (value.length > 15) {
+            alert("태그는 최대 15자까지 입력 가능합니다.");
+            return
+        }
+
+        setTagInput(value)
+
         if (value.endsWith(" ") && value.trim() !== "") {
             const newTag = value.trim()
+
+            //조건: #으로 시작, 중복 방지, # 단독 입력 방지
             if (newTag !== "#" && newTag.startsWith("#") && !postInfo.tags.includes(newTag)) {
+                // 태그 최대 6개로 제한
+                if (postInfo.tags.length >= 6) {
+                    alert("태그는 최대 6개까지 추가할 수 있습니다.")
+                    return
+                }
+
                 setPostInfo((prev) => ({
                     ...prev,
                     tags: [...prev.tags, newTag]
@@ -180,7 +198,7 @@ const TripLogBoardEditForm = () => {
             alert("나라를 선택해주세요.");
             return;
         }
-        
+
         axios.put(`/api/v1/posts/${id}`, postInfo)  // PUT 요청으로 업데이트
             .then((res) => {
                 alert("수정했습니다")
@@ -225,6 +243,7 @@ const TripLogBoardEditForm = () => {
                             onChange={(e) =>
                                 setPostInfo((prev) => ({ ...prev, title: e.target.value }))
                             }
+                            maxLength={50}
                         />
                     </div>
 
@@ -312,6 +331,7 @@ const TripLogBoardEditForm = () => {
                         </label>
                         <input
                             id="tags"
+                            value={tagInput}
                             onChange={handleTagInput}
                             placeholder="#태그 입력 후 스페이스바"
                             className="border-gray-300 rounded-md p-2 w-full"
