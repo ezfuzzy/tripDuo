@@ -395,6 +395,7 @@ const CourseBoardEditForm = () => {
                                     value={day.dayMemo || ""}
                                     onChange={(e) => handleDayMemoChange(dayIndex, e.target.value)}
                                     placeholder="메모를 입력하세요..."
+                                    maxLength={200}
                                 />
                             </div>
 
@@ -436,6 +437,7 @@ const CourseBoardEditForm = () => {
                                             id={`placeMemo-${dayIndex}-${placeIndex}`}
                                             value={place.placeMemo || ""}
                                             onChange={(e) => handlePlaceMemoChange(dayIndex, placeIndex, e.target.value)}
+                                            maxLength={150}
                                         />
                                     </div>
                                 </div>

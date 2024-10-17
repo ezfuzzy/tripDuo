@@ -64,7 +64,7 @@ const KakaoSaveLocationPage = ({ onSave }) => {
         <div style="margin-bottom: 8px;">${place.address_name}</div>
         <div style="margin-bottom: 8px;">전화번호: ${place.phone || '정보 없음'}</div>
         <div style="margin-bottom: 8px;"><a href="${place.place_url}" target="_blank">장소 링크</a></div>
-        <textarea placeholder="장소 메모..." style="width: 100%; margin-bottom: 8px;" oninput="window.updatePlaceMemo('${place.id}', this.value)">${place.placeMemo || ''}</textarea>
+        <textarea placeholder="장소 메모..." maxLength={100} style="width: 100%; margin-bottom: 8px;" oninput="window.updatePlaceMemo('${place.id}', this.value)">${place.placeMemo || ''}</textarea>
         <button
         onclick="window.savePlace('${place.place_name}')"
         style="width:100%;background-color:green;color:white;padding:5px;border:none;border-radius:5px;">
