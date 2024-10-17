@@ -4,7 +4,18 @@ import java.time.LocalDateTime;
 
 import com.example.tripDuo.enums.ReportStatus;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,7 +46,7 @@ public abstract class Report {
 	private String content;
 	
 	@Enumerated(EnumType.STRING)
-    @Column(length = 10)
+    @Column(length = 15)
     private ReportStatus status;
 	
 	private LocalDateTime createdAt;

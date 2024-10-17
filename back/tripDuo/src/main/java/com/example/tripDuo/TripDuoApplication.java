@@ -623,9 +623,6 @@ public class TripDuoApplication {
 		reportRepo.save(report28);
 		reportRepo.save(report29);
 
-        // 확인용 출력
-        System.out.println("초기 데이터 저장 완료!");
-
         System.out.println("\n\n### ### ### ### ### ### ### ###");
         System.out.println("#                             #");
 		System.out.println("#   서버가 성공적으로 실행되었습니다.   #");
