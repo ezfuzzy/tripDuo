@@ -35,7 +35,6 @@ public class AuthController {
 
 	@PostMapping("/signup")
 	public ResponseEntity<String> signup(@RequestBody UserDto userDto) throws Exception {
-	    
 	    return ResponseEntity.ok(authService.signup(userDto));
 	}
 

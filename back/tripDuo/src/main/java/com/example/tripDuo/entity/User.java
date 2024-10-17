@@ -18,7 +18,6 @@ import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,7 +47,6 @@ public class User {
     @Column(nullable = false, length = 30, unique = true)
     private String encryptedPhoneNumber;
     
-    @Email
     @Column(nullable = false, length = 50, unique = true)
     private String email; // [note: "인증 받으면 email 로그인 사용 가능 ?? "]
     
