@@ -217,7 +217,7 @@ function MateBoardDetail(props) {
         .catch((error) => console.log(error))
     }
   }
-  
+
   // 답글 텍스트 상태 업데이트
   const handleReplyTextChange = (index, value) => {
     setReplyTexts((prev) => ({
@@ -256,8 +256,6 @@ function MateBoardDetail(props) {
       setDropdownIndex(null)
     }
   }
-
-
 
   //댓글 등록
   const handleCommentSubmit = (e) => {
@@ -583,17 +581,20 @@ function MateBoardDetail(props) {
             </div>
           </div>
 
-          <p>안녕하세요~</p>
-
-          <a href="/">대충 경로 공유한 url</a>
-          <br />
-          <br />
-
           {/* Froala Editor 내용 */}
-          <div dangerouslySetInnerHTML={{ __html: cleanHTML }}></div>
+          <div dangerouslySetInnerHTML={{ __html: cleanHTML }} className=" py-10 px-4 border-y border-slate-200"></div>
 
           {/* 캘린더 */}
           <div className="p-4">
+            <label htmlFor="Calendar" className="block font-semibold">
+              일정
+            </label>
+            <div className="my-3">
+              <p>
+                {post.startDate || "0000.00.00."} ~ {post.endDate || "0000.00.00."}
+              </p>
+            </div>
+
             <Calendar
               value={selectedDateRange} // 초기값 또는 선택된 날짜 범위
               formatDay={(locale, date) => moment(date).format("DD")}
