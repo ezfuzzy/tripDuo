@@ -18,7 +18,7 @@ const CourseBoardForm = () => {
   // 달력에서 선택된 날짜 범위 저장
   const [selectedDateRange, setSelectedDateRange] = useState([null, null]);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false); // 캘린더 표시 여부 상태
- 
+
   const [title, setTitle] = useState("")
   const [country, setCountry] = useState("")
   const [city, setCity] = useState("")
@@ -225,7 +225,7 @@ const CourseBoardForm = () => {
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder={status==="PRIVATE" ? "MyPage에서 확인 가능한 게시물입니다." : ""}
+                placeholder={status === "PRIVATE" ? "MyPage에서 확인 가능한 게시물입니다." : ""}
               />
             </div>
 
@@ -482,7 +482,7 @@ const CourseBoardForm = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
             <div
               className="bg-white p-6 rounded-lg shadow-lg w-2/3 max-w-4xl"
-              style={{ maxHeight: "90vh", overflowY: "auto" }}>
+              style={{ maxHeight: "80vh", overflowY: "auto" }}>
               <div className="flex justify-between items-center mb-4">
                 <div className="text-xl font-bold">
                   Day {selectedDayIndex + 1} : {selectedPlaceIndex + 1}번 장소 선택 중

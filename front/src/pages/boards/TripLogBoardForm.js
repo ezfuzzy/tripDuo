@@ -63,7 +63,7 @@ const TripLogBoardForm = () => {
         const postData = res.data.dto
         setPost(postData)
         setTitle(`[ ${res.data.dto.title} ] 게시물의 여행기록`)
-        console.log(res.data.dto)
+
         //장소 정보
         const places = postData.postData.reduce((acc, day) => acc.concat(day.places), [])
         setAllPlaces(places)

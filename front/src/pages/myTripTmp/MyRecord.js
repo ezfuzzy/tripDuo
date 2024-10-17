@@ -136,7 +136,7 @@ function MyRecord(props) {
                       // /* 혼합 모드 설정 */
                       mixBlendMode: "multiply",
                     }}>
-                    <a href={`/posts/course/${post.id}/detail`} className="block">
+                    <a href={`/posts/trip_log/${post.id}/detail`} className="block">
                       <div className="md:flex justify-between">
                         <div>
                           <h4 className="text-xl font-semibold">{post.title}</h4>

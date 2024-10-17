@@ -160,7 +160,7 @@ const GoogleSaveLocationPage = ({ onSave }) => {
       <div
         ref={mapRef}
         className="flex-grow mb-4"
-        style={{ width: "100%", minHeight: "60vh", maxHeight: "80vh" }}
+        style={{ width: "100%", height: "50vh" }}
       ></div>
 
       <div className="flex flex-col space-y-2 p-2 bg-white border-t border-gray-200">

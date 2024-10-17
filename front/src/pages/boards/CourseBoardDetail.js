@@ -596,14 +596,14 @@ const CourseBoardDetail = () => {
           <div className="flex justify-start">
             <button
               onClick={() => navigate(`/posts/course?di=${domesticInternational}`)}
-              className="text-white bg-tripDuoMint hover:bg-tripDuoGreen focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
-              목록으로${loggedInUsername}${post.writer}
+              className="text-white bg-tripDuoMint hover:bg-tripDuoGreen focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 mr-4 text-center">
+              목록으로
             </button>
-            {post.writer == loggedInUsername &&
+            {post.writer == loggedInNickname &&
               <button
               onClick={() => navigate("/private/myPlan")}
-              className="text-white bg-tripDuoMint hover:bg-tripDuoGreen focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
-              Trip plane
+              className="text-tripDuoGreen border border-tripDuoGreen hover:bg-tripDuoMint focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
+              Trip plan
             </button>
             }
           </div>
