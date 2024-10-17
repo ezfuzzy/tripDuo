@@ -82,7 +82,7 @@ const CourseBoardDetail = () => {
   const [kakaoMap, setKakaoMap] = useState(null)
   // SavedPlacesGoogleMapComponent를 참조할 ref 생성
   const savedPlacesGoogleMapComponentRef = useRef(null);
-  
+
   //infowWindow 상태값 관리
   const [currentInfoWindow, setCurrentInfoWindow] = useState(null)
 
@@ -176,9 +176,9 @@ const CourseBoardDetail = () => {
         //댓글 목록이 존재하는지 확인 후, 배열에 ref라는 방 추가
         const list = Array.isArray(res.data.commentList)
           ? res.data.commentList.map((item) => {
-              item.ref = createRef()
-              return item
-            })
+            item.ref = createRef()
+            return item
+          })
           : []
         //댓글 목록
         setCommentList(list)
@@ -294,9 +294,9 @@ const CourseBoardDetail = () => {
     } else {
       // setGoogleMapCenterLocation({ Ma: place.Ma, La: place.La })
       // Google Map의 infoWindow 열기
-    if (savedPlacesGoogleMapComponentRef.current) {
-      savedPlacesGoogleMapComponentRef.current.openInfoWindowAtPlace(place); // SavedPlacesGoogleMapComponent에서 제공하는 함수 호출
-    }
+      if (savedPlacesGoogleMapComponentRef.current) {
+        savedPlacesGoogleMapComponentRef.current.openInfoWindowAtPlace(place); // SavedPlacesGoogleMapComponent에서 제공하는 함수 호출
+      }
     }
   }
 
@@ -339,14 +339,51 @@ const CourseBoardDetail = () => {
     }
   }
 
-  // 신고 처리 함수
-  const handleReportComment = (commentId) => {
+  // 게시물 신고 처리 함수
+  const handleReportPost = () => {
     if (!loggedInUserId) {
       alert("로그인 후 이용가능합니다.")
     } else {
-      // 신고 기능 구현
-      alert(`댓글 ID ${commentId}가 신고되었습니다.`)
-      // 추가로 서버에 신고 요청을 보내는 로직을 여기에 추가
+      const data = {
+        content: "게시물 신고",
+        reportedUserId: writerProfile.userId,
+      }
+      if (window.confirm("해당 게시물을 신고하시겠습니까")) {
+        axios
+          .post(`/api/v1/reports/${post.id}/POST/${loggedInUserId}`, data)
+          .then((res) => {
+            if (res.data.isSuccess) {
+              alert("해당 게시물에 대한 신고가 접수되었습니다.")
+            } else {
+              alert(res.data.message)
+            }
+          })
+          .catch((error) => console.log(error))
+      }
+    }
+  }
+
+  // 댓글 신고 처리 함수
+  const handleReportComment = (commentInfo) => {
+    if (!loggedInUserId) {
+      alert("로그인 후 이용가능합니다.")
+    } else {
+      const data = {
+        content: "댓글 신고",
+        reportedUserId: commentInfo.userId,
+      }
+      if (window.confirm("해당 댓글을 신고하시겠습니까")) {
+        axios
+          .post(`/api/v1/reports/${commentInfo.id}/POST_COMMENT/${loggedInUserId}`, data)
+          .then((res) => {
+            if (res.data.isSuccess) {
+              alert("해당 댓글에 대한 신고가 접수되었습니다.")
+            } else {
+              alert(res.data.message)
+            }
+          })
+          .catch((error) => console.log(error))
+      }
     }
   }
 
@@ -601,10 +638,10 @@ const CourseBoardDetail = () => {
             </button>
             {post.writer == loggedInNickname &&
               <button
-              onClick={() => navigate("/private/myPlan")}
-              className="text-tripDuoGreen border border-tripDuoGreen hover:bg-tripDuoMint focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
-              Trip plan
-            </button>
+                onClick={() => navigate("/private/myPlan")}
+                className="text-tripDuoGreen border border-tripDuoGreen hover:bg-tripDuoMint focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
+                Trip plan
+              </button>
             }
           </div>
 
@@ -659,23 +696,61 @@ const CourseBoardDetail = () => {
             {post.startDate === null
               ? "설정하지 않았습니다."
               : new Date(post.startDate).toLocaleDateString("ko-KR", {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                })}
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+              })}
             {post.endDate === null
               ? ""
               : ` ~ ${new Date(post.endDate).toLocaleDateString("ko-KR", {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                })}`}
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+              })}`}
           </span>
         </div>
 
         <div className="flex justify-between items-center m-3">
           <div>
             <strong className="mr-6">{post.title}</strong>
+          </div>
+          {/* 오른쪽 DropDown 메뉴 */}
+          <div className="relative inline-block text-left">
+            <button
+              onClick={(e) => toggleDropdown(e, "titleDropdown")}
+              className="flex items-center p-2 text-gray-500 rounded hover:text-gray-700">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-6 h-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v.01M12 12v.01M12 18v.01" />
+              </svg>
+            </button>
+
+            {dropdownIndex === "titleDropdown" && (
+              <div className="absolute right-0 w-40 mt-2 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg">
+                <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                  {/* <button
+                    className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                    onClick={() => {
+                      setDropdownIndex(null)
+                      alert("Option 1 selected")
+                    }}>
+                    차단
+                  </button> */}
+                  <button
+                    className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                    onClick={() => {
+                      setDropdownIndex(null)
+                      handleReportPost()
+                    }}>
+                    신고
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* 수정, 삭제 버튼 */}
@@ -739,9 +814,8 @@ const CourseBoardDetail = () => {
               {/* title / 좋아요 버튼 / 좋아요, 조회수 */}
               {!isWriter && (
                 <button
-                  className={`mx-3 ${
-                    isLiked ? "bg-pink-600" : "bg-pink-400"
-                  } text-white active:bg-emerald-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
+                  className={`mx-3 ${isLiked ? "bg-pink-600" : "bg-pink-400"
+                    } text-white active:bg-emerald-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
                   type="button"
                   onClick={handleLike}>
                   <FontAwesomeIcon icon={faHeart} className="mr-2" />
@@ -914,7 +988,7 @@ const CourseBoardDetail = () => {
                                     className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
                                     onClick={() => {
                                       setDropdownIndex(null)
-                                      handleReportComment(item.id)
+                                      handleReportComment(item)
                                     }}>
                                     신고
                                   </button>
@@ -1057,9 +1131,8 @@ const CourseBoardDetail = () => {
         {/* 댓글 더보기 버튼 */}
         <div className="grid grid-cols-1 md:grid-cols-2 mx-auto mb-5">
           <button
-            className={`bg-green-500 text-white py-2 px-4 rounded ${
-              isCommentListLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
-            }`}
+            className={`bg-green-500 text-white py-2 px-4 rounded ${isCommentListLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
+              }`}
             disabled={isCommentListLoading}
             onClick={handleMoreComment}>
             {isCommentListLoading ? (
