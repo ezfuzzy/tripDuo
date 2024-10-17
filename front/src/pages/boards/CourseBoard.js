@@ -141,14 +141,6 @@ function CourseBoard() {
 
   // 해외 / 국내 전환시 호출
   useEffect(() => {
-    setSearchCriteria({
-      country: "",
-      city: "",
-      startDate: "",
-      endDate: "",
-      keyword: "",
-      condition: "title", // 기본 조건 설정
-    });
     setPageInfo([])
     setCurrentPage(1)
     fetchFilteredPosts(1)
@@ -161,6 +153,7 @@ function CourseBoard() {
         setCurrentPage((prevPage) => prevPage + 1)
       }
     })
+
     if (observerRef.current) {
       observer.observe(observerRef.current)
     }
@@ -204,6 +197,7 @@ function CourseBoard() {
     fetchFilteredPosts(1) // 첫 페이지 데이터 다시 불러오기
   }
 
+  // 정렬 기준 변경
   const handleSortChange = (e) => {
     const newSortBy = e.target.value
     setSortBy(e.target.value) // 정렬 기준 변경
