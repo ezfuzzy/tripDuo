@@ -110,7 +110,7 @@ function MyPlace2() {
 
                 // 저장된 장소의 좌표로 지도 중심 이동
                 setGoogleMapCenterLocation({ Ma: placeInfo.latitude, La: placeInfo.longitude })
-  
+
                 // 메모 저장 시 해당 장소 메모도 업데이트
                 setSelectedPlaceMemo(placesInfo.userMemo)
 
@@ -138,14 +138,14 @@ function MyPlace2() {
 
     // 장소 클릭 시 맵 중심 이동, 장소 메모 표시, 인포윈도우 표시
     const handlePlaceClick = (placeItem) => {
-        
+
         const transformedPlaceItem = transformPlaceItem(placeItem)
 
         if (savedPlacesGoogleMapComponentRef.current) {
             setGoogleMapCenterLocation({ Ma: placeItem.place.latitude, La: placeItem.place.longitude })
             savedPlacesGoogleMapComponentRef.current.openInfoWindowAtPlace(transformedPlaceItem);
         }
-        
+
         setSelectedPlaceMemo(placeItem.userMemo || "메모가 없습니다.");
     };
 
@@ -223,14 +223,23 @@ function MyPlace2() {
                     {/* SaveLocationPage 모달 */}
                     {showPlaceSearch && (
                         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                            <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-xl">
+                            <div className="bg-white p-4 rounded-lg shadow-lg w-2/3 max-w-4xl"
+                                style={{ maxHeight: "80vh", overflowY: "auto" }}>
+                                <div className="flex justify-end">
+                                    <button
+                                        onClick={() => setShowPlaceSearch(false)}
+                                        className="text-red-600 hover:text-red-800 text-3xl font-bold"
+                                        aria-label="Close">
+                                        &times;
+                                    </button>
+                                </div>
                                 <GoogleSaveLocationPage onSave={handleSavePlace} />
-                                <button
+                                {/* <button
                                     onClick={() => setShowPlaceSearch(false)}
                                     className="mt-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-400 transition"
                                 >
                                     닫기
-                                </button>
+                                </button> */}
                             </div>
                         </div>
                     )}

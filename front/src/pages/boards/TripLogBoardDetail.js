@@ -537,14 +537,21 @@ const TripLogBoardDetail = () => {
       {/* 로딩 애니메이션 */}
       {loading && <LoadingAnimation />}
       <div className="flex flex-col h-full bg-gray-100 p-6">
-      <div className="flex flex-wrap justify-between items-center gap-2 mt-2">
+        <div className="flex flex-wrap justify-between items-center gap-2 mt-2">
           {/* 왼쪽에 "목록으로" 버튼 */}
           <div className="flex justify-start">
             <button
-              onClick={() => navigate(`/posts/course?di=${domesticInternational}`)}
-              className="text-white bg-tripDuoMint hover:bg-tripDuoGreen focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
+              onClick={() => navigate(`/posts/trip_log?di=${domesticInternational}`)}
+              className="text-white bg-tripDuoMint hover:bg-tripDuoGreen focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 mr-4 text-center">
               목록으로
             </button>
+            {postInfo.writer == loggedInNickname &&
+              <button
+                onClick={() => navigate("/private/myTripLog")}
+                className="text-tripDuoGreen border border-tripDuoGreen hover:bg-tripDuoMint focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
+                Trip log
+              </button>
+            }
           </div>
 
           {/* 오른쪽에 별점 및 삭제 버튼 */}
@@ -577,18 +584,17 @@ const TripLogBoardDetail = () => {
               </p>
             )}
           </div>
-
-          {/* 태그들 */}
-          <div className="flex gap-2">
-            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{postInfo.country}</span>
-            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{postInfo.city}</span>
-            {postInfo.tags &&
-              postInfo.tags.map((tag, index) => (
-                <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center">
-                  {tag}
-                </span>
-              ))}
-          </div>
+        </div>
+        {/* 태그들 */}
+        <div className="flex gap-2 mt-4">
+          <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{postInfo.country}</span>
+          <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{postInfo.city}</span>
+          {postInfo.tags &&
+            postInfo.tags.map((tag, index) => (
+              <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center">
+                {tag}
+              </span>
+            ))}
         </div>
 
         {/* 여행 일정 */}
