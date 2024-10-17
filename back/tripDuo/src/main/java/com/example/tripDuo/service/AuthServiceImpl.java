@@ -426,6 +426,8 @@ public class AuthServiceImpl implements AuthService {
 						.encryptedPhoneNumber(kakaoProfile.getKakao_account().getEmail())
 						.email(kakaoProfile.getKakao_account().getEmail())
 						.role(UserRole.USER)
+						.accountStatus(AccountStatus.ACTIVE)
+						.verificationStatus(VerificationStatus.VERIFIED)
 						.build();
 
 		boolean isLoginChecked = false;
@@ -448,7 +450,7 @@ public class AuthServiceImpl implements AuthService {
 			Oauth OauthUser=oauthRepo.save(kakaoUser);
 
 			userProfileInfoRepo.save(UserProfileInfo.toEntity(
-					UserProfileInfoDto.builder().nickname(kakaoProfile.getProperties().getNickname()).build(), user));
+					UserProfileInfoDto.builder().nickname(kakaoProfile.getProperties().getNickname()).profilePicture(kakaoProfile.properties.profile_image).build(), user));
 
 			userTripInfoRepo.save(UserTripInfo.builder().userId(user.getId()).build());
 
@@ -601,6 +603,8 @@ public class AuthServiceImpl implements AuthService {
 						.encryptedPhoneNumber(googleProfile.getEmail())
 						.email(googleProfile.getEmail())
 						.role(UserRole.USER)
+						.accountStatus(AccountStatus.ACTIVE)
+						.verificationStatus(VerificationStatus.VERIFIED)
 						.build();
 		
 		boolean isLoginChecked = false;
@@ -618,7 +622,7 @@ public class AuthServiceImpl implements AuthService {
 			oauthRepo.save(googleUser);
 
 			userProfileInfoRepo.save(UserProfileInfo
-					.toEntity(UserProfileInfoDto.builder().nickname(googleProfile.getName()).build(), user));
+					.toEntity(UserProfileInfoDto.builder().nickname(googleProfile.getName()).profilePicture(googleProfile.getPicture()).build(), user));
 
 			userTripInfoRepo.save(UserTripInfo.builder().userId(user.getId()).build());
 		
