@@ -86,12 +86,28 @@ function MyRecord(props) {
   return (
     <div className="container mx-auto p-4 max-w-[1024px]">
       {/* 게시글 작성 버튼 */}
-      <div className="flex justify-end mb-6">
+      {/* <div className="flex justify-end mb-6">
         <button
           onClick={() => navigate("/posts/trip_log/new?status=PRIVATE")}
           className="bg-tripDuoMint text-white font-bold px-4 py-2 rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300">
           여행기록 작성
         </button>
+      </div> */}
+      <div className="flex justify-end">
+        <div className="bg-tripDuoMint text-white font-bold px-4 py-2 rounded-md shadow-md">
+          <span>여행기록 작성:</span>
+          <span
+            className="ml-2 cursor-pointer hover:bg-tripDuoGreen transition-all duration-300 px-2 rounded"
+            onClick={() => navigate("/posts/trip_log/new?status=PRIVATE&di=Domestic")}>
+            국내
+          </span>
+          <span className="mx-2">/</span>
+          <span
+            className="cursor-pointer hover:bg-tripDuoGreen transition-all duration-300 px-2 rounded"
+            onClick={() => navigate("/posts/trip_log/new?status=PRIVATE&di=International")}>
+            해외
+          </span>
+        </div>
       </div>
       <div className="container mx-auto p-4 max-w-[1024px]">
         {postList ? (
