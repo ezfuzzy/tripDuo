@@ -52,7 +52,7 @@ public class Post {
     @Column(nullable = false, length = 10)
     private PostType type;
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 50)
     private String title;    
 
     @Column(length = 3000)
@@ -67,10 +67,10 @@ public class Post {
     @Column(length = 30)
     private String city;
 
-    @Column(length = 20)
+    @Column(length = 40)
     private String startDate;
 
-    @Column(length = 20)
+    @Column(length = 40)
     private String endDate;
     
     @Column(columnDefinition = "TEXT[]")

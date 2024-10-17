@@ -214,7 +214,6 @@ public class ChatServiceImpl implements ChatService {
 	public ChatMessageDto saveMessageToDatabsePassive(ChatMessageDto chatMessageDto) {
 		// 모든 채팅방 키 가져오기
 		Set<String> chatRooms = redisTemplate.keys("chatRoomId:*");
-		System.out.println("Scheduled task running. Found chat rooms: " + chatRooms);
 
 		for (String redisKey : chatRooms) {
 			// 메시지 가져오기
