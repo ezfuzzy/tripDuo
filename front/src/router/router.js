@@ -16,11 +16,9 @@ import MateBoard from "../pages/boards/MateBoard"
 import MateBoardForm from "../pages/boards/MateBoardForm"
 import MateBoardEditForm from "../pages/boards/MateBoardEditForm"
 import MateBoardDetail from "../pages/boards/MateBoardDetail"
-import TravelChecklist from "../pages/Utilities/TravelChecklist"
-import TravelSafetyInfo from "../pages/Utilities/TravelSafetyInfo"
-import LocationRecommendations from "../pages/Utilities/LocationRecommendations"
+import TripChecklist from "../pages/Utilities/TripChecklist"
+import TripSafetyInfo from "../pages/Utilities/TripSafetyInfo"
 import ExchangeInfo from "../pages/Utilities/ExchangeInfo"
-import LanguageCultureTips from "../pages/Utilities/LanguageCultureTips"
 import CourseBoard from "../pages/boards/CourseBoard"
 import CourseBoardForm from "../pages/boards/CourseBoardForm"
 import CourseBoardDetail from "../pages/boards/CourseBoardDetail"
@@ -51,7 +49,7 @@ import UserBoard from "../pages/admin/UserBoard"
 import AdminLayout from "../components/AdminLayout"
 import MyPlace2 from "../pages/myTripTmp/MyPlace2"
 import UtilHome from "../pages/Utilities/UtilHome"
-import TravelCostCaculator from "../pages/Utilities/TravelCostCalculator"
+import TripCostCalculator from "../pages/Utilities/TripCostCalculator"
 
 // /users/:id
 // /users/:id/setting
@@ -96,12 +94,10 @@ const routes = [
 
   // ### 부가 기능 ###
   { path: "/utils", element: <UtilHome /> },
-  { path: "/utils/checklist", element: <TravelChecklist /> },
+  { path: "/utils/checklist", element: <TripChecklist /> },
   { path: "/utils/exchangeInfo", element: <ExchangeInfo /> },
-  { path: "/utils/safetyInfo", element: <TravelSafetyInfo /> },
-  { path: "/utils/recommendations", element: <LocationRecommendations /> },
-  { path: "/utils/languageTip", element: <LanguageCultureTips /> },
-  { path: "/caculator", element: <TravelCostCaculator /> },
+  { path: "/utils/calculator", element: <TripCostCalculator /> },
+  { path: "/utils/safetyInfo", element: <TripSafetyInfo /> },
   
   // ### etc ###
 ]
