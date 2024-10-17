@@ -266,8 +266,8 @@ function NavBar() {
 
       {/* Tabs */}
       <div className="border-b border-gray-200">
-        <ul className="flex flex-wrap justify-around -mb-px text-sm font-medium text-center text-gray-500 ">
-          <li className="mx-2">
+        <ul className="flex flex-wrap justify-around -mb-px text-sm font-medium text-center text-gray-500 md:flex-nowrap lg:flex-wrap">
+          <li className="mx-2 md:mx-4 lg:mx-2">
             <NavLink
               className={`font-bold text-lg inline-flex items-center justify-center p-3 border-b-2 rounded-t-lg transition-all duration-300 ${
                 location.pathname.startsWith("/posts/course") && location.search.includes("di=Domestic")
@@ -280,7 +280,7 @@ function NavBar() {
               &nbsp;국내 여행
             </NavLink>
           </li>
-          <li className="mx-2">
+          <li className="mx-2 md:mx-4 lg:mx-2">
             <NavLink
               className={`font-bold text-lg inline-flex items-center justify-center p-3 border-b-2 rounded-t-lg transition-all duration-300 ${
                 location.pathname.startsWith("/posts/course") && location.search.includes("di=International")
@@ -293,7 +293,7 @@ function NavBar() {
               &nbsp;해외 여행
             </NavLink>
           </li>
-          <li className="mx-2">
+          <li className="mx-2 md:mx-4 lg:mx-2">
             <NavLink
               className={`font-bold text-lg inline-flex items-center justify-center p-3 border-b-2 rounded-t-lg transition-all duration-300 ${
                 location.pathname === "/posts/mate"
@@ -305,7 +305,7 @@ function NavBar() {
               &nbsp;여행 메이트
             </NavLink>
           </li>
-          <li className="mx-2">
+          <li className="mx-2 md:mx-4 lg:mx-2">
             <NavLink
               className={`font-bold text-lg inline-flex items-center justify-center p-3 border-b-2 rounded-t-lg transition-all duration-300 ${
                 location.pathname === "/posts/community"
@@ -428,22 +428,22 @@ function NavBar() {
                   </NavLink>
                 </div>
                 <div>
-                  <NavLink to={"/private/myPlan"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                  <NavLink to={`/private/myPlan`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                     여행 계획
                   </NavLink>
                 </div>
                 <div>
-                  <NavLink to={"/private/myTripLog"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                  <NavLink to={`/private/myTripLog`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                     여행 기록
                   </NavLink>
                 </div>
                 <div>
-                  <NavLink to={"/private/wishMate"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                  <NavLink to={`/private/wishMate`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                     관심 메이트
                   </NavLink>
                 </div>
                 <div>
-                  <NavLink to={"/private/myPlace"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                  <NavLink to={`/private/myPlace`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                     마이 플레이스
                   </NavLink>
                 </div>
@@ -462,22 +462,22 @@ function NavBar() {
                   openSections.extra ? "max-h-80" : "max-h-0"
                 }`}>
                 <div>
-                  <NavLink to="/checklist" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                  <NavLink to="/utils/checklist" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                     체크 리스트
                   </NavLink>
                 </div>
                 <div>
-                  <NavLink to="/exchangeInfo" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                  <NavLink to="/utils/exchangeInfo" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                     환율 정보
                   </NavLink>
                 </div>
                 <div>
-                  <NavLink to="/calculator" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                  <NavLink to="/utils/calculator" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                     여행 경비 계산기
                   </NavLink>
                 </div>
                 <div>
-                  <NavLink to="/safetyInfo" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                  <NavLink to="/utils/safetyInfo" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                     안전 정보
                   </NavLink>
                 </div>
