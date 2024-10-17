@@ -428,22 +428,22 @@ function NavBar() {
                   </NavLink>
                 </div>
                 <div>
-                  <NavLink to={`/myPlan/${userId}`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                  <NavLink to={"/private/myPlan"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                     여행 계획
                   </NavLink>
                 </div>
                 <div>
-                  <NavLink to={`/myRecord/${userId}`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                  <NavLink to={"/private/myTripLog"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                     여행 기록
                   </NavLink>
                 </div>
                 <div>
-                  <NavLink to={`/wishMate/${userId}`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                  <NavLink to={"/private/wishMate"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                     관심 메이트
                   </NavLink>
                 </div>
                 <div>
-                  <NavLink to={`/myPlace/${userId}`} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                  <NavLink to={"/private/myPlace"} className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                     마이 플레이스
                   </NavLink>
                 </div>
