@@ -1,143 +1,274 @@
-import React, { useState } from "react"
-
-const EXCHANGE_API_KEY = "fddfb68fc5e46faf142e2e15" // API 키
-
-const fetchExchangeRate = async (currencyCode) => {
-  const url = `https://v6.exchangerate-api.com/v6/${EXCHANGE_API_KEY}/latest/${currencyCode}`
-  try {
-    const response = await fetch(url)
-    const data = await response.json()
-    return data.conversion_rates // 환율 데이터 반환
-  } catch (error) {
-    console.error("환율 정보를 가져오는 중 오류 발생:", error)
-    return null // 오류 발생 시 null 반환
-  }
-}
+import React, { useEffect, useState } from "react"
+import { currencyNames } from "../../constants/mapping"
 
 function TripCostCalculator() {
-  const [days, setDays] = useState([]) // 날짜와 항목을 저장하는 상태
-  const [selectedCurrency, setSelectedCurrency] = useState("USD") // 기본 화폐 설정
+  const [days, setDays] = useState([1, 2, 3, 4])
+  const [expenses, setExpenses] = useState({
+    1: { food: 0, accommodation: 0, miscellaneous: 0, additional: [] },
+    2: { food: 0, accommodation: 0, miscellaneous: 0, additional: [] },
+    3: { food: 0, accommodation: 0, miscellaneous: 0, additional: [] },
+    4: { food: 0, accommodation: 0, miscellaneous: 0, additional: [] },
+  })
+
+  const [exchangeRates, setExchangeRates] = useState(null)
+  const [error, setError] = useState(null)
+  const [selectedCurrency, setSelectedCurrency] = useState("KRW")
+  const [searchTerm, setSearchTerm] = useState("")
+  const [curRate, setCurRate] = useState(0)
+  const [showCurrencyList, setShowCurrencyList] = useState(false) // 리스트 표시 상태 추가
+
+  useEffect(() => {
+    const fetchExchangeRates = async () => {
+      try {
+        const response = await fetch(
+          `https://v6.exchangerate-api.com/v6/${process.env.REACT_APP_EXCHANGE_API_KEY}/latest/KRW`
+        )
+        const data = await response.json()
+
+        setExchangeRates(data.conversion_rates)
+      } catch (error) {
+        setError("환율 정보를 가져오는 데 실패했습니다.")
+      }
+    }
+
+    fetchExchangeRates()
+  }, [])
+
+  const totalFoodExpenses = Object.values(expenses).reduce((acc, curr) => acc + curr.food, 0)
+  const totalAccommodationExpenses = Object.values(expenses).reduce((acc, curr) => acc + curr.accommodation, 0)
+  const totalMiscellaneousExpenses = Object.values(expenses).reduce((acc, curr) => acc + curr.miscellaneous, 0)
+
+  const additionalCosts = {}
+  Object.values(expenses).forEach((day) => {
+    day.additional.forEach((item) => {
+      if (item.label) {
+        additionalCosts[item.label] = (additionalCosts[item.label] || 0) + parseInt(item.cost, 10) || 0
+      }
+    })
+  })
+
+  const totalExpenses =
+    totalFoodExpenses +
+    totalAccommodationExpenses +
+    totalMiscellaneousExpenses +
+    Object.values(additionalCosts).reduce((acc, cost) => acc + cost, 0)
+
+  useEffect(() => {
+    if (exchangeRates) {
+      const rate = exchangeRates[selectedCurrency] || 1
+      setCurRate(rate)
+    }
+  }, [exchangeRates, selectedCurrency, totalExpenses])
 
   const addDay = () => {
-    setDays([...days, { date: "", items: [] }]) // 새로운 날짜 카드 추가
+    const newDay = days.length + 1
+    setDays([...days, newDay])
+    setExpenses((prevExpenses) => ({
+      ...prevExpenses,
+      [newDay]: { food: 0, accommodation: 0, miscellaneous: 0, additional: [] },
+    }))
   }
 
-  const addItem = async (dayIndex, item) => {
-    const rates = await fetchExchangeRate(selectedCurrency) // 선택된 화폐의 환율 가져오기
-    if (rates) {
-      const convertedAmount = Math.round(item.amount * rates["KRW"]) // 원화로 변환 및 반올림
-      const newItem = {
-        name: item.name,
-        amount: convertedAmount,
-        currency: selectedCurrency, // 사용된 화폐 추가
+  const addItem = (day) => {
+    setExpenses((prevExpenses) => ({
+      ...prevExpenses,
+      [day]: {
+        ...prevExpenses[day],
+        additional: [...prevExpenses[day].additional, { label: "", cost: 0 }],
+      },
+    }))
+  }
+
+  const handleAdditionalChange = (day, index, field, value) => {
+    setExpenses((prevExpenses) => {
+      const updatedAdditional = [...prevExpenses[day].additional]
+      updatedAdditional[index] = { ...updatedAdditional[index], [field]: value }
+      return {
+        ...prevExpenses,
+        [day]: { ...prevExpenses[day], additional: updatedAdditional },
       }
-      const newDays = [...days]
-      newDays[dayIndex].items.push(newItem) // 해당 날짜에 항목 추가
-      setDays(newDays)
+    })
+  }
+
+  const filteredCurrencies = searchTerm
+    ? Object.entries(currencyNames).filter(([key, value]) => value.includes(searchTerm))
+    : []
+
+  const handleCurrencyClick = (currency) => {
+    setSearchTerm(currency)
+    setSelectedCurrency(currency) // 선택된 통화 업데이트
+    setShowCurrencyList(false) // 클릭 시 리스트 숨기기
+  }
+
+  const handleInputChange = (e) => {
+    setSearchTerm(e.target.value)
+    setShowCurrencyList(e.target.value.length > 0) // 입력 시 리스트 표시
+  }
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && filteredCurrencies.length === 1) {
+      handleCurrencyClick(filteredCurrencies[0][0]) // 단일 항목 클릭
     }
   }
 
-  const calculateTotalForDay = (day) => {
-    return day.items.reduce((acc, item) => acc + item.amount, 0) // 해당 날짜의 총 금액 계산
-  }
-
-  const calculateOverallTotal = () => {
-    return days.reduce((acc, day) => acc + calculateTotalForDay(day), 0) // 전체 총 금액 계산
-  }
-
-  const deleteDay = (dayIndex) => {
-    const newDays = days.filter((_, index) => index !== dayIndex)
-    setDays(newDays)
-  }
-
-  const setToday = (dayIndex) => {
-    const newDays = [...days]
-    newDays[dayIndex].date = new Date().toISOString().split("T")[0] // 오늘 날짜로 설정
-    setDays(newDays)
-  }
-
   return (
-    <div className="max-w-6xl mx-auto p-6 rounded-lg shadow-md border border-tripDuoGreen bg-white">
-      <h1 className="text-3xl font-bold text-center mb-4 text-tripDuoGreen">여행 비용 관리</h1>
-      <div className="flex mb-4">
-        <select
-          value={selectedCurrency}
-          onChange={(e) => setSelectedCurrency(e.target.value)}
-          className="mr-2 p-2 border border-tripDuoGreen rounded w-full md:w-auto focus:ring focus:ring-tripDuoMint">
-          <option value="USD">달러 (USD)</option>
-          <option value="EUR">유로 (EUR)</option>
-          <option value="JPY">엔 (JPY)</option>
-          <option value="GBP">파운드 (GBP)</option>
-          <option value="AUD">호주 달러 (AUD)</option>
-          <option value="CAD">캐나다 달러 (CAD)</option>
-          <option value="CHF">스위스 프랑 (CHF)</option>
-          <option value="CNY">중국 위안 (CNY)</option>
-          <option value="HKD">홍콩 달러 (HKD)</option>
-          <option value="NZD">뉴질랜드 달러 (NZD)</option>
-          <option value="SGD">싱가포르 달러 (SGD)</option>
-          <option value="SEK">스웨덴 크로나 (SEK)</option>
-          <option value="NOK">노르웨이 크로네 (NOK)</option>
-          <option value="MXN">멕시코 페소 (MXN)</option>
-          <option value="RUB">러시아 루블 (RUB)</option>
-          <option value="INR">인도 루피 (INR)</option>
-          <option value="BRL">브라질 레알 (BRL)</option>
-          <option value="ZAR">남아프리카 랜드 (ZAR)</option>
-        </select>
+    <div className="max-w-4xl mx-auto p-4 bg-white shadow rounded-lg">
+      <h1 className="text-2xl font-bold mb-4 text-center">여행 경비 계산기</h1>
+      {error && <p className="exchange-info-error text-center text-red-500">{error}</p>}
+
+      <div className="mb-4 relative">
+        <label htmlFor="currency" className="block text-sm font-medium text-gray-700 mb-1">
+          나라 이름 (통화 이름):
+        </label>
+        <input
+          id="currency"
+          type="text"
+          value={searchTerm}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown} // 키 다운 이벤트 추가
+          className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-200 ease-in-out"
+          placeholder="통화 이름을 입력하세요..."
+        />
+        <ul
+          className={`mt-2 absolute w-full bg-white border border-gray-300 rounded-md shadow-lg z-10 ${
+            showCurrencyList && filteredCurrencies.length ? "block" : "hidden"
+          }`}>
+          {filteredCurrencies.map(([key, value]) => (
+            <li
+              key={key}
+              className="text-gray-700 cursor-pointer hover:bg-gray-100 p-2 transition duration-150 ease-in-out"
+              onClick={() => handleCurrencyClick(key)}>
+              {value}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div>
         <button
           onClick={addDay}
-          className="p-2 bg-tripDuoMint text-white rounded hover:bg-tripDuoGreen transition duration-300">
-          날짜 카드 추가
+          className="mb-4 w-20 py-2 px-4 bg-tripDuoGreen text-white font-bold rounded hover:bg-blue-700 transition duration-300 float-right">
+          날짜 추가
         </button>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {days.map((day, dayIndex) => (
-          <div key={dayIndex} className="p-4 border rounded-lg shadow-md bg-gray-100">
-            <h3 className="text-lg font-bold">Day {dayIndex + 1}</h3> {/* 카드 제목 추가 */}
-            <input
-              type="text"
-              placeholder="항목 (ex: 의류)"
-              className="mb-2 p-2 border border-tripDuoGreen rounded w-full focus:ring focus:ring-tripDuoMint"
-              id={`item-${dayIndex}`}
-            />
-            <input
-              type="number"
-              placeholder="금액"
-              className="mb-2 p-2 border border-tripDuoGreen rounded w-full focus:ring focus:ring-tripDuoMint"
-              id={`amount-${dayIndex}`}
-            />
-            <button
-              onClick={() => {
-                const itemName = document.getElementById(`item-${dayIndex}`).value
-                const amount = Number(document.getElementById(`amount-${dayIndex}`).value)
-                const item = { name: itemName, amount: amount, currency: selectedCurrency }
-                addItem(dayIndex, item) // 항목 추가
-                document.getElementById(`item-${dayIndex}`).value = "" // 항목 입력 필드 초기화
-                document.getElementById(`amount-${dayIndex}`).value = "" // 금액 입력 필드 초기화
-              }}
-              className="p-2 bg-tripDuoMint text-white rounded w-full hover:bg-tripDuoGreen transition duration-300">
-              항목 추가
-            </button>
-            <div className="mt-2 max-h-40 overflow-y-auto border-t pt-2">
-              {day.items.map((item, index) => (
-                <div key={index} className="p-2 border-b">
-                  {item.name} | {Math.round(item.amount)} 원 ({item.currency}) {/* 사용된 화폐 표시 */}
-                </div>
-              ))}
+      <div className="flex flex-wrap justify-center lg:justify-between gap-2">
+        {days.map((day, index) => (
+          <div
+            key={day}
+            className={`w-full lg:w-1/4 md:w-1/4 sm:w-1/2 xs:w-1/2 mb-2 bg-gray-100 p-4 rounded-lg shadow-md border border-gray-300 ${
+              index % 4 === 0 ? "clear-both" : ""
+            }`}>
+            <h2 className="text-lg font-bold mb-2 text-tripDuoGreen">Day {day}</h2>
+            <div className="mb-2">
+              <label htmlFor={`food-${day}`} className="block text-sm font-medium text-gray-700">
+                식비:
+              </label>
+              <input
+                id={`food-${day}`}
+                type="text"
+                pattern="[0-9]*"
+                value={expenses[day].food}
+                onChange={(e) =>
+                  setExpenses((prevExpenses) => ({
+                    ...prevExpenses,
+                    [day]: { ...prevExpenses[day], food: parseInt(e.target.value, 10) || 0 },
+                  }))
+                }
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              />
             </div>
-            <h4 className="mt-2 text-lg font-semibold">당일 총 금액: {Math.round(calculateTotalForDay(day))} 원</h4>
-            {/* 당일 총 금액 표시 */}
-            <button
-              onClick={() => deleteDay(dayIndex)}
-              className="p-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-300">
-              삭제
-            </button>
+            <div className="mb-2">
+              <label htmlFor={`accommodation-${day}`} className="block text-sm font-medium text-gray-700">
+                숙박비:
+              </label>
+              <input
+                id={`accommodation-${day}`}
+                type="text"
+                pattern="[0-9]*"
+                value={expenses[day].accommodation}
+                onChange={(e) =>
+                  setExpenses((prevExpenses) => ({
+                    ...prevExpenses,
+                    [day]: { ...prevExpenses[day], accommodation: parseInt(e.target.value, 10) || 0 },
+                  }))
+                }
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              />
+            </div>
+            <div className="mb-2">
+              <label htmlFor={`miscellaneous-${day}`} className="block text-sm font-medium text-gray-700">
+                기타 부대비용:
+              </label>
+              <input
+                id={`miscellaneous-${day}`}
+                type="text"
+                pattern="[0-9]*"
+                value={expenses[day].miscellaneous}
+                onChange={(e) =>
+                  setExpenses((prevExpenses) => ({
+                    ...prevExpenses,
+                    [day]: { ...prevExpenses[day], miscellaneous: parseInt(e.target.value, 10) || 0 },
+                  }))
+                }
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              />
+            </div>
+            {expenses[day].additional.map((item, index) => (
+              <div key={index} className="mb-2">
+                <label className="block text-sm font-medium text-gray-700">추가 항목:</label>
+                <input
+                  type="text"
+                  placeholder="항목명"
+                  value={item.label}
+                  onChange={(e) => handleAdditionalChange(day, index, "label", e.target.value)}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+                <input
+                  type="text"
+                  placeholder="비용"
+                  pattern="[0-9]*"
+                  value={item.cost}
+                  onChange={(e) => handleAdditionalChange(day, index, "cost", parseInt(e.target.value, 10) || 0)}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+            ))}
+            <div className="mt-4">
+              <button
+                onClick={() => addItem(day)}
+                className="px-4 py-2 bg-green-600 text-white rounded-md shadow hover:bg-tripDuoGreen focus:outline-none focus:ring-2 focus:ring-blue-400">
+                항목추가
+              </button>
+            </div>
           </div>
         ))}
       </div>
-      <h2 className="mt-4 text-xl font-semibold text-tripDuoGreen">
-        전체 총 금액: {Math.round(calculateOverallTotal())} 원
-      </h2>{" "}
-      {/* 전체 총 금액 표시 */}
+      <div className="w-full mb-2 bg-gray-100 p-4 rounded-lg shadow-md border border-gray-300">
+        <h2 className="text-lg font-bold mb-2 text-tripDuoGreen">총 경비</h2>
+        <p className="text-lg font-bold mb-2">
+          식비: {totalFoodExpenses.toLocaleString()} 원 ::{" "}
+          {(Math.round(totalFoodExpenses * curRate * 100) / 100).toLocaleString()} {selectedCurrency}
+        </p>
+        <p className="text-lg font-bold mb-2">
+          숙박비: {totalAccommodationExpenses.toLocaleString()} 원 ::{" "}
+          {(Math.round(totalAccommodationExpenses * curRate * 100) / 100).toLocaleString()} {selectedCurrency}
+        </p>
+        <p className="text-lg font-bold mb-2">
+          기타 부대비용: {totalMiscellaneousExpenses.toLocaleString()} 원 ::{" "}
+          {(Math.round(totalMiscellaneousExpenses * curRate * 100) / 100).toLocaleString()} {selectedCurrency}
+        </p>
+
+        {Object.entries(additionalCosts).map(([label, cost]) => (
+          <p key={label} className="text-lg font-bold mb-2">
+            {label}: {cost.toLocaleString()} 원 :: {(Math.round(cost * curRate * 100) / 100).toLocaleString()}{" "}
+            {selectedCurrency}
+          </p>
+        ))}
+
+        <p className="text-lg font-bold mb-2">
+          전체 비용 합계: {totalExpenses.toLocaleString()} 원 ::{" "}
+          {(Math.round(totalExpenses * curRate * 100) / 100).toLocaleString()} {selectedCurrency}
+        </p>
+      </div>
     </div>
   )
 }
