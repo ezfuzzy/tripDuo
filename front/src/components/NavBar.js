@@ -9,14 +9,11 @@ import {
   faBell,
   faChevronDown,
   faChevronUp,
-  faCompass,
   faMessage,
   faMicrophone,
   faPeoplePulling,
   faPersonSwimming,
   faPersonThroughWindow,
-  faPersonWalkingLuggage,
-  faUser,
 } from "@fortawesome/free-solid-svg-icons"
 
 function NavBar() {
@@ -235,33 +232,33 @@ function NavBar() {
                 </button>
               </p>
               {isLoggedIn && (
-                <p className="block px-4 py-2 hover:bg-gray-100">
-                  <button
-                    onClick={() => {
-                      navigate(`/users/${userId}`)
-                      setDropdownOpen(!isDropdownOpen)
-                    }}>
-                    마이 페이지
-                  </button>
-                </p>
+                <>
+                  <p className="block px-4 py-2 hover:bg-gray-100">
+                    <button
+                      onClick={() => {
+                        navigate(`/users/${userId}`)
+                        setDropdownOpen(!isDropdownOpen)
+                      }}>
+                      마이 페이지
+                    </button>
+                  </p>
+                  <p className="block px-4 py-2 hover:bg-gray-100">
+                    <button
+                      onClick={() => {
+                        navigate("/chatRoom")
+                        setDropdownOpen(!isDropdownOpen)
+                      }}>
+                      채팅
+                    </button>
+                  </p>
+                </>
               )}
-              <p className="block px-4 py-2 hover:bg-gray-100">
-                <button
-                  onClick={() => {
-                    navigate("/chatRoom")
-                    setDropdownOpen(!isDropdownOpen)
-                  }}>
-                  채팅
-                </button>
-              </p>
             </div>
           )}
         </div>
         {/* TripDuo 로고는 항상 가로 정중앙에 위치 */}
         <div className="absolute left-1/2 transform -translate-x-1/2">
-          <button
-            className="font-bold text-2xl"
-            onClick={handleTripDuoClick}>
+          <button className="font-bold text-2xl" onClick={handleTripDuoClick}>
             <img className="w-24 h-auto" src="/img/TripDuologo.png" alt="logo" />
           </button>
         </div>
