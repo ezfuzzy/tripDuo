@@ -436,7 +436,8 @@ const TripBoardFormNew = () => {
                   id={`dayMemo-${dayIndex}`}
                   value={day.dayMemo || ""}
                   onChange={(e) => handleDayMemoChange(dayIndex, e.target.value)}
-                  placeholder="메모를 입력하세요..."
+                  placeholder="이날은 무슨 일이 있었나요?"
+                  maxLength={500}
                 />
               </div>
 

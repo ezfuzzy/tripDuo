@@ -48,7 +48,7 @@ const GoogleSaveLocationPage = ({ onSave }) => {
           <strong>${place.name}</strong>
         </div>
         <div style="margin-bottom: 8px;">${place.formatted_address}</div>
-        <textarea placeholder="장소 메모..." style="width: 100%; margin-bottom: 8px;" oninput="updatePlaceMemo('${place.place_id}', this.value)">${placeMemo || ''}</textarea>
+        <textarea placeholder="장소 메모..." maxLength={100} style="width: 100%; margin-bottom: 8px;" oninput="updatePlaceMemo('${place.place_id}', this.value)">${placeMemo || ''}</textarea>
         <button
           onclick="savePlace('${place.place_id}')"
           style="width:100%;background-color:green;color:white;padding:5px;border:none;border-radius:5px;">

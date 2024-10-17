@@ -372,14 +372,15 @@ const TripLogBoardEditForm = () => {
 
                             <div className="mb-4">
                                 <label htmlFor={`dayMemo-${dayIndex}`} className="block text-lg font-medium text-gray-700">
-                                    Day Memo
+                                    Day Record
                                 </label>
                                 <textarea
                                     className="border-gray-300 rounded-md p-2 w-full"
                                     id={`dayMemo-${dayIndex}`}
                                     value={day.dayMemo || ""}
                                     onChange={(e) => handleDayMemoChange(dayIndex, e.target.value)}
-                                    placeholder="메모를 입력하세요..."
+                                    placeholder="이날은 무슨 일이 있었나요?"
+                                    maxLength={500}
                                 />
                             </div>
 

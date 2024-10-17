@@ -13,7 +13,7 @@ import LoadingAnimation from "../../components/LoadingAnimation"
 //새로 등록한 댓글을 추가할 인덱스
 let commentIndex = 0
 //댓글 글자수 제한
-const maxLength = 3000
+const maxLength = 100
 
 // 모달 스타일 설정
 const customStyles = {
@@ -704,8 +704,8 @@ const TripLogBoardDetail = () => {
             <div key={dayIndex} className="bg-white rounded-lg shadow-md p-4">
               <h2 className="text-xl font-semibold mb-4">Day {dayIndex + 1} - {postInfo.startDate && calculateDate(postInfo.startDate, dayIndex)} </h2>
               <div className="mb-4">
-                <label className="block font-semibold">Day Record</label>
-                <p className="border p-2 w-3/4 bg-gray-100">{day.dayMemo || "메모가 없습니다"}</p>
+              <label className="block font-semibold mb-2">Day Record</label>
+              <p className="border p-2 w-full bg-gray-100">{day.dayMemo || "메모가 없습니다"}</p>
               </div>
               {day.places && day.places.length > 0 ? (
                 day.places.map((place, placeIndex) => (

@@ -292,6 +292,7 @@ const TripLogBoardForm = () => {
                   id={`dayMemo-${dayIndex}`}
                   onChange={(e) => handleDayMemoChange(dayIndex, e.target.value)}
                   placeholder="이날은 무슨 일이 있었나요?"
+                  maxLength={500}
                 />
               </div>
               {day.places.map((place, placeIndex) => (
