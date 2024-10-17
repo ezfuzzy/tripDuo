@@ -119,8 +119,8 @@ public class ChatServiceImpl implements ChatService {
 		}
 		
 		return Map.of(
-				"list", messageDtoList,
-				"PROFILE_PICTURE_CLOUDFRONT_URL", PROFILE_PICTURE_CLOUDFRONT_URL
+					"list", messageDtoList,
+					"PROFILE_PICTURE_CLOUDFRONT_URL", PROFILE_PICTURE_CLOUDFRONT_URL
 				);
 	}
 

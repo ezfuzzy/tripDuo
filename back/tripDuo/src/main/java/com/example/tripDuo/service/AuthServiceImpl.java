@@ -31,6 +31,7 @@ import com.example.tripDuo.entity.UserProfileInfo;
 import com.example.tripDuo.entity.UserTripInfo;
 import com.example.tripDuo.enums.AccountStatus;
 import com.example.tripDuo.enums.UserRole;
+import com.example.tripDuo.enums.VerificationStatus;
 import com.example.tripDuo.repository.OauthRepository;
 import com.example.tripDuo.repository.UserProfileInfoRepository;
 import com.example.tripDuo.repository.UserRepository;
@@ -170,6 +171,8 @@ public class AuthServiceImpl implements AuthService {
 		}
 
 		userDto.setRole(UserRole.USER);
+		userDto.setAccountStatus(AccountStatus.ACTIVE);
+		userDto.setVerificationStatus(VerificationStatus.VERIFIED);
 		String encodedPwd = encoder.encode(userDto.getPassword());
 		userDto.setPassword(encodedPwd);
 
