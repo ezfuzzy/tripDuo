@@ -475,28 +475,13 @@ function NavBar() {
                   </NavLink>
                 </div>
                 <div>
-                  <NavLink to="/safetyInfo" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
-                    안전 정보
-                  </NavLink>
-                </div>
-                <div>
                   <NavLink to="/calculator" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
                     여행 경비 계산기
                   </NavLink>
                 </div>
                 <div>
-                  <NavLink to="planner" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
-                    여행 플래너
-                  </NavLink>
-                </div>
-                <div>
-                  <NavLink to="recommendations" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
-                    여행 추천 장소
-                  </NavLink>
-                </div>
-                <div>
-                  <NavLink to="languageTip" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
-                    여행 대화/문화 팁
+                  <NavLink to="/safetyInfo" className={offCanvasNavLinkStyle} onClick={closeOffCanvas}>
+                    안전 정보
                   </NavLink>
                 </div>
               </div>

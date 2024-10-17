@@ -14,7 +14,7 @@ const fetchExchangeRate = async (currencyCode) => {
   }
 }
 
-function TravelCostCaculator() {
+function TripCostCalculator() {
   const [days, setDays] = useState([]) // 날짜와 항목을 저장하는 상태
   const [selectedCurrency, setSelectedCurrency] = useState("USD") // 기본 화폐 설정
 
@@ -142,4 +142,4 @@ function TravelCostCaculator() {
   )
 }
 
-export default TravelCostCaculator
+export default TripCostCalculator

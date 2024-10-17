@@ -49,7 +49,7 @@ const initialItems = [
 
 const predefinedCategories = ['의류', '전자기기', '세면도구', '서류', '기타'];
 
-function TravelChecklist() {
+function TripChecklist() {
     const [items, setItems] = useState(() => {
         const savedItems = localStorage.getItem(LOCAL_STORAGE_KEY);
         return savedItems ? JSON.parse(savedItems) : initialItems;
@@ -252,4 +252,4 @@ function TravelChecklist() {
     );
 }
 
-export default TravelChecklist;
+export default TripChecklist;

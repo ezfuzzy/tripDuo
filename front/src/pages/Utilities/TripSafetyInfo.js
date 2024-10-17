@@ -5,7 +5,7 @@ const axiosInstanceForSafetyInfo = axios.create({
   baseURL: "https://www.travel-advisory.info/api",
 })
 
-function TravelSafetyInfo() {
+function TripSafetyInfo() {
   const [safetyInfo, setSafetyInfo] = useState([])
   const [filteredInfo, setFilteredInfo] = useState([])
   const [loading, setLoading] = useState(true)
@@ -70,4 +70,4 @@ function TravelSafetyInfo() {
   )
 }
 
-export default TravelSafetyInfo
+export default TripSafetyInfo

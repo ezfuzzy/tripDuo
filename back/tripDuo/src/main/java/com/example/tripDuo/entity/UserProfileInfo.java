@@ -45,7 +45,7 @@ public class UserProfileInfo {
     private Long age;
     
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 6)
+    @Column(length = 6)
     private Gender gender;
 
     private String profilePicture;
