@@ -619,7 +619,7 @@ const TripLogBoardDetail = () => {
                 여행기록 작성
               </button>
               <button
-                onClick={() => navigate(`/posts/course/${id}/edit?di=${domesticInternational}`)}
+                onClick={() => navigate(`/posts/trip_log/${id}/edit?di=${domesticInternational}`)}
                 className="text-white bg-gray-600 hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
                 수정
               </button>
