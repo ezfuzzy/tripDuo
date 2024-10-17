@@ -116,41 +116,44 @@ function TripCostCalculator() {
       <h1 className="text-2xl font-bold mb-4 text-center">여행 경비 계산기</h1>
       {error && <p className="exchange-info-error text-center text-red-500">{error}</p>}
 
-      <div className="mb-4 relative">
-        <label htmlFor="currency" className="block text-sm font-medium text-gray-700 mb-1">
+      <div className="mb-4 relative flex flex-col">
+        <label htmlFor="currency" className="block text-sm font-medium text-gray-700 mt-3">
           나라 이름 (통화 이름):
         </label>
-        <input
-          id="currency"
-          type="text"
-          value={searchTerm}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown} // 키 다운 이벤트 추가
-          className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-200 ease-in-out"
-          placeholder="통화 이름을 입력하세요..."
-        />
-        <ul
-          className={`mt-2 absolute w-full bg-white border border-gray-300 rounded-md shadow-lg z-10 ${
-            showCurrencyList && filteredCurrencies.length ? "block" : "hidden"
-          }`}>
-          {filteredCurrencies.map(([key, value]) => (
-            <li
-              key={key}
-              className="text-gray-700 cursor-pointer hover:bg-gray-100 p-2 transition duration-150 ease-in-out"
-              onClick={() => handleCurrencyClick(key)}>
-              {value}
-            </li>
-          ))}
-        </ul>
+        <div className="flex items-center">
+          <input
+            id="currency"
+            type="text"
+            value={searchTerm}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            className="mt-1 block w-1/2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-200 ease-in-out"
+            placeholder="통화 이름을 입력하세요..."
+          />
+          <div className="flex justify-end w-full">
+            <button
+              onClick={addDay}
+              className="ml-2 w-32 py-2 px-4 bg-green-600 text-white font-bold rounded hover:bg-tripDuoGreen transition duration-300">
+              날짜 추가
+            </button>
+          </div>
+        </div>
       </div>
-      <div>
-        <button
-          onClick={addDay}
-          className="mb-4 w-20 py-2 px-4 bg-tripDuoGreen text-white font-bold rounded hover:bg-blue-700 transition duration-300 float-right">
-          날짜 추가
-        </button>
-      </div>
-      <div className="flex flex-wrap justify-center lg:justify-between gap-2">
+      <ul
+        className={`absolute w-1/5 bg-white border border-gray-300 rounded-md shadow-lg z-10 ${
+          showCurrencyList && filteredCurrencies.length ? "block" : "hidden"
+        }`} style={{ marginTop: '-1rem' }}>
+        {filteredCurrencies.map(([key, value]) => (
+          <li
+            key={key}
+            className="text-gray-700 cursor-pointer hover:bg-gray-100 p-2 transition duration-150 ease-in-out"
+            onClick={() => handleCurrencyClick(key)}>
+            {value}
+          </li>
+        ))}
+      </ul>
+
+      <div className="flex flex-wrap gap-10">
         {days.map((day, index) => (
           <div
             key={day}
@@ -242,7 +245,7 @@ function TripCostCalculator() {
           </div>
         ))}
       </div>
-      <div className="w-full mb-2 bg-gray-100 p-4 rounded-lg shadow-md border border-gray-300">
+      <div className="w-full my-2 bg-gray-100 p-4 rounded-lg shadow-md border border-tripDuoGreen">
         <h2 className="text-lg font-bold mb-2 text-tripDuoGreen">총 경비</h2>
         <p className="text-lg font-bold mb-2">
           식비: {totalFoodExpenses.toLocaleString()} 원 ::{" "}
