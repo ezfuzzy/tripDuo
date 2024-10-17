@@ -677,7 +677,7 @@ function CommunityBoardDetail(props) {
             </div>
 
             {/* Froala Editor 내용 */}
-            <div dangerouslySetInnerHTML={{ __html: cleanHTML }}></div>
+            <div dangerouslySetInnerHTML={{ __html: cleanHTML }} className=" py-10 px-4 border-y border-slate-200"></div>
             {
               // 로그인된 username 과 post의 userId 로 불러온 작성자 아이디가 동일하면 랜더링
               userId === post.userId && (
