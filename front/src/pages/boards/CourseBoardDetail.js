@@ -597,8 +597,15 @@ const CourseBoardDetail = () => {
             <button
               onClick={() => navigate(`/posts/course?di=${domesticInternational}`)}
               className="text-white bg-tripDuoMint hover:bg-tripDuoGreen focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
-              목록으로
+              목록으로${loggedInUsername}${post.writer}
             </button>
+            {post.writer == loggedInUsername &&
+              <button
+              onClick={() => navigate("/private/myPlan")}
+              className="text-white bg-tripDuoMint hover:bg-tripDuoGreen focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
+              Trip plane
+            </button>
+            }
           </div>
 
           {/* 오른쪽에 별점 및 삭제 버튼 */}

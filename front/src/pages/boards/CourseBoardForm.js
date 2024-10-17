@@ -170,7 +170,7 @@ const CourseBoardForm = () => {
     axios
       .post("/api/v1/posts/course", post)
       .then((res) => {
-        status === "PRIVATE" ? navigate(`/myPlan/${userId}`)
+        status === "PRIVATE" ? navigate("/private/myPlan")
           : navigate(`/posts/course?di=${domesticInternational}`)
       })
       .catch((error) => console.log(error))
@@ -199,7 +199,7 @@ const CourseBoardForm = () => {
           </h1>
           <button
             onClick={() => {
-              status === "PRIVATE" ? navigate(`/private/myPlan/${userId}`)
+              status === "PRIVATE" ? navigate(`/private/myPlan`)
                 : navigate(`/posts/course?di=${domesticInternational}`)
             }}
             className="text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-full text-sm px-5 py-2">
