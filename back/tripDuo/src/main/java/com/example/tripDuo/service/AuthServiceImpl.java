@@ -159,21 +159,20 @@ public class AuthServiceImpl implements AuthService {
 	public String signup(UserDto userDto) throws Exception {
 
 		// ### username, nickname, password 유효성 체크 ###
-		
 		String usernamePattern = "^[a-z0-9]{6,16}$";
-        String nicknamePattern = "^(?=.*[가-힣])(?!.*[^a-zA-Z가-힣0-9])[a-zA-Z가-힣0-9]{2,8}$|^(?!.*[가-힣])(?!.*[^a-zA-Z0-9])[a-zA-Z0-9]{4,16}$\r\n";
+        String nicknamePattern = "^(?=.*[가-힣])(?!.*[^a-zA-Z가-힣0-9])[a-zA-Z가-힣0-9]{2,8}$|^(?!.*[가-힣])(?!.*[^a-zA-Z0-9])[a-zA-Z0-9]{4,16}$";
         String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,22}$";
 
-		if(!Pattern.matches(usernamePattern, userDto.getUsername()) || 
+        if(!Pattern.matches(usernamePattern, userDto.getUsername()) || 
 				!Pattern.matches(nicknamePattern, userDto.getNickname()) ||
 				!Pattern.matches(passwordPattern, userDto.getPassword())) {
 			return "유효성 검사 탈락";
 		}
-		
+
 		userDto.setRole(UserRole.USER);
 		String encodedPwd = encoder.encode(userDto.getPassword());
 		userDto.setPassword(encodedPwd);
-		
+
 		// 비밀번호 암호화
         String encryptedPhoneNumber = encryptionUtil.encrypt(userDto.getEncryptedPhoneNumber());
 		userDto.setEncryptedPhoneNumber(encryptedPhoneNumber);
@@ -189,7 +188,7 @@ public class AuthServiceImpl implements AuthService {
 		userProfileInfoRepo.save(UserProfileInfo.toEntity(upiDto, savedUser));
 		
 		userTripInfoRepo.save(UserTripInfo.builder().userId(savedUser.getId()).build());
-		
+
 		String token = jwtUtil.generateToken(userDto.getUsername());
 
 		return "Bearer+" + token;

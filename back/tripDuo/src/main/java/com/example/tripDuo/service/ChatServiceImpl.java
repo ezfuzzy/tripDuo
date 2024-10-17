@@ -89,7 +89,7 @@ public class ChatServiceImpl implements ChatService {
 		List<ChatRoom> chatRooms = chatRoomRepo.findByIdInOrderByLastmessagetimeDesc(chatRoomIds);
 		// ChatRoom을 ChatRoomDto로 변환
 		List<ChatRoomDto> chatRoomDtos = chatRooms.stream().map(ChatRoomDto::toDto).collect(Collectors.toList());
-		System.out.println("사용자가 속한 채팅방 목록: " + chatRoomDtos);
+
 		return chatRoomDtos;
 	}
 
@@ -117,8 +117,6 @@ public class ChatServiceImpl implements ChatService {
 		for (ChatMessage message : messageList) {			
 			messageDtoList.add(ChatMessageDto.toDto(message));
 		}
-		System.out.println("메세지 확인"+messageDtoList);
-		
 		
 		return Map.of(
 				"list", messageDtoList,
@@ -132,7 +130,6 @@ public class ChatServiceImpl implements ChatService {
 		LocalDateTime localTime = LocalDateTime.now();
 		chatRoomDto.setLastmessagetime(localTime);
 		ChatRoom chatRoom = chatRoomRepo.save(ChatRoom.toEntity(chatRoomDto));
-		System.out.println("채팅방 생성됨: " + chatRoom.getId());
 
 		for (Long curUserId : chatRoomDto.getParticipantsList()) {
 			UserProfileInfo userProfileInfo = userProfileInfoRepo.findById(curUserId)
@@ -158,7 +155,6 @@ public class ChatServiceImpl implements ChatService {
 		// 4. Redis에 메시지 저장 (캐싱)
 		String redisKey = "chatRoomId:" + chatMessageDto.getChatRoomId();
 		redisTemplate.opsForList().rightPush(redisKey, chatMessageDto);
-		System.out.println("Message saved to Redis with key " + redisKey + ": " + chatMessageDto);
 
 		return chatMessageDto;
 	}
@@ -168,7 +164,6 @@ public class ChatServiceImpl implements ChatService {
 	public void saveMessagesToDatabase() {
 		// 모든 채팅방 키 가져오기
 		Set<String> chatRooms = redisTemplate.keys("chatRoomId:*");
-		System.out.println("Scheduled task running. Found chat rooms: " + chatRooms);
 
 		for (String redisKey : chatRooms) {
 			// 메시지 가져오기
@@ -205,7 +200,6 @@ public class ChatServiceImpl implements ChatService {
 			// 각 채팅방 키에 해당하는 데이터를 삭제
 			for (String redisKey : chatRooms) {
 				redisTemplate.delete(redisKey);
-				System.out.println("Deleted Redis cache for: " + redisKey);
 			}
 		}
 	}
