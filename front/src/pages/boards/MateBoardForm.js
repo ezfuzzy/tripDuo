@@ -22,6 +22,7 @@ function MateBoardForm(props) {
   const [domesticInternational, setDomesticInternational] = useState()
   const [SearchParams, setSearchParams] = useSearchParams()
   const [post, setPost] = useState({}) // 게시물의 정보
+  const [postTitle, setPostTitle] = useState("")
 
   const navigate = useNavigate()
 
@@ -51,11 +52,7 @@ function MateBoardForm(props) {
           ...post,
           country: domesticInternational === "Domestic" ? "대한민국" : "",
           tags: [],
-          viewCount: 10,
-          likeCount: 10,
-          rating: 80,
           status: "OPEN",
-          city: "",
         })
       }
     },
@@ -75,6 +72,23 @@ function MateBoardForm(props) {
       ...post,
       [e.target.name]: e.target.value,
     })
+  }
+
+  const handleTitleChange = (e)=>{
+    const value = e.target.value
+
+    if(value.length > 50){
+      alert("제목은 50자 까지 입력 가능합니다.")
+      return
+    }
+
+    setPostTitle(value)
+    
+    setPost({
+      ...post,
+      title : value
+    })
+  
   }
 
 
@@ -304,7 +318,8 @@ function MateBoardForm(props) {
             </label>
             <input
               className="w-full border-gray-300 rounded-md"
-              onChange={handleChange}
+              value={postTitle}
+              onChange={handleTitleChange}
               type="text"
               id="title"
               name="title"
