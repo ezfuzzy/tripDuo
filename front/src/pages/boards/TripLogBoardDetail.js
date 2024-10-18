@@ -586,7 +586,7 @@ const TripLogBoardDetail = () => {
               className="text-white bg-tripDuoMint hover:bg-tripDuoGreen focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 mr-4 text-center">
               목록으로
             </button>
-            {postInfo.writer == loggedInNickname &&
+            {postInfo.writer === loggedInNickname &&
               <button
                 onClick={() => navigate("/private/myTripLog")}
                 className="text-tripDuoGreen border border-tripDuoGreen hover:bg-tripDuoMint focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">

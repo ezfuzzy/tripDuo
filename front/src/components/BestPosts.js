@@ -45,66 +45,72 @@ function BestPosts(props) {
     }
   }
 
-  const renderPostList = (title, postList) => (
-    <div>
-      <h3 className="text-xl font-semibold my-5">{title}</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {postList.map((post, index) => {
-          const imageFileName = getImageFileName(post.city, post.country)
-          const imagePath = `/img/countryImages/${imageFileName}.jpg`
+  const renderPostList = (title, postList) => {
+    if (postList.length === 0) {
+      return null
+    }
 
-          return (
-            <div key={index} className="bg-white shadow-2xl rounded-lg overflow-hidden">
-              <img
-                src={imagePath || "https://picsum.photos/200/150?random=11"}
-                alt={post.title}
-                className="w-full h-32 object-cover"
-              />
-              <div className="p-4">
-                <div className="flex items-center mb-2">
-                  <img
-                    src={
-                      post.userProfileInfo.profilePicture
-                        ? cloudFrontUrl + post.userProfileInfo.profilePicture
-                        : `${process.env.PUBLIC_URL}/img/defaultImages/defaultProfilePicture.svg`
-                    }
-                    alt={post.userProfileInfo.nickname}
-                    className="w-10 h-10 rounded-full mr-2 cursor-pointer"
-                    onClick={() => navigate(`/users/${post.userProfileInfo.user.id}/profile`)}
-                  />
-                  <span
-                    className="font-semibold cursor-pointer"
-                    onClick={() => navigate(`/users/${post.userProfileInfo.user.id}/profile`)}>
-                    {post.userProfileInfo.nickname}
-                  </span>
-                </div>
-                <h4
-                  className="font-bold text- cursor-pointer overflow-hidden whitespace-nowrap text-ellipsis"
-                  onClick={() => {
-                    const di =
-                      postList === postLists.domesticCourse || postList === postLists.domesticMate
-                        ? "Domestic"
-                        : "International"
-                    navigate(`/posts/${post.type.toLowerCase()}/${post.id}/detail?di=${di}`)
-                  }}>
-                  {post.title}
-                </h4>
-                <div className="flex justify-between items-center mt-7">
-                  {post.type === "COURSE" ? (
-                    <span className="text-sm text-gray-600">⭐ {post.rating}</span>
-                  ) : post.type === "MATE" ? (
-                    <span className="text-sm text-gray-600">
-                      <FontAwesomeIcon icon={faHeart} className="h-4 w-4 mr-1" /> {post.likeCount}
+    return (
+      <div>
+        <h3 className="text-xl font-semibold my-5">{title}</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {postList.map((post, index) => {
+            const imageFileName = getImageFileName(post.city, post.country)
+            const imagePath = `/img/countryImages/${imageFileName}.jpg`
+
+            return (
+              <div key={index} className="bg-white shadow-2xl rounded-lg overflow-hidden">
+                <img
+                  src={imagePath || "https://picsum.photos/200/150?random=11"}
+                  alt={post.title}
+                  className="w-full h-32 object-cover"
+                />
+                <div className="p-4">
+                  <div className="flex items-center mb-2">
+                    <img
+                      src={
+                        post.userProfileInfo.profilePicture
+                          ? cloudFrontUrl + post.userProfileInfo.profilePicture
+                          : `${process.env.PUBLIC_URL}/img/defaultImages/defaultProfilePicture.svg`
+                      }
+                      alt={post.userProfileInfo.nickname}
+                      className="w-10 h-10 rounded-full mr-2 cursor-pointer"
+                      onClick={() => navigate(`/users/${post.userProfileInfo.user.id}/profile`)}
+                    />
+                    <span
+                      className="font-semibold cursor-pointer"
+                      onClick={() => navigate(`/users/${post.userProfileInfo.user.id}/profile`)}>
+                      {post.userProfileInfo.nickname}
                     </span>
-                  ) : null}
+                  </div>
+                  <h4
+                    className="font-bold text- cursor-pointer overflow-hidden whitespace-nowrap text-ellipsis"
+                    onClick={() => {
+                      const di =
+                        postList === postLists.domesticCourse || postList === postLists.domesticMate
+                          ? "Domestic"
+                          : "International"
+                      navigate(`/posts/${post.type.toLowerCase()}/${post.id}/detail?di=${di}`)
+                    }}>
+                    {post.title}
+                  </h4>
+                  <div className="flex justify-between items-center mt-7">
+                    {post.type === "COURSE" ? (
+                      <span className="text-sm text-gray-600">⭐ {post.rating}</span>
+                    ) : post.type === "MATE" ? (
+                      <span className="text-sm text-gray-600">
+                        <FontAwesomeIcon icon={faHeart} className="h-4 w-4 mr-1" /> {post.likeCount}
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
               </div>
-            </div>
-          )
-        })}
+            )
+          })}
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 
   return (
     <div>
