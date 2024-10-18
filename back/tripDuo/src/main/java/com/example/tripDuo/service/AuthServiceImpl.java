@@ -203,7 +203,7 @@ public class AuthServiceImpl implements AuthService {
 	// ### 휴대폰 인증 ###
 
 	@Override
-	public boolean sendVerificationCode(String phoneNumber) {
+	public String sendVerificationCode(String phoneNumber) {
 		// 1. 인증번호 생성
 		String verificationCode = phoneNumberVerificationService.generateVerificationCode();
 
@@ -231,7 +231,7 @@ public class AuthServiceImpl implements AuthService {
 //		  System.out.println(exception.getMessage());
 //		}
 
-		return true;
+		return verificationCode;
 //		try {
 //			sendVerificationCodeToEmail(verificationCode);
 //		} catch (UnirestException e) {

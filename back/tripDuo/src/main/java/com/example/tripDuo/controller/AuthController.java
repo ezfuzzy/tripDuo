@@ -42,9 +42,9 @@ public class AuthController {
 	@PostMapping("/phone/send-code")
 	public ResponseEntity<String> sendVerificationCodeToPhone(@RequestBody String inputPhoneNumber) {
 		String phoneNumber = inputPhoneNumber.substring(0, inputPhoneNumber.length()-1);
-		
-		if(authService.sendVerificationCode(phoneNumber)) {
-			return ResponseEntity.ok("Verification code is sent");
+		String tempStr = authService.sendVerificationCode(phoneNumber); 
+		if(!tempStr.isEmpty()) {
+			return ResponseEntity.ok(tempStr);
 		} else {
 			return ResponseEntity.badRequest().body("Invalid phone number");
 		}
