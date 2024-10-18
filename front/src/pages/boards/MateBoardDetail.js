@@ -479,6 +479,31 @@ function MateBoardDetail(props) {
     return className // 최종 클래스 이름 반환
   }
 
+  const calculateNightsAndDays = (startDate, endDate) => {
+    if (!startDate || !endDate) return "날짜를 정확히 입력해주세요."
+
+    // 문자열을 Date 객체로 변환 ("YYYY.MM.DD" → Date)
+    const start = new Date(startDate.replace(/\./g, "-"))
+    const end = new Date(endDate.replace(/\./g, "-"))
+
+    // 두 날짜 간의 차이를 밀리초 단위로 계산
+    const diffTime = end.getTime() - start.getTime()
+
+    // 차이를 일(day) 단위로 변환
+    const diffDays = diffTime / (1000 * 60 * 60 * 24)
+
+    if (diffDays > 0) {
+      // "박"의 계산 (diffDays - 1)
+      const days = diffDays + 1
+      // const nights = diffDays > 0 ? diffDays : 0;
+      const nights = diffDays
+
+      return `${nights}박 ${days}일`
+    } else {
+      return `당일 일정`
+    }
+  }
+
   return (
     <div className="container mx-auto p-4 max-w-[900px]">
       {/* 로딩 애니메이션 */}
@@ -605,9 +630,12 @@ function MateBoardDetail(props) {
               일정
             </label>
             <div className="my-3">
-              <p>
+              <span>
                 {post.startDate || "0000.00.00."} ~ {post.endDate || "0000.00.00."}
-              </p>
+              </span>
+              <span className="ml-3 text-sm bg-tripDuoGreen text-white px-2 py-1 rounded">
+                {calculateNightsAndDays(post.startDate, post.endDate)}
+              </span>
             </div>
 
             <Calendar
@@ -624,7 +652,7 @@ function MateBoardDetail(props) {
               prevLabel={
                 <FaChevronLeft className="text-green-500 hover:text-green-700 transition duration-150 mx-auto" />
               }
-              nextLabel={ 
+              nextLabel={
                 <FaChevronRight className="text-green-500 hover:text-green-700 transition duration-150 mx-auto" />
               }
               prev2Label={null}
