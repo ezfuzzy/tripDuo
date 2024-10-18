@@ -70,7 +70,7 @@ const TripDuoCarousel = () => {
         {carouselItems.map((item, index) => (
           <div key={index} className="keen-slider__slide">
             <img
-              src={`${process.env.PUBLIC_URL}/img/countryImages/${item.imageSrc}`}
+              src={`${process.env.PUBLIC_URL}/img/carouselImages/${item.imageSrc}`}
               alt={`Slide ${index + 1}`}
               className="w-full h-[100px] xs:h-[200px] sm:h-[300px] md:h-[500px] object-cover rounded-lg transition-all duration-300 cursor-pointer"
               onClick={() => handleImageClick(item, index)} // 이미지 클릭 시 해당 슬라이드로 이동

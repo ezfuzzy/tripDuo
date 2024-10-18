@@ -4,6 +4,7 @@ export const carouselItems = [
   { name: "item3", imageSrc: "RUS_01.jpg", linkSrc: "/posts/mate?di=Domestic" },
   { name: "item4", imageSrc: "USA_01.jpg", linkSrc: "/posts/mate?di=International" },
   { name: "item5", imageSrc: "BRA_01.jpg", linkSrc: "/checklist" },
+  { name: "item6", imageSrc: "promotion-points.png", linkSrc: "/posts/course?di=Domestic" },
 ]
 
 export const menuItems = [
