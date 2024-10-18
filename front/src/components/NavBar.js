@@ -176,14 +176,14 @@ function NavBar() {
       <AlertModal show={alertShow} message={"로그아웃 되었습니다"} yes={handleYes} />
 
       {/* 글로벌 네비게이션 바 */}
-      <nav className="bg-white p-4 shadow-md flex justify-between items-center relative">
+      <nav className="bg-white p-4 flex justify-between items-center relative">
         {/* Off-canvas toggle button */}
-        <button type="button" className="text-gray-600 pl-4" onClick={() => setOffCanvasOpen(true)}>
+        <button type="button" className="text-gray-600 px-4 md:px-10" onClick={() => setOffCanvasOpen(true)}>
           <FontAwesomeIcon icon={faBars} className="h-5 w-5 mr-2" />
         </button>
 
         {/* md 이상에서만 보여주는 icon */}
-        <div className="hidden md:flex space-x-4">
+        <div className="hidden md:flex space-x-4 md:px-10">
           {isLoggedIn && (
             <>
               <NavLink to={`/chatRoom`}>
