@@ -353,7 +353,7 @@ function NavBar() {
               </div>
 
               <div
-                className={`bg-gray-50 space-y-2 pl-5 overflow-hidden transition-all duration-300 ease-in-out ${
+                className={`bg-gray-50 rounded-md space-y-2 pl-5 overflow-hidden transition-all duration-300 ease-in-out ${
                   openSections.ourTrip ? "max-h-60" : "max-h-0"
                 }`}>
                 <div>
@@ -387,7 +387,7 @@ function NavBar() {
               </div>
 
               <div
-                className={`bg-gray-50 space-y-2 pl-5 overflow-hidden transition-all duration-300 ease-in-out ${
+                className={`bg-gray-50 rounded-md space-y-2 pl-5 overflow-hidden transition-all duration-300 ease-in-out ${
                   openSections.tripMate ? "max-h-60" : "max-h-0"
                 }`}>
                 <div>
@@ -419,7 +419,7 @@ function NavBar() {
               </div>
 
               <div
-                className={`bg-gray-50 space-y-2 pl-5 overflow-hidden transition-all duration-300 ease-in-out ${
+                className={`bg-gray-50 rounded-md space-y-2 pl-5 overflow-hidden transition-all duration-300 ease-in-out ${
                   openSections.myPage ? "max-h-60" : "max-h-0"
                 }`}>
                 <div>
@@ -458,7 +458,7 @@ function NavBar() {
                 {openSections.extra ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}
               </div>
               <div
-                className={`bg-gray-50 space-y-2 pl-5 overflow-hidden transition-all duration-300 ease-in-out ${
+                className={`bg-gray-50 rounded-md space-y-2 pl-5 overflow-hidden transition-all duration-300 ease-in-out ${
                   openSections.extra ? "max-h-80" : "max-h-0"
                 }`}>
                 <div>
