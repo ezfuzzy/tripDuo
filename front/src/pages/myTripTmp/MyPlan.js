@@ -131,7 +131,7 @@ function MyPlan(props) {
                       // /* 혼합 모드 설정 */
                       mixBlendMode: "multiply",
                     }}>
-                    <a href={`/posts/course/${post.id}/detail`} className="block">
+                    <a href={`/posts/course/${post.id}/detail?di=${post.country === "대한민국" ? "Domestic" : "International"}`} className="block">
                       <div className="md:flex justify-between">
                         <div>
                           <h4 className="text-xl font-semibold">{post.title}</h4>
