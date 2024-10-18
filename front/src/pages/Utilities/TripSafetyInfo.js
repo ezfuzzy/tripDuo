@@ -21,7 +21,7 @@ function TripSafetyInfo() {
 
     const fetchSafetyInfo = async () => {
       try {
-        const url = "http://apis.data.go.kr/1262000/TravelWarningService/getTravelWarningList"
+        const url = "https://apis.data.go.kr/1262000/TravelWarningService/getTravelWarningList"
         const queryParams =
           `?${encodeURIComponent("serviceKey")}=${process.env.REACT_APP_GONGGONG_DATA_API_KEY_ENCODING}` +
           `&${encodeURIComponent("numOfRows")}=${encodeURIComponent("141")}` +
