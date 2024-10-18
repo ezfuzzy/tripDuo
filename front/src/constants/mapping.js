@@ -13,8 +13,8 @@ export const menuItems = [
   { name: "해외 메이트 찾기", imageSrc: "mate-international.png", linkSrc: "/posts/mate?di=International" },
   { name: "여행 계획 만들기", imageSrc: "make-schedule.png", linkSrc: "/private/myPlan" },
   { name: "장소 저장하기", imageSrc: "save-place.png", linkSrc: "/private/myPlace" },
-  { name: "여행 체크리스트", imageSrc: "checklist.png", linkSrc: "/private/checklist" },
-  { name: "환율 정보", imageSrc: "exchange.png", linkSrc: "/private/exchangeInfo" },
+  { name: "여행 체크리스트", imageSrc: "checklist.png", linkSrc: "/utils/checklist" },
+  { name: "환율 정보", imageSrc: "exchange.png", linkSrc: "/utils/exchangeInfo" },
 ]
 
 export const reviewPositiveTagList = [
