@@ -11,7 +11,7 @@ const useWebSocket = () => {
 
   // WebSocket 연결
   useEffect(() => {
-    const socket = new SockJS("http://localhost:8888/api/ws");
+    const socket = new SockJS("https://tripduo.xyz/api/ws");
     const client = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
