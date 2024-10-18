@@ -5,17 +5,17 @@ const ReportBoard = () => {
   const [reports, setReports] = useState([]) // 신고 정보
   const [selectedReport, setSelectedReport] = useState({}) // 선택된 신고 정보
   const [targetTypes, setTargetTypes] = useState([]) // 대상 정보
-  const [reportedUserIds, setReportedUserIds] = useState([]) // 소유자 id 정보
   const [targetAccountStatus, setTargetAccountStatus] = useState([]) // 소유자 계정 상태 정보
   const [currentPage, setCurrentPage] = useState(1) // 현재 페이지
   const [pageSize, setPageSize] = useState(10) // 페이지당 행 수
   const [modalOpen, setModalOpen] = useState(false) // 모달 열림 여부
-  const [reportStatus, setReportStatus] = useState("") // 선택된 신고 상태
-  const [accountStatus, setAccountStatus] = useState("") // 선택된 계정 상태
   const [totalReportPages, setTotalReportPages] = useState() // 총 페이지 수
 
   const [selectedYear, setSelectedYear] = useState("") // 선택된 년도
   const [selectedMonth, setSelectedMonth] = useState("") // 선택된 월
+
+  const [reportStatus, setReportStatus] = useState("") // 선택된 신고 상태
+  const [accountStatus, setAccountStatus] = useState("") // 선택된 계정 상태
 
   // 검색 조건
   const [searchCriteria, setSearchCriteria] = useState({
@@ -51,11 +51,11 @@ const ReportBoard = () => {
       createdAtMonth, // 조합된 년도와 월을 검색 조건에 추가
     }))
 
+    // 상태 업데이트 후 getReports 호출
     getReports() // 신고 목록 가져오기
   }
 
-  // 신고 목록 가져오기
-  const getReports = async () => {
+  const getReports = () => {
     const params = {
       reportedUserId: searchCriteria.reportedUserId || null,
       reportStatus: searchCriteria.reportStatus || null,
@@ -65,39 +65,42 @@ const ReportBoard = () => {
       pageSize: pageSize,
     }
 
-    try {
-      const response = await axios.get("/api/v1/reports", { params })
-      console.log(response.data)
-      setReports(response.data.list) // 신고 정보 업데이트
-      setTargetTypes(response.data.targetTypeList) // 대상 정보 업데이트
-      setReportedUserIds(response.data.reportedUserIdList) // 소유자 id 업데이트
-      setTargetAccountStatus(response.data.targetAccountStatusList) // 소유자 계정 상태 정보 업데이트
-      setTotalReportPages(response.data.totalReportPages) // 총 페이지 수 업데이트
-    } catch (error) {
-      console.error("신고 목록을 가져오는 데 실패했습니다:", error)
-    }
+    axios
+      .get("/api/v1/reports", { params })
+      .then((response) => {
+        //console.log(response.data)
+        setReports(response.data.list) // 신고 정보 업데이트
+        setTargetTypes(response.data.targetTypeList) // 대상 정보 업데이트
+        setTargetAccountStatus(response.data.targetAccountStatusList) // 소유자 계정 상태 정보 업데이트
+        setTotalReportPages(response.data.totalReportPages) // 총 페이지 수 업데이트
+      })
+      .catch((error) => {
+        console.error("신고 목록을 가져오는 데 실패했습니다:", error)
+      })
   }
 
   useEffect(() => {
     handleSearch()
-  }, [pageSize, searchCriteria.reportStatus, searchCriteria.targetType])
+  }, [pageSize, searchCriteria.reportStatus, searchCriteria.targetType, searchCriteria.createdAtMonth])
 
   useEffect(() => {
     getReports()
   }, [currentPage])
 
   // 신고 처리 API 요청
-  const handleProcessReport = async () => {
-    try {
-      await axios.put(`/api/v1/reports/${selectedReport.infos.id}`, {
+  const handleProcessReport = () => {
+    axios
+      .put(`/api/v1/reports/${selectedReport.infos.id}`, {
         reportStatus: reportStatus,
         accountStatus: accountStatus,
       })
-      setModalOpen(false) // 모달 닫기
-      getReports() // 신고 목록 새로 고침
-    } catch (error) {
-      console.error("신고 정보를 업데이트하는 데 실패했습니다:", error)
-    }
+      .then(() => {
+        setModalOpen(false) // 모달 닫기
+        getReports() // 신고 목록 새로 고침
+      })
+      .catch((error) => {
+        console.error("신고 정보를 업데이트하는 데 실패했습니다:", error)
+      })
   }
 
   const handleChangePage = (newPage) => {
@@ -233,21 +236,33 @@ const ReportBoard = () => {
         </select>
 
         <div className="overflow-x-auto mt-3">
-          <table className="min-w-full border border-gray-300">
+          <table className="min-w-full border border-gray-300" style={{ tableLayout: "fixed" }}>
             <thead>
               <tr className="bg-gray-200">
-                <th className="border border-gray-300 px-4 py-2">id</th>
-                <th className="border border-gray-300 px-4 py-2">신고자 id</th>
-                <th className="border border-gray-300 px-4 py-2">대상</th>
-                <th className="border border-gray-300 px-4 py-2">상태</th>
-                <th className="border border-gray-300 px-4 py-2">소유자 id</th>
-                <th className="border border-gray-300 px-4 py-2">
+                <th className="border border-gray-300 px-4 py-2" style={{ width: "5%" }}>
+                  id
+                </th>
+                <th className="border border-gray-300 px-4 py-2" style={{ width: "10%" }}>
+                  신고자 id
+                </th>
+                <th className="border border-gray-300 px-4 py-2" style={{ width: "10%" }}>
+                  대상
+                </th>
+                <th className="border border-gray-300 px-4 py-2" style={{ width: "10%" }}>
+                  상태
+                </th>
+                <th className="border border-gray-300 px-4 py-2" style={{ width: "10%" }}>
+                  소유자 id
+                </th>
+                <th className="border border-gray-300 px-4 py-2" style={{ width: "10%" }}>
                   소유자
                   <br />
                   계정 상태
                 </th>
-                <th className="border border-gray-300 px-4 py-2">날짜</th>
-                <th className="border border-gray-300 px-4 py-2"></th>
+                <th className="border border-gray-300 px-4 py-2" style={{ width: "25%" }}>
+                  날짜
+                </th>
+                <th className="border border-gray-300 px-4 py-2" style={{ width: "20%" }}></th>
               </tr>
             </thead>
             <tbody>
@@ -271,7 +286,7 @@ const ReportBoard = () => {
                     {report.status === "PENDING" && "보류 중"}
                   </td>
 
-                  <td className="border border-gray-300 px-4 py-2">{reportedUserIds[index]}</td>
+                  <td className="border border-gray-300 px-4 py-2">{report.reportedContentOwnerId}</td>
 
                   <td className="border border-gray-300 px-4 py-2">
                     {targetAccountStatus[index] === "ACTIVE" && "활성"}
@@ -290,7 +305,6 @@ const ReportBoard = () => {
                         const selectedReport = {
                           infos: report,
                           targetType: targetTypes[index],
-                          targetId: reportedUserIds[index],
                           targetAccountStatus: targetAccountStatus[index],
                         }
                         setSelectedReport(selectedReport) // 선택된 신고 정보를 상태에 저장
@@ -304,7 +318,7 @@ const ReportBoard = () => {
                         onClose={() => setModalOpen(false)}
                         onConfirm={handleProcessReport}
                         report={selectedReport} // 선택된 신고 정보를 모달에 전달
-                        setStatus={setReportStatus}
+                        setReportStatus={setReportStatus}
                         setAccountStatus={setAccountStatus}
                       />
                     )}
@@ -314,168 +328,6 @@ const ReportBoard = () => {
             </tbody>
           </table>
         </div>
-
-        <div className="flex justify-center items-center mt-4">
-          <button
-            onClick={handleSearch}
-            className="font-bold bg-tripDuoMint text-white px-3 py-2 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300"
-          >
-            검색
-          </button>
-        </div>
-
-        {/* 상태 선택 */}
-        <div className="flex items-center gap-2 mt-2">
-          <span>상태 : </span>
-          {["PROCESSED", "UNPROCESSED", "PENDING"].map((status) => (
-            <button
-              key={status}
-              onClick={() => {
-                // 현재 선택된 상태와 동일하면 해제, 아니면 선택
-                setSearchCriteria((prev) => ({
-                  ...prev,
-                  reportStatus: prev.reportStatus === status ? "" : status,
-                }))
-              }}
-              className={`font-bold ${
-                searchCriteria.reportStatus === status ? "bg-tripDuoGreen" : "bg-tripDuoMint"
-              } text-white px-3 py-1 text-sm rounded-md shadow-md transition-all duration-300`}
-            >
-              {status === "PROCESSED" ? "처리됨" : status === "UNPROCESSED" ? "처리되지 않음" : "보류 중"}
-            </button>
-          ))}
-        </div>
-
-        {/* 대상 선택 */}
-        <div className="flex items-center gap-2 mt-2">
-          <span>대상 : </span>
-          {["USER", "USER_REVIEW", "POST", "POST_COMMENT", "CHAT_ROOM", "CHAT_MESSAGE"].map((type) => (
-            <button
-              key={type}
-              onClick={() => {
-                // 현재 선택된 대상과 동일하면 해제, 아니면 선택
-                setSearchCriteria((prev) => ({
-                  ...prev,
-                  targetType: prev.targetType === type ? "" : type,
-                }))
-              }}
-              className={`font-bold ${
-                searchCriteria.targetType === type ? "bg-tripDuoGreen" : "bg-tripDuoMint"
-              } text-white px-3 py-1 text-sm rounded-md shadow-md transition-all duration-300`}
-            >
-              {type === "USER"
-                ? "사용자"
-                : type === "USER_REVIEW"
-                ? "사용자 리뷰"
-                : type === "POST"
-                ? "게시글"
-                : type === "POST_COMMENT"
-                ? "게시글 댓글"
-                : type === "CHAT_ROOM"
-                ? "채팅방"
-                : "채팅메시지"}
-            </button>
-          ))}
-        </div>
-
-        {/* 날짜 선택 */}
-        <div className="flex items-center gap-2 mt-2">
-          <span>날짜 : </span>
-          <button className="font-bold bg-tripDuoMint text-white px-3 py-1 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300">
-            뭔가 년과 월을 선택할 수 있는 느낌
-          </button>
-        </div>
-      </div>
-
-      <select value={pageSize} onChange={handleChangePageSize} className="border border-gray-300 rounded py-2">
-        {[10, 25, 50].map((option) => (
-          <option key={option} value={option}>
-            {option}개씩 보기
-          </option>
-        ))}
-      </select>
-
-      <div className="overflow-x-auto mt-3">
-        <table className="min-w-full border border-gray-300">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="border border-gray-300 px-4 py-2">id</th>
-              <th className="border border-gray-300 px-4 py-2">신고자 id</th>
-              <th className="border border-gray-300 px-4 py-2">대상</th>
-              <th className="border border-gray-300 px-4 py-2">상태</th>
-              <th className="border border-gray-300 px-4 py-2">소유자 id</th>
-              <th className="border border-gray-300 px-4 py-2">
-                소유자
-                <br />
-                계정 상태
-              </th>
-              <th className="border border-gray-300 px-4 py-2">날짜</th>
-              <th className="border border-gray-300 px-4 py-2"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {reports.map((report, index) => (
-              <tr className="text-center" key={report.id}>
-                <td className="border border-gray-300 px-4 py-2">{report.id}</td>
-                <td className="border border-gray-300 px-4 py-2">{report.reporterId}</td>
-
-                <td className="border border-gray-300 px-4 py-2">
-                  {targetTypes[index] === "USER" && "사용자"}
-                  {targetTypes[index] === "USER_REVIEW" && "사용자 리뷰"}
-                  {targetTypes[index] === "POST" && "게시글"}
-                  {targetTypes[index] === "POST_COMMENT" && "게시글 댓글"}
-                  {targetTypes[index] === "CHAT_ROOM" && "채팅방"}
-                  {targetTypes[index] === "CHAT_MESSAGE" && "채팅메시지"}
-                </td>
-
-                <td className="border border-gray-300 px-4 py-2">
-                  {report.status === "PROCESSED" && "처리됨"}
-                  {report.status === "UNPROCESSED" && "처리되지 않음"}
-                  {report.status === "PENDING" && "보류 중"}
-                </td>
-
-                <td className="border border-gray-300 px-4 py-2">{reportedUserIds[index]}</td>
-
-                <td className="border border-gray-300 px-4 py-2">
-                  {targetAccountStatus[index] === "ACTIVE" && "활성"}
-                  {targetAccountStatus[index] === "INACTIVE" && "비활성"}
-                  {targetAccountStatus[index] === "WARNED" && "경고"}
-                  {targetAccountStatus[index] === "SUSPENDED" && "정지"}
-                </td>
-
-                <td className="border border-gray-300 px-4 py-2">{new Date(report.createdAt).toLocaleString()}</td>
-
-                <td className="border border-gray-300 px-4 py-2">
-                  <button
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                    onClick={() => {
-                      setModalOpen(true)
-                      const selectedReport = {
-                        infos: report,
-                        targetType: targetTypes[index],
-                        targetId: reportedUserIds[index],
-                        targetAccountStatus: targetAccountStatus[index],
-                      }
-                      setSelectedReport(selectedReport) // 선택된 신고 정보를 상태에 저장
-                    }}
-                  >
-                    자세히 보기
-                  </button>
-                  {modalOpen && (
-                    <ReportModal
-                      isOpen={modalOpen}
-                      onClose={() => setModalOpen(false)}
-                      onConfirm={handleProcessReport}
-                      report={selectedReport} // 선택된 신고 정보를 모달에 전달
-                      setStatus={setReportStatus}
-                      setAccountStatus={setAccountStatus}
-                    />
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </div>
 
       <div className="flex justify-center items-center mt-4">
@@ -502,11 +354,24 @@ const ReportBoard = () => {
 }
 
 // 모달 컴포넌트
-const ReportModal = ({ isOpen, onClose, onConfirm, report, setStatus, setAccountStatus }) => {
+const ReportModal = ({ isOpen, onClose, onConfirm, report, setReportStatus, setAccountStatus }) => {
+  // 모달이 열릴 때 상태 초기화
+  useEffect(() => {
+    setReportStatus(report.infos.status) // 현재 신고 상태로 초기화
+    setAccountStatus(report.targetAccountStatus) // 현재 계정 상태로 초기화
+  }, [report, setReportStatus, setAccountStatus])
+
   if (!isOpen) return null
 
+  const handleModalOutClick = (e) => {
+    // 모달 바깥을 클릭했을 때 닫기
+    if (e.target === e.currentTarget) {
+      onClose()
+    }
+  }
+
   return (
-    <div className="modal fixed inset-0 flex items-center justify-center z-50">
+    <div className="modal fixed inset-0 flex items-center justify-center z-50" onClick={handleModalOutClick}>
       <div className="modal-content bg-white p-4 rounded shadow-lg relative">
         {/* 닫기 SVG 아이콘 */}
         <svg
@@ -521,7 +386,6 @@ const ReportModal = ({ isOpen, onClose, onConfirm, report, setStatus, setAccount
         {/* 신고 정보 표시 */}
         <h3 className="text-lg font-bold mb-4">신고 상세 정보</h3>
         <div className="bg-gray-100 p-4 rounded-md shadow-md border border-gray-300 text-left">
-          {" "}
           {/* 테두리 추가 및 좌측 정렬 */}
           <p className="mb-2">
             <strong>신고 내용 : </strong>
@@ -529,33 +393,63 @@ const ReportModal = ({ isOpen, onClose, onConfirm, report, setStatus, setAccount
           </p>
           {report.targetType === "USER" && (
             <p className="mb-2">
-              <strong>유저 닉네임 </strong>: {report.infos.reportedUser.username}
+              <strong>userId </strong>: {report.infos.reportedUser.id}
+              <br />
+              <strong>username </strong>: {report.infos.reportedUser.username}
+              <br />
+              <strong>email </strong>: {report.infos.reportedUser.email}
+              <br />
+              <strong>verificationStatus </strong>: {report.infos.reportedUser.verificationStatus}
             </p>
           )}
           {report.targetType === "USER_REVIEW" && (
             <p className="mb-2">
-              <strong>리뷰 내용 : </strong>
+              <strong>reviewId </strong>: {report.infos.reportedUserReview.id}
+              <br />
+              <strong>content </strong>: {report.infos.reportedUserReview.content}
+              <br />
+              <strong>experience </strong>: {report.infos.reportedUserReview.experience}
+              <br />
+              <strong>tags </strong>: {report.infos.reportedUserReview.tags}
             </p>
           )}
           {report.targetType === "POST" && (
             <p className="mb-2">
-              <strong>게시글 id </strong>: {report.infos.reportedPost.id}
+              <strong>postId </strong>: {report.infos.reportedPost.id}
               <br />
               <strong>title </strong>: {report.infos.reportedPost.title}
               <br />
               <strong>content </strong>: {report.infos.reportedPost.content}
               <br />
               <strong>type </strong>: {report.infos.reportedPost.type}
+              <br />
+              <strong>country </strong>: {report.infos.reportedPost.country}
+              <br />
+              <strong>city </strong>: {report.infos.reportedPost.city}
+              <br />
+              <strong>likeCount </strong>: {report.infos.reportedPost.likeCount}
+              <br />
+              <strong>rating </strong>: {report.infos.reportedPost.rating}
+              <br />
+              <strong>viewCount </strong>: {report.infos.reportedPost.viewCount}
             </p>
           )}
           {report.targetType === "POST_COMMENT" && (
             <p className="mb-2">
-              <strong>게시글 댓글 내용 : </strong>
+              <strong>commentId </strong>: {report.infos.reportedPostComment.id}
+              <br />
+              <strong>postId </strong>: {report.infos.reportedPostComment.postId}
+              <br />
+              <strong>content </strong>: {report.infos.reportedPostComment.content}
+              <br />
+              <strong>toUsername </strong>: {report.infos.reportedPostComment.toUsername}
+              <br />
+              <strong>status </strong>: {report.infos.reportedPostComment.status}
             </p>
           )}
           {report.targetType === "CHAT_ROOM" && (
             <p className="mb-2">
-              <strong>채팅방 id </strong>: {report.infos.reportedChatRoom.id}
+              <strong>chatRoomId </strong>: {report.infos.reportedChatRoom.id}
               <br />
               <strong>title </strong>: {report.infos.reportedChatRoom.title}
               <br />
@@ -564,7 +458,9 @@ const ReportModal = ({ isOpen, onClose, onConfirm, report, setStatus, setAccount
           )}
           {report.targetType === "CHAT_MESSAGE" && (
             <p className="mb-2">
-              <strong>채팅메시지 id </strong>: {report.infos.reportedChatMessage.id}
+              <strong>chatRoomId </strong>: {report.infos.reportedChatMessage.chatRoomId}
+              <br />
+              <strong>chatMessage id </strong>: {report.infos.reportedChatMessage.id}
               <br />
               <strong>message </strong>: {report.infos.reportedChatMessage.message}
             </p>
@@ -610,8 +506,9 @@ const ReportModal = ({ isOpen, onClose, onConfirm, report, setStatus, setAccount
                   <input
                     type="radio"
                     name="reportStatus"
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
+                    //value={status}
+                    //checked={report.infos.status === status}
+                    onChange={() => setReportStatus(status)}
                     className="mr-2"
                   />
                   {status === "PROCESSED" && "처리됨"}
@@ -638,8 +535,9 @@ const ReportModal = ({ isOpen, onClose, onConfirm, report, setStatus, setAccount
                   <input
                     type="radio"
                     name="accountStatus"
-                    value={status}
-                    onChange={(e) => setAccountStatus(e.target.value)}
+                    //value={status}
+                    //checked={report.targetAccountStatus === status}
+                    onChange={() => setAccountStatus(status)}
                     className="mr-2"
                   />
                   {status === "ACTIVE" && "활성"}

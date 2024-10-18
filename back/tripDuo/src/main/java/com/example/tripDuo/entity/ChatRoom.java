@@ -7,13 +7,7 @@ import java.util.Date;
 import com.example.tripDuo.dto.ChatRoomDto;
 import com.example.tripDuo.enums.ChatRoomType;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,8 +25,11 @@ public class ChatRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;  
 
+    @Column(nullable = false, length = 20)
     private String title; 
+
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private ChatRoomType type; 
 	private LocalDateTime lastmessagetime;
 //    @OneToMany(mappedBy = "chatroom")

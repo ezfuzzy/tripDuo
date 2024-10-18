@@ -82,9 +82,10 @@ function LoginPage() {
     axios
       .post("/api/v1/auth/login", loginData)
       .then((res) => {
-        processToken(res.data)
-        if (!res.data.startsWith("Bearer+")) {
-          setError(res.data)
+        processToken(res.data.token)
+
+        if (!res.data.message.startsWith("Bearer+")) {
+          setError(res.data.message)
         }
       })
       .catch(() => {

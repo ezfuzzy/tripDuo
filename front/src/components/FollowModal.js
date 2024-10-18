@@ -1,9 +1,9 @@
-import { faUser, faXmark } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
-import { ratingConfig } from "../constants/mapping";
+import { faUser, faXmark } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import axios from "axios"
+import React, { useEffect, useState } from "react"
+import { useNavigate } from "react-router"
+import { ratingConfig } from "../constants/mapping"
 
 const defaultProfile = (
   <img
@@ -11,44 +11,44 @@ const defaultProfile = (
     src={`${process.env.PUBLIC_URL}/img/defaultImages/defaultProfilePicture.svg`}
     alt="default profile img"
   />
-);
+)
 
 function FollowModal({ id, ff, onClose }) {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
-  const [followerList, setFollowerList] = useState([]);
-  const [followeeList, setFolloweeList] = useState([]);
+  const [followerList, setFollowerList] = useState([])
+  const [followeeList, setFolloweeList] = useState([])
 
-  const [activeTab, setActiveTab] = useState(ff);
+  const [activeTab, setActiveTab] = useState(ff)
 
   // rating 값에 따른 아이콘과 색상 계산 //
   const getRatingDetails = (ratings) => {
-    return (
-      ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { icon: faUser, color: "black" }
-    ); // 기본값
-  };
+    return ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { imageSrc: "default.svg" }
+  }
 
   useEffect(() => {
     // id 유저를 팔로우에 대한 리스트
     axios
       .get(`/api/v1/users/${id}/followInfos`)
       .then((res) => {
-        console.log(res.data);
-        setFollowerList(res.data.followerList);
-        setFolloweeList(res.data.followeeList);
-        console.log(res.data.followerList);
-        console.log(res.data.followeeList);
+        console.log(res.data)
+        setFollowerList(res.data.followerList)
+        setFolloweeList(res.data.followeeList)
+        console.log(res.data.followerList)
+        console.log(res.data.followeeList)
       })
-      .catch((error) => console.log(error));
-  }, [id, ff]);
+      .catch((error) => console.log(error))
+  }, [id, ff])
 
   const handleActiveTab = (tab) => {
-    setActiveTab(tab);
-  };
+    setActiveTab(tab)
+  }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black bg-opacity-50">
-      <div className="relative w-1/4 max-w-4xl min-h-[400px] w-[300px] bg-white rounded-lg shadow-lg overflow-hidden top-1/4">
+    <div onClick={onClose} className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black bg-opacity-50">
+      <div
+        onClick={(event) => event.stopPropagation()} // 내부 클릭은 모달을 닫지 않음
+        className="relative w-1/4 max-w-4xl min-h-[400px] w-[300px] bg-white rounded-lg shadow-lg overflow-hidden top-1/4">
         {/* Header */}
         <div className="flex items-center justify-between p-3 border-b">
           <div className="text-sm font-medium text-center w-full">
@@ -92,14 +92,14 @@ function FollowModal({ id, ff, onClose }) {
                 <p className="text-center text-gray-500">팔로잉이 없습니다.</p>
               ) : (
                 followeeList.map((followee) => {
-                  const { icon: ratingIcon, color: ratingColor } = getRatingDetails(followee.ratings || 0);
+                  const imageSrc = getRatingDetails(followee.ratings || 0)
                   return (
                     <li
                       key={followee.userId}
                       className="flex justify-between gap-x-6 py-4 cursor-pointer"
                       onClick={() => {
-                        navigate(`/users/${followee.id}/profile`);
-                        onClose();
+                        navigate(`/users/${followee.id}/profile`)
+                        onClose()
                       }}>
                       <div className="flex min-w-0 gap-x-4">
                         {followee.profilePicture ? (
@@ -113,21 +113,21 @@ function FollowModal({ id, ff, onClose }) {
                         )}
                         <div className="min-w-0 flex-auto">
                           <p className="text-sm font-semibold leading-6 text-gray-900">{followee.nickname}</p>
+                          <p className="text-sm leading-6 text-gray-900">
+                            {followee.age} / {followee.gender}
+                          </p>
                         </div>
                       </div>
                       <div className="shrink-0 sm:flex sm:flex-col sm:items-end">
-                        <p>
-                          <FontAwesomeIcon icon={ratingIcon} color={ratingColor} className="mr-2"></FontAwesomeIcon>
-                        </p>
-                        <p className="text-sm leading-6 text-gray-900">{followee.ratings}</p>
-                      </div>
-                      <div className="shrink-0 sm:flex sm:flex-col sm:items-end">
-                        <p className="text-sm leading-6 text-gray-900">
-                          {followee.age} / {followee.gender}
-                        </p>
+                        <img
+                          className="w-6 h-6"
+                          src={`${process.env.PUBLIC_URL}/img/userRatingImages/${imageSrc.imageSrc}`}
+                          alt="user rating"
+                          title={`${imageSrc.imageSrc.replace(".svg", "")}`}
+                        />
                       </div>
                     </li>
-                  );
+                  )
                 })
               )
             ) : null}
@@ -138,14 +138,14 @@ function FollowModal({ id, ff, onClose }) {
                 <p className="text-center text-gray-500">팔로워가 없습니다.</p>
               ) : (
                 followerList.map((follower) => {
-                  const { icon: ratingIcon, color: ratingColor } = getRatingDetails(follower.ratings || 0);
+                  const imageSrc = getRatingDetails(follower.ratings || 0)
                   return (
                     <li
                       key={follower.userId}
                       className="flex justify-between gap-x-6 py-4 cursor-pointer"
                       onClick={() => {
-                        navigate(`/users/${follower.userId}/profile`);
-                        onClose();
+                        navigate(`/users/${follower.userId}/profile`)
+                        onClose()
                       }}>
                       <div className="flex min-w-0 gap-x-4">
                         {follower.profilePicture ? (
@@ -157,7 +157,6 @@ function FollowModal({ id, ff, onClose }) {
                         ) : (
                           defaultProfile
                         )}
-
                         <div className="min-w-0 flex-auto">
                           <p className="text-sm font-semibold leading-6 text-gray-900">{follower.nickname}</p>
                           <p className="text-sm leading-6 text-gray-900">
@@ -166,13 +165,15 @@ function FollowModal({ id, ff, onClose }) {
                         </div>
                       </div>
                       <div className="shrink-0 sm:flex sm:flex-col sm:items-end">
-                        <p>
-                          <FontAwesomeIcon icon={ratingIcon} color={ratingColor} className="mr-2"></FontAwesomeIcon>
-                        </p>
-                        <p className="text-sm leading-6 text-gray-900">{follower.ratings}</p>
+                        <img
+                          className="w-6 h-6"
+                          src={`${process.env.PUBLIC_URL}/img/userRatingImages/${imageSrc.imageSrc}`}
+                          alt="user rating"
+                          title={`${imageSrc.imageSrc.replace(".svg", "")}`}
+                        />
                       </div>
                     </li>
-                  );
+                  )
                 })
               )
             ) : null}
@@ -180,7 +181,7 @@ function FollowModal({ id, ff, onClose }) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default FollowModal;
+export default FollowModal

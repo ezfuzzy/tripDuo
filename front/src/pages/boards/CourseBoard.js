@@ -10,6 +10,7 @@ import { cityMapping, countryMapping } from "../../constants/mapping"
 function CourseBoard() {
   //로딩 상태 추가
   const [loading, setLoading] = useState(false)
+  const [firstLoading, setFirstLoading] = useState(true)
   // 글 목록 정보
   const [pageInfo, setPageInfo] = useState([])
   const [totalPages, setTotalPages] = useState(1)
@@ -99,39 +100,22 @@ function CourseBoard() {
       condition: searchCriteria.condition || null,
       sortBy,
       pageNum,
-      pageSize: 12
     }
 
     axios
       .get("/api/v1/posts/course", { params })
       .then((res) => {
-        console.log(params)
-        //필터링되어 돌아온 데이터
-        let filtered = res.data.list
+        //페이지 정보 상태 값 관리
+        console.log(res.data.list)
 
-        // 필터링된 데이터 개수 확인
-        console.log("필터링 전 데이터 개수:", res.data.list.length);
-        console.log("필터링 후 데이터 개수:", filtered.length);
-
-        //국내 해외 필터링
-        if (domesticInternational === "Domestic") {
-          filtered = filtered.filter((item) => item.country === "대한민국")
-        } else if (domesticInternational === "International") {
-          filtered = filtered.filter((item) => item.country !== "대한민국")
-        }
-
-        // 국내/해외에 따라 상태 값 관리
         setPageInfo((prevInfo) => {
-          const combinedPosts = [
-            ...prevInfo.filter((item) =>
-              (domesticInternational === "Domestic" ? item.country === "대한민국" : item.country !== "대한민국")
-            ),
-            ...filtered
-          ]
+          const combinedPosts = [...prevInfo, ...res.data.list]
 
-          // 중복 제거 (id를 기준으로)
+          // 중복 제거 (id를 기준으로) 및 domesticInternational 값에 맞지 않는 데이터 필터링
           const uniquePosts = combinedPosts.reduce((acc, currentPost) => {
-            if (!acc.some(post => post.id === currentPost.id)) {
+            const isDomestic = domesticInternational === "Domestic" && currentPost.country === "대한민국"
+            const isInternational = domesticInternational === "International" && currentPost.country !== "대한민국"
+            if (!acc.some((post) => post.id === currentPost.id) && (isDomestic || isInternational)) {
               acc.push(currentPost)
             }
             return acc
@@ -170,6 +154,7 @@ function CourseBoard() {
         setCurrentPage((prevPage) => prevPage + 1)
       }
     })
+
     if (observerRef.current) {
       observer.observe(observerRef.current)
     }
@@ -182,6 +167,13 @@ function CourseBoard() {
   }, [currentPage, totalPages])
 
   useEffect(() => {
+    if (firstLoading) {
+      setTimeout(() => {
+        setCurrentPage((prev) => prev - 1)
+        setFirstLoading(false)
+      }, 100)
+      return
+    }
     if (currentPage > 1) {
       fetchFilteredPosts(currentPage)
     }
@@ -191,10 +183,19 @@ function CourseBoard() {
   const handleDesiredCountry = () => {
     const newDomesticInternational = domesticInternational === "International" ? "Domestic" : "International"
     setDomesticInternational(newDomesticInternational)
+    setSearchCriteria({
+      country: "",
+      city: "",
+      startDate: "",
+      endDate: "",
+      keyword: "",
+      condition: "title", // 기본 조건 설정
+    })
     setSearchParams({
       ...searchCriteria,
       di: newDomesticInternational,
     })
+    window.location.reload()
   }
 
   // 새로운 검색을 시작하는 함수
@@ -204,6 +205,7 @@ function CourseBoard() {
     fetchFilteredPosts(1) // 첫 페이지 데이터 다시 불러오기
   }
 
+  // 정렬 기준 변경
   const handleSortChange = (e) => {
     const newSortBy = e.target.value
     setSortBy(e.target.value) // 정렬 기준 변경
@@ -211,7 +213,7 @@ function CourseBoard() {
     // 정렬 기준에 따라 pageData를 정렬
     let sortedData = [...pageInfo]
     if (newSortBy === "latest") {
-      sortedData.sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt))
+      sortedData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     } else if (newSortBy === "viewCount") {
       sortedData.sort((a, b) => b.viewCount - a.viewCount)
     } else if (newSortBy === "likeCount") {
@@ -314,8 +316,6 @@ function CourseBoard() {
 
   // city 또는 country 값에 따른 이미지 파일명 변환 함수
   const getImageFileName = (city, country) => {
-    
-
     // city 값이 있으면 city에 맞는 이미지, 없으면 country에 맞는 이미지 반환
     if (city && cityMapping[city]) {
       return cityMapping[city]
@@ -394,7 +394,7 @@ function CourseBoard() {
               placeholder="도시"
               className="border text-sm border-tripDuoGreen rounded-md px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-tripDuoMint transition-all duration-300"
             />
-            
+
             {/* 날짜 선택 및 검색 버튼 */}
             <button
               onClick={() => setIsCalendarOpen(!isCalendarOpen)}
@@ -402,15 +402,15 @@ function CourseBoard() {
               <span className="whitespace-nowrap">
                 {selectedDateRange[0] && selectedDateRange[1]
                   ? `${selectedDateRange[0].getFullYear().toString().slice(-2)}${(selectedDateRange[0].getMonth() + 1)
-                    .toString()
-                    .padStart(2, "0")}${selectedDateRange[0]
+                      .toString()
+                      .padStart(2, "0")}${selectedDateRange[0]
                       .getDate()
                       .toString()
                       .padStart(2, "0")} / ${selectedDateRange[1].getFullYear().toString().slice(-2)}${(
-                        selectedDateRange[1].getMonth() + 1
-                      )
-                        .toString()
-                        .padStart(2, "0")}${selectedDateRange[1].getDate().toString().padStart(2, "0")}`
+                      selectedDateRange[1].getMonth() + 1
+                    )
+                      .toString()
+                      .padStart(2, "0")}${selectedDateRange[1].getDate().toString().padStart(2, "0")}`
                   : "날짜 선택"}
               </span>
             </button>
@@ -502,17 +502,17 @@ function CourseBoard() {
                     {post.startDate === null
                       ? ""
                       : new Date(post.startDate).toLocaleDateString("ko-KR", {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                      })}
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                        })}
                     {post.endDate === null
                       ? ""
                       : ` ~ ${new Date(post.endDate).toLocaleDateString("ko-KR", {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                      })}`}
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                        })}`}
                   </p>
                   <p className="text-sm text-right text-green-800 font-semibold">
                     {post.country} - {post.city}

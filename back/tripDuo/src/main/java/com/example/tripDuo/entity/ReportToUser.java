@@ -29,6 +29,7 @@ public class ReportToUser extends Report {
         return ReportToUser.builder()
                 .id(dto.getId())
                 .reporterId(dto.getReporterId() != null ? dto.getReporterId() : 0L)
+                .reportedContentOwnerId(dto.getReportedUserId() != null ? dto.getReportedUserId() : 0L)
                 .content(dto.getContent())
                 .status(dto.getReportStatus())
                 .createdAt(dto.getCreatedAt())

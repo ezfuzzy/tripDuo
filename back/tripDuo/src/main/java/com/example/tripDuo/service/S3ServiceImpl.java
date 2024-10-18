@@ -2,6 +2,12 @@ package com.example.tripDuo.service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -47,7 +53,38 @@ public class S3ServiceImpl implements S3Service{
 	      //return amazonS3.getUrl(bucket, fileName).toString();
 	      return fileName;
 	}
+	
+	@Override
+	public String uploadOAuthProfileImage(String imageUrl) throws  IOException, URISyntaxException {
+		
+		String tempBucket = bucket + "/users/profile_pictures";
+		String fileName = createFileName(imageUrl);
+		  
+		URL url = new URL(imageUrl);
+        HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+        httpURLConnection.setRequestMethod("GET");
+        httpURLConnection.setDoOutput(true);
+        httpURLConnection.connect();
 
+        // 이미지 InputStream 얻기
+        try (InputStream inputStream = httpURLConnection.getInputStream()) {
+            // S3에 저장할 메타데이터 설정
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(httpURLConnection.getContentLength());
+            metadata.setContentType(httpURLConnection.getContentType());
+
+            // S3에 이미지 업로드
+            PutObjectRequest putRequest = new PutObjectRequest(tempBucket, fileName, inputStream, metadata);
+            amazonS3.putObject(putRequest);
+            return fileName;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            httpURLConnection.disconnect();
+        }
+		return fileName;
+	}
+	
 	@Override
 	public void deleteImage(String fileUrl) {
 		// 이미지 수정으로 인해 기존 이미지 삭제 메소드
@@ -60,7 +97,15 @@ public class S3ServiceImpl implements S3Service{
 
 	@Override
 	public String createFileName(String fileName) {
-		return UUID.randomUUID().toString().concat(getFileExtension(fileName));
+		Set<String> allowedExtensions = new HashSet<>(Arrays.asList(
+	            "jpg", "jpeg", "png", "heic", "heif"
+	    		));
+	    String fileExtension = "";
+		if (!allowedExtensions.contains(getFileExtension(fileName))) {
+			fileExtension = ".png";
+        }
+			
+		return UUID.randomUUID().toString().concat(fileExtension);
 	}
 
 	@Override

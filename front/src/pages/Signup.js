@@ -229,9 +229,11 @@ function Signup() {
   //인증코드 전송
   const sendVerificationCode = () => {
     axios.post('/api/v1/auth/phone/send-code', phoneNumber)
-      .then(() => {
+      .then((res) => {
         setIsCodeSent(true)
         alert('인증 코드가 전송되었습니다.')
+        console.log("api 요금때문에 일단 이렇게 드리겠습니다...  ", res.data);
+        
       })
       .catch(() => {
         alert('인증 코드 전송에 실패했습니다.')

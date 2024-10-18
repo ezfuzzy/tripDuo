@@ -1,11 +1,9 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
-import { shallowEqual, useDispatch, useSelector } from "react-redux"
+import { shallowEqual, useSelector } from "react-redux"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import BlockModal from "../../components/BlockModal"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faUser } from "@fortawesome/free-solid-svg-icons"
-import { ratingConfig } from "../../constants/mapping"
+import { myPageMenuList, ratingConfig } from "../../constants/mapping"
 
 function MyPage() {
   const navigate = useNavigate()
@@ -24,12 +22,10 @@ function MyPage() {
 
   // rating 값에 따른 아이콘과 색상 계산 //
   const getRatingDetails = (ratings) => {
-    return (
-      ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { icon: faUser, color: "black" }
-    ) // 기본값
+    return ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { imageSrc: "default.svg" } // 기본값
   }
 
-  const { icon: ratingIcon, color: ratingColor } = getRatingDetails(profile.ratings || 0)
+  const imageSrc = getRatingDetails(profile.ratings || 0)
   //---------------------------------------------------------------------------------------------------------------rating 관리부
 
   // 접속된 사용자가 없거나 본인이 아니라면 home 으로 리다일렉트
@@ -49,7 +45,7 @@ function MyPage() {
         }
       })
       .catch((error) => console.log(error))
-  }, [id, userId, navigate, ratingIcon])
+  }, [id, userId, navigate, imageSrc])
 
   //------------------------------------------------------------------------ 이벤트 관리부
   // 프로필 보기 클릭
@@ -97,7 +93,7 @@ function MyPage() {
       <div className="m-3 flex justify-center">
         <div className="flex items-center gap-x-6 m-3">
           {imageData ? (
-            <img src={imageData} className="w-20 h-20 rounded-full shadow-lg" />
+            <img src={imageData} className="w-20 h-20 rounded-full shadow-lg" alt="profile" />
           ) : (
             <img
               className="bi bi-person-circle w-20 h-20"
@@ -106,10 +102,15 @@ function MyPage() {
             />
           )}
           <div>
-            <h3 className="text-base font-semibold leading-7 tracking-tight text-gray-900">
-              <FontAwesomeIcon icon={ratingIcon} color={ratingColor} className="mr-2"></FontAwesomeIcon>
-              {profile.nickname}
-            </h3>
+            <div className="flex items-center">
+              <img
+                className="w-6 h-6 mr-2"
+                src={`${process.env.PUBLIC_URL}/img/userRatingImages/${imageSrc.imageSrc}`}
+                alt="user rating"
+                title={`${imageSrc.imageSrc.replace(".svg", "")}`}
+              />
+              <span className="text-base font-semibold leading-7 tracking-tight text-gray-900">{profile.nickname}</span>
+            </div>
             <p className="text-sm font-semibold leading-6 text-green-600">
               {profile.gender} / {profile.age}
             </p>
@@ -125,82 +126,46 @@ function MyPage() {
       </div>
 
       {/* 마이 페이지 메뉴 */}
-      <h1 className="text-3xl font-bold m-4">My Page</h1>
-      <div className="borderbox">
-        <ul className="grid grid-cols-2 gap-4">
-          <li className="bg-white shadow-md rounded-lg p-4">
-            <h3>
-              <Link className="text-gray-500 hover:text-black text-decoration-none" to={`/myPlan`}>
-                <strong>Travel Plan</strong>(여행 계획)
+      <h1 className="text-3xl font-bold my-10 text-center">My Page</h1>
+      <div className="borderBox">
+        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center mx-10">
+          {myPageMenuList.map((menuItem, idx) => {
+            if (menuItem.title.startsWith("ADMIN") && userRole !== "ADMIN") {
+              return null
+            }
+            return (
+              <Link
+                key={idx}
+                className="text-tripDuoGreen group-hover:text-tripDuoMint text-decoration-none"
+                to={`${menuItem.link}`}>
+                <li className="bg-white shadow-md rounded-lg p-4 cursor-pointer border border-green-600 hover:scale-102 transition duration-300 hover:shadow-xl group">
+                  <strong className="text-2xl">{menuItem.title}</strong>
+                  {menuItem.subTitle}
+
+                  <p className="text-sm sm:text-xs mt-3">{menuItem.content}</p>
+                </li>
               </Link>
-            </h3>
-            <p>
-              여행을 계획하거나
-              <br />
-              계획한 여행들을 확인하실 수 있습니다.
-            </p>
-          </li>
-          <li className="bg-white shadow-md rounded-lg p-4">
-            <h3>
-              <Link className="text-gray-500 hover:text-black text-decoration-none" to={`/myRecord`}>
-                <strong>Travel Record</strong>(여행 기록)
-              </Link>
-            </h3>
-            <p>고객님의 여행 기록을 확인하실 수 있습니다.</p>
-          </li>
-          <li className="bg-white shadow-md rounded-lg p-4">
-            <h3>
-              <Link className="text-gray-500 hover:text-black text-decoration-none" to={`/wishMate`}>
-                <strong>Wish Mate</strong>(관심 메이트)
-              </Link>
-            </h3>
-            <p>관심 메이트로 등록하신 여행 메이트를 확인하실 수 있습니다.</p>
-          </li>
-          <li className="bg-white shadow-md rounded-lg p-4">
-            <h3>
-              <Link className="text-gray-500 hover:text-black text-decoration-none" to={`/myPlace`}>
-                <strong>My Place</strong>(마이 플레이스)
-              </Link>
-            </h3>
-            <p>관심있는 지역, 음식점들을 관리할 수 있습니다.</p>
-          </li>
-          <li className="bg-white shadow-md rounded-lg p-4">
-            <h3>
-              <Link className="text-gray-500 hover:text-black text-decoration-none" to={`/likedCourse`}>
-                <strong>Liked Courses</strong>(관심 여행 계획)
-              </Link>
-            </h3>
-            <p>좋아요를 누른 여행 계획을 볼 수 있습니다.</p>
-          </li>
-          {userRole === "ADMIN" ? (
-            <li className="bg-white shadow-md rounded-lg p-4">
-              <h3>
-                <Link className="text-gray-500 hover:text-black text-decoration-none" to={`/admin-dashboard`}>
-                  <strong>ADMIN DASHBOARD</strong>
-                </Link>
-              </h3>
-              <p>admin dashboard</p>
-            </li>
-          ) : (
-            ""
-          )}
+            )
+          })}
         </ul>
       </div>
 
       {isBlockModalOpen && <BlockModal id={id} onClose={handleCloseBlockModal} />}
 
-      <div className="mt-20 space-y-3">
+      <div className="my-20 space-y-3 text-center">
+        <p className="text-2xl my-5">
+          <strong>계정 관리</strong>
+        </p>
         <p>
-          <strong className="py-2 hover:bg-gray-100 cursor-pointer" onClick={handleOpenBlockModal}>
+          <strong className="p-2 hover:bg-gray-100 cursor-pointer" onClick={handleOpenBlockModal}>
             차단 목록
           </strong>
         </p>
         <p>
-          <strong className="py-2 hover:bg-gray-100 cursor-pointer" onClick={handleDeleteUser}>
+          <strong className="p-2 hover:bg-gray-100 cursor-pointer" onClick={handleDeleteUser}>
             회원 탈퇴
           </strong>
         </p>
-        <p className="py-2">내 활동 기록</p>
       </div>
     </div>
   )

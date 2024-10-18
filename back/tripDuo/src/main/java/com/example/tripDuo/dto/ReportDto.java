@@ -26,6 +26,8 @@ import lombok.experimental.SuperBuilder;
 public class ReportDto {
     private Long id;
     private Long reporterId;
+    private Long reportedUserId;
+
     private String content;
     private ReportStatus reportStatus;
     private LocalDateTime createdAt;
@@ -34,7 +36,6 @@ public class ReportDto {
     private Long targetId;
 
     // ### for app ###
-    private Long reportedUserId;
     private int pageNum = 1;
     private int pageSize = 10;
     private String sortBy;
@@ -51,24 +52,24 @@ public class ReportDto {
             .build();
 
         // 각 Report 타입에 따라 targetType과 targetId 설정
-        if (report instanceof ReportToUser) {
+        if (report instanceof ReportToUser r) {
             dto.setTargetType(ReportTarget.USER.name());
-            dto.setTargetId(((ReportToUser) report).getReportedUser().getId());
-        } else if (report instanceof ReportToUserReview) {
+            dto.setTargetId((r).getReportedUser().getId());
+        } else if (report instanceof ReportToUserReview r) {
             dto.setTargetType(ReportTarget.USER_REVIEW.name());
-            dto.setTargetId(((ReportToUserReview) report).getReportedUserReview().getId());
-        } else if (report instanceof ReportToPost) {
+            dto.setTargetId((r).getReportedUserReview().getId());
+        } else if (report instanceof ReportToPost r) {
             dto.setTargetType(ReportTarget.POST.name());
-            dto.setTargetId(((ReportToPost) report).getReportedPost().getId());
-        } else if (report instanceof ReportToPostComment) {
+            dto.setTargetId((r).getReportedPost().getId());
+        } else if (report instanceof ReportToPostComment r) {
             dto.setTargetType(ReportTarget.POST_COMMENT.name());
-            dto.setTargetId(((ReportToPostComment) report).getReportedPostComment().getId());
-        } else if (report instanceof ReportToChatRoom) {
+            dto.setTargetId((r).getReportedPostComment().getId());
+        } else if (report instanceof ReportToChatRoom r) {
             dto.setTargetType(ReportTarget.CHAT_ROOM.name());
-            dto.setTargetId(((ReportToChatRoom) report).getReportedChatRoom().getId());
-        } else if (report instanceof ReportToChatMessage) {
+            dto.setTargetId((r).getReportedChatRoom().getId());
+        } else if (report instanceof ReportToChatMessage r) {
             dto.setTargetType(ReportTarget.CHAT_MESSAGE.name());
-            dto.setTargetId(((ReportToChatMessage) report).getReportedChatMessage().getId());
+            dto.setTargetId((r).getReportedChatMessage().getId());
         }
 
         return dto;

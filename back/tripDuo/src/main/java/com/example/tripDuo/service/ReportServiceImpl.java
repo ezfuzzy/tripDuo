@@ -176,7 +176,7 @@ public class ReportServiceImpl implements ReportService {
         Pageable pageable = PageRequest.of(reportDto.getPageNum() - 1, reportDto.getPageSize(), sort);
 
 		// 신고 정보 가져오기
-        Page<Report> reports = reportRepo.findAll(ReportSpecification.searchReports(reportDto), pageable);
+        Page<Report> reports = reportRepo.findAll(ReportSpecification.searchReports(reportDto, reportRepo), pageable);
         List<Report> reportList = reports.getContent();
 
         
@@ -184,13 +184,9 @@ public class ReportServiceImpl implements ReportService {
                 .map(ReportDto::toDto)
                 .collect(Collectors.toList());
 
-        // targetTypeList, reportedUserIdList, targetAccountStatusList 가져오기
+        // targetTypeList, targetAccountStatusList 가져오기
         List<String> targetTypeList = reportDtoList.stream()
                 .map(ReportDto::getTargetType)
-                .collect(Collectors.toList());
-
-        List<Long> reportedUserIdList = reportList.stream()
-                .map(this::getreportedUserIdsFromReport)
                 .collect(Collectors.toList());
 
         List<AccountStatus> targetAccountStatusList = reportList.stream()
@@ -208,33 +204,11 @@ public class ReportServiceImpl implements ReportService {
         return Map.of(
                 "list", reportList,
                 "targetTypeList", targetTypeList,
-                "reportedUserIdList", reportedUserIdList,
                 "targetAccountStatusList", targetAccountStatusList,
                 "pageNum", reportDto.getPageNum(),
                 "totalRowCount", totalRowCount,
                 "totalReportPages", totalReportPages
         );
-    }
-
-    private Long getreportedUserIdsFromReport(Report report) {
-        // 신고 대상 작성자의 Id 가져오기
-        if (report instanceof ReportToUser r) {
-            return r.getReportedUser().getId();
-        } else if (report instanceof ReportToUserReview r) {
-            return r.getReportedUserReview().getReviewerUserProfileInfo().getUser().getId();
-        } else if (report instanceof ReportToPost r) {
-            return r.getReportedPost().getUserProfileInfo().getUser().getId();
-        } else if (report instanceof ReportToPostComment r) {
-            return r.getReportedPostComment().getUserProfileInfo().getUser().getId();
-        } else if (report instanceof ReportToChatRoom r) {
-            Long chatRoomId = r.getReportedChatRoom().getId();
-            ChatParticipant chatParticipant = chatParticipantRepo.findByChatRoomIdAndIsOwner(chatRoomId, true);
-            return chatParticipant.getUserProfileInfo().getUser().getId();
-        } else if (report instanceof ReportToChatMessage r) {
-            return r.getReportedChatMessage().getUserProfileInfo().getUser().getId();
-        } else {
-            return null; // 다른 서브클래스의 경우 null 반환
-        }
     }
 
     private AccountStatus getAccountStatusFromReport(Report report) {

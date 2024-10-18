@@ -24,6 +24,7 @@ import com.example.tripDuo.entity.PostLike;
 import com.example.tripDuo.entity.PostRating;
 import com.example.tripDuo.entity.UserProfileInfo;
 import com.example.tripDuo.entity.UserSavedCourse;
+import com.example.tripDuo.enums.AccountStatus;
 import com.example.tripDuo.enums.PostType;
 import com.example.tripDuo.repository.PostCommentRepository;
 import com.example.tripDuo.repository.PostLikeRepository;
@@ -201,15 +202,19 @@ public class PostServiceImpl implements PostService {
 		
 		int totalCommentPages = (int) Math.ceil(existingDto.getCommentCount() / (double) COMMENT_PAGE_SIZE);
 		
-		// view count + 1
 		
 		UserProfileInfoDto upiDto = UserProfileInfoDto.toDto(post.getUserProfileInfo(), PROFILE_PICTURE_CLOUDFRONT_URL);
+		// view count + 1
+		if (post.getUserProfileInfo().getUser().getAccountStatus() != AccountStatus.ACTIVE) {
+			upiDto = null;
+		}
+		
 		existingDto.setViewCount(existingDto.getViewCount() + 1);
 		postRepo.save(Post.toEntity(existingDto, userProfileInfoRepo.findById(existingDto.getUserId()).get()));
 		
 		return Map.of(
 				"dto", existingDto, 
-				"userProfileInfo", upiDto,
+				"userProfileInfo",  upiDto != null ? upiDto : "",
 				"postRating", postRatingDto != null ? postRatingDto : "",
 				"commentList", commentList, 
 				"totalCommentPages", totalCommentPages

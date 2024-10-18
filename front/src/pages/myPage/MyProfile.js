@@ -81,12 +81,10 @@ function MyProfile(props) {
 
   // rating 값에 따른 아이콘과 색상 계산 //
   const getRatingDetails = (ratings) => {
-    return (
-      ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { icon: faUser, color: "black" }
-    ) // 기본값
+    return ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { imageSrc: "default.svg" } // 기본값
   }
 
-  const { icon: ratingIcon, color: ratingColor } = getRatingDetails(profile.ratings || 0)
+  const imageSrc = getRatingDetails(profile.ratings || 0)
   //---------------------------------------------------------------------------------------------------------------rating 관리부
   useEffect(() => {
     // 로딩 애니메이션을 0.5초 동안만 표시
@@ -108,7 +106,7 @@ function MyProfile(props) {
         // is Blocked?
         if (res.data.theirFollowType === "BLOCK") {
           alert("해당 사용자가 당신을 차단하여 더 이상 프로필을 볼 수 없습니다.")
-          navigate("/")
+          // navigate("/")
         } else if (res.data.theirFollowType === "FOLLOW") {
           setFollowing(true)
         }
@@ -194,10 +192,12 @@ function MyProfile(props) {
             setBlockStatue(true)
             //뷰 페이지 설정
             setFollowingStatus(false)
-            setProfile({
-              ...profile,
-              followerCount: profile.followerCount - 1,
-            })
+            if (followingStatus === true) {
+              setProfile({
+                ...profile,
+                followerCount: profile.followerCount - 1,
+              })
+            }
             dropdownMenuRef.current.classList.toggle("hidden") // dropdown 메뉴 숨김
           })
           .catch((error) => console.log(error))
@@ -305,7 +305,10 @@ function MyProfile(props) {
 
   // 프로필 사용자 신고
   const handleReportUser = () => {
-    const data = { content: "신고 테스트" }
+    const data = { 
+      content: "신고 테스트",
+      reportedUserId: id,
+    }
     if (window.confirm("사용자를 신고하시겠습니까")) {
       axios
         .post(`/api/v1/reports/${id}/user/${userId}`, data)
@@ -353,9 +356,10 @@ function MyProfile(props) {
   }
 
   // 리뷰 신고 처리 함수
-  const handleReportReview = (reviewId) => {
+  const handleReportReview = (reviewId, index) => {
     const data = {
       content: "신고 테스트",
+      reportedUserId: reviewList[index].reviewerId,
     }
     if (window.confirm("해당 리뷰를 신고하시겠습니까")) {
       axios
@@ -419,8 +423,8 @@ function MyProfile(props) {
     setEditTexts((prev) => ({
       ...prev,
       [index]: value,
-    }));
-  };
+    }))
+  }
 
   return (
     <div className="container mx-auto p-4 max-w-[900px] shadow-md rounded-lg">
@@ -462,8 +466,13 @@ function MyProfile(props) {
             )}
 
             <div className="mt-5 flex">
-              <h3 className="text-xl text-base font-semibold leading-7 tracking-tight text-gray-900">
-                <FontAwesomeIcon icon={ratingIcon} color={ratingColor} className="mr-2"></FontAwesomeIcon>
+              <h3 className="flex items-center text-xl font-semibold leading-7 tracking-tight text-gray-900">
+                <img
+                  className="w-6 h-6 mr-2"
+                  src={`${process.env.PUBLIC_URL}/img/userRatingImages/${imageSrc.imageSrc}`}
+                  alt="user rating"
+                  title={`${imageSrc.imageSrc.replace(".svg", "")}`}
+                />
                 {profile.nickname}
               </h3>
               {/* Toggle 버튼 (신고/차단) 프로필 주인이 아닐시에만 랜더링*/}
@@ -761,7 +770,7 @@ function MyProfile(props) {
                     ) : (
                       // 리뷰 신고
                       <p
-                        onClick={() => handleReportReview(item.id)}
+                        onClick={() => handleReportReview(item.id, index)}
                         className="text-xs text-gray-500 ml-auto mr-4 cursor-pointer">
                         신고
                       </p>

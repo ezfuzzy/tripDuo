@@ -117,15 +117,14 @@ public class UserServiceImpl implements UserService {
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 		
 		Long currentUserId = userRepo.findByUsername(username).getId();
-		System.out.println("111");
+
 		User foundUser = userRepo.findById(userId)
 				.orElseThrow(() -> new EntityNotFoundException("User not found"));
-		System.out.println(foundUser.toString());
-		System.out.println("222");
+		
 		if(foundUser.getAccountStatus() != AccountStatus.ACTIVE || foundUser.getDeletedAt() != null) {
 			return Map.of("message", "없는 사용자 입니다.");
 		}
-		System.out.println("333");
+
 		// 상대방이 나를 follow / block했는지
 		UserFollow myUserFollow = userFollowRepo
 				.findByFolloweeUserProfileInfo_User_IdAndFollowerUserProfileInfo_User_Id(
@@ -364,6 +363,10 @@ public class UserServiceImpl implements UserService {
 		User user = userRepo.findById(userId)
 				.orElseThrow(() -> new EntityNotFoundException("User not found"));
 		
+		//findByFolloweeUserProfileInfo_User_IdAndFollowerUserProfileInfo_User_Id
+		userFollowRepo.deleteAllByFolloweeUserProfileInfo_User_Id(userId);
+		userFollowRepo.deleteAllByFollowerUserProfileInfo_User_Id(userId);
+		
 		user.softDelete();
 	}
 	
@@ -425,6 +428,10 @@ public class UserServiceImpl implements UserService {
 			
 			UserFollow userFollow = UserFollow.toEntity(userFollowDto, followeeProfileInfo, followerProfileInfo);
 			userFollowRepo.save(userFollow);
+		}
+
+		if (userFollowDto.getFollowType() != FollowType.BLOCK) {
+			userFollowRepo.deleteByFolloweeUserProfileInfo_User_IdAndFollowerUserProfileInfo_User_IdAndFollowType(userFollowDto.getFollowerUserId(), userFollowDto.getFolloweeUserId(), userFollowDto.getFollowType());
 		}
 	}
 
