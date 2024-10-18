@@ -95,6 +95,21 @@ function MateBoardEditForm(props) {
     })
   }
 
+  const handleTitleChange = (e)=>{
+    const value = e.target.value
+
+    if(value.length > 50){
+      e.preventDefault()
+      alert("제목은 50자 까지 입력 가능합니다.")
+      return
+    }
+    setPost({
+      ...post,
+      title : value
+    })
+  
+  }
+
   // 캘린더의 날짜 스타일을 설정하는 함수 추가
   const tileClassName = ({ date }) => {
     const day = date.getDay() // 0: 일요일, 1: 월요일, ..., 6: 토요일
@@ -149,7 +164,7 @@ function MateBoardEditForm(props) {
             </label>
             <input
               className="w-full border-gray-300 rounded-md"
-              onChange={handleChange}
+              onChange={handleTitleChange}
               type="text"
               id="title"
               name="title"

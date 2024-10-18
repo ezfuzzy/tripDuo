@@ -59,6 +59,21 @@ function CommunityBoardEditForm(props) {
     })
   }
 
+  const handleTitleChange = (e)=>{
+    const value = e.target.value
+
+    if(value.length > 50){
+      e.preventDefault()
+      alert("제목은 50자 까지 입력 가능합니다.")
+      return
+    }
+    setPost({
+      ...post,
+      title : value
+    })
+  
+  }
+
   return (
     <div className="container mx-auto p-4 max-w-[900px]">
       {/* 로딩 애니메이션 */}
@@ -99,7 +114,7 @@ function CommunityBoardEditForm(props) {
             </label>
             <input
               className="w-full border-gray-300 rounded-md"
-              onChange={handleChange}
+              onChange={handleTitleChange}
               type="text"
               id="title"
               name="title"

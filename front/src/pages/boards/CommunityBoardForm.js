@@ -19,6 +19,7 @@ function CommunityBoardForm() {
   const [domesticInternational, setDomesticInternational] = useState()
   const [SearchParams, setSearchParams] = useSearchParams()
   const [post, setPost] = useState({}) // 게시물의 정보
+  const [postTitle, setPostTitle] = useState("")
 
   const navigate = useNavigate()
 
@@ -67,6 +68,23 @@ function CommunityBoardForm() {
       ...post,
       [e.target.name]: e.target.value,
     })
+  }
+
+  const handleTitleChange = (e)=>{
+    const value = e.target.value
+
+    if(value.length > 50){
+      alert("제목은 50자 까지 입력 가능합니다.")
+      return
+    }
+
+    setPostTitle(value)
+    
+    setPost({
+      ...post,
+      title : value
+    })
+  
   }
 
   // 태그 입력 핸들러
@@ -253,7 +271,8 @@ function CommunityBoardForm() {
             </label>
             <input
               className="w-full border-gray-300 rounded-md"
-              onChange={handleChange}
+              value={postTitle}
+              onChange={handleTitleChange}
               type="text"
               id="title"
               name="title"
