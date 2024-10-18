@@ -284,7 +284,7 @@ function CommunityBoard() {
 
         {/* 메이트 게시판 리스트 */}
 
-        <ul className="w-full border border-gray-200 divide-y divide-gray-200">
+        <ul className="w-full border-y border-gray-200 divide-y divide-gray-200">
           {pageData.map((item) => (
             <li key={item.id} className="grid grid-cols-1 sm:grid-cols-4 items-center text-center py-2 gap-2">
               {/* 첫 번째 열: 게시글 정보 */}
@@ -309,10 +309,10 @@ function CommunityBoard() {
               </div>
 
               {/* 두 번째 열: 작성자 */}
-              <div className="sm:text-center text-sm sm:col-span-1 font-semibold text-gray-500">{item.writer}</div>
+              <div className="text-left ml-5 sm:ml-0 sm:text-center text-sm sm:col-span-1 font-semibold text-gray-500">{item.writer}</div>
 
               {/* 세 번째 열: 작성일/수정일 */}
-              <div className="text-xs text-right mr-5 ">
+              <div className="text-xs text-right mr-6 ">
                 <div>
                   {item.updatedAt ? (
                     <span className="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded">
