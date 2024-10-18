@@ -74,52 +74,49 @@ function MateBoardForm(props) {
     })
   }
 
-  const handleTitleChange = (e)=>{
+  const handleTitleChange = (e) => {
     const value = e.target.value
 
-    if(value.length > 50){
+    if (value.length > 50) {
       alert("제목은 50자 까지 입력 가능합니다.")
       return
     }
 
     setPostTitle(value)
-    
+
     setPost({
       ...post,
-      title : value
+      title: value,
     })
-  
   }
 
+  // 태그 입력 핸들러
+  const handleTagInput = (e) => {
+    const value = e.target.value
 
- // 태그 입력 핸들러
- const handleTagInput = (e) => {
-  const value = e.target.value
-
-  // 태그 길이 15자로 제한
-  if (value.length <= 15) {
-    setTagInput(value)
-  } else if (value.length > 15){
-    alert("태그는 #포함 최대 15자까지 입력 가능합니다.")
-    setTagInput("")
-    return
-  }
-
-
-  if (value.endsWith(" ") && value.trim() !== "") {
-    const newTag = value.trim()
-    if (newTag !== "#" && newTag.startsWith("#") && !postTags.includes(newTag)) {
-      if (postTags.length >= 6) {
-        alert("태그는 최대 6개까지 추가할 수 있습니다.")
-        setTagInput("")
-        return
-      }
-
-      setPostTags([...postTags, newTag])
+    // 태그 길이 15자로 제한
+    if (value.length <= 15) {
+      setTagInput(value)
+    } else if (value.length > 15) {
+      alert("태그는 #포함 최대 15자까지 입력 가능합니다.")
       setTagInput("")
+      return
+    }
+
+    if (value.endsWith(" ") && value.trim() !== "") {
+      const newTag = value.trim()
+      if (newTag !== "#" && newTag.startsWith("#") && !postTags.includes(newTag)) {
+        if (postTags.length >= 6) {
+          alert("태그는 최대 6개까지 추가할 수 있습니다.")
+          setTagInput("")
+          return
+        }
+
+        setPostTags([...postTags, newTag])
+        setTagInput("")
+      }
     }
   }
-}
 
   //태그 제거
   const removeTag = (tagToRemove) => setPostTags(postTags.filter((tag) => tag !== tagToRemove))
@@ -182,6 +179,7 @@ function MateBoardForm(props) {
 
     return className // 최종 클래스 이름 반환
   }
+
 
   return (
     <div className="container mx-auto p-4 max-w-[900px]">
@@ -343,6 +341,7 @@ function MateBoardForm(props) {
 
             <Calendar
               selectRange={true}
+              minDate={new Date()}
               className="w-full p-4 bg-white rounded-lg border-none" // 달력 컴포넌트의 테두리를 없애기 위해 border-none 추가
               onChange={handleDateChange}
               value={selectedDateRange || [new Date(), new Date()]} // 초기값 또는 선택된 날짜 범위

@@ -189,6 +189,7 @@ function MateBoardEditForm(props) {
 
             <Calendar
               selectRange={true}
+              minDate={new Date()}
               className="w-full p-4 bg-white rounded-lg border-none" // 달력 컴포넌트의 테두리를 없애기 위해 border-none 추가
               onChange={handleDateChange}
               value={selectedDateRange || [new Date(), new Date()]} // 초기값 또는 선택된 날짜 범위
