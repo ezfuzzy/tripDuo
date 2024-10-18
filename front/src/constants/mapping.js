@@ -1,10 +1,10 @@
 export const carouselItems = [
-  { name: "item1", imageSrc: "KOR_01.jpg", linkSrc: "/posts/course?di=Domestic" },
-  { name: "item2", imageSrc: "AUS_01.jpg", linkSrc: "/posts/course?di=International" },
-  { name: "item3", imageSrc: "RUS_01.jpg", linkSrc: "/posts/mate?di=Domestic" },
-  { name: "item4", imageSrc: "USA_01.jpg", linkSrc: "/posts/mate?di=International" },
-  { name: "item5", imageSrc: "BRA_01.jpg", linkSrc: "/checklist" },
-  { name: "item6", imageSrc: "promotion-points.png", linkSrc: "/posts/course?di=Domestic" },
+  { name: "item1", imageSrc: "carousel-main.jpg", linkSrc: "/" },
+  { name: "item2", imageSrc: "carousel-course-international.jpg", linkSrc: "/posts/course?di=International" },
+  { name: "item3", imageSrc: "carousel-mate-domestic.jpg", linkSrc: "/posts/mate?di=Domestic" },
+  { name: "item4", imageSrc: "carousel-mate-international.jpg", linkSrc: "/posts/mate?di=International" },
+  { name: "item5", imageSrc: "promotion-points-course-domestic.png", linkSrc: "/posts/course?di=Domestic" },
+  { name: "item6", imageSrc: "carousel-checkList.jpg", linkSrc: "/utils/checkList" },
 ]
 
 export const menuItems = [
