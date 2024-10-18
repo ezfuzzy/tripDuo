@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react"
 import LoadingAnimation from "../../components/LoadingAnimation"
 import axios from "axios"
 
+const axiosInstanceForSafetyInfo = axios.create({
+  baseURL: "",
+})
+
 function TripSafetyInfo() {
   const [safetyInfo, setSafetyInfo] = useState([])
   const [loading, setLoading] = useState(true)
@@ -23,7 +27,7 @@ function TripSafetyInfo() {
           `&${encodeURIComponent("numOfRows")}=${encodeURIComponent("141")}` +
           `&${encodeURIComponent("pageNo")}=${encodeURIComponent("1")}`
 
-        const response = await axios.get(url + queryParams, { responseType: "text" })
+        const response = await axiosInstanceForSafetyInfo.get(url + queryParams, { responseType: "text" })
 
         const jsonResponse = JSON.parse(response.data)
         const items = jsonResponse.response.body.items.item
@@ -48,9 +52,9 @@ function TripSafetyInfo() {
     setSelectedItem(null)
   }
 
-  const filteredSafetyInfo = safetyInfo.filter(item => 
+  const filteredSafetyInfo = safetyInfo.filter((item) =>
     item.countryName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  )
 
   if (error) {
     return <div className="text-center text-red-500">{error}</div>
@@ -58,11 +62,11 @@ function TripSafetyInfo() {
 
   return (
     <div className="p-4">
-      <input 
-        type="text" 
-        placeholder="나라 이름 입력 ..." 
-        value={searchTerm} 
-        onChange={(e) => setSearchTerm(e.target.value)} 
+      <input
+        type="text"
+        placeholder="나라 이름 입력 ..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
         className="mb-4 p-2 border rounded w-full"
       />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
