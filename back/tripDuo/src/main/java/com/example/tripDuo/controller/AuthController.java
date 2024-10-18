@@ -144,7 +144,7 @@ public class AuthController {
 	}
 
 	@GetMapping("/googleLogin")
-	public ResponseEntity<?> googleInfo(@RequestHeader("Authorization") String token) {
+	public ResponseEntity<?> googleInfo(@RequestHeader("Authorization") String token) throws Exception {
 		String accessToken = token.replace("Bearer ", "");
 
 		OAuthToken oAuthToken = new OAuthToken();
@@ -172,12 +172,12 @@ public class AuthController {
 
 	// 유저 정보 가져오기
 	@GetMapping("/kakaoLogin")
-	public ResponseEntity<?> kakaoInfo(@RequestHeader("Authorization") String token) {
+	public ResponseEntity<?> kakaoInfo(@RequestHeader("Authorization") String token) throws Exception {
 		String accessToken = token.replace("Bearer ", "");
 
 		OAuthToken oAuthToken = new OAuthToken();
 		oAuthToken.setAccess_token(accessToken);
-		Map<String, Object>  kakaoInfo = authService.KakaoSignUp(oAuthToken);
+		Map<String, Object> kakaoInfo = authService.KakaoSignUp(oAuthToken);
 
 		try {
 			return ResponseEntity.status(HttpStatus.OK).body(kakaoInfo);

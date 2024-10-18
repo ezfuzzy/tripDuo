@@ -60,6 +60,7 @@ public class AuthServiceImpl implements AuthService {
 	private final UserProfileInfoRepository userProfileInfoRepo;
 	private final UserTripInfoRepository userTripInfoRepo;
 	private final OauthRepository oauthRepo;
+	private final S3Service s3Service;
 	
 	private final PhoneNumberVerificationService phoneNumberVerificationService;
 	private final EncryptionUtil encryptionUtil;
@@ -102,6 +103,7 @@ public class AuthServiceImpl implements AuthService {
 			UserProfileInfoRepository userProfileInfoRepo,
 			UserTripInfoRepository userTripInfoRepo,
 			OauthRepository oauthRepo,
+			S3Service s3Service,
 			PhoneNumberVerificationService phoneNumberVerificationService,
 			EncryptionUtil encryptionUtil) {
 		this.jwtUtil = jwtUtil;
@@ -111,6 +113,7 @@ public class AuthServiceImpl implements AuthService {
 		this.userProfileInfoRepo = userProfileInfoRepo;
 		this.userTripInfoRepo = userTripInfoRepo;
 		this.oauthRepo = oauthRepo;
+		this.s3Service = s3Service;
 		this.phoneNumberVerificationService = phoneNumberVerificationService;
 		this.encryptionUtil = encryptionUtil;
 	}
@@ -394,7 +397,7 @@ public class AuthServiceImpl implements AuthService {
 	 * @return TODO
 	 */
 	@Override
-	public Map<String, Object> KakaoSignUp(OAuthToken kakaoToken) {
+	public Map<String, Object> KakaoSignUp(OAuthToken kakaoToken) throws Exception {
 		RestTemplate rt2 = new RestTemplate();
 		HttpHeaders headers2 = new HttpHeaders();
 		headers2.add("Authorization", "Bearer " + kakaoToken.getAccess_token());
@@ -447,10 +450,12 @@ public class AuthServiceImpl implements AuthService {
 									.oauth_provider("KAKAO")
 									.oauth_id(oauthIdTypeChange)
 									.build();
-			Oauth OauthUser=oauthRepo.save(kakaoUser);
+			oauthRepo.save(kakaoUser);
 
+			String userProfilePicture = s3Service.uploadOAuthProfileImage(kakaoProfile.properties.profile_image);
+			
 			userProfileInfoRepo.save(UserProfileInfo.toEntity(
-					UserProfileInfoDto.builder().nickname(kakaoProfile.getProperties().getNickname()).profilePicture(kakaoProfile.properties.profile_image).build(), user));
+					UserProfileInfoDto.builder().nickname(kakaoProfile.getProperties().getNickname()).profilePicture(userProfilePicture).build(), user));
 
 			userTripInfoRepo.save(UserTripInfo.builder().userId(user.getId()).build());
 
@@ -568,7 +573,7 @@ public class AuthServiceImpl implements AuthService {
 	 * @return TODO
 	 */
 	@Override
-	public Map<String, Object> GoogleSignUp(OAuthToken googleToken) {
+	public Map<String, Object> GoogleSignUp(OAuthToken googleToken) throws Exception{
 		RestTemplate rt2 = new RestTemplate();
 		HttpHeaders headers2 = new HttpHeaders();
 		headers2.add("Authorization", "Bearer " + googleToken.getAccess_token());
@@ -616,13 +621,13 @@ public class AuthServiceImpl implements AuthService {
 		} else {
 			user = userRepo.save(user);
 			System.out.println("새로운 유저가 저장되었습니다.");
-
+			String userProfilePicture = s3Service.uploadOAuthProfileImage(googleProfile.getPicture());
 			Oauth googleUser = Oauth.builder().user(user).oauth_provider("GOOGLE").oauth_id(googleProfile.getId())
 					.build();
 			oauthRepo.save(googleUser);
 
 			userProfileInfoRepo.save(UserProfileInfo
-					.toEntity(UserProfileInfoDto.builder().nickname(googleProfile.getName()).profilePicture(googleProfile.getPicture()).build(), user));
+					.toEntity(UserProfileInfoDto.builder().nickname(googleProfile.getName()).profilePicture(userProfilePicture).build(), user));
 
 			userTripInfoRepo.save(UserTripInfo.builder().userId(user.getId()).build());
 		
