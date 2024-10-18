@@ -10,6 +10,7 @@ import { cityMapping, countryMapping } from "../../constants/mapping"
 function CourseBoard() {
   //로딩 상태 추가
   const [loading, setLoading] = useState(false)
+  const [firstLoading, setFirstLoading] = useState(true)
   // 글 목록 정보
   const [pageInfo, setPageInfo] = useState([])
   const [totalPages, setTotalPages] = useState(1)
@@ -99,22 +100,22 @@ function CourseBoard() {
       condition: searchCriteria.condition || null,
       sortBy,
       pageNum,
-      pageSize: 12,
     }
 
     axios
       .get("/api/v1/posts/course", { params })
       .then((res) => {
-        //필터링되어 돌아온 데이터
-        let filtered = res.data.list
-
         //페이지 정보 상태 값 관리
-        setPageInfo((prevInfo) => {
-          const combinedPosts = [...prevInfo, ...filtered]
+        console.log(res.data.list)
 
-          // 중복 제거 (id를 기준으로)
+        setPageInfo((prevInfo) => {
+          const combinedPosts = [...prevInfo, ...res.data.list]
+
+          // 중복 제거 (id를 기준으로) 및 domesticInternational 값에 맞지 않는 데이터 필터링
           const uniquePosts = combinedPosts.reduce((acc, currentPost) => {
-            if (!acc.some((post) => post.id === currentPost.id)) {
+            const isDomestic = domesticInternational === "Domestic" && currentPost.country === "대한민국"
+            const isInternational = domesticInternational === "International" && currentPost.country !== "대한민국"
+            if (!acc.some((post) => post.id === currentPost.id) && (isDomestic || isInternational)) {
               acc.push(currentPost)
             }
             return acc
@@ -166,6 +167,13 @@ function CourseBoard() {
   }, [currentPage, totalPages])
 
   useEffect(() => {
+    if (firstLoading) {
+      setTimeout(() => {
+        setCurrentPage((prev) => prev - 1)
+        setFirstLoading(false)
+      }, 100)
+      return
+    }
     if (currentPage > 1) {
       fetchFilteredPosts(currentPage)
     }
@@ -182,12 +190,12 @@ function CourseBoard() {
       endDate: "",
       keyword: "",
       condition: "title", // 기본 조건 설정
-    });
+    })
     setSearchParams({
       ...searchCriteria,
       di: newDomesticInternational,
     })
-    window.location.reload();
+    window.location.reload()
   }
 
   // 새로운 검색을 시작하는 함수
