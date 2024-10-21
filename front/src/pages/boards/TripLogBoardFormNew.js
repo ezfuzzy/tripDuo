@@ -351,6 +351,37 @@ const TripBoardFormNew = () => {
                 <>
                   <option value="">나라를 선택하세요</option>
                   {/* 국가 옵션 목록 */}
+                  <optgroup label="아시아">
+                      <option value="일본">일본</option>
+                      <option value="중국">중국</option>
+                      <option value="인도">인도</option>
+                    </optgroup>
+
+                    <optgroup label="유럽">
+                      <option value="영국">영국</option>
+                      <option value="독일">독일</option>
+                      <option value="스페인">스페인</option>
+                      <option value="프랑스">프랑스</option>
+                      <option value="이탈리아">이탈리아</option>
+                    </optgroup>
+
+                    <optgroup label="북아메리카">
+                      <option value="미국">미국</option>
+                      <option value="캐나다">캐나다</option>
+                    </optgroup>
+
+                    <optgroup label="남아메리카">
+                      <option value="브라질">브라질</option>
+                    </optgroup>
+
+                    <optgroup label="오세아니아">
+                      <option value="호주">호주</option>
+                    </optgroup>
+
+                    <optgroup label="기타">
+                      <option value="러시아">러시아</option>
+                      <option value="남아프리카 공화국">남아프리카 공화국</option>
+                    </optgroup>
                 </>
               )}
             </select>

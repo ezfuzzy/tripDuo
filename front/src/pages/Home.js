@@ -35,6 +35,13 @@ function Home() {
     }
   }, [location, dispatch, navigate])
 
+  const callLoading = () => {
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false)
+    }, 1000)
+  }
+
   return (
     <div className="container mx-auto px-8 bg-white min-h-screen">
       {loading && <LoadingAnimation duration={0.3} />}
@@ -76,7 +83,8 @@ function Home() {
                 <h4 className="font-bold">{`여행지 ${product}`}</h4>
                 <p className="text-gray-600">여행지 이름</p>
                 <div className="flex justify-end">
-                  <button className="mt-2 bg-tripDuoMint text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition duration-300">
+                  <button className="mt-2 bg-tripDuoMint text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition duration-300"
+                  onClick={callLoading}>
                     더 보기
                   </button>
                 </div>
