@@ -205,66 +205,93 @@ const CourseBoardForm = () => {
     return className; // 최종 클래스 이름 반환
   }
 
+  const calculateNightsAndDays = (startDate, endDate) => {
+
+    if (!startDate || !endDate) return ""
+
+    // 두 날짜 간의 차이를 밀리초 단위로 계산
+    const diffTime = endDate.getTime() - startDate.getTime()
+
+
+    // 차이를 일(day) 단위로 변환
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+    console.log(diffDays);
+
+    if (diffDays > 0) {
+      // "박"의 계산 (diffDays - 1)
+      const days = diffDays + 1
+      // const nights = diffDays > 0 ? diffDays : 0;
+      const nights = diffDays
+
+      return `(${nights}박 ${days}일)`
+    } else {
+      return `(당일 일정)`
+    }
+  }
+
   return (
-    <div className="container mx-auto p-6 max-w-[900px]">
-      <div className="flex flex-col h-full bg-white p-6 shadow-lg rounded-lg">
+    <div className="container mx-auto p-6 max-w-[900px] bg-gradient-to-r from-green-100 to-white rounded-xl shadow-lg">
+      <div className="flex flex-col h-full bg-white p-6 shadow-xl rounded-lg">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-3xl font-semibold text-gray-800">
-            {status === "PRIVATE" && "나만의 "}{domesticInternational === "Domestic" ? "국내 " : "해외 "}여행 코스 작성
+          <h1 className="text-4xl font-bold text-gray-900">
+            {status === "PRIVATE" && "나만의 "}
+            {domesticInternational === "Domestic" ? "국내 " : "해외 "}여행 코스 작성
           </h1>
-          <button
-            onClick={() => {
-              status === "PRIVATE" ? navigate(`/private/myPlan`)
-                : navigate(`/posts/course?di=${domesticInternational}`)
-            }}
-            className="text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-full text-sm px-5 py-2">
-            목록으로 돌아가기
-          </button>
-          <button
-            className="text-white bg-indigo-600 hover:bg-indigo-500 rounded-full text-sm px-5 py-2"
-            onClick={handleSubmit}>
-            작성 완료
-          </button>
+          <div className="flex justify-end space-x-4">
+            <button
+              onClick={() => {
+                status === "PRIVATE" ? navigate(`/private/myPlan`)
+                  : navigate(`/posts/course?di=${domesticInternational}`)
+              }}
+              className="text-white bg-green-400 hover:bg-green-700 rounded-full text-sm font-bold px-6 py-2 shadow-md transition duration-150">
+              목록으로
+            </button>
+            <button
+              className="text-white bg-tripDuoMint hover:bg-tripDuoGreen rounded-full text-sm font-bold px-6 py-2 shadow-lg transition duration-150"
+              onClick={handleSubmit}>
+              작성 완료
+            </button>
+          </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="pl-6">
           <div className="flex mb-4">
             {/* 제목 요소 */}
             <div className="flex-grow-[4]">
-              <label htmlFor="title" className="block text-lg font-medium text-gray-700">
-                제목
-              </label>
               <input
                 className="border-gray-300 rounded-md p-2 w-full"
                 type="text"
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder={status === "PRIVATE" ? "MyPage에서 확인 가능한 게시물입니다." : ""}
+                placeholder={status === "PRIVATE" ? "MyPage에서 확인 가능한 게시물입니다." : "제목을 입력해 주세요..."}
                 maxLength={50}
               />
             </div>
 
             {/* 날짜 선택 및 날짜 초기화 버튼 */}
-            <div className="flex flex-grow-[1] items-end justify-end ml-4">
+            <div className="flex flex-grow-[1] items-end justify-end ml-4 mr-6">
               <button
                 onClick={() => setIsCalendarOpen(!isCalendarOpen)}
-                className="text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-full text-sm px-5 py-2"
+                className="text-green-900 text-sm font-bold border-2 border-green-900 hover:bg-indigo-200 rounded-full px-4 py-1"
               >
                 날짜 선택
               </button>
-              <button onClick={handleDateReset} className="text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-full text-sm px-5 py-2 ml-2">
+              <button
+                onClick={handleDateReset}
+                className="text-sm text-gray-500 border-2 hover:bg-indigo-200 rounded-full px-3 py-1 ml-2"
+              >
                 날짜 초기화
               </button>
             </div>
           </div>
 
           {/* 선택한 날짜 */}
-          <div className="sm:col-span-6">
-            <p style={{ marginTop: '-10px', marginBottom: '-20px' }} className="text-sm text-gray-600 text-right">
-              {selectedDateRange[0] && selectedDateRange[1]
-                ? `${selectedDateRange[0].toLocaleDateString()} ~ ${selectedDateRange[1].toLocaleDateString()}`
-                : "0000. 00. 00. ~ 0000. 00. 00."}
+          <div className="sm:col-span-6 mr-6">
+            <p style={{ marginTop: '-10px', marginBottom: '0px' }} className="text-sm text-gray-600 text-right">
+              {selectedDateRange[0] ? moment(selectedDateRange[0]).format("YYYY. MM. DD") : "0000. 00. 00."} ~
+              {selectedDateRange[1] ? moment(selectedDateRange[1]).format("YYYY. MM. DD") : "0000. 00. 00."}
+              {calculateNightsAndDays(selectedDateRange[0], selectedDateRange[1])}
             </p>
           </div>
 
@@ -310,14 +337,13 @@ const CourseBoardForm = () => {
               </div>
             )}
           </div>
+        </div>
 
+        <div className="pl-6 w-5/6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="country" className="block text-lg font-medium text-gray-700">
-                나라
-              </label>
               <select
-                className="border-gray-300 rounded-md p-2 w-full"
+                className="border-gray-300 rounded-md p-1 text-sm w-full"
                 id="country"
                 value={country}
                 onChange={(e) => {
@@ -368,11 +394,8 @@ const CourseBoardForm = () => {
             </div>
 
             <div>
-              <label htmlFor="city" className="block text-lg font-medium text-gray-700">
-                도시
-              </label>
               <select
-                className="border-gray-300 rounded-md p-2 w-full"
+                className="border-gray-300 rounded-md p-1 text-sm w-full"
                 id="city"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
@@ -388,20 +411,17 @@ const CourseBoardForm = () => {
             </div>
           </div>
 
-          <div>
-            <label htmlFor="tags" className="block text-lg font-medium text-gray-700">
-              태그
-            </label>
+          <div className="mt-4">
             <input
               id="tags"
               value={tagInput}
               onChange={handleTagInput}
               placeholder="#태그 입력 후 스페이스바"
-              className="border-gray-300 rounded-md p-2 w-full"
+              className="border-gray-300 rounded-md p-1 text-sm w-full"
             />
             <div className="flex flex-wrap gap-2 mt-2">
-              {tags.map((tag, index) => (
-                <span key={index} className="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full">
+            {tags.map((tag, index) => (
+                <span key={index} className="bg-indigo-100 text-indigo-800 text-sm font-bold px-2 py-1 rounded-md">
                   {tag}
                   <button className="ml-2 text-gray-600 hover:text-gray-900" onClick={() => removeTag(tag)}>
                     &times;
@@ -418,11 +438,11 @@ const CourseBoardForm = () => {
               <div className="flex justify-between items-center mb-2">
                 <h2 className="text-xl font-semibold">Day {dayIndex + 1}</h2>
                 <div className="flex space-x-2">
-                  <button onClick={addDay} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
-                    Day 추가
+                <button onClick={addDay} className="border-2 border-blue-900 hover:bg-blue-100 text-blue-900 px-2 py-1 rounded-md shadow-lg transition duration-300 text-sm font-bold">
+                Day 추가
                   </button>
                   <button
-                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+                    className="border-2 border-red-700 hover:bg-red-100 text-red-700 px-2 py-1 rounded-md shadow-lg transition duration-300 text-sm font-bold"
                     onClick={() => removeDay(dayIndex)}>
                     Day 삭제
                   </button>
@@ -448,7 +468,7 @@ const CourseBoardForm = () => {
                     <span className="w-20">{placeIndex + 1}번 장소</span>
                     <button
                       type="button"
-                      className="text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-4 py-2.5 text-center"
+                      className="text-blue-900 text-sm font-bold border border-blue-900 hover:bg-blue-100 px-2 py-1 rounded-md shadow-lg transition duration-300"
                       onClick={() => handlePlaceSelection(dayIndex, placeIndex)}>
                       장소 선택
                     </button>
@@ -460,7 +480,7 @@ const CourseBoardForm = () => {
                       />
                       <div className="ml-2 w-1/4">
                         <button
-                          className={`text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-4 py-2.5 text-center ${day.places.length === 0 ? "opacity-50 cursor-not-allowed" : ""
+                          className={`border border-red-700 hover:bg-red-100 text-red-700 px-2 py-1 rounded-md shadow-lg transition duration-300 text-sm font-bold ${day.places.length === 0 ? "opacity-50 cursor-not-allowed" : ""
                             }`}
                           onClick={() => removePlace(dayIndex, placeIndex)}
                           disabled={day.places.length === 0}>
@@ -486,11 +506,16 @@ const CourseBoardForm = () => {
                   </div>
                 </div>
               ))}
-              <button
-                onClick={() => addPlace(dayIndex)}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
-                장소 추가
-              </button>
+              
+              {/* 장소 추가 버튼 */}
+              <div className="flex justify-center mt-4">
+                <button
+                  onClick={() => addPlace(dayIndex)}
+                  className="border-2 border-blue-900 hover:bg-blue-100 text-blue-900 px-4 py-2 rounded-md shadow-lg transition duration-300 text-sm font-bold"
+                >
+                  장소 추가
+                </button>
+              </div>
             </div>
           ))}
         </div>

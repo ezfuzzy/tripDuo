@@ -67,7 +67,7 @@ const CourseKakaoMapComponent = ({ onSave, selectedDayIndex, selectedPlaceIndex,
       <div style="margin-bottom: 8px;">${place.address_name}</div>
       <button
       onclick="${buttonOnClick}"
-      style="width:100%;background-color:green;color:white;padding:5px;border:none;border-radius:5px;">
+      style="width:100%;background-color:white;color:green;padding:5px;border:1px solid green;border-radius:5px;font-weight:bold;">
         ${buttonLabel}
       </button>
     </div>
@@ -199,7 +199,7 @@ const CourseKakaoMapComponent = ({ onSave, selectedDayIndex, selectedPlaceIndex,
           />
           <button
             onClick={handleSearch}
-            className="text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-r-lg text-sm px-4 py-2">
+            className="text-blue-900 text-sm font-bold border border-blue-900 hover:bg-blue-100 focus:outline-none focus:ring-4 focus:ring-blue-300 rounded-r-lg px-4 py-2">
             검색
           </button>
         </div>

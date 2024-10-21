@@ -13,7 +13,7 @@ const TripBoardFormNew = () => {
   const loggedInUserId = useSelector((state) => state.userData.id, shallowEqual)
   const loggedInNickname = useSelector((state) => state.userData.nickname, shallowEqual)
 
-  const calendarRef = useRef(null);
+  const calendarRef = useRef(null)
 
   // 달력에서 선택된 날짜 범위 저장
   const [selectedDateRange, setSelectedDateRange] = useState([null, null])
@@ -202,7 +202,7 @@ const TripBoardFormNew = () => {
     }
 
     return className; // 최종 클래스 이름 반환
-  };
+  }
 
   const calculateNightsAndDays = (startDate, endDate) => {
 
@@ -254,37 +254,40 @@ const TripBoardFormNew = () => {
         </div>
 
 
-        <div className="pl-6 w-5/6">
-          <div className="flex mb-6">
-            {/* 제목 입력 필드 */}
+        <div className="pl-6">
+          <div className="flex mb-4">
+            {/* 제목 요소 */}
             <div className="flex-grow-[4]">
               <input
-                className="border-gray-300 rounded-lg shadow-sm p-3 w-full focus:ring focus:ring-green-200"
+                className="border-gray-300 rounded-md p-2 w-full"
                 type="text"
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder={status === "PRIVATE" ? "MyPage에서 확인 가능한 게시물입니다." : ""}
+                placeholder={status === "PRIVATE" ? "MyPage에서 확인 가능한 게시물입니다." : "제목을 입력해 주세요..."}
                 maxLength={50}
               />
             </div>
 
             {/* 날짜 선택 및 날짜 초기화 버튼 */}
-            <div className="flex flex-grow-[1] items-end justify-end ml-4">
+            <div className="flex flex-grow-[1] items-end justify-end ml-4 mr-6">
               <button
                 onClick={() => setIsCalendarOpen(!isCalendarOpen)}
-                className="text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-full text-sm px-5 py-2"
+                className="text-green-900 text-sm font-bold border-2 border-green-900 hover:bg-indigo-200 rounded-full px-4 py-1"
               >
                 날짜 선택
               </button>
-              <button onClick={handleDateReset} className="text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-full text-sm px-5 py-2 ml-2">
+              <button
+                onClick={handleDateReset}
+                className="text-sm text-gray-500 border-2 hover:bg-indigo-200 rounded-full px-3 py-1 ml-2"
+              >
                 날짜 초기화
               </button>
             </div>
           </div>
 
           {/* 선택한 날짜 */}
-          <div className="sm:col-span-6">
+          <div className="sm:col-span-6 mr-6">
             <p style={{ marginTop: '-10px', marginBottom: '0px' }} className="text-sm text-gray-600 text-right">
               {selectedDateRange[0] ? moment(selectedDateRange[0]).format("YYYY. MM. DD") : "0000. 00. 00."} ~
               {selectedDateRange[1] ? moment(selectedDateRange[1]).format("YYYY. MM. DD") : "0000. 00. 00."}
@@ -334,24 +337,27 @@ const TripBoardFormNew = () => {
               </div>
             )}
           </div>
+        </div>
 
-          {/* 국가 및 도시 선택 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
-            <select
-              className="border-gray-300 rounded-lg p-3 w-full shadow-sm focus:ring focus:ring-green-200"
-              id="country"
-              value={country}
-              onChange={(e) => {
-                setCountry(e.target.value);
-                setCity("");
-              }}>
-              {domesticInternational === "Domestic" ? (
-                <option value="대한민국">대한민국</option>
-              ) : (
-                <>
-                  <option value="">나라를 선택하세요</option>
-                  {/* 국가 옵션 목록 */}
-                  <optgroup label="아시아">
+        <div className="pl-6 w-5/6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <select
+                className="border-gray-300 rounded-md p-1 text-sm w-full"
+                id="country"
+                value={country}
+                onChange={(e) => {
+                  setCountry(e.target.value)
+                  setCity("")
+                }}>
+                {domesticInternational === "Domestic" ? (
+                  // Domestic일 경우 대한민국만 표시
+                  <option value="대한민국">대한민국</option>
+                ) : (
+                  // International일 경우 기존 나라 선택 옵션 제공
+                  <>
+                    <option value="">나라를 선택하세요</option>
+                    <optgroup label="아시아">
                       <option value="일본">일본</option>
                       <option value="중국">중국</option>
                       <option value="인도">인도</option>
@@ -382,39 +388,44 @@ const TripBoardFormNew = () => {
                       <option value="러시아">러시아</option>
                       <option value="남아프리카 공화국">남아프리카 공화국</option>
                     </optgroup>
-                </>
-              )}
-            </select>
+                  </>
+                )}
+              </select>
+            </div>
 
-            <select
-              className="border-gray-300 rounded-lg p-3 w-full shadow-sm focus:ring focus:ring-green-200"
-              id="city"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              disabled={!country}>
-              <option value="">도시를 선택하세요</option>
-              {cities.map((cityOption) => (
-                <option key={cityOption} value={cityOption}>
-                  {cityOption}
-                </option>
-              ))}
-            </select>
+            <div>
+              <select
+                className="border-gray-300 rounded-md p-1 text-sm w-full"
+                id="city"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                disabled={!country} //나라가 선택되지 않으면 비활성화
+              >
+                <option value="">도시를 선택하세요</option>
+                {cities.map((cityOption) => (
+                  <option key={cityOption} value={cityOption}>
+                    {cityOption}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          {/* 태그 입력 */}
           <div className="mt-4">
             <input
               id="tags"
               value={tagInput}
               onChange={handleTagInput}
               placeholder="#태그 입력 후 스페이스바"
-              className="border-gray-300 rounded-lg p-3 w-full shadow-sm focus:ring focus:ring-green-200"
+              className="border-gray-300 rounded-md p-1 text-sm w-full"
             />
             <div className="flex flex-wrap gap-2 mt-2">
               {tags.map((tag, index) => (
-                <span key={index} className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full shadow-sm">
+                <span key={index} className="bg-indigo-100 text-indigo-800 text-sm font-bold px-2 py-1 rounded-md">
                   {tag}
-                  <button className="ml-2 text-gray-600 hover:text-gray-900" onClick={() => removeTag(tag)}>
+                  <button
+                    className="ml-2 text-gray-600 hover:text-gray-900"
+                    onClick={() => removeTag(tag)}>
                     &times;
                   </button>
                 </span>
@@ -423,15 +434,16 @@ const TripBoardFormNew = () => {
           </div>
         </div>
 
-
         {/* Day 추가 및 장소 선택 */}
-        <div className="mt-6 space-y-6">
+        <div className="mt-4 space-y-6">
           {days.map((day, dayIndex) => (
             <div key={dayIndex} className="bg-gray-50 p-6 rounded-lg shadow-md">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-semibold text-indigo-900">Day {dayIndex + 1}</h2>
                 <div className="flex space-x-2">
-                  <button onClick={addDay} className="border-2 border-blue-900 hover:bg-blue-100 text-blue-900 px-2 py-1 rounded-md shadow-lg transition duration-300 text-sm font-bold">
+                  <button
+                    onClick={addDay}
+                    className="border-2 border-blue-900 hover:bg-blue-100 text-blue-900 px-2 py-1 rounded-md shadow-lg transition duration-300 text-sm font-bold">
                     Day 추가
                   </button>
                   <button
@@ -464,7 +476,7 @@ const TripBoardFormNew = () => {
                     <span className="w-20">{placeIndex + 1}번 장소</span>
                     <button
                       type="button"
-                      className="border border-blue-900 hover:bg-blue-100 text-blue-900 px-2 py-1 rounded-md shadow-lg transition duration-300 text-sm font-bold"
+                      className="text-blue-900 text-sm font-bold border border-blue-900 hover:bg-blue-100 px-2 py-1 rounded-md shadow-lg transition duration-300"
                       onClick={() => handlePlaceSelection(dayIndex, placeIndex)}>
                       장소 선택
                     </button>

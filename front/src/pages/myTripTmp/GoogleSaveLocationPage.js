@@ -20,7 +20,7 @@ const GoogleSaveLocationPage = ({ onSave }) => {
 
     loader.load().then(() => {
       const map = new window.google.maps.Map(mapRef.current, {
-        center: { lat: 37.5665, lng: 126.978 },
+        center: { lat: 41.4038996, lng: 2.1748516 },
         zoom: 14,
       });
       setMap(map);
@@ -51,7 +51,7 @@ const GoogleSaveLocationPage = ({ onSave }) => {
         <textarea placeholder="장소 메모..." maxLength={100} style="width: 100%; margin-bottom: 8px;" oninput="updatePlaceMemo('${place.place_id}', this.value)">${placeMemo || ''}</textarea>
         <button
           onclick="savePlace('${place.place_id}')"
-          style="width:100%;background-color:green;color:white;padding:5px;border:none;border-radius:5px;">
+          style="width:100%;background-color:white;color:green;padding:5px;border:1px solid green;border-radius:5px;font-weight:bold;">
           저장
         </button>
       </div>
@@ -175,7 +175,7 @@ const GoogleSaveLocationPage = ({ onSave }) => {
           />
           <button
             onClick={handleSearch}
-            className="text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-r-lg text-sm px-4 py-2"
+            className="text-blue-900 text-sm font-bold border border-blue-900 hover:bg-blue-100 focus:outline-none focus:ring-4 focus:ring-blue-300 rounded-r-lg px-4 py-2"
           >
             검색
           </button>

@@ -19,7 +19,7 @@ const CourseGoogleMapComponent = ({ onSave, selectedDayIndex, selectedPlaceIndex
 
         loader.load().then(() => {
             const map = new window.google.maps.Map(mapRef.current, {
-                center: { lat: 37.5665, lng: 126.978 },
+                center: { lat: 41.4038996, lng: 2.1748516 },
                 zoom: 14,
             });
             setMap(map);
@@ -47,7 +47,9 @@ const CourseGoogleMapComponent = ({ onSave, selectedDayIndex, selectedPlaceIndex
           <strong>${place.name}</strong>
         </div>
         <div style="margin-bottom: 8px;">${place.formatted_address}</div>
-        <button onclick="window.savePlace('${place}')" style="width:100%;background-color:green;color:white;padding:5px;border:none;border-radius:5px;">
+        <button
+        onclick="window.savePlace('${place}')"
+        style="width:100%;background-color:white;color:green;padding:5px;border:1px solid green;border-radius:5px;font-weight:bold;">
           저장
         </button>
       </div>
@@ -178,7 +180,7 @@ const CourseGoogleMapComponent = ({ onSave, selectedDayIndex, selectedPlaceIndex
                     />
                     <button
                         onClick={handleSearch}
-                        className="text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-3 py-1.5 text-center w-1/5">
+                        className="text-blue-900 text-sm font-bold border border-blue-900 hover:bg-blue-100 focus:outline-none focus:ring-4 focus:ring-blue-300 rounded-r-lg px-4 py-2">
                         검색
                     </button>
                 </div>

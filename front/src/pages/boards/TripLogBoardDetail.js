@@ -8,6 +8,7 @@ import { faCrown, faDove, faEye, faFeather, faHeart, faMessage, faPlane, faStar,
 import SavedPlacesKakaoMapComponent from "../../components/SavedPlacesKakaoMapComponent"
 import SavedPlacesGoogleMapComponent from "../../components/SavedPlacesGoogleMapComponent"
 import LoadingAnimation from "../../components/LoadingAnimation"
+import Modal from "react-modal"
 
 
 //새로 등록한 댓글을 추가할 인덱스
@@ -67,6 +68,15 @@ const TripLogBoardDetail = () => {
   const [kakaoMapCenterLocation, setKakaoMapCenterLocation] = useState({ Ma: 37.5665, La: 126.978 })
   //구글 지도의 중심 좌표를 저장하는 상태값
   const [googleMapCenterLocation, setGoogleMapCenterLocation] = useState({ Ma: 37.5665, La: 126.978 })
+  // map 객체를 저장할 상태값
+  const [kakaoMap, setKakaoMap] = useState(null)
+  // SavedPlacesGoogleMapComponent를 참조할 ref 생성
+  const savedPlacesGoogleMapComponentRef = useRef(null)
+  //infowWindow 상태값 관리
+  const [currentInfoWindow, setCurrentInfoWindow] = useState(null)
+  // 스크롤을 이동할 위치의 요소에 대한 참조 생성
+  const scrollToRef = useRef(null)
+  
   //댓글 목록을 상태값으로 관리
   const [commentList, setCommentList] = useState([])
   //댓글의 현재 페이지 번호
@@ -139,6 +149,8 @@ const TripLogBoardDetail = () => {
         //게시글 정보
         const postData = res.data.dto
         setPostInfo(postData)
+        setIsLiked(res.data.dto.like)
+
         //글 작성자 정보
         const writerData = res.data.userProfileInfo
         setWriterProfile(writerData)
@@ -155,15 +167,18 @@ const TripLogBoardDetail = () => {
         }
 
         //장소 정보
-        const places = postData.postData.reduce((acc, day) => acc.concat(day.places), [])
-        setAllPlaces(places)
+        if (postData.postData !== null) {
+          const places = postData.postData.reduce((acc, day) => acc.concat(day.places), [])
 
-        // 첫 번째 장소로 지도 중심 설정
-        if (places.length > 0 && places[0].position && domesticInternational === "Domestic") {
-          setKakaoMapCenterLocation({ Ma: places[0].position.Ma, La: places[0].position.La });
-        }
-        if (places.length > 0 && places[0] && domesticInternational === "Domestic") {
-          setGoogleMapCenterLocation({ Ma: places[0].Ma, La: places[0].La });
+          setAllPlaces(places)
+
+          // 첫 번째 장소로 지도 중심 설정
+          if (places.length > 0 && places[0].position && domesticInternational === "Domestic") {
+            setKakaoMapCenterLocation({ Ma: places[0].position.Ma, La: places[0].position.La })
+          }
+          if (places.length > 0 && places[0] && domesticInternational !== "Domestic") {
+            setGoogleMapCenterLocation({ Ma: places[0].Ma, La: places[0].La })
+          }
         }
 
         //댓글 목록이 존재하는지 확인 후, 배열에 ref라는 방 추가
@@ -179,7 +194,6 @@ const TripLogBoardDetail = () => {
         setTotalPageCount(res.data.totalCommentPages)
       })
       .catch((error) => {
-        console.log("데이터를 가져오지 못했습니다.", error)
         alert("게시물을 불러오는 중 문제가 발생했습니다.")
       })
   }, [id, searchParams, isRated, myRating]) //경로 파라미터가 변경될 때 서버로부터 데이터 다시 받기
@@ -237,7 +251,6 @@ const TripLogBoardDetail = () => {
             }))
           })
           .catch((error) => {
-            console.log(error)
             alert(error.response.data)
           })
       } else if (isLiked) { //이미 좋아요 누른 경우
@@ -252,7 +265,6 @@ const TripLogBoardDetail = () => {
             })
           })
           .catch((error) => {
-            console.log(error)
             alert(error.response.data)
           })
       }
@@ -265,10 +277,48 @@ const TripLogBoardDetail = () => {
   const handlePlaceClick = (place) => {
     if (place.position && place.position.Ma !== undefined && place.position.La !== undefined) {
       setKakaoMapCenterLocation({ Ma: place.position.Ma, La: place.position.La })
+
+      // 기존의 열린 infoWindow가 있다면 닫기
+      if (currentInfoWindow) {
+        currentInfoWindow.close()
+      }
+
+      // 새로운 infoWindow 생성
+      const infoWindow = new window.kakao.maps.InfoWindow({
+        content: `
+          <div style="padding:10px;font-size:12px;display:flex;flex-direction:column;align-items:flex-start;width:100%;max-width:600px;height:100%;">
+              <div style="margin-bottom: 8px; display: flex; justify-content: space-between; width: 100%;">
+                  <strong>${place.place_name}</strong>
+              </div>
+              <div style="margin-bottom: 8px;">${place.address_name}</div>
+              <div style="margin-bottom: 8px;">전화번호: ${place.phone || '정보 없음'}</div>
+              <div style="margin-bottom: 16px;"><a href="${place.place_url}" target="_blank">장소 링크</a></div>
+          </div>
+      `,
+      })
+
+      // 새로운 infoWindow 열기
+      const markerPosition = new window.kakao.maps.LatLng(place.position.Ma, place.position.La)
+      infoWindow.open(kakaoMap, new window.kakao.maps.Marker({ position: markerPosition, map: kakaoMap }))
+
+      // 새로운 infoWindow를 상태로 저장
+      setCurrentInfoWindow(infoWindow)
+      // scrollIntoView 메서드를 사용하여 특정 요소로 스크롤 이동
+      if (scrollToRef.current) {
+        scrollToRef.current.scrollIntoView({ behavior: "smooth" })
+      }
     } else {
-      setGoogleMapCenterLocation({ Ma: place.Ma, La: place.La })
+      // setGoogleMapCenterLocation({ Ma: place.Ma, La: place.La })
+      // Google Map의 infoWindow 열기
+      if (savedPlacesGoogleMapComponentRef.current) {
+        savedPlacesGoogleMapComponentRef.current.openInfoWindowAtPlace(place) // SavedPlacesGoogleMapComponent에서 제공하는 함수 호출
+      }
+      // scrollIntoView 메서드를 사용하여 특정 요소로 스크롤 이동
+      if (scrollToRef.current) {
+        scrollToRef.current.scrollIntoView({ behavior: "smooth" })
+      }
     }
-  };
+  }
 
   // 답글 텍스트 상태 업데이트
   const handleReplyTextChange = (index, value) => {
@@ -516,10 +566,29 @@ const TripLogBoardDetail = () => {
     }
   }
 
+  //댓글 등록일 날짜 형식 변환
+  const formatDate = (dateString) => {
+    const date = new Date(dateString)
+
+    const formattedDate = date.toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+
+    const formattedTime = date.toLocaleTimeString("ko-KR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    })
+
+    return `${formattedDate} ${formattedTime}`
+  }
+
   //rating 모달 열기
   const openRatingModal = (type) => {
     setIsRatingModalOpened(true);
-  };
+  }
 
   //rating 모달 닫기
   const closeRatingModal = () => {
@@ -529,35 +598,34 @@ const TripLogBoardDetail = () => {
   //별을 클릭했을 때 rating 을 저장
   const handleRating = (index) => {
     setNewPostRating(index);
-  };
+  }
 
   //별점 등록
   const handlePostRating = () => {
     axios
-      .post(`/api/v1/posts/${postInfo.id}/ratings`
-        , {
-          userId: loggedInUserId, postId: postInfo.id, rating: newPostRating
-        })
+      .post(`/api/v1/posts/${postInfo.id}/ratings`, { userId: loggedInUserId, postId: postInfo.id, rating: newPostRating })
       .then((res) => {
-        closeRatingModal();
-        setRated(true);
+        closeRatingModal()
+        setRated(true)
       })
-      .catch((error) => console.log(error));
-  };
+      .catch((error) => console.log(error))
+  }
 
   //별점 수정
   const handleUpdateRating = () => {
     axios
-      .put(`/api/v1/posts/${postInfo.id}/ratings/${ratedInfo.id}`
-        , {
-          id: ratedInfo.id, userId: loggedInUserId, postId: postInfo.id, rating: newPostRating
-        })
+      .put(`/api/v1/posts/${postInfo.id}/ratings/${ratedInfo.id}`, {
+        id: ratedInfo.id,
+        userId: loggedInUserId,
+        postId: postInfo.id,
+        rating: newPostRating,
+      })
       .then((res) => {
         setMyRating(newPostRating)
-        closeRatingModal();
+        closeRatingModal()
       })
-      .catch((error) => console.log(error));
-  };
+      .catch((error) => console.log(error))
+  }
 
   //별점 삭제
   const handleDeleteRating = () => {
@@ -806,7 +874,7 @@ const TripLogBoardDetail = () => {
             </div>
           ))}
         </div>
-        <div>
+        <div ref={scrollToRef}>
           {
             domesticInternational === "Domestic" ?
               <SavedPlacesKakaoMapComponent savedPlaces={allPlaces} centerLocation={kakaoMapCenterLocation} />
@@ -952,7 +1020,7 @@ const TripLogBoardDetail = () => {
 
                         {/* 답글 및 기타 버튼 */}
                         <div className="mt-2 text-sm text-gray-500">
-                          <small className="ml-4 text-gray-400">{item.createdAt}</small>
+                          <small className="ml-4 text-gray-400">{formatDate(item.createdAt)}</small>
                           <button
                             className="ml-4 text-blue-500 hover:text-blue-700 text-sm"
                             onClick={(e) => {
@@ -1074,6 +1142,30 @@ const TripLogBoardDetail = () => {
           </button>
         </div>
       </div>
+      <Modal
+        isOpen={isRatingModalOpened}
+        onRequestClose={closeRatingModal}
+        style={customStyles}
+        contentLabel="채팅방 생성"
+        ariaHideApp={false}>
+        <div className="flex items-center  mb-5">
+          {[1, 2, 3, 4, 5].map((star, index) => (
+            <div key={index} onClick={() => handleRating(star)}>
+              <FontAwesomeIcon
+                icon={faStar}
+                className={`w-6 h-6 cursor-pointer ${newPostRating >= star ? "text-yellow-400" : "text-gray-300"}`}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="text-center">
+          <button
+            onClick={isRated ? handleUpdateRating : handlePostRating}
+            className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100">
+            평가하기
+          </button>
+        </div>
+      </Modal>
     </div>
   )
 }

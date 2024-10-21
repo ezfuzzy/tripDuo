@@ -163,31 +163,31 @@ function MyPlace() {
     };
 
     return (
-        <div className="container mx-auto p-4 max-w-[1024px]">
+        <div className="container mx-auto p-4 max-w-[1024px] bg-gradient-to-r from-green-100 to-white">
             {/* 로딩 애니메이션 */}
             {loading && <LoadingAnimation />}
-            <div className="flex flex-col items-center min-h-screen bg-gray-100">
+            <div className="flex flex-col items-center min-h-screen bg-white rounded-md">
                 <div className="w-full max-w-screen-xl mx-auto p-4">
-                    <div className="flex justify-start">
+                    <div className="flex justify-between">
                         <button
                             onClick={() => navigate(`/users/${loggedInUserId}`)}
-                            className="text-white bg-tripDuoMint hover:bg-tripDuoGreen focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
+                            className="text-tripDuoGreen border border-tripDuoGreen hover:bg-tripDuoMint focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 mr-4 text-center">
                             MyPage
                         </button>
                         <button
                             onClick={() => navigate("/private/myPlace2")}
-                            className="text-white bg-tripDuoMint hover:bg-tripDuoGreen focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
-                            해외
+                            className="bg-tripDuoMint font-bold text-white px-4 py-2 text-sm rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300 flex items-center">
+                            해외로
                         </button>
                     </div>
                     {/* 상단 헤더 */}
                     <h1 className="text-3xl font-bold mb-4 text-center">마이 플레이스(국내)</h1>
 
                     {/* 장소 검색 버튼 */}
-                    <div className="flex justify-end mb-4">
+                    <div className="flex justify-start mb-2">
                         <button
                             onClick={handleOpenPlaceSearch}
-                            className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-500 transition"
+                            className="border border-blue-900 hover:bg-blue-100 text-blue-900 px-2 py-1 rounded-md shadow-lg transition duration-300 text-sm font-bold"
                         >
                             장소 추가
                         </button>
@@ -237,13 +237,15 @@ function MyPlace() {
                     {showPlaceSearch && (
                         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                             <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-xl">
+                            <div className="flex justify-end">
+                                    <button
+                                        onClick={() => setShowPlaceSearch(false)}
+                                        className="text-red-600 hover:text-red-800 text-3xl font-bold"
+                                        aria-label="Close">
+                                        &times;
+                                    </button>
+                                </div>
                                 <KakaoSaveLocationPage onSave={handleSavePlace} />
-                                <button
-                                    onClick={() => setShowPlaceSearch(false)}
-                                    className="mt-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-400 transition"
-                                >
-                                    닫기
-                                </button>
                             </div>
                         </div>
                     )}

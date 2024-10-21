@@ -81,10 +81,11 @@ const CourseBoardDetail = () => {
   // map 객체를 저장할 상태값
   const [kakaoMap, setKakaoMap] = useState(null)
   // SavedPlacesGoogleMapComponent를 참조할 ref 생성
-  const savedPlacesGoogleMapComponentRef = useRef(null);
-
+  const savedPlacesGoogleMapComponentRef = useRef(null)
   //infowWindow 상태값 관리
   const [currentInfoWindow, setCurrentInfoWindow] = useState(null)
+  // 스크롤을 이동할 위치의 요소에 대한 참조 생성
+  const scrollToRef = useRef(null)
 
   //댓글 목록을 상태값으로 관리
   const [commentList, setCommentList] = useState([])
@@ -173,6 +174,7 @@ const CourseBoardDetail = () => {
             setGoogleMapCenterLocation({ Ma: places[0].Ma, La: places[0].La })
           }
         }
+
         //댓글 목록이 존재하는지 확인 후, 배열에 ref라는 방 추가
         const list = Array.isArray(res.data.commentList)
           ? res.data.commentList.map((item) => {
@@ -186,7 +188,6 @@ const CourseBoardDetail = () => {
         setTotalPageCount(res.data.totalCommentPages)
       })
       .catch((error) => {
-        console.log("데이터를 가져오지 못했습니다.", error)
         alert("게시물을 불러오는 중 문제가 발생했습니다.")
       })
   }, [id, searchParams, isRated, myRating])
@@ -200,6 +201,17 @@ const CourseBoardDetail = () => {
       document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [dropdownIndex])
+
+  // 날짜 계산 함수
+  const calculateDate = (startDate, dayIndex) => {
+    const date = new Date(startDate)
+    date.setDate(date.getDate() + dayIndex) // 시작 날짜에 dayIndex 만큼 더함
+    return date.toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+  }
 
   //글 삭제를 눌렀을 때 호출되는 함수
   const deleteHandleYes = () => {
@@ -234,7 +246,6 @@ const CourseBoardDetail = () => {
             }))
           })
           .catch((error) => {
-            console.log(error)
             alert(error.response.data)
           })
       } else if (isLiked) {
@@ -250,7 +261,6 @@ const CourseBoardDetail = () => {
             })
           })
           .catch((error) => {
-            console.log(error)
             alert(error.response.data)
           })
       }
@@ -261,13 +271,12 @@ const CourseBoardDetail = () => {
 
   //장소명 눌렀을 때 실행되는 함수
   const handlePlaceClick = (place) => {
-    console.log(place)
     if (place.position && place.position.Ma !== undefined && place.position.La !== undefined) {
       setKakaoMapCenterLocation({ Ma: place.position.Ma, La: place.position.La })
 
       // 기존의 열린 infoWindow가 있다면 닫기
       if (currentInfoWindow) {
-        currentInfoWindow.close();
+        currentInfoWindow.close()
       }
 
       // 새로운 infoWindow 생성
@@ -282,20 +291,27 @@ const CourseBoardDetail = () => {
               <div style="margin-bottom: 16px;"><a href="${place.place_url}" target="_blank">장소 링크</a></div>
           </div>
       `,
-      });
+      })
 
       // 새로운 infoWindow 열기
-      const markerPosition = new window.kakao.maps.LatLng(place.position.Ma, place.position.La);
-      infoWindow.open(kakaoMap, new window.kakao.maps.Marker({ position: markerPosition, map: kakaoMap }));
+      const markerPosition = new window.kakao.maps.LatLng(place.position.Ma, place.position.La)
+      infoWindow.open(kakaoMap, new window.kakao.maps.Marker({ position: markerPosition, map: kakaoMap }))
 
       // 새로운 infoWindow를 상태로 저장
-      setCurrentInfoWindow(infoWindow);
-
+      setCurrentInfoWindow(infoWindow)
+      // scrollIntoView 메서드를 사용하여 특정 요소로 스크롤 이동
+      if (scrollToRef.current) {
+        scrollToRef.current.scrollIntoView({ behavior: "smooth" })
+      }
     } else {
       // setGoogleMapCenterLocation({ Ma: place.Ma, La: place.La })
       // Google Map의 infoWindow 열기
       if (savedPlacesGoogleMapComponentRef.current) {
-        savedPlacesGoogleMapComponentRef.current.openInfoWindowAtPlace(place); // SavedPlacesGoogleMapComponent에서 제공하는 함수 호출
+        savedPlacesGoogleMapComponentRef.current.openInfoWindowAtPlace(place) // SavedPlacesGoogleMapComponent에서 제공하는 함수 호출
+      }
+      // scrollIntoView 메서드를 사용하여 특정 요소로 스크롤 이동
+      if (scrollToRef.current) {
+        scrollToRef.current.scrollIntoView({ behavior: "smooth" })
       }
     }
   }
@@ -870,7 +886,7 @@ const CourseBoardDetail = () => {
             </div>
           ))}
         </div>
-        <div>
+        <div ref={scrollToRef}>
           {domesticInternational === "Domestic" ? (
             <SavedPlacesKakaoMapComponent savedPlaces={allPlaces} centerLocation={kakaoMapCenterLocation} onMapReady={setKakaoMap} />
           ) : (
