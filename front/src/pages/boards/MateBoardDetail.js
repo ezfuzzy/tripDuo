@@ -426,7 +426,6 @@ function MateBoardDetail(props) {
   const { stompClient, isConnected } = useWebSocket()
 
   const handleClickChat = () => {
-    // console.log("채팅 버튼 클릭")
     // console.log("1번" + userId)
     if (isConnected) {
       console.log("웹 소켓 연결 정상")
