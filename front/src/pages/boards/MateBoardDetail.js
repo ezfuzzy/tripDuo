@@ -426,14 +426,14 @@ function MateBoardDetail(props) {
   const { stompClient, isConnected } = useWebSocket()
 
   const handleClickChat = () => {
-    console.log("채팅 버튼 클릭")
-    console.log("1번" + userId)
+    // console.log("채팅 버튼 클릭")
+    // console.log("1번" + userId)
     if (isConnected) {
       console.log("웹 소켓 연결 정상")
     } else {
       console.log("웹 소켓 비정상")
     }
-    console.log("2번" + writerProfile.id)
+    // console.log("2번" + writerProfile.id)
     axios
       .post("/api/chat/rooms", {
         ownerId: userId, // 방 생성자를 명시
