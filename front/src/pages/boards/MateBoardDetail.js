@@ -439,7 +439,7 @@ function MateBoardDetail(props) {
         ownerId: userId, // 방 생성자를 명시
         participantsList: [userId, writerProfile.id], // 대화 참가자 목록
         type: "ONE_ON_ONE",
-        title: `${username}님과${writerProfile.nickname}님의 채팅`,
+        title: `${nickname}님과${writerProfile.nickname}님의 채팅`,
       })
       .then((res) => {
         const newRoom = res.data
