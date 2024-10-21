@@ -17,7 +17,7 @@ public class WebConfig implements WebMvcConfigurer {
         
         // Swagger API docs에 대한 CORS 설정
         registry.addMapping("/v3/api-docs/**")  // OpenAPI 문서 경로
-                .allowedOrigins("http://localhost:3000")
+                .allowedOrigins("http://tripduo.xyz", "https://tripduo.xyz")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
