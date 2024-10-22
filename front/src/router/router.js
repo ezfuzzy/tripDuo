@@ -1,7 +1,6 @@
 import { createBrowserRouter } from "react-router-dom"
 import App from "../App"
 import Home from "../pages/Home"
-import Sample from "../pages/Sample"
 import Signup from "../pages/Signup"
 import Agreement from "../pages/Agreement"
 import LoginPage from "../pages/LoginPage"
@@ -60,7 +59,6 @@ const routes = [
   { path: "/", element: <Home /> },
 
   // ### sign up, login, logout ... ###
-  { path: "/sample", element: <Sample /> },
   { path: "/agreement", element: <Agreement /> },
   { path: "/signup", element: <Signup /> },
   { path: "/login", element: <LoginPage /> },
