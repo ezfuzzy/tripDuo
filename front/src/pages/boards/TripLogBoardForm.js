@@ -12,12 +12,8 @@ const TripLogBoardForm = () => {
   const { id } = useParams()
   //로그인된 user정보
   const loggedInUserId = useSelector((state) => state.userData.id, shallowEqual) // 로그인된 user의 id
-  const loggedInUsername = useSelector((state) => state.userData.username, shallowEqual) // 로그인된 username
   const loggedInNickname = useSelector((state) => state.userData.nickname, shallowEqual) // 로그인된 nickname
-  const loggedInProfilePicture = useSelector((state) => state.userData.profilePicture, shallowEqual) // 로그인된 user의 프로필사진
 
-  //게시물 작성자 정보
-  const [writerProfile, setWriterProfile] = useState({})
   //글 하나의 정보 상태값으로 관리
   const [post, setPost] = useState({
     tags: [],
@@ -82,8 +78,6 @@ const TripLogBoardForm = () => {
           throw new Error("게시물 작성자의 정보가 없습니다.")
         }
 
-        const writerData = res.data.userProfileInfo
-        setWriterProfile(writerData)
       })
       .catch((error) => {
         console.log("데이터를 가져오지 못했습니다.", error)
@@ -129,7 +123,7 @@ const TripLogBoardForm = () => {
 
     // 태그 길이 15자로 제한
     if (value.length > 15) {
-      alert("태그는 최대 15자까지 입력 가능합니다.");
+      alert("태그는 최대 15자까지 입력 가능합니다.")
       return
     }
 
@@ -158,13 +152,13 @@ const TripLogBoardForm = () => {
   //글 작성 완료
   const handleSubmit = () => {
     if (!title) {
-      alert("제목을 입력해주세요.");
-      return;
+      alert("제목을 입력해주세요.")
+      return
     }
   
     if (!post.country) {
-      alert("나라를 선택해주세요.");
-      return;
+      alert("나라를 선택해주세요.")
+      return
     }
 
     const postInfo = {
@@ -183,7 +177,6 @@ const TripLogBoardForm = () => {
     axios
       .post("/api/v1/posts/trip_log", postInfo)
       .then((res) => {
-        console.log(postInfo)
         navigate(`/posts/trip_log?di=${domesticInternational}`)
       })
       .catch((error) => console.log(error))

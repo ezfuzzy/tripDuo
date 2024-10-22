@@ -1,14 +1,13 @@
 import axios from "axios"
 import React, { useEffect, useRef, useState } from "react"
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import CourseKakaoMapComponent from "../../components/CourseKakaoMapComponent";
-import CourseGoogleMapComponent from "../../components/CourseGoogleMapComponent";
-import LoadingAnimation from "../../components/LoadingAnimation";
-import { citiesByCountry } from "../../constants/mapping";
-import moment from "moment";
-import Calendar from "react-calendar";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-
+import { useNavigate, useParams, useSearchParams } from "react-router-dom"
+import CourseKakaoMapComponent from "../../components/CourseKakaoMapComponent"
+import CourseGoogleMapComponent from "../../components/CourseGoogleMapComponent"
+import LoadingAnimation from "../../components/LoadingAnimation"
+import { citiesByCountry } from "../../constants/mapping"
+import moment from "moment"
+import Calendar from "react-calendar"
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa"
 
 const TripLogBoardEditForm = () => {
     //로딩 상태 추가
@@ -76,16 +75,16 @@ const TripLogBoardEditForm = () => {
 
     // 캘린더의 날짜 스타일을 설정하는 함수 추가
     const tileClassName = ({ date }) => {
-        const day = date.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
+        const day = date.getDay() // 0: 일요일, 1: 월요일, ..., 6: 토요일
         // 기본적으로 검은색으로 설정
-        let className = "text-black";
+        let className = "text-black"
 
         // 토요일과 일요일에만 빨간색으로 변경
         if (day === 0 || day === 6) {
-            className = "text-red-500"; // 토요일과 일요일에 숫자를 빨간색으로 표시
+            className = "text-red-500" // 토요일과 일요일에 숫자를 빨간색으로 표시
         }
 
-        return className; // 최종 클래스 이름 반환
+        return className // 최종 클래스 이름 반환
     }
 
     const calculateNightsAndDays = (startDate, endDate) => {
@@ -102,12 +101,12 @@ const TripLogBoardEditForm = () => {
 
         // 차이를 일(day) 단위로 변환
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
-        console.log(diffDays);
+        console.log(diffDays)
 
         if (diffDays > 0) {
             // "박"의 계산 (diffDays - 1)
             const days = diffDays + 1
-            // const nights = diffDays > 0 ? diffDays : 0;
+            // const nights = diffDays > 0 ? diffDays : 0
             const nights = diffDays
 
             return `(${nights}박 ${days}일)`
@@ -122,7 +121,7 @@ const TripLogBoardEditForm = () => {
 
         // 태그 길이 15자로 제한
         if (value.length > 15) {
-            alert("태그는 최대 15자까지 입력 가능합니다.");
+            alert("태그는 최대 15자까지 입력 가능합니다.")
             return
         }
 
@@ -172,8 +171,8 @@ const TripLogBoardEditForm = () => {
         setPostInfo((prev) => ({
             ...prev,
             postData: [...prev.postData, { places: [{ place_name: "", placeMemo: "" }], dayMemo: "" }]
-        }));
-    };
+        }))
+    }
 
     //Day 삭제 버튼
     const removeDay = (dayIndex) => {
@@ -253,13 +252,13 @@ const TripLogBoardEditForm = () => {
     //수정 완료 버튼
     const handleSubmit = () => {
         if (!postInfo.title) {
-            alert("제목을 입력해주세요.");
-            return;
+            alert("제목을 입력해주세요.")
+            return
         }
 
         if (!postInfo.country) {
-            alert("나라를 선택해주세요.");
-            return;
+            alert("나라를 선택해주세요.")
+            return
         }
 
         const submittedPostInfo = {
@@ -268,7 +267,7 @@ const TripLogBoardEditForm = () => {
             endDate: selectedDateRange[1],
         }
 
-        axios.put(`/api/v1/posts/${id}`, postInfo)  // PUT 요청으로 업데이트
+        axios.put(`/api/v1/posts/${id}`, submittedPostInfo)  // PUT 요청으로 업데이트
             .then((res) => {
                 alert("수정했습니다")
                 // 업데이트 후 해당글 자세히보기로 이동
@@ -362,17 +361,17 @@ const TripLogBoardEditForm = () => {
                                 </button>
                                 <Calendar
                                     selectRange={true}
-                                    className="w-full p-4 bg-white rounded-lg border-none" // 달력 컴포넌트의 테두리를 없애기 위해 border-none 추가
+                                    className="w-full p-4 bg-white rounded-lg border-none"
                                     onChange={handleDateChange}
-                                    value={selectedDateRange || [new Date(), new Date()]} // 초기값 또는 선택된 날짜 범위
-                                    minDetail="month" // 상단 네비게이션에서 '월' 단위만 보이게 설정
-                                    maxDetail="month" // 상단 네비게이션에서 '월' 단위만 보이게 설정
+                                    value={selectedDateRange || [new Date(), new Date()]}
+                                    minDetail="month" 
+                                    maxDetail="month" 
                                     navigationLabel={null}
-                                    showNeighboringMonth={false} //  이전, 이후 달의 날짜는 보이지 않도록 설정
-                                    calendarType="hebrew" //일요일부터 보이도록 설정
-                                    tileClassName={tileClassName} // 날짜 스타일 설정
-                                    formatYear={(locale, date) => moment(date).format("YYYY")} // 네비게이션 눌렀을때 숫자 년도만 보이게
-                                    formatMonthYear={(locale, date) => moment(date).format("YYYY. MM")} // 네비게이션에서 2023. 12 이렇게 보이도록 설정
+                                    showNeighboringMonth={false}
+                                    calendarType="hebrew"
+                                    tileClassName={tileClassName}
+                                    formatYear={(locale, date) => moment(date).format("YYYY")}
+                                    formatMonthYear={(locale, date) => moment(date).format("YYYY. MM")}
                                     prevLabel={
                                         <FaChevronLeft className="text-green-500 hover:text-green-700 transition duration-150 mx-auto" />
                                     }
@@ -386,7 +385,7 @@ const TripLogBoardEditForm = () => {
                                             <span className={date.getDay() === 0 || date.getDay() === 6 ? "text-red-500" : "text-black"}>
                                                 {date.getDate()} {/* 날짜 숫자만 표시 */}
                                             </span>
-                                        );
+                                        )
                                     }} // 날짜 내용 설정
                                     formatDay={() => null}
                                 />
@@ -604,7 +603,7 @@ const TripLogBoardEditForm = () => {
                 </div>
             )}
         </div>
-    );
-};
+    )
+}
 
 export default TripLogBoardEditForm

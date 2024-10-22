@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 
 const LoadingAnimation = ({ duration = 0.7 }) => {
-  const [imageWidth, setImageWidth] = useState('0%'); // 처음에는 0%로 시작
+  const [imageWidth, setImageWidth] = useState('0%') // 처음에는 0%로 시작
 
   useEffect(() => {
     // 애니메이션이 시작되도록 타이머 설정
     const timer = setTimeout(() => {
-      setImageWidth('100%'); // 100%로 설정하여 왼쪽부터 오른쪽까지 이미지가 보이게 함
-    }, 100); // 0.1초 후 애니메이션 시작
+      setImageWidth('100%') // 100%로 설정하여 왼쪽부터 오른쪽까지 이미지가 보이게 함
+    }, 100) // 0.1초 후 애니메이션 시작
 
-    return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 정리
-  }, []);
+    return () => clearTimeout(timer) // 컴포넌트 언마운트 시 타이머 정리
+  }, [])
 
   return (
     <div className="fixed inset-0 flex justify-center items-center z-50 bg-white bg-opacity-75 pointer-events-none">
@@ -27,7 +27,7 @@ const LoadingAnimation = ({ duration = 0.7 }) => {
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default LoadingAnimation;
+export default LoadingAnimation

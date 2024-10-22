@@ -1,58 +1,58 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react"
 
 const KakaoSaveLocationPage = ({ onSave }) => {
-  const mapRef = useRef(null);
-  const [map, setMap] = useState(null);
-  const [selectedPlace, setSelectedPlace] = useState(null);
-  const [keyword, setKeyword] = useState("");
-  const [places, setPlaces] = useState([]);
-  const [markers, setMarkers] = useState([]);
-  const [infoWindows, setInfoWindows] = useState([]);
-  const [placeMemo, setPlaceMemo] = useState(""); // 장소 메모 상태 추가
+  const mapRef = useRef(null)
+  const [map, setMap] = useState(null)
+  const [selectedPlace, setSelectedPlace] = useState(null)
+  const [keyword, setKeyword] = useState("")
+  const [places, setPlaces] = useState([])
+  const [markers, setMarkers] = useState([])
+  const [infoWindows, setInfoWindows] = useState([])
+  const [placeMemo, setPlaceMemo] = useState("") // 장소 메모 상태 추가
 
   useEffect(() => {
     const initializeMap = () => {
       if (!window.kakao || !window.kakao.maps) {
-        console.error("Kakao Maps API is not loaded.");
-        return;
+        console.error("Kakao Maps API is not loaded.")
+        return
       }
 
       const map = new window.kakao.maps.Map(mapRef.current, {
         center: new window.kakao.maps.LatLng(37.5665, 126.978),
         level: 3,
-      });
-      setMap(map);
+      })
+      setMap(map)
 
       window.kakao.maps.event.addListener(map, "click", () => {
-        window.closeInfoWindow();
-        setSelectedPlace(null);
-      });
-    };
+        window.closeInfoWindow()
+        setSelectedPlace(null)
+      })
+    }
 
-    const kakaoMapApi = process.env.REACT_APP_KAKAO_MAP_API_KEY;
+    const kakaoMapApi = process.env.REACT_APP_KAKAO_MAP_API_KEY
 
-    const script = document.createElement("script");
-    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoMapApi}&autoload=false&libraries=services`;
-    script.async = false;
+    const script = document.createElement("script")
+    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoMapApi}&autoload=false&libraries=services`
+    script.async = false
     script.onload = () => {
-      window.kakao.maps.load(initializeMap);
-    };
-    document.head.appendChild(script);
+      window.kakao.maps.load(initializeMap)
+    }
+    document.head.appendChild(script)
 
     return () => {
-      document.head.removeChild(script);
-    };
-  }, []);
+      document.head.removeChild(script)
+    }
+  }, [])
 
   const clearMarkers = () => {
-    markers.forEach((marker) => marker.setMap(null));
-    setMarkers([]);
-  };
+    markers.forEach((marker) => marker.setMap(null))
+    setMarkers([])
+  }
 
   const clearInfoWindows = () => {
-    infoWindows.forEach((infoWindow) => infoWindow.close());
-    setInfoWindows([]);
-  };
+    infoWindows.forEach((infoWindow) => infoWindow.close())
+    setInfoWindows([])
+  }
 
   // 검색 결과 선택 시 렌더링 되는 박스
   const createInfoWindowContent = (place) => {
@@ -71,104 +71,104 @@ const KakaoSaveLocationPage = ({ onSave }) => {
           저장
         </button>
       </div>
-    `;
-  };
+    `
+  }
 
   window.closeInfoWindow = () => {
-    infoWindows.forEach((infoWindow) => infoWindow.close());
-  };
+    infoWindows.forEach((infoWindow) => infoWindow.close())
+  }
 
   window.updatePlaceMemo = (placeId, memo) => {
-    setPlaceMemo(memo); // 메모 상태 업데이트
-  };
+    setPlaceMemo(memo) // 메모 상태 업데이트
+  }
 
   window.savePlace = (placeName) => {
-    const placeToSave = places.find((place) => place.place_name === placeName);
+    const placeToSave = places.find((place) => place.place_name === placeName)
     if (placeToSave) {
-      handleSave(placeToSave);
+      handleSave(placeToSave)
     }
-  };
+  }
 
   const handleSearch = () => {
     if (map && keyword) {
-      const ps = new window.kakao.maps.services.Places();
+      const ps = new window.kakao.maps.services.Places()
       ps.keywordSearch(keyword, (data, status) => {
         if (status === window.kakao.maps.services.Status.OK) {
-          setPlaces(data);
-          map.setCenter(new window.kakao.maps.LatLng(data[0].y, data[0].x));
-          map.setLevel(3);
+          setPlaces(data)
+          map.setCenter(new window.kakao.maps.LatLng(data[0].y, data[0].x))
+          map.setLevel(3)
 
-          clearMarkers();
-          clearInfoWindows();
+          clearMarkers()
+          clearInfoWindows()
 
-          const newMarkers = [];
-          const newInfoWindows = [];
+          const newMarkers = []
+          const newInfoWindows = []
 
           data.forEach((place) => {
             const marker = new window.kakao.maps.Marker({
               position: new window.kakao.maps.LatLng(place.y, place.x),
               map: map,
-            });
+            })
 
             const infoWindow = new window.kakao.maps.InfoWindow({
               content: createInfoWindowContent(place),
-            });
+            })
 
             window.kakao.maps.event.addListener(marker, "click", () => {
-              window.closeInfoWindow();
+              window.closeInfoWindow()
               setSelectedPlace({
                 ...place,
                 position: new window.kakao.maps.LatLng(place.y, place.x),
-              });
-              infoWindow.open(map, marker);
-            });
+              })
+              infoWindow.open(map, marker)
+            })
 
-            newMarkers.push(marker);
-            newInfoWindows.push(infoWindow);
-          });
+            newMarkers.push(marker)
+            newInfoWindows.push(infoWindow)
+          })
 
-          setMarkers(newMarkers);
-          setInfoWindows(newInfoWindows);
+          setMarkers(newMarkers)
+          setInfoWindows(newInfoWindows)
         }
-      });
+      })
     }
-  };
+  }
 
   const handleSave = (place) => {
     if (place) {
       const placeToSave = {
         ...place,
         placeMemo, // 메모 추가
-      };
+      }
 
-      onSave(placeToSave); // 선택된 장소와 메모를 외부 컴포넌트로 전달
-      setSelectedPlace(null);
-      setPlaceMemo(""); // 저장 후 메모 초기화
+      onSave(placeToSave) // 선택된 장소와 메모를 외부 컴포넌트로 전달
+      setSelectedPlace(null)
+      setPlaceMemo("") // 저장 후 메모 초기화
     }
-  };
+  }
 
   const handlePlaceClick = (place) => {
-    map.setCenter(place.position);
-    map.setLevel(5);
+    map.setCenter(place.position)
+    map.setLevel(5)
     const marker = markers.find(
       (marker) =>
         marker.getPosition().getLat().toFixed(10) === place.position.getLat().toFixed(10) &&
         marker.getPosition().getLng().toFixed(10) === place.position.getLng().toFixed(10)
-    );
+    )
 
-    const infoWindow = infoWindows[markers.indexOf(marker)];
+    const infoWindow = infoWindows[markers.indexOf(marker)]
 
     if (infoWindow) {
-      window.closeInfoWindow();
-      infoWindow.open(map, marker);
+      window.closeInfoWindow()
+      infoWindow.open(map, marker)
     }
-  };
+  }
 
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
-      handleSearch();
+      handleSearch()
     }
-  };
+  }
 
   return (
     <div className="flex flex-col w-full h-full overflow-hidden">
@@ -203,15 +203,15 @@ const KakaoSaveLocationPage = ({ onSave }) => {
                 }`}
               key={index}
               onClick={() => {
-                const selectedPosition = new window.kakao.maps.LatLng(place.y, place.x);
+                const selectedPosition = new window.kakao.maps.LatLng(place.y, place.x)
 
                 const placeData = {
                   ...place,
                   position: selectedPosition,
-                };
+                }
 
-                setSelectedPlace(placeData);
-                handlePlaceClick(placeData);
+                setSelectedPlace(placeData)
+                handlePlaceClick(placeData)
               }}
             >
               {place.place_name}
@@ -220,7 +220,7 @@ const KakaoSaveLocationPage = ({ onSave }) => {
         </ul>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default KakaoSaveLocationPage;
+export default KakaoSaveLocationPage

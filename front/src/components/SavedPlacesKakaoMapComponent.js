@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react"
 
 const SavedPlacesMapComponent = ({ savedPlaces, centerLocation, onMapReady  }) => {
   const mapRef = useRef(null)
@@ -21,14 +21,14 @@ const SavedPlacesMapComponent = ({ savedPlaces, centerLocation, onMapReady  }) =
 
       // 맵 객체가 초기화되면 부모 컴포넌트에 전달
       if (onMapReady) {
-        onMapReady(map);
+        onMapReady(map)
       }
     }
 
     const kakaoMapApi = process.env.REACT_APP_KAKAO_MAP_API_KEY
     const script = document.createElement("script")
     script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoMapApi}&autoload=false&libraries=services`
-    script.async = false;
+    script.async = false
     script.onload = () => {
       window.kakao.maps.load(initializeMap)
     }
@@ -42,10 +42,10 @@ const SavedPlacesMapComponent = ({ savedPlaces, centerLocation, onMapReady  }) =
   useEffect(() => {
     if (map && savedPlaces.length > 0) {
       // 첫 번째 마커의 위치로 지도 중심을 설정
-      const firstPlace = savedPlaces[0];
+      const firstPlace = savedPlaces[0]
       if (firstPlace.position && firstPlace.position.Ma !== undefined && firstPlace.position.La !== undefined) {
-        const firstMarkerPosition = new window.kakao.maps.LatLng(firstPlace.position.Ma, firstPlace.position.La);
-        map.setCenter(firstMarkerPosition);  // 첫 번째 마커 위치로 중심 이동
+        const firstMarkerPosition = new window.kakao.maps.LatLng(firstPlace.position.Ma, firstPlace.position.La)
+        map.setCenter(firstMarkerPosition)  // 첫 번째 마커 위치로 중심 이동
       }
       
       // 기존 마커 제거
@@ -56,25 +56,24 @@ const SavedPlacesMapComponent = ({ savedPlaces, centerLocation, onMapReady  }) =
 
       // savedPlaces 배열 검증 및 처리
       savedPlaces.forEach((item) => {
-        // console.log(item)
         if (item.position && item.position.Ma !== undefined && item.position.La !== undefined) {
-          const markerPosition = new window.kakao.maps.LatLng(item.position.Ma, item.position.La);
+          const markerPosition = new window.kakao.maps.LatLng(item.position.Ma, item.position.La)
           const marker = new window.kakao.maps.Marker({
             position: markerPosition,
             map: map,
-          });
+          })
 
           // 마커 클릭 시 인포윈도우 표시
           const infoWindow = new window.kakao.maps.InfoWindow({
             content: `<div style="padding:5px;">${item.place_name || "Unknown Place"}</div>`,
-          });
+          })
           window.kakao.maps.event.addListener(marker, "click", () => {
             infoWindow.open(map, marker)
-          });
+          })
 
           newMarkers.push(marker)
         } else {
-          console.warn(`Invalid position for place: ${item.place_name}`);
+          console.warn(`Invalid position for place: ${item.place_name}`)
         }
       })
     }
@@ -83,11 +82,11 @@ const SavedPlacesMapComponent = ({ savedPlaces, centerLocation, onMapReady  }) =
   useEffect(() => {
     // centerLocation이 업데이트될 때마다 지도 중심 이동
     if (map && centerLocation) {
-      const { Ma, La } = centerLocation;
-      const newCenter = new window.kakao.maps.LatLng(Ma, La);
-      map.setCenter(newCenter);
+      const { Ma, La } = centerLocation
+      const newCenter = new window.kakao.maps.LatLng(Ma, La)
+      map.setCenter(newCenter)
     }
-  }, [map, centerLocation]);
+  }, [map, centerLocation])
 
   return (
     <div className="flex flex-col w-full h-full">

@@ -1,7 +1,7 @@
-import React from "react";
+import React from "react"
 
 function ConfirmModal({ show, message, yes, no }) {
-  if (!show) return null; // 모달이 보이지 않을 때는 null 반환
+  if (!show) return null // 모달이 보이지 않을 때는 null 반환
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -32,7 +32,7 @@ function ConfirmModal({ show, message, yes, no }) {
       </div>
     </div>
     
-  );
+  )
 }
 
-export default ConfirmModal;
+export default ConfirmModal

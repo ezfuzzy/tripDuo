@@ -30,7 +30,6 @@ const CourseKakaoMapComponent = ({ onSave, selectedDayIndex, selectedPlaceIndex,
       })
     }
     const kakaoMapApi = process.env.REACT_APP_KAKAO_MAP_API_KEY
-    console.log(kakaoMapApi)
 
     const script = document.createElement("script")
     script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoMapApi}&autoload=false&libraries=services`

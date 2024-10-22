@@ -1,11 +1,11 @@
 import axios from "axios"
 import { useEffect, useRef, useState } from "react"
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router"
 
-import { shallowEqual, useSelector } from "react-redux";
-import LoadingAnimation from "../../components/LoadingAnimation";
-import SavedPlacesGoogleMapComponent from "../../components/SavedPlacesGoogleMapComponent";
-import GoogleSaveLocationPage from "./GoogleSaveLocationPage";
+import { shallowEqual, useSelector } from "react-redux"
+import LoadingAnimation from "../../components/LoadingAnimation"
+import SavedPlacesGoogleMapComponent from "../../components/SavedPlacesGoogleMapComponent"
+import GoogleSaveLocationPage from "./GoogleSaveLocationPage"
 
 function MyPlace2() {
     //로딩 상태 추가
@@ -15,7 +15,7 @@ function MyPlace2() {
     // 저장된 장소 목록의 상태값
     const [placesInfo, setPlacesInfo] = useState([])
     // 기본 좌표는 서울
-    const [googleMapCenterLocation, setGoogleMapCenterLocation] = useState({ Ma: 41.4038996, La: 2.1748516 });
+    const [googleMapCenterLocation, setGoogleMapCenterLocation] = useState({ Ma: 41.4038996, La: 2.1748516 })
     // SaveLocationPage 렌더링 여부를 관리
     const [showPlaceSearch, setShowPlaceSearch] = useState(false)
     // 선택된 장소 메모
@@ -52,7 +52,7 @@ function MyPlace2() {
                     })
                 } else {
                     // 장소가 없을 때 기본 상태 유지
-                    setPlacesInfo([]);
+                    setPlacesInfo([])
                 }
             })
             .catch(error => {
@@ -75,15 +75,15 @@ function MyPlace2() {
                 address_name: item.place.addressName,
                 category_name: item.place.categoryName,
                 road_address_name: item.place.roadAddressName,
-            };
-        });
-        setTransformedData(transformed);
-    }, [placesInfo]);
+            }
+        })
+        setTransformedData(transformed)
+    }, [placesInfo])
 
     // 장소 검색 버튼 클릭 시 장소 검색 컴포넌트를 열기 위한 핸들러
     const handleOpenPlaceSearch = () => {
-        setShowPlaceSearch(true);
-    };
+        setShowPlaceSearch(true)
+    }
 
     // 장소 저장 후 호출되는 함수
     const handleSavePlace = (place) => {
@@ -101,7 +101,6 @@ function MyPlace2() {
 
         axios.post(`/api/v1/users/${loggedInUserId}/trips/saved-places`, placeInfo)
             .then(res => {
-                console.log(res.data)
                 // 장소 저장 후 placesInfo 상태 업데이트
                 setPlacesInfo(prevPlacesInfo => [
                     ...prevPlacesInfo,
@@ -120,7 +119,7 @@ function MyPlace2() {
                 alert("장소를 저장하지 못했습니다.")
                 console.log(error)
             })
-    };
+    }
 
     const transformPlaceItem = (placeItem) => {
         return {
@@ -133,8 +132,8 @@ function MyPlace2() {
             placeMemo: placeItem.userMemo || "",  // userMemo -> placeMemo
             place_name: placeItem.place.placeName || "",  // placeName -> place_name
             place_url: placeItem.place.placeUrl || "",  // placeUrl -> place_url
-        };
-    };
+        }
+    }
 
     // 장소 클릭 시 맵 중심 이동, 장소 메모 표시, 인포윈도우 표시
     const handlePlaceClick = (placeItem) => {
@@ -143,11 +142,11 @@ function MyPlace2() {
 
         if (savedPlacesGoogleMapComponentRef.current) {
             setGoogleMapCenterLocation({ Ma: placeItem.place.latitude, La: placeItem.place.longitude })
-            savedPlacesGoogleMapComponentRef.current.openInfoWindowAtPlace(transformedPlaceItem);
+            savedPlacesGoogleMapComponentRef.current.openInfoWindowAtPlace(transformedPlaceItem)
         }
 
-        setSelectedPlaceMemo(placeItem.userMemo || "메모가 없습니다.");
-    };
+        setSelectedPlaceMemo(placeItem.userMemo || "메모가 없습니다.")
+    }
 
     return (
         <div className="container mx-auto p-4 max-w-[1024px] bg-gradient-to-r from-green-100 to-white">

@@ -4,17 +4,7 @@ import { shallowEqual, useSelector } from "react-redux"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 import ConfirmModal from "../../components/ConfirmModal"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import {
-  faCrown,
-  faDove,
-  faEye,
-  faFeather,
-  faHeart,
-  faMessage,
-  faPlane,
-  faStar,
-  faUser,
-} from "@fortawesome/free-solid-svg-icons"
+import { faEye, faHeart, faMessage, faStar } from "@fortawesome/free-solid-svg-icons"
 import SavedPlacesKakaoMapComponent from "../../components/SavedPlacesKakaoMapComponent"
 import SavedPlacesGoogleMapComponent from "../../components/SavedPlacesGoogleMapComponent"
 import LoadingAnimation from "../../components/LoadingAnimation"
@@ -114,14 +104,13 @@ const CourseBoardDetail = () => {
   //action 발행하기 위해
   const navigate = useNavigate()
 
-  //--------------------------------------------------------------------------------------------------------------rating 관리 부
   // rating 값에 따른 아이콘과 색상 계산 //
   const getRatingDetails = (ratings) => {
     return ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { imageSrc: "default.svg" } // 기본값
   }
 
   const imageSrc = getRatingDetails(writerProfile.ratings || 0)
-  //--------------------------------------------------------------------------------------------------------------
+  
   useEffect(() => {
     // 로딩 애니메이션을 0.5초 동안만 표시
     setLoading(true)
@@ -748,14 +737,6 @@ const CourseBoardDetail = () => {
             {dropdownIndex === "titleDropdown" && (
               <div className="absolute right-0 w-40 mt-2 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg">
                 <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                  {/* <button
-                    className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
-                    onClick={() => {
-                      setDropdownIndex(null)
-                      alert("Option 1 selected")
-                    }}>
-                    차단
-                  </button> */}
                   <button
                     className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
                     onClick={() => {
@@ -838,32 +819,34 @@ const CourseBoardDetail = () => {
                   {isLiked ? "unLike" : "Like"}
                 </button>
               )}
-              <span className="text-sm text-gray-500">
-                <span className="mx-3">
-                  <FontAwesomeIcon icon={faEye} className="h-5 w-5 mr-2" />
-                  {post.viewCount}
-                </span>
-                <span className="mr-3">
-                  <FontAwesomeIcon icon={faHeart} className="h-4 w-4 mr-2" />
-                  {post.likeCount}
-                </span>
-                <span className="mr-3">
-                  <FontAwesomeIcon icon={faMessage} className="h-4 w-4 mr-2" />
-                  {post.commentCount}
-                </span>
-              </span>
             </div>
+          </div>
+          <div className="ml-20">
+            <span className="text-sm text-gray-500">
+              <span className="mx-3">
+                <FontAwesomeIcon icon={faEye} className="h-4 w-4 mr-2" />
+                {post.viewCount}
+              </span>
+              <span className="mr-3">
+                <FontAwesomeIcon icon={faHeart} className="h-3 w-3 mr-2" />
+                {post.likeCount}
+              </span>
+              <span className="mr-3">
+                <FontAwesomeIcon icon={faMessage} className="h-3 w-3 mr-2" />
+                {post.commentCount}
+              </span>
+            </span>
           </div>
         </div>
 
         {/* Day 목록 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 mb-6">
           {(post.postData || [{ dayMemo: "", places: [] }]).map((day, dayIndex) => (
             <div key={dayIndex} className="bg-white rounded-lg shadow-md p-4">
-              <h2 className="text-xl font-semibold mb-4">Day {dayIndex + 1}</h2>
+              <h2 className="text-xl font-semibold mb-4">Day {dayIndex + 1} - {post.startDate && calculateDate(post.startDate, dayIndex)}</h2>
               <div className="mb-4">
                 <label className="block font-semibold mb-2">Day Memo</label>
-                <p className="border p-2 w-full bg-gray-100">{day.dayMemo || "메모가 없습니다"}</p>
+                <p className="text-sm border p-2 w-full bg-gray-100">{day.dayMemo || "메모가 없습니다"}</p>
               </div>
               {day.places && day.places.length > 0 ? (
                 day.places.map((place, placeIndex) => (
@@ -877,7 +860,7 @@ const CourseBoardDetail = () => {
                       {place.place_name || "장소명이 없습니다"}
                     </button>
                     <label className="block font-semibold">장소 메모</label>
-                    <p className="border p-2 w-full bg-white">{place.placeMemo || "메모가 없습니다"}</p>
+                    <p className="text-sm border p-2 w-full bg-white">{place.placeMemo || "메모가 없습니다"}</p>
                   </div>
                 ))
               ) : (
@@ -1145,9 +1128,9 @@ const CourseBoardDetail = () => {
         </div>
 
         {/* 댓글 더보기 버튼 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 mx-auto mb-5">
+        <div className="mx-auto mb-5">
           <button
-            className={`bg-green-500 text-white py-2 px-4 rounded ${isCommentListLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
+            className={`bg-tripDuoMint text-white py-2 px-4 rounded ${isCommentListLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
               }`}
             disabled={isCommentListLoading}
             onClick={handleMoreComment}>
@@ -1165,7 +1148,7 @@ const CourseBoardDetail = () => {
         style={customStyles}
         contentLabel="채팅방 생성"
         ariaHideApp={false}>
-        <div className="flex items-center  mb-5">
+        <div className="flex items-center mb-5">
           {[1, 2, 3, 4, 5].map((star, index) => (
             <div key={index} onClick={() => handleRating(star)}>
               <FontAwesomeIcon

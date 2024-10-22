@@ -1,7 +1,7 @@
-import React from "react";
+import React from "react"
 
 function TermPrivacyModal({ isOpen, onClose }) {
-    if (!isOpen) return null;
+    if (!isOpen) return null
 
     return (
         <div
@@ -64,7 +64,7 @@ function TermPrivacyModal({ isOpen, onClose }) {
                 </div>
             </div>
         </div>
-    );
+    )
 }
 
-export default TermPrivacyModal;
+export default TermPrivacyModal

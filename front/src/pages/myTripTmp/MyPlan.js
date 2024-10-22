@@ -4,7 +4,7 @@ import { shallowEqual, useSelector } from "react-redux"
 import { useNavigate } from "react-router"
 import { cityMapping, countryMapping } from "../../constants/mapping"
 
-function MyPlan(props) {
+function MyPlan() {
   //course 변수 사용하기 위해 임시로 useState() 사용
   const loggedInUserId = useSelector((state) => state.userData.id, shallowEqual) // 로그인된 user의 id
   const [postList, setPostList] = useState([])

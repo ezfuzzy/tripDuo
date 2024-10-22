@@ -1,7 +1,7 @@
-import React, { memo } from "react";
+import React, { memo } from "react"
 
 const TermServiceModal = memo(({ isOpen, onClose }) => {
-    if (!isOpen) return null;
+    if (!isOpen) return null
 
     return (
         <div 
@@ -59,7 +59,7 @@ const TermServiceModal = memo(({ isOpen, onClose }) => {
                 </div>
             </div>
         </div>
-    );
-});
+    )
+})
 
-export default TermServiceModal;
+export default TermServiceModal

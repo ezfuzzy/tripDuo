@@ -13,11 +13,11 @@ const CourseBoardForm = () => {
   const userId = useSelector((state) => state.userData.id, shallowEqual)
   const nickname = useSelector((state) => state.userData.nickname, shallowEqual)
 
-  const calendarRef = useRef(null);
+  const calendarRef = useRef(null)
 
   // 달력에서 선택된 날짜 범위 저장
-  const [selectedDateRange, setSelectedDateRange] = useState([null, null]);
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false); // 캘린더 표시 여부 상태
+  const [selectedDateRange, setSelectedDateRange] = useState([null, null])
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false) // 캘린더 표시 여부 상태
 
   const [title, setTitle] = useState("")
   const [country, setCountry] = useState("")
@@ -66,7 +66,7 @@ const CourseBoardForm = () => {
 
     // 태그 길이 15자로 제한
     if (value.length > 15) {
-      alert("태그는 최대 15자까지 입력 가능합니다.");
+      alert("태그는 최대 15자까지 입력 가능합니다.")
       return
     }
 
@@ -160,13 +160,13 @@ const CourseBoardForm = () => {
   //작성 완료 버튼
   const handleSubmit = () => {
     if (!title) {
-      alert("제목을 입력해주세요.");
-      return;
+      alert("제목을 입력해주세요.")
+      return
     }
 
     if (!country) {
-      alert("나라를 선택해주세요.");
-      return;
+      alert("나라를 선택해주세요.")
+      return
     }
 
     const post = {
@@ -193,16 +193,16 @@ const CourseBoardForm = () => {
 
   // 캘린더의 날짜 스타일을 설정하는 함수 추가
   const tileClassName = ({ date }) => {
-    const day = date.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
+    const day = date.getDay() // 0: 일요일, 1: 월요일, ..., 6: 토요일
     // 기본적으로 검은색으로 설정
-    let className = "text-black";
+    let className = "text-black"
 
     // 토요일과 일요일에만 빨간색으로 변경
     if (day === 0 || day === 6) {
-      className = "text-red-500"; // 토요일과 일요일에 숫자를 빨간색으로 표시
+      className = "text-red-500" // 토요일과 일요일에 숫자를 빨간색으로 표시
     }
 
-    return className; // 최종 클래스 이름 반환
+    return className // 최종 클래스 이름 반환
   }
 
   const calculateNightsAndDays = (startDate, endDate) => {
@@ -215,12 +215,10 @@ const CourseBoardForm = () => {
 
     // 차이를 일(day) 단위로 변환
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
-    console.log(diffDays);
 
     if (diffDays > 0) {
       // "박"의 계산 (diffDays - 1)
       const days = diffDays + 1
-      // const nights = diffDays > 0 ? diffDays : 0;
       const nights = diffDays
 
       return `(${nights}박 ${days}일)`
@@ -330,7 +328,7 @@ const CourseBoardForm = () => {
                       <span className={date.getDay() === 0 || date.getDay() === 6 ? "text-red-500" : "text-black"}>
                         {date.getDate()} {/* 날짜 숫자만 표시 */}
                       </span>
-                    );
+                    )
                   }} // 날짜 내용 설정
                   formatDay={() => null}
                 />

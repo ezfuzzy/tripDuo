@@ -1,14 +1,15 @@
 import axios from "axios"
 import React, { createRef, useEffect, useRef, useState } from "react"
 import { shallowEqual, useSelector } from "react-redux"
-import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom"
+import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 import ConfirmModal from "../../components/ConfirmModal"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faCrown, faDove, faEye, faFeather, faHeart, faMessage, faPlane, faStar, faUser } from "@fortawesome/free-solid-svg-icons"
+import { faEye, faHeart, faMessage, faStar } from "@fortawesome/free-solid-svg-icons"
 import SavedPlacesKakaoMapComponent from "../../components/SavedPlacesKakaoMapComponent"
 import SavedPlacesGoogleMapComponent from "../../components/SavedPlacesGoogleMapComponent"
 import LoadingAnimation from "../../components/LoadingAnimation"
 import Modal from "react-modal"
+import { ratingConfig } from "../../constants/mapping"
 
 
 //새로 등록한 댓글을 추가할 인덱스
@@ -26,7 +27,7 @@ const customStyles = {
     marginRight: "-50%",
     transform: "translate(-50%, -50%)",
   },
-};
+}
 
 const TripLogBoardDetail = () => {
   //로딩 상태 추가
@@ -45,17 +46,17 @@ const TripLogBoardDetail = () => {
   const [isLiked, setIsLiked] = useState(false)
 
   // 별점 버튼 설정
-  const [isRated, setRated] = useState(false);
+  const [isRated, setRated] = useState(false)
   // post 에 새로 매기는 점수
-  const [newPostRating, setNewPostRating] = useState(0);
+  const [newPostRating, setNewPostRating] = useState(0)
   // 로그인된 사용자에 대한 postRating 관련 데이터
-  const [ratedInfo, setRatedInfo] = useState({});
+  const [ratedInfo, setRatedInfo] = useState({})
   // 로그인된 사용자가 매긴 점수
-  const [myRating, setMyRating] = useState(0);
+  const [myRating, setMyRating] = useState(0)
   // 게시물의 rating 총점
-  const [postRating, setPostRating] = useState(0);
+  const [postRating, setPostRating] = useState(0)
   // rating 모달 관리
-  const [isRatingModalOpened, setIsRatingModalOpened] = useState(false);
+  const [isRatingModalOpened, setIsRatingModalOpened] = useState(false)
 
   //글 하나의 정보 상태값으로 관리
   const [postInfo, setPostInfo] = useState({ tags: [], postData: [{ dayMemo: "", places: [""] }] })
@@ -76,7 +77,7 @@ const TripLogBoardDetail = () => {
   const [currentInfoWindow, setCurrentInfoWindow] = useState(null)
   // 스크롤을 이동할 위치의 요소에 대한 참조 생성
   const scrollToRef = useRef(null)
-  
+
   //댓글 목록을 상태값으로 관리
   const [commentList, setCommentList] = useState([])
   //댓글의 현재 페이지 번호
@@ -98,36 +99,19 @@ const TripLogBoardDetail = () => {
 
   //검색 키워드, 국내외 관련 처리
   const [searchParams] = useSearchParams()
-  const location = useLocation()
-  const searchParams2 = new URLSearchParams(location.search)
   const domesticInternational = searchParams.get('di')
   //Confirm 모달을 띄울지 여부를 상태값으로 관리
   const [confirmShow, setConfirmShow] = useState(false)
   //action 발행하기 위해
   const navigate = useNavigate()
 
-  //--------------------------------------------------------------------------------------------------------------rating 관리 부
-  // rating 비교 조건 데이터
-  const ratingConfig = [
-    { min: 0, max: 1499, icon: faFeather, color: "gray" }, // 이코노미
-    { min: 1500, max: 2999, icon: faFeather, color: "blue" }, // 프리미엄 이코노미
-    { min: 3000, max: 4499, icon: faDove, color: "gray" }, // 비지니스
-    { min: 4500, max: 5999, icon: faDove, color: "blue" }, // 프리미엄 비지니스
-    { min: 6000, max: 7499, icon: faPlane, color: "gray" }, // 퍼스트
-    { min: 7500, max: 8999, icon: faPlane, color: "blue" }, // 프리미엄 퍼스트
-    { min: 9000, max: 10000, icon: faCrown, color: "yellow" }, // 로얄
-    { min: -Infinity, max: Infinity, icon: faUser, color: "black" }, // 기본값
-  ]
-
   // rating 값에 따른 아이콘과 색상 계산 //
   const getRatingDetails = (ratings) => {
-    return (
-      ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { icon: faUser, color: "black" }
-    ) // 기본값
+    return ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { imageSrc: "default.svg" } // 기본값
   }
 
-  const { icon: ratingIcon, color: ratingColor } = getRatingDetails(writerProfile.ratings || 0);
-  //--------------------------------------------------------------------------------------------------------------
+  const imageSrc = getRatingDetails(writerProfile.ratings || 0)
+
   useEffect(() => {
     // 로딩 애니메이션을 0.5초 동안만 표시
     setLoading(true)
@@ -157,13 +141,13 @@ const TripLogBoardDetail = () => {
 
         //rating 관련 정보
         setPostRating(res.data.dto.rating || 0) // 총점
-        setRatedInfo(res.data.postRating || {}); // 현재 사용자가 매긴 rating 의 정보
+        setRatedInfo(res.data.postRating || {}) // 현재 사용자가 매긴 rating 의 정보
         setMyRating(res.data.postRating.rating || "") // 현재 사용자가 매긴 rating 의 값 (과거 값)
         //현재 사용자가 rating을 매겼는지 여부
         if (res.data.postRating === "") {
-          setRated(false);
+          setRated(false)
         } else {
-          setRated(true);
+          setRated(true)
         }
 
         //장소 정보
@@ -360,7 +344,7 @@ const TripLogBoardDetail = () => {
     if (!loggedInUserId) {
       alert("로그인 후 이용가능합니다.")
     } else {
-      const data = { 
+      const data = {
         content: "게시물 신고",
         reportedUserId: writerProfile.userId,
       }
@@ -384,7 +368,7 @@ const TripLogBoardDetail = () => {
     if (!loggedInUserId) {
       alert("로그인 후 이용가능합니다.")
     } else {
-      const data = { 
+      const data = {
         content: "댓글 신고",
         reportedUserId: commentInfo.userId,
       }
@@ -421,7 +405,6 @@ const TripLogBoardDetail = () => {
     axios
       .post(`/api/v1/posts/${postInfo.id}/comments`, data)
       .then((res) => {
-        console.log(res.data)
         //방금 저장한 댓글의 정보
         const newComment = res.data
         //댓글의 정보에 ref라는 방을 추가하고 거기에 참조값을 담을 object넣어준다
@@ -453,7 +436,6 @@ const TripLogBoardDetail = () => {
 
     axios.post(`/api/v1/posts/${postInfo.id}/comments`, data)
       .then((res) => {
-        console.log(res.data)
         //방금 저장한 댓글의 정보
         const newComment = res.data
         //댓글의 정보에 ref라는 방을 추가하고 거기에 참조값을 담을 object넣어준다
@@ -633,12 +615,12 @@ const TripLogBoardDetail = () => {
       axios
         .delete(`/api/v1/posts/${postInfo.id}/ratings/${ratedInfo.id}`)
         .then((res) => {
-          setRated(false);
-          alert("별점을 삭제하였습니다.");
+          setRated(false)
+          alert("별점을 삭제하였습니다.")
         })
-        .catch((error) => console.log(error));
+        .catch((error) => console.log(error))
     }
-  };
+  }
 
   return (
 
@@ -791,21 +773,20 @@ const TripLogBoardDetail = () => {
             {writerProfile.profilePicture ? (
               <img src={writerProfile.profilePicture} className="w-20 h-20 rounded-full" alt="" />
             ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
+              <img
                 className="bi bi-person-circle w-20 h-20"
-                viewBox="0 0 16 16">
-                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-                <path
-                  fillRule="evenodd"
-                  d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.206 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"
-                />
-              </svg>
+                src={`${process.env.PUBLIC_URL}/img/defaultImages/defaultProfilePicture.svg`}
+                alt="default profile img"
+              />
             )}
             <div>
-              <h3 className="text-base font-semibold leading-7 tracking-tight text-gray-900">
-                <FontAwesomeIcon icon={ratingIcon} color={ratingColor}></FontAwesomeIcon>
+              <h3 className=" flex text-base font-semibold leading-7 tracking-tight text-gray-900">
+                <img
+                  className="w-6 h-6 mr-2"
+                  src={`${process.env.PUBLIC_URL}/img/userRatingImages/${imageSrc.imageSrc}`}
+                  alt="user rating"
+                  title={`${imageSrc.imageSrc.replace(".svg", "")}`}
+                />
                 {writerProfile.nickname}
               </h3>
               <p className="text-sm font-semibold leading-6 text-indigo-600">
@@ -827,32 +808,34 @@ const TripLogBoardDetail = () => {
                   {isLiked ? "unLike" : "Like"}
                 </button>
               )}
-              <span className="text-sm text-gray-500">
-                <span className="mx-3">
-                  <FontAwesomeIcon icon={faEye} className="h-5 w-5 mr-2" />
-                  {postInfo.viewCount}
-                </span>
-                <span className="mr-3">
-                  <FontAwesomeIcon icon={faHeart} className="h-4 w-4 mr-2" />
-                  {postInfo.likeCount}
-                </span>
-                <span className="mr-3">
-                  <FontAwesomeIcon icon={faMessage} className="h-4 w-4 mr-2" />
-                  {postInfo.commentCount}
-                </span>
-              </span>
             </div>
+          </div>
+          <div className="ml-20">
+            <span className="text-sm text-gray-500">
+              <span className="mx-3">
+                <FontAwesomeIcon icon={faEye} className="h-4 w-4 mr-2" />
+                {postInfo.viewCount}
+              </span>
+              <span className="mr-3">
+                <FontAwesomeIcon icon={faHeart} className="h-3 w-3 mr-2" />
+                {postInfo.likeCount}
+              </span>
+              <span className="mr-3">
+                <FontAwesomeIcon icon={faMessage} className="h-3 w-3 mr-2" />
+                {postInfo.commentCount}
+              </span>
+            </span>
           </div>
         </div>
 
         {/* Day 목록 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 mb-6">
           {(postInfo.postData || [{ dayMemo: "", places: [] }]).map((day, dayIndex) => (
             <div key={dayIndex} className="bg-white rounded-lg shadow-md p-4">
               <h2 className="text-xl font-semibold mb-4">Day {dayIndex + 1} - {postInfo.startDate && calculateDate(postInfo.startDate, dayIndex)} </h2>
               <div className="mb-4">
-              <label className="block font-semibold mb-2">Day Record</label>
-              <p className="border p-2 w-full bg-gray-100">{day.dayMemo || "메모가 없습니다"}</p>
+                <label className="block font-semibold mb-2">Day Record</label>
+                <p className="text-sm border p-2 w-full bg-gray-100">{day.dayMemo || "메모가 없습니다"}</p>
               </div>
               {day.places && day.places.length > 0 ? (
                 day.places.map((place, placeIndex) => (
@@ -877,9 +860,9 @@ const TripLogBoardDetail = () => {
         <div ref={scrollToRef}>
           {
             domesticInternational === "Domestic" ?
-              <SavedPlacesKakaoMapComponent savedPlaces={allPlaces} centerLocation={kakaoMapCenterLocation} />
+              <SavedPlacesKakaoMapComponent savedPlaces={allPlaces} centerLocation={kakaoMapCenterLocation} onMapReady={setKakaoMap}/>
               :
-              <SavedPlacesGoogleMapComponent savedPlaces={allPlaces} centerLocation={googleMapCenterLocation} />
+              <SavedPlacesGoogleMapComponent savedPlaces={allPlaces} centerLocation={googleMapCenterLocation} ref={savedPlacesGoogleMapComponentRef}/>
           }
         </div>
 
@@ -1128,9 +1111,9 @@ const TripLogBoardDetail = () => {
         </div>
 
         {/* 댓글 더보기 버튼 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 mx-auto mb-5">
+        <div className="mx-auto mb-5">
           <button
-            className={`bg-green-500 text-white py-2 px-4 rounded ${isCommentListLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
+            className={`bg-tripDuoMint text-white py-2 px-4 rounded ${isCommentListLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
               }`}
             disabled={isCommentListLoading}
             onClick={handleMoreComment}>

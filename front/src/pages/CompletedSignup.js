@@ -1,4 +1,3 @@
-import axios from "axios"
 import { useEffect, useState } from "react"
 import { shallowEqual, useSelector } from "react-redux"
 import { Link, useLocation, useNavigate } from "react-router-dom"
@@ -8,7 +7,6 @@ function CompletedSignup() {
   const userId = useSelector((state) => state.userData.id, shallowEqual) // 접속된 사용자의 id
 
   const [loading, setLoading] = useState(false)
-  const [profile, setProfile] = useState({})
   const location = useLocation()
   const navigate = useNavigate()
   const { isAllChecked } = location.state || {}
@@ -35,18 +33,6 @@ function CompletedSignup() {
     setTimeout(() => {
       setLoading(false)
     }, 700)
-    // if (!username) return
-
-    // const fetchProfile = async () => {
-    //   try {
-    //     const response = await axios.get(`/api/v1/users/username/${username}`)
-    //     setProfile(response.data)
-    //   } catch (error) {
-    //     console.error("프로필 데이터를 가져오는 중 오류 발생:", error)
-    //   }
-    // }
-
-    // fetchProfile()
   }, [userId])
 
   return (
