@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react"
 import { useDispatch } from "react-redux"
-import { useNavigate } from "react-router"
+import { useLocation, useNavigate } from "react-router"
 import axios from "axios"
 import { decodeToken } from "jsontokens"
 import "../css/LoginPage.css"
@@ -8,6 +8,8 @@ import { Link, NavLink } from "react-router-dom"
 import useWebSocket from "../components/useWebSocket"
 
 function LoginPage() {
+  const location = useLocation()
+
   const [loginData, setLoginData] = useState({
     username: "",
     password: "",
@@ -31,16 +33,6 @@ function LoginPage() {
     }
   }
 
-  useEffect(() => {
-    const token = localStorage.getItem("token")
-    const kakaoToken = localStorage.getItem("KakaoToken")
-
-    if (token || kakaoToken) {
-      // 토큰이 있는 상태라면 홈으로 리디렉션
-      navigate("/")
-    }
-  }, [navigate])
-
   const processToken = (token) => {
     if (token.startsWith("Bearer+")) {
       localStorage.setItem("token", token)
@@ -63,7 +55,8 @@ function LoginPage() {
 
       // WebSocket이 성공적으로 연결된 후, navigate를 수행
       if (isConnected) {
-        navigate("/")
+        const from = location.state?.from?.pathname || "/"
+        navigate(from)
         window.location.reload()
       } else {
         console.error("WebSocket not connected yet") // 연결 상태가 아닐 때 에러 로그
@@ -98,10 +91,14 @@ function LoginPage() {
   const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.REACT_APP_KAKAO_LOGIN_API_KEY}&redirect_uri=${process.env.REACT_APP_KAKAO_REDIRECT_URL}&response_type=code`
 
   const handleGoogleLogin = () => {
+    const from = location.state?.from?.pathname || "/"
+    sessionStorage.setItem("from", from)
     window.location = googleURL
   }
 
   const handleKakaoLogin = () => {
+    const from = location.state?.from?.pathname || "/"
+    sessionStorage.setItem("from", from)
     window.location = kakaoURL
   }
 
