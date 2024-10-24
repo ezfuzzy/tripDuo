@@ -1,19 +1,21 @@
 import axios from "axios"
 import React, { createRef, useEffect, useRef, useState } from "react"
 import { shallowEqual, useSelector } from "react-redux"
-import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom"
+import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 import ConfirmModal from "../../components/ConfirmModal"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faCrown, faDove, faEye, faFeather, faHeart, faMessage, faPlane, faStar, faUser } from "@fortawesome/free-solid-svg-icons"
+import { faEye, faHeart, faMessage, faStar } from "@fortawesome/free-solid-svg-icons"
 import SavedPlacesKakaoMapComponent from "../../components/SavedPlacesKakaoMapComponent"
 import SavedPlacesGoogleMapComponent from "../../components/SavedPlacesGoogleMapComponent"
 import LoadingAnimation from "../../components/LoadingAnimation"
+import Modal from "react-modal"
+import { ratingConfig } from "../../constants/mapping"
 
 
 //새로 등록한 댓글을 추가할 인덱스
 let commentIndex = 0
 //댓글 글자수 제한
-const maxLength = 3000
+const maxLength = 100
 
 // 모달 스타일 설정
 const customStyles = {
@@ -25,7 +27,7 @@ const customStyles = {
     marginRight: "-50%",
     transform: "translate(-50%, -50%)",
   },
-};
+}
 
 const TripLogBoardDetail = () => {
   //로딩 상태 추가
@@ -44,17 +46,17 @@ const TripLogBoardDetail = () => {
   const [isLiked, setIsLiked] = useState(false)
 
   // 별점 버튼 설정
-  const [isRated, setRated] = useState(false);
+  const [isRated, setRated] = useState(false)
   // post 에 새로 매기는 점수
-  const [newPostRating, setNewPostRating] = useState(0);
+  const [newPostRating, setNewPostRating] = useState(0)
   // 로그인된 사용자에 대한 postRating 관련 데이터
-  const [ratedInfo, setRatedInfo] = useState({});
+  const [ratedInfo, setRatedInfo] = useState({})
   // 로그인된 사용자가 매긴 점수
-  const [myRating, setMyRating] = useState(0);
+  const [myRating, setMyRating] = useState(0)
   // 게시물의 rating 총점
-  const [postRating, setPostRating] = useState(0);
+  const [postRating, setPostRating] = useState(0)
   // rating 모달 관리
-  const [isRatingModalOpened, setIsRatingModalOpened] = useState(false);
+  const [isRatingModalOpened, setIsRatingModalOpened] = useState(false)
 
   //글 하나의 정보 상태값으로 관리
   const [postInfo, setPostInfo] = useState({ tags: [], postData: [{ dayMemo: "", places: [""] }] })
@@ -67,6 +69,15 @@ const TripLogBoardDetail = () => {
   const [kakaoMapCenterLocation, setKakaoMapCenterLocation] = useState({ Ma: 37.5665, La: 126.978 })
   //구글 지도의 중심 좌표를 저장하는 상태값
   const [googleMapCenterLocation, setGoogleMapCenterLocation] = useState({ Ma: 37.5665, La: 126.978 })
+  // map 객체를 저장할 상태값
+  const [kakaoMap, setKakaoMap] = useState(null)
+  // SavedPlacesGoogleMapComponent를 참조할 ref 생성
+  const savedPlacesGoogleMapComponentRef = useRef(null)
+  //infowWindow 상태값 관리
+  const [currentInfoWindow, setCurrentInfoWindow] = useState(null)
+  // 스크롤을 이동할 위치의 요소에 대한 참조 생성
+  const scrollToRef = useRef(null)
+
   //댓글 목록을 상태값으로 관리
   const [commentList, setCommentList] = useState([])
   //댓글의 현재 페이지 번호
@@ -88,36 +99,19 @@ const TripLogBoardDetail = () => {
 
   //검색 키워드, 국내외 관련 처리
   const [searchParams] = useSearchParams()
-  const location = useLocation()
-  const searchParams2 = new URLSearchParams(location.search)
   const domesticInternational = searchParams.get('di')
   //Confirm 모달을 띄울지 여부를 상태값으로 관리
   const [confirmShow, setConfirmShow] = useState(false)
   //action 발행하기 위해
   const navigate = useNavigate()
 
-  //--------------------------------------------------------------------------------------------------------------rating 관리 부
-  // rating 비교 조건 데이터
-  const ratingConfig = [
-    { min: 0, max: 1499, icon: faFeather, color: "gray" }, // 이코노미
-    { min: 1500, max: 2999, icon: faFeather, color: "blue" }, // 프리미엄 이코노미
-    { min: 3000, max: 4499, icon: faDove, color: "gray" }, // 비지니스
-    { min: 4500, max: 5999, icon: faDove, color: "blue" }, // 프리미엄 비지니스
-    { min: 6000, max: 7499, icon: faPlane, color: "gray" }, // 퍼스트
-    { min: 7500, max: 8999, icon: faPlane, color: "blue" }, // 프리미엄 퍼스트
-    { min: 9000, max: 10000, icon: faCrown, color: "yellow" }, // 로얄
-    { min: -Infinity, max: Infinity, icon: faUser, color: "black" }, // 기본값
-  ]
-
   // rating 값에 따른 아이콘과 색상 계산 //
   const getRatingDetails = (ratings) => {
-    return (
-      ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { icon: faUser, color: "black" }
-    ) // 기본값
+    return ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { imageSrc: "default.svg" } // 기본값
   }
 
-  const { icon: ratingIcon, color: ratingColor } = getRatingDetails(writerProfile.ratings || 0);
-  //--------------------------------------------------------------------------------------------------------------
+  const imageSrc = getRatingDetails(writerProfile.ratings || 0)
+
   useEffect(() => {
     // 로딩 애니메이션을 0.5초 동안만 표시
     setLoading(true)
@@ -139,31 +133,36 @@ const TripLogBoardDetail = () => {
         //게시글 정보
         const postData = res.data.dto
         setPostInfo(postData)
+        setIsLiked(res.data.dto.like)
+
         //글 작성자 정보
         const writerData = res.data.userProfileInfo
         setWriterProfile(writerData)
 
         //rating 관련 정보
         setPostRating(res.data.dto.rating || 0) // 총점
-        setRatedInfo(res.data.postRating || {}); // 현재 사용자가 매긴 rating 의 정보
+        setRatedInfo(res.data.postRating || {}) // 현재 사용자가 매긴 rating 의 정보
         setMyRating(res.data.postRating.rating || "") // 현재 사용자가 매긴 rating 의 값 (과거 값)
         //현재 사용자가 rating을 매겼는지 여부
         if (res.data.postRating === "") {
-          setRated(false);
+          setRated(false)
         } else {
-          setRated(true);
+          setRated(true)
         }
 
         //장소 정보
-        const places = postData.postData.reduce((acc, day) => acc.concat(day.places), [])
-        setAllPlaces(places)
+        if (postData.postData !== null) {
+          const places = postData.postData.reduce((acc, day) => acc.concat(day.places), [])
 
-        // 첫 번째 장소로 지도 중심 설정
-        if (places.length > 0 && places[0].position && domesticInternational === "Domestic") {
-          setKakaoMapCenterLocation({ Ma: places[0].position.Ma, La: places[0].position.La });
-        }
-        if (places.length > 0 && places[0] && domesticInternational === "Domestic") {
-          setGoogleMapCenterLocation({ Ma: places[0].Ma, La: places[0].La });
+          setAllPlaces(places)
+
+          // 첫 번째 장소로 지도 중심 설정
+          if (places.length > 0 && places[0].position && domesticInternational === "Domestic") {
+            setKakaoMapCenterLocation({ Ma: places[0].position.Ma, La: places[0].position.La })
+          }
+          if (places.length > 0 && places[0] && domesticInternational !== "Domestic") {
+            setGoogleMapCenterLocation({ Ma: places[0].Ma, La: places[0].La })
+          }
         }
 
         //댓글 목록이 존재하는지 확인 후, 배열에 ref라는 방 추가
@@ -179,7 +178,6 @@ const TripLogBoardDetail = () => {
         setTotalPageCount(res.data.totalCommentPages)
       })
       .catch((error) => {
-        console.log("데이터를 가져오지 못했습니다.", error)
         alert("게시물을 불러오는 중 문제가 발생했습니다.")
       })
   }, [id, searchParams, isRated, myRating]) //경로 파라미터가 변경될 때 서버로부터 데이터 다시 받기
@@ -237,7 +235,6 @@ const TripLogBoardDetail = () => {
             }))
           })
           .catch((error) => {
-            console.log(error)
             alert(error.response.data)
           })
       } else if (isLiked) { //이미 좋아요 누른 경우
@@ -252,7 +249,6 @@ const TripLogBoardDetail = () => {
             })
           })
           .catch((error) => {
-            console.log(error)
             alert(error.response.data)
           })
       }
@@ -265,10 +261,48 @@ const TripLogBoardDetail = () => {
   const handlePlaceClick = (place) => {
     if (place.position && place.position.Ma !== undefined && place.position.La !== undefined) {
       setKakaoMapCenterLocation({ Ma: place.position.Ma, La: place.position.La })
+
+      // 기존의 열린 infoWindow가 있다면 닫기
+      if (currentInfoWindow) {
+        currentInfoWindow.close()
+      }
+
+      // 새로운 infoWindow 생성
+      const infoWindow = new window.kakao.maps.InfoWindow({
+        content: `
+          <div style="padding:10px;font-size:12px;display:flex;flex-direction:column;align-items:flex-start;width:100%;max-width:600px;height:100%;">
+              <div style="margin-bottom: 8px; display: flex; justify-content: space-between; width: 100%;">
+                  <strong>${place.place_name}</strong>
+              </div>
+              <div style="margin-bottom: 8px;">${place.address_name}</div>
+              <div style="margin-bottom: 8px;">전화번호: ${place.phone || '정보 없음'}</div>
+              <div style="margin-bottom: 16px;"><a href="${place.place_url}" target="_blank">장소 링크</a></div>
+          </div>
+      `,
+      })
+
+      // 새로운 infoWindow 열기
+      const markerPosition = new window.kakao.maps.LatLng(place.position.Ma, place.position.La)
+      infoWindow.open(kakaoMap, new window.kakao.maps.Marker({ position: markerPosition, map: kakaoMap }))
+
+      // 새로운 infoWindow를 상태로 저장
+      setCurrentInfoWindow(infoWindow)
+      // scrollIntoView 메서드를 사용하여 특정 요소로 스크롤 이동
+      if (scrollToRef.current) {
+        scrollToRef.current.scrollIntoView({ behavior: "smooth" })
+      }
     } else {
-      setGoogleMapCenterLocation({ Ma: place.Ma, La: place.La })
+      // setGoogleMapCenterLocation({ Ma: place.Ma, La: place.La })
+      // Google Map의 infoWindow 열기
+      if (savedPlacesGoogleMapComponentRef.current) {
+        savedPlacesGoogleMapComponentRef.current.openInfoWindowAtPlace(place) // SavedPlacesGoogleMapComponent에서 제공하는 함수 호출
+      }
+      // scrollIntoView 메서드를 사용하여 특정 요소로 스크롤 이동
+      if (scrollToRef.current) {
+        scrollToRef.current.scrollIntoView({ behavior: "smooth" })
+      }
     }
-  };
+  }
 
   // 답글 텍스트 상태 업데이트
   const handleReplyTextChange = (index, value) => {
@@ -305,11 +339,52 @@ const TripLogBoardDetail = () => {
     }
   }
 
-  // 신고 처리 함수
-  const handleReportComment = (commentId) => {
-    // 신고 기능 구현
-    alert(`댓글 ID ${commentId}가 신고되었습니다.`)
-    // 추가로 서버에 신고 요청을 보내는 로직을 여기에 추가
+  // 게시물 신고 처리 함수
+  const handleReportPost = () => {
+    if (!loggedInUserId) {
+      alert("로그인 후 이용가능합니다.")
+    } else {
+      const data = {
+        content: "게시물 신고",
+        reportedUserId: writerProfile.userId,
+      }
+      if (window.confirm("해당 게시물을 신고하시겠습니까")) {
+        axios
+          .post(`/api/v1/reports/${postInfo.id}/POST/${loggedInUserId}`, data)
+          .then((res) => {
+            if (res.data.isSuccess) {
+              alert("해당 게시물에 대한 신고가 접수되었습니다.")
+            } else {
+              alert(res.data.message)
+            }
+          })
+          .catch((error) => console.log(error))
+      }
+    }
+  }
+
+  // 댓글 신고 처리 함수
+  const handleReportComment = (commentInfo) => {
+    if (!loggedInUserId) {
+      alert("로그인 후 이용가능합니다.")
+    } else {
+      const data = {
+        content: "댓글 신고",
+        reportedUserId: commentInfo.userId,
+      }
+      if (window.confirm("해당 댓글을 신고하시겠습니까")) {
+        axios
+          .post(`/api/v1/reports/${commentInfo.id}/POST_COMMENT/${loggedInUserId}`, data)
+          .then((res) => {
+            if (res.data.isSuccess) {
+              alert("해당 댓글에 대한 신고가 접수되었습니다.")
+            } else {
+              alert(res.data.message)
+            }
+          })
+          .catch((error) => console.log(error))
+      }
+    }
   }
 
   //댓글 등록
@@ -330,7 +405,6 @@ const TripLogBoardDetail = () => {
     axios
       .post(`/api/v1/posts/${postInfo.id}/comments`, data)
       .then((res) => {
-        console.log(res.data)
         //방금 저장한 댓글의 정보
         const newComment = res.data
         //댓글의 정보에 ref라는 방을 추가하고 거기에 참조값을 담을 object넣어준다
@@ -362,7 +436,6 @@ const TripLogBoardDetail = () => {
 
     axios.post(`/api/v1/posts/${postInfo.id}/comments`, data)
       .then((res) => {
-        console.log(res.data)
         //방금 저장한 댓글의 정보
         const newComment = res.data
         //댓글의 정보에 ref라는 방을 추가하고 거기에 참조값을 담을 object넣어준다
@@ -475,10 +548,29 @@ const TripLogBoardDetail = () => {
     }
   }
 
+  //댓글 등록일 날짜 형식 변환
+  const formatDate = (dateString) => {
+    const date = new Date(dateString)
+
+    const formattedDate = date.toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+
+    const formattedTime = date.toLocaleTimeString("ko-KR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    })
+
+    return `${formattedDate} ${formattedTime}`
+  }
+
   //rating 모달 열기
   const openRatingModal = (type) => {
     setIsRatingModalOpened(true);
-  };
+  }
 
   //rating 모달 닫기
   const closeRatingModal = () => {
@@ -488,35 +580,34 @@ const TripLogBoardDetail = () => {
   //별을 클릭했을 때 rating 을 저장
   const handleRating = (index) => {
     setNewPostRating(index);
-  };
+  }
 
   //별점 등록
   const handlePostRating = () => {
     axios
-      .post(`/api/v1/posts/${postInfo.id}/ratings`
-        , {
-          userId: loggedInUserId, postId: postInfo.id, rating: newPostRating
-        })
+      .post(`/api/v1/posts/${postInfo.id}/ratings`, { userId: loggedInUserId, postId: postInfo.id, rating: newPostRating })
       .then((res) => {
-        closeRatingModal();
-        setRated(true);
+        closeRatingModal()
+        setRated(true)
       })
-      .catch((error) => console.log(error));
-  };
+      .catch((error) => console.log(error))
+  }
 
   //별점 수정
   const handleUpdateRating = () => {
     axios
-      .put(`/api/v1/posts/${postInfo.id}/ratings/${ratedInfo.id}`
-        , {
-          id: ratedInfo.id, userId: loggedInUserId, postId: postInfo.id, rating: newPostRating
-        })
+      .put(`/api/v1/posts/${postInfo.id}/ratings/${ratedInfo.id}`, {
+        id: ratedInfo.id,
+        userId: loggedInUserId,
+        postId: postInfo.id,
+        rating: newPostRating,
+      })
       .then((res) => {
         setMyRating(newPostRating)
-        closeRatingModal();
+        closeRatingModal()
       })
-      .catch((error) => console.log(error));
-  };
+      .catch((error) => console.log(error))
+  }
 
   //별점 삭제
   const handleDeleteRating = () => {
@@ -524,12 +615,12 @@ const TripLogBoardDetail = () => {
       axios
         .delete(`/api/v1/posts/${postInfo.id}/ratings/${ratedInfo.id}`)
         .then((res) => {
-          setRated(false);
-          alert("별점을 삭제하였습니다.");
+          setRated(false)
+          alert("별점을 삭제하였습니다.")
         })
-        .catch((error) => console.log(error));
+        .catch((error) => console.log(error))
     }
-  };
+  }
 
   return (
 
@@ -537,14 +628,21 @@ const TripLogBoardDetail = () => {
       {/* 로딩 애니메이션 */}
       {loading && <LoadingAnimation />}
       <div className="flex flex-col h-full bg-gray-100 p-6">
-      <div className="flex flex-wrap justify-between items-center gap-2 mt-2">
+        <div className="flex flex-wrap justify-between items-center gap-2 mt-2">
           {/* 왼쪽에 "목록으로" 버튼 */}
           <div className="flex justify-start">
             <button
-              onClick={() => navigate(`/posts/course?di=${domesticInternational}`)}
-              className="text-white bg-tripDuoMint hover:bg-tripDuoGreen focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
+              onClick={() => navigate(`/posts/trip_log?di=${domesticInternational}`)}
+              className="text-white bg-tripDuoMint hover:bg-tripDuoGreen focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 mr-4 text-center">
               목록으로
             </button>
+            {postInfo.writer === loggedInNickname &&
+              <button
+                onClick={() => navigate("/private/myTripLog")}
+                className="text-tripDuoGreen border border-tripDuoGreen hover:bg-tripDuoMint focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
+                Trip log
+              </button>
+            }
           </div>
 
           {/* 오른쪽에 별점 및 삭제 버튼 */}
@@ -577,18 +675,17 @@ const TripLogBoardDetail = () => {
               </p>
             )}
           </div>
-
-          {/* 태그들 */}
-          <div className="flex gap-2">
-            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{postInfo.country}</span>
-            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{postInfo.city}</span>
-            {postInfo.tags &&
-              postInfo.tags.map((tag, index) => (
-                <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center">
-                  {tag}
-                </span>
-              ))}
-          </div>
+        </div>
+        {/* 태그들 */}
+        <div className="flex gap-2 mt-4">
+          <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{postInfo.country}</span>
+          <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full items-center">#{postInfo.city}</span>
+          {postInfo.tags &&
+            postInfo.tags.map((tag, index) => (
+              <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center">
+                {tag}
+              </span>
+            ))}
         </div>
 
         {/* 여행 일정 */}
@@ -603,6 +700,44 @@ const TripLogBoardDetail = () => {
           <div>
             <strong className="mr-6">{postInfo.title}</strong>
           </div>
+          {/* 오른쪽 DropDown 메뉴 */}
+          <div className="relative inline-block text-left">
+            <button
+              onClick={(e) => toggleDropdown(e, "titleDropdown")}
+              className="flex items-center p-2 text-gray-500 rounded hover:text-gray-700">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-6 h-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v.01M12 12v.01M12 18v.01" />
+              </svg>
+            </button>
+
+            {dropdownIndex === "titleDropdown" && (
+              <div className="absolute right-0 w-40 mt-2 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg">
+                <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                  {/* <button
+                    className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                    onClick={() => {
+                      setDropdownIndex(null)
+                      alert("Option 1 selected")
+                    }}>
+                    차단
+                  </button> */}
+                  <button
+                    className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                    onClick={() => {
+                      setDropdownIndex(null)
+                      handleReportPost()
+                    }}>
+                    신고
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* 수정, 삭제 버튼 */}
           {loggedInNickname === postInfo.writer && (
@@ -613,7 +748,7 @@ const TripLogBoardDetail = () => {
                 여행기록 작성
               </button>
               <button
-                onClick={() => navigate(`/posts/course/${id}/edit?di=${domesticInternational}`)}
+                onClick={() => navigate(`/posts/trip_log/${id}/edit?di=${domesticInternational}`)}
                 className="text-white bg-gray-600 hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 text-center">
                 수정
               </button>
@@ -638,21 +773,20 @@ const TripLogBoardDetail = () => {
             {writerProfile.profilePicture ? (
               <img src={writerProfile.profilePicture} className="w-20 h-20 rounded-full" alt="" />
             ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
+              <img
                 className="bi bi-person-circle w-20 h-20"
-                viewBox="0 0 16 16">
-                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-                <path
-                  fillRule="evenodd"
-                  d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.206 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"
-                />
-              </svg>
+                src={`${process.env.PUBLIC_URL}/img/defaultImages/defaultProfilePicture.svg`}
+                alt="default profile img"
+              />
             )}
             <div>
-              <h3 className="text-base font-semibold leading-7 tracking-tight text-gray-900">
-                <FontAwesomeIcon icon={ratingIcon} color={ratingColor}></FontAwesomeIcon>
+              <h3 className=" flex text-base font-semibold leading-7 tracking-tight text-gray-900">
+                <img
+                  className="w-6 h-6 mr-2"
+                  src={`${process.env.PUBLIC_URL}/img/userRatingImages/${imageSrc.imageSrc}`}
+                  alt="user rating"
+                  title={`${imageSrc.imageSrc.replace(".svg", "")}`}
+                />
                 {writerProfile.nickname}
               </h3>
               <p className="text-sm font-semibold leading-6 text-indigo-600">
@@ -674,32 +808,34 @@ const TripLogBoardDetail = () => {
                   {isLiked ? "unLike" : "Like"}
                 </button>
               )}
-              <span className="text-sm text-gray-500">
-                <span className="mx-3">
-                  <FontAwesomeIcon icon={faEye} className="h-5 w-5 mr-2" />
-                  {postInfo.viewCount}
-                </span>
-                <span className="mr-3">
-                  <FontAwesomeIcon icon={faHeart} className="h-4 w-4 mr-2" />
-                  {postInfo.likeCount}
-                </span>
-                <span className="mr-3">
-                  <FontAwesomeIcon icon={faMessage} className="h-4 w-4 mr-2" />
-                  {postInfo.commentCount}
-                </span>
-              </span>
             </div>
+          </div>
+          <div className="ml-20">
+            <span className="text-sm text-gray-500">
+              <span className="mx-3">
+                <FontAwesomeIcon icon={faEye} className="h-4 w-4 mr-2" />
+                {postInfo.viewCount}
+              </span>
+              <span className="mr-3">
+                <FontAwesomeIcon icon={faHeart} className="h-3 w-3 mr-2" />
+                {postInfo.likeCount}
+              </span>
+              <span className="mr-3">
+                <FontAwesomeIcon icon={faMessage} className="h-3 w-3 mr-2" />
+                {postInfo.commentCount}
+              </span>
+            </span>
           </div>
         </div>
 
         {/* Day 목록 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 mb-6">
           {(postInfo.postData || [{ dayMemo: "", places: [] }]).map((day, dayIndex) => (
             <div key={dayIndex} className="bg-white rounded-lg shadow-md p-4">
               <h2 className="text-xl font-semibold mb-4">Day {dayIndex + 1} - {postInfo.startDate && calculateDate(postInfo.startDate, dayIndex)} </h2>
               <div className="mb-4">
-                <label className="block font-semibold">Day Record</label>
-                <p className="border p-2 w-3/4 bg-gray-100">{day.dayMemo || "메모가 없습니다"}</p>
+                <label className="block font-semibold mb-2">Day Record</label>
+                <p className="text-sm border p-2 w-full bg-gray-100">{day.dayMemo || "메모가 없습니다"}</p>
               </div>
               {day.places && day.places.length > 0 ? (
                 day.places.map((place, placeIndex) => (
@@ -721,12 +857,12 @@ const TripLogBoardDetail = () => {
             </div>
           ))}
         </div>
-        <div>
+        <div ref={scrollToRef}>
           {
             domesticInternational === "Domestic" ?
-              <SavedPlacesKakaoMapComponent savedPlaces={allPlaces} centerLocation={kakaoMapCenterLocation} />
+              <SavedPlacesKakaoMapComponent savedPlaces={allPlaces} centerLocation={kakaoMapCenterLocation} onMapReady={setKakaoMap}/>
               :
-              <SavedPlacesGoogleMapComponent savedPlaces={allPlaces} centerLocation={googleMapCenterLocation} />
+              <SavedPlacesGoogleMapComponent savedPlaces={allPlaces} centerLocation={googleMapCenterLocation} ref={savedPlacesGoogleMapComponentRef}/>
           }
         </div>
 
@@ -867,7 +1003,7 @@ const TripLogBoardDetail = () => {
 
                         {/* 답글 및 기타 버튼 */}
                         <div className="mt-2 text-sm text-gray-500">
-                          <small className="ml-4 text-gray-400">{item.createdAt}</small>
+                          <small className="ml-4 text-gray-400">{formatDate(item.createdAt)}</small>
                           <button
                             className="ml-4 text-blue-500 hover:text-blue-700 text-sm"
                             onClick={(e) => {
@@ -975,9 +1111,9 @@ const TripLogBoardDetail = () => {
         </div>
 
         {/* 댓글 더보기 버튼 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 mx-auto mb-5">
+        <div className="mx-auto mb-5">
           <button
-            className={`bg-green-500 text-white py-2 px-4 rounded ${isCommentListLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
+            className={`bg-tripDuoMint text-white py-2 px-4 rounded ${isCommentListLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
               }`}
             disabled={isCommentListLoading}
             onClick={handleMoreComment}>
@@ -989,6 +1125,30 @@ const TripLogBoardDetail = () => {
           </button>
         </div>
       </div>
+      <Modal
+        isOpen={isRatingModalOpened}
+        onRequestClose={closeRatingModal}
+        style={customStyles}
+        contentLabel="채팅방 생성"
+        ariaHideApp={false}>
+        <div className="flex items-center  mb-5">
+          {[1, 2, 3, 4, 5].map((star, index) => (
+            <div key={index} onClick={() => handleRating(star)}>
+              <FontAwesomeIcon
+                icon={faStar}
+                className={`w-6 h-6 cursor-pointer ${newPostRating >= star ? "text-yellow-400" : "text-gray-300"}`}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="text-center">
+          <button
+            onClick={isRated ? handleUpdateRating : handlePostRating}
+            className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100">
+            평가하기
+          </button>
+        </div>
+      </Modal>
     </div>
   )
 }

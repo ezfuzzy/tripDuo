@@ -7,40 +7,21 @@ import CourseGoogleMapComponent from "../../components/CourseGoogleMapComponent"
 import Calendar from "react-calendar"
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa"
 import moment from "moment"
+import { citiesByCountry } from "../../constants/mapping"
 
 const CourseBoardForm = () => {
   const userId = useSelector((state) => state.userData.id, shallowEqual)
   const nickname = useSelector((state) => state.userData.nickname, shallowEqual)
 
-  const calendarRef = useRef(null);
+  const calendarRef = useRef(null)
 
   // 달력에서 선택된 날짜 범위 저장
-  const [selectedDateRange, setSelectedDateRange] = useState([null, null]);
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false); // 캘린더 표시 여부 상태
- 
+  const [selectedDateRange, setSelectedDateRange] = useState([null, null])
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false) // 캘린더 표시 여부 상태
+
   const [title, setTitle] = useState("")
   const [country, setCountry] = useState("")
   const [city, setCity] = useState("")
-
-  //나라별 도시 목록
-  const citiesByCountry = {
-    대한민국: ["서울", "부산", "제주", "인천"],
-    일본: ["도쿄", "오사카", "교토", "삿포로"],
-    중국: ["베이징", "상하이", "광저우", "시안"],
-    인도: ["델리", "뭄바이", "콜카타", "벵갈루루"],
-    스페인: ["바르셀로나", "그라나다", "마드리드", "세비야"],
-    영국: ["런던", "맨체스터", "버밍엄", "리버풀"],
-    독일: ["베를린", "뮌헨", "프랑크푸르트", "함부르크"],
-    프랑스: ["파리", "마르세유", "리옹", "니스"],
-    이탈리아: ["로마", "밀라노", "베네치아", "피렌체"],
-    미국: ["뉴욕", "로스앤젤레스", "시카고", "마이애미"],
-    캐나다: ["토론토", "밴쿠버", "몬트리올", "오타와"],
-    브라질: ["상파울루", "리우데자네이루", "브라질리아", "살바도르"],
-    호주: ["시드니", "멜버른", "브리즈번", "퍼스"],
-    러시아: ["모스크바", "상트페테르부르크", "노보시비르스크", "예카테린부르크"],
-    "남아프리카 공화국": ["케이프타운", "요하네스버그", "더반", "프리토리아"],
-    // Add more countries and cities as needed
-  };
 
   // 선택한 나라에 맞는 도시 목록을 얻음
   const cities = citiesByCountry[country] || []
@@ -82,11 +63,26 @@ const CourseBoardForm = () => {
 
   const handleTagInput = (e) => {
     const value = e.target.value
+
+    // 태그 길이 15자로 제한
+    if (value.length > 15) {
+      alert("태그는 최대 15자까지 입력 가능합니다.")
+      return
+    }
+
     setTagInput(value)
 
     if (value.endsWith(" ") && value.trim() !== "") {
       const newTag = value.trim()
+
+      //조건: #으로 시작, 중복 방지, # 단독 입력 방지
       if (newTag !== "#" && newTag.startsWith("#") && !tags.includes(newTag)) {
+        // 태그 최대 6개로 제한
+        if (tags.length >= 6) {
+          alert("태그는 최대 6개까지 추가할 수 있습니다.")
+          return
+        }
+
         setTags([...tags, newTag])
         setTagInput("")
       }
@@ -164,13 +160,13 @@ const CourseBoardForm = () => {
   //작성 완료 버튼
   const handleSubmit = () => {
     if (!title) {
-      alert("제목을 입력해주세요.");
-      return;
+      alert("제목을 입력해주세요.")
+      return
     }
 
     if (!country) {
-      alert("나라를 선택해주세요.");
-      return;
+      alert("나라를 선택해주세요.")
+      return
     }
 
     const post = {
@@ -189,7 +185,7 @@ const CourseBoardForm = () => {
     axios
       .post("/api/v1/posts/course", post)
       .then((res) => {
-        status === "PRIVATE" ? navigate(`/myPlan/${userId}`)
+        status === "PRIVATE" ? navigate("/private/myPlan")
           : navigate(`/posts/course?di=${domesticInternational}`)
       })
       .catch((error) => console.log(error))
@@ -197,76 +193,103 @@ const CourseBoardForm = () => {
 
   // 캘린더의 날짜 스타일을 설정하는 함수 추가
   const tileClassName = ({ date }) => {
-    const day = date.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
+    const day = date.getDay() // 0: 일요일, 1: 월요일, ..., 6: 토요일
     // 기본적으로 검은색으로 설정
-    let className = "text-black";
+    let className = "text-black"
 
     // 토요일과 일요일에만 빨간색으로 변경
     if (day === 0 || day === 6) {
-      className = "text-red-500"; // 토요일과 일요일에 숫자를 빨간색으로 표시
+      className = "text-red-500" // 토요일과 일요일에 숫자를 빨간색으로 표시
     }
 
-    return className; // 최종 클래스 이름 반환
+    return className // 최종 클래스 이름 반환
+  }
+
+  const calculateNightsAndDays = (startDate, endDate) => {
+
+    if (!startDate || !endDate) return ""
+
+    // 두 날짜 간의 차이를 밀리초 단위로 계산
+    const diffTime = endDate.getTime() - startDate.getTime()
+
+
+    // 차이를 일(day) 단위로 변환
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+
+    if (diffDays > 0) {
+      // "박"의 계산 (diffDays - 1)
+      const days = diffDays + 1
+      const nights = diffDays
+
+      return `(${nights}박 ${days}일)`
+    } else {
+      return `(당일 일정)`
+    }
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-[900px]">
-      <div className="flex flex-col h-full bg-white p-6 shadow-lg rounded-lg">
+    <div className="container mx-auto p-6 max-w-[900px] bg-gradient-to-r from-green-100 to-white rounded-xl shadow-lg">
+      <div className="flex flex-col h-full bg-white p-6 shadow-xl rounded-lg">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-3xl font-semibold text-gray-800">
-            {status === "PRIVATE" && "나만의 "}{domesticInternational === "Domestic" ? "국내 " : "해외 "}여행 코스 작성
+          <h1 className="text-4xl font-bold text-gray-900">
+            {status === "PRIVATE" && "나만의 "}
+            {domesticInternational === "Domestic" ? "국내 " : "해외 "}여행 코스 작성
           </h1>
-          <button
-            onClick={() => {
-              status === "PRIVATE" ? navigate(`/myPlan/${userId}`)
-                : navigate(`/posts/course?di=${domesticInternational}`)
-            }}
-            className="text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-full text-sm px-5 py-2">
-            목록으로 돌아가기
-          </button>
-          <button
-            className="text-white bg-indigo-600 hover:bg-indigo-500 rounded-full text-sm px-5 py-2"
-            onClick={handleSubmit}>
-            작성 완료
-          </button>
+          <div className="flex justify-end space-x-4">
+            <button
+              onClick={() => {
+                status === "PRIVATE" ? navigate(`/private/myPlan`)
+                  : navigate(`/posts/course?di=${domesticInternational}`)
+              }}
+              className="text-white bg-green-400 hover:bg-green-700 rounded-full text-sm font-bold px-6 py-2 shadow-md transition duration-150">
+              목록으로
+            </button>
+            <button
+              className="text-white bg-tripDuoMint hover:bg-tripDuoGreen rounded-full text-sm font-bold px-6 py-2 shadow-lg transition duration-150"
+              onClick={handleSubmit}>
+              작성 완료
+            </button>
+          </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="pl-6">
           <div className="flex mb-4">
             {/* 제목 요소 */}
             <div className="flex-grow-[4]">
-              <label htmlFor="title" className="block text-lg font-medium text-gray-700">
-                제목
-              </label>
               <input
                 className="border-gray-300 rounded-md p-2 w-full"
                 type="text"
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder={status==="PRIVATE" ? "MyPage에서 확인 가능한 게시물입니다." : ""}
+                placeholder={status === "PRIVATE" ? "MyPage에서 확인 가능한 게시물입니다." : "제목을 입력해 주세요..."}
+                maxLength={50}
               />
             </div>
 
             {/* 날짜 선택 및 날짜 초기화 버튼 */}
-            <div className="flex flex-grow-[1] items-end justify-end ml-4">
+            <div className="flex flex-grow-[1] items-end justify-end ml-4 mr-6">
               <button
                 onClick={() => setIsCalendarOpen(!isCalendarOpen)}
-                className="text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-full text-sm px-5 py-2"
+                className="text-green-900 text-sm font-bold border-2 border-green-900 hover:bg-indigo-200 rounded-full px-4 py-1"
               >
                 날짜 선택
               </button>
-              <button onClick={handleDateReset} className="text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-full text-sm px-5 py-2 ml-2">
+              <button
+                onClick={handleDateReset}
+                className="text-sm text-gray-500 border-2 hover:bg-indigo-200 rounded-full px-3 py-1 ml-2"
+              >
                 날짜 초기화
               </button>
             </div>
           </div>
+
           {/* 선택한 날짜 */}
-          <div className="sm:col-span-6">
-            <p style={{ marginTop: '-10px', marginBottom: '-20px' }} className="text-sm text-gray-600 text-right">
-              {selectedDateRange[0] && selectedDateRange[1]
-                ? `${selectedDateRange[0].toLocaleDateString()} ~ ${selectedDateRange[1].toLocaleDateString()}`
-                : "0000. 00. 00. ~ 0000. 00. 00."}
+          <div className="sm:col-span-6 mr-6">
+            <p style={{ marginTop: '-10px', marginBottom: '0px' }} className="text-sm text-gray-600 text-right">
+              {selectedDateRange[0] ? moment(selectedDateRange[0]).format("YYYY. MM. DD") : "0000. 00. 00."} ~
+              {selectedDateRange[1] ? moment(selectedDateRange[1]).format("YYYY. MM. DD") : "0000. 00. 00."}
+              {calculateNightsAndDays(selectedDateRange[0], selectedDateRange[1])}
             </p>
           </div>
 
@@ -305,21 +328,20 @@ const CourseBoardForm = () => {
                       <span className={date.getDay() === 0 || date.getDay() === 6 ? "text-red-500" : "text-black"}>
                         {date.getDate()} {/* 날짜 숫자만 표시 */}
                       </span>
-                    );
+                    )
                   }} // 날짜 내용 설정
                   formatDay={() => null}
                 />
               </div>
             )}
           </div>
+        </div>
 
+        <div className="pl-6 w-5/6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="country" className="block text-lg font-medium text-gray-700">
-                나라
-              </label>
               <select
-                className="border-gray-300 rounded-md p-2 w-full"
+                className="border-gray-300 rounded-md p-1 text-sm w-full"
                 id="country"
                 value={country}
                 onChange={(e) => {
@@ -370,11 +392,8 @@ const CourseBoardForm = () => {
             </div>
 
             <div>
-              <label htmlFor="city" className="block text-lg font-medium text-gray-700">
-                도시
-              </label>
               <select
-                className="border-gray-300 rounded-md p-2 w-full"
+                className="border-gray-300 rounded-md p-1 text-sm w-full"
                 id="city"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
@@ -390,20 +409,17 @@ const CourseBoardForm = () => {
             </div>
           </div>
 
-          <div>
-            <label htmlFor="tags" className="block text-lg font-medium text-gray-700">
-              태그
-            </label>
+          <div className="mt-4">
             <input
               id="tags"
               value={tagInput}
               onChange={handleTagInput}
               placeholder="#태그 입력 후 스페이스바"
-              className="border-gray-300 rounded-md p-2 w-full"
+              className="border-gray-300 rounded-md p-1 text-sm w-full"
             />
             <div className="flex flex-wrap gap-2 mt-2">
-              {tags.map((tag, index) => (
-                <span key={index} className="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full">
+            {tags.map((tag, index) => (
+                <span key={index} className="bg-indigo-100 text-indigo-800 text-sm font-bold px-2 py-1 rounded-md">
                   {tag}
                   <button className="ml-2 text-gray-600 hover:text-gray-900" onClick={() => removeTag(tag)}>
                     &times;
@@ -420,11 +436,11 @@ const CourseBoardForm = () => {
               <div className="flex justify-between items-center mb-2">
                 <h2 className="text-xl font-semibold">Day {dayIndex + 1}</h2>
                 <div className="flex space-x-2">
-                  <button onClick={addDay} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
-                    Day 추가
+                <button onClick={addDay} className="border-2 border-blue-900 hover:bg-blue-100 text-blue-900 px-2 py-1 rounded-md shadow-lg transition duration-300 text-sm font-bold">
+                Day 추가
                   </button>
                   <button
-                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+                    className="border-2 border-red-700 hover:bg-red-100 text-red-700 px-2 py-1 rounded-md shadow-lg transition duration-300 text-sm font-bold"
                     onClick={() => removeDay(dayIndex)}>
                     Day 삭제
                   </button>
@@ -440,6 +456,7 @@ const CourseBoardForm = () => {
                   value={day.dayMemo || ""}
                   onChange={(e) => handleDayMemoChange(dayIndex, e.target.value)}
                   placeholder="메모를 입력하세요..."
+                  maxLength={200}
                 />
               </div>
 
@@ -449,7 +466,7 @@ const CourseBoardForm = () => {
                     <span className="w-20">{placeIndex + 1}번 장소</span>
                     <button
                       type="button"
-                      className="text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-4 py-2.5 text-center"
+                      className="text-blue-900 text-sm font-bold border border-blue-900 hover:bg-blue-100 px-2 py-1 rounded-md shadow-lg transition duration-300"
                       onClick={() => handlePlaceSelection(dayIndex, placeIndex)}>
                       장소 선택
                     </button>
@@ -461,7 +478,7 @@ const CourseBoardForm = () => {
                       />
                       <div className="ml-2 w-1/4">
                         <button
-                          className={`text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-4 py-2.5 text-center ${day.places.length === 0 ? "opacity-50 cursor-not-allowed" : ""
+                          className={`border border-red-700 hover:bg-red-100 text-red-700 px-2 py-1 rounded-md shadow-lg transition duration-300 text-sm font-bold ${day.places.length === 0 ? "opacity-50 cursor-not-allowed" : ""
                             }`}
                           onClick={() => removePlace(dayIndex, placeIndex)}
                           disabled={day.places.length === 0}>
@@ -481,16 +498,22 @@ const CourseBoardForm = () => {
                         id={`placeMemo-${dayIndex}-${placeIndex}`}
                         value={place.placeMemo || ""}
                         onChange={(e) => handlePlaceMemoChange(dayIndex, placeIndex, e.target.value)}
+                        maxLength={150}
                       />
                     </div>
                   </div>
                 </div>
               ))}
-              <button
-                onClick={() => addPlace(dayIndex)}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
-                장소 추가
-              </button>
+              
+              {/* 장소 추가 버튼 */}
+              <div className="flex justify-center mt-4">
+                <button
+                  onClick={() => addPlace(dayIndex)}
+                  className="border-2 border-blue-900 hover:bg-blue-100 text-blue-900 px-4 py-2 rounded-md shadow-lg transition duration-300 text-sm font-bold"
+                >
+                  장소 추가
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -501,7 +524,7 @@ const CourseBoardForm = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
             <div
               className="bg-white p-6 rounded-lg shadow-lg w-2/3 max-w-4xl"
-              style={{ maxHeight: "90vh", overflowY: "auto" }}>
+              style={{ maxHeight: "80vh", overflowY: "auto" }}>
               <div className="flex justify-between items-center mb-4">
                 <div className="text-xl font-bold">
                   Day {selectedDayIndex + 1} : {selectedPlaceIndex + 1}번 장소 선택 중

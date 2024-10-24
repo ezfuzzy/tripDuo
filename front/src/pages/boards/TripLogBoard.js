@@ -2,7 +2,7 @@ import axios from "axios"
 import moment from "moment/moment"
 import { useEffect, useRef, useState } from "react"
 import Calendar from "react-calendar"
-import { Link, useNavigate, useSearchParams } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import LoadingAnimation from "../../components/LoadingAnimation"
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa"
 import { cityMapping, countryMapping } from "../../constants/mapping"
@@ -47,26 +47,13 @@ function TripLogBoard() {
 
   const navigate = useNavigate()
 
-  // 캘린더 외부 클릭시 캘린더 모달 닫기
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
-        setIsCalendarOpen(false) // 달력 닫기
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
-
   useEffect(() => {
     // 로딩 애니메이션을 0.5초 동안만 표시
     setLoading(true)
     setTimeout(() => {
       setLoading(false)
     }, 700)
+
     let pageNum = searchParams.get("pageNum") || 1
     const diValue = searchParams.get("di") || "Domestic"
     const city = searchParams.get("city") || ""
@@ -80,6 +67,20 @@ function TripLogBoard() {
 
     setSearchCriteria({ city, startDate, endDate, country, keyword, condition: searchCriteria.condition })
   }, [searchParams])
+
+  // 캘린더 외부 클릭시 캘린더 모달 닫기
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+        setIsCalendarOpen(false) // 달력 닫기
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
 
   // 검색 필터 + 국내/해외 필터
   const fetchFilteredPosts = (pageNum = 1) => {
@@ -107,21 +108,9 @@ function TripLogBoard() {
         //필터링되어 돌아온 데이터
         let filtered = res.data.list
 
-        //국내 해외 필터링
-        if (domesticInternational === "Domestic") {
-          filtered = filtered.filter((item) => item.country === "대한민국")
-        } else if (domesticInternational === "International") {
-          filtered = filtered.filter((item) => item.country !== "대한민국")
-        }
-
-        // 국내/해외에 따라 상태 값 관리
+        //페이지 정보 상태 값 관리
         setPageInfo((prevInfo) => {
-          const combinedPosts = [
-            ...prevInfo.filter((item) =>
-              domesticInternational === "Domestic" ? item.country === "대한민국" : item.country !== "대한민국"
-            ),
-            ...filtered,
-          ]
+          const combinedPosts = [...prevInfo, ...filtered]
 
           // 중복 제거 (id를 기준으로)
           const uniquePosts = combinedPosts.reduce((acc, currentPost) => {
@@ -164,7 +153,7 @@ function TripLogBoard() {
         setCurrentPage((prevPage) => prevPage + 1)
       }
     })
-    
+
     if (observerRef.current) {
       observer.observe(observerRef.current)
     }
@@ -186,10 +175,19 @@ function TripLogBoard() {
   const handleDesiredCountry = () => {
     const newDomesticInternational = domesticInternational === "International" ? "Domestic" : "International"
     setDomesticInternational(newDomesticInternational)
+    setSearchCriteria({
+      country: "",
+      city: "",
+      startDate: "",
+      endDate: "",
+      keyword: "",
+      condition: "title", // 기본 조건 설정
+    })
     setSearchParams({
       ...searchCriteria,
       di: newDomesticInternational,
     })
+    window.location.reload()
   }
 
   // 새로운 검색을 시작하는 함수
@@ -397,15 +395,15 @@ function TripLogBoard() {
               <span className="whitespace-nowrap">
                 {selectedDateRange[0] && selectedDateRange[1]
                   ? `${selectedDateRange[0].getFullYear().toString().slice(-2)}${(selectedDateRange[0].getMonth() + 1)
-                      .toString()
-                      .padStart(2, "0")}${selectedDateRange[0]
+                    .toString()
+                    .padStart(2, "0")}${selectedDateRange[0]
                       .getDate()
                       .toString()
                       .padStart(2, "0")} / ${selectedDateRange[1].getFullYear().toString().slice(-2)}${(
-                      selectedDateRange[1].getMonth() + 1
-                    )
-                      .toString()
-                      .padStart(2, "0")}${selectedDateRange[1].getDate().toString().padStart(2, "0")}`
+                        selectedDateRange[1].getMonth() + 1
+                      )
+                        .toString()
+                        .padStart(2, "0")}${selectedDateRange[1].getDate().toString().padStart(2, "0")}`
                   : "날짜 선택"}
               </span>
             </button>
@@ -497,17 +495,17 @@ function TripLogBoard() {
                     {post.startDate === null
                       ? "설정하지 않았습니다."
                       : new Date(post.startDate).toLocaleDateString("ko-KR", {
-                          year: "numeric",
-                          month: "2-digit",
-                          day: "2-digit",
-                        })}
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })}
                     {post.endDate === null
                       ? ""
                       : ` ~ ${new Date(post.endDate).toLocaleDateString("ko-KR", {
-                          year: "numeric",
-                          month: "2-digit",
-                          day: "2-digit",
-                        })}`}
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })}`}
                   </p>
                   <p className="text-sm text-right text-green-800 font-semibold">
                     {post.country} - {post.city}

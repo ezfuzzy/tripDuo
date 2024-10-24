@@ -70,9 +70,9 @@ const TripDuoCarousel = () => {
         {carouselItems.map((item, index) => (
           <div key={index} className="keen-slider__slide">
             <img
-              src={`${process.env.PUBLIC_URL}/img/countryImages/${item.imageSrc}`}
+              src={`${process.env.PUBLIC_URL}/img/carouselImages/${item.imageSrc}`}
               alt={`Slide ${index + 1}`}
-              className="w-full h-[500px] object-cover rounded-lg transition-all duration-300 cursor-pointer" // 높이를 약간 늘림
+              className="w-full h-[100px] xs:h-[200px] sm:h-[300px] md:h-[500px] object-cover rounded-lg transition-all duration-300 cursor-pointer"
               onClick={() => handleImageClick(item, index)} // 이미지 클릭 시 해당 슬라이드로 이동
             />
           </div>
@@ -81,12 +81,12 @@ const TripDuoCarousel = () => {
       {/* 왼쪽(이전) 버튼 */}
       <button
         onClick={handlePrev}
-        className="absolute left-[5px] top-1/2 transform -translate-y-1/2 text-tripDuoMint border-2 rounded-full p-2 text-4xl z-10 transition-transform duration-200 hover:scale-110 bg-white bg-opacity-70 shadow-lg">
+        className="absolute left-[5px] top-1/2 transform -translate-y-1/2 text-tripDuoMint border-2 rounded-full p-2 xs:text-3xl sm:text-4xl md:text-5xl z-10 transition-transform duration-200 hover:scale-110 bg-white bg-opacity-70 shadow-lg">
         <FaChevronLeft className="text-tripDuoGreen transition duration-150 mx-auto" />
       </button>
       <button
         onClick={handleNext}
-        className="absolute right-[5px] top-1/2 transform -translate-y-1/2 text-tripDuoMint border-2 rounded-full p-2 text-4xl z-10 transition-transform duration-200 hover:scale-110 bg-white bg-opacity-70 shadow-lg">
+        className="absolute right-[5px] top-1/2 transform -translate-y-1/2 text-tripDuoMint border-2 rounded-full p-2 xs:text-3xl sm:text-4xl md:text-5xl z-10 transition-transform duration-200 hover:scale-110 bg-white bg-opacity-70 shadow-lg">
         <FaChevronRight className="text-tripDuoGreen transition duration-150 mx-auto" />
       </button>
       {/* 슬라이드 점들 */}

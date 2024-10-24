@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom"
 import SockJS from "sockjs-client"
 
 function KakaoRedirect(props) {
+  const from = sessionStorage.getItem("from") || "/" //세션 스토리지에 저장된 경로를 저장
+  
   // 로그인 성공시 MyPage로 이동
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -51,10 +53,10 @@ function KakaoRedirect(props) {
       })
   }, [code])
 
-  const processToken = (token) => {
-    if (token.startsWith("Bearer+")) {
-      localStorage.setItem("token", token)
-      const result = decodeToken(token.substring(7))
+  const processToken = (data) => {
+    if (data.token.startsWith("Bearer+")) {
+      localStorage.setItem("token", data.token)
+      const result = decodeToken(data.token.substring(7))
 
       const userData = {
         id: result.payload.id,
@@ -69,12 +71,19 @@ function KakaoRedirect(props) {
       }
 
       dispatch({ type: "LOGIN_USER", payload: { userData, loginStatus } })
-      axios.defaults.headers.common["Authorization"] = token
+      axios.defaults.headers.common["Authorization"] = data.token
 
       // WebSocket 연결
       connectWebSocket()
 
-      navigate("/completedSignup", { state: { isAllChecked : true } })
+      if (data.isLoginChecked) {
+        sessionStorage.removeItem("from") // 세션 스토리지에서 삭제
+        navigate(from)
+      } else if (!data.isLoginChecked) {
+        //로그인이 처음이라면 회원가입 완료 페이지로
+        navigate("/completedSignup", { state: { isAllChecked: true } })
+      }
+
       window.location.reload()
     }
   }

@@ -39,17 +39,21 @@ public class UserProfileInfo {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private String nickname;
     
     private Long age;
     
     @Enumerated(EnumType.STRING)
+    @Column(length = 6)
     private Gender gender;
-    
+
     private String profilePicture;
+
+    @Column(length = 100)
     private String profileMessage;
-    
+
+    @Column(length = 50)
     private String curLocation;
     
     @Column(columnDefinition = "TEXT[]")

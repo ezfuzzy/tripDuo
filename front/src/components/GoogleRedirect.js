@@ -3,10 +3,11 @@ import axios from "axios"
 import { decodeToken } from "jsontokens"
 import React, { useEffect, useRef, useState } from "react"
 import { useDispatch } from "react-redux"
-import { useLocation, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import SockJS from "sockjs-client"
 
 function GoogleAuthLogin() {
+  const from = sessionStorage.getItem("from") || "/" //세션 스토리지에서 저장된 경로를 저장
   // 현재 사이트 URL 중 code 뒷 부분을 가져오는 코드
   const code = new URL(window.location.href).searchParams.get("code")
   // const encode = encodeURIComponent(code)
@@ -46,10 +47,10 @@ function GoogleAuthLogin() {
       })
   }, [code])
 
-  const processToken = (token) => {
-    if (token.startsWith("Bearer+")) {
-      localStorage.setItem("token", token)
-      const result = decodeToken(token.substring(7))
+  const processToken = (data) => {
+    if (data.token.startsWith("Bearer+")) {
+      localStorage.setItem("token", data.token)
+      const result = decodeToken(data.token.substring(7))
 
       const userData = {
         id: result.payload.id,
@@ -64,12 +65,18 @@ function GoogleAuthLogin() {
       }
 
       dispatch({ type: "LOGIN_USER", payload: { userData, loginStatus } })
-      axios.defaults.headers.common["Authorization"] = token
+      axios.defaults.headers.common["Authorization"] = data.token
 
       // WebSocket 연결
       connectWebSocket()
 
-      navigate("/completedSignup", { state: { isAllChecked : true } })
+      if (data.isLoginChecked) {
+        sessionStorage.removeItem("from") // 세션 스토리지에서 삭제
+        navigate(from)
+      } else if (!data.isLoginChecked) {
+        //로그인이 처음이라면 회원가입 완료 페이지로
+        navigate("/completedSignup", { state: { isAllChecked: true } })
+      }
       window.location.reload()
     }
   }

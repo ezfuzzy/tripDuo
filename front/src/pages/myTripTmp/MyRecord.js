@@ -4,7 +4,7 @@ import { shallowEqual, useSelector } from "react-redux"
 import { useNavigate } from "react-router"
 import { cityMapping, countryMapping } from "../../constants/mapping"
 
-function MyRecord(props) {
+function MyRecord() {
   const loggedInUserId = useSelector((state) => state.userData.id, shallowEqual) // 로그인된 user의 id
   const [postList, setPostList] = useState([])
 
@@ -20,10 +20,10 @@ function MyRecord(props) {
   // 게시글 리스트를 가져오는 함수
   const fetchPostList = (pageNum) => {
     axios
-      .get(`/api/v1/posts/course?userId=${loggedInUserId}&pageNum=${pageNum}`)
-      .then((response) => {
+      .get(`/api/v1/posts/trip_log?userId=${loggedInUserId}&pageNum=${pageNum}`)
+      .then((res) => {
         setPostList((prevList) => {
-          const combinedPosts = [...prevList, ...response.data.list]
+          const combinedPosts = [...prevList, ...res.data.list]
 
           // 중복 제거 (id를 기준으로, acc: 중복이 제거된 누적된 배열)
           const uniquePosts = combinedPosts.reduce((acc, currentPost) => {
@@ -35,7 +35,7 @@ function MyRecord(props) {
 
           return uniquePosts
         })
-        setTotalPages(response.data.totalPages) // 총 페이지 수 업데이트
+        setTotalPages(res.data.totalPages) // 총 페이지 수 업데이트
       })
       .catch((error) => {
         console.log(error)
@@ -86,18 +86,34 @@ function MyRecord(props) {
   return (
     <div className="container mx-auto p-4 max-w-[1024px]">
       {/* 게시글 작성 버튼 */}
-      <div className="flex justify-end mb-6">
+      {/* <div className="flex justify-end mb-6">
         <button
-          onClick={() => navigate("/posts/course/new?status=PRIVATE")}
+          onClick={() => navigate("/posts/trip_log/new?status=PRIVATE")}
           className="bg-tripDuoMint text-white font-bold px-4 py-2 rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300">
-          새 여행 계획하기
+          여행기록 작성
         </button>
+      </div> */}
+      <div className="flex justify-end">
+        <div className="bg-tripDuoMint text-white font-bold px-4 py-2 rounded-md shadow-md">
+          <span>여행기록 작성:</span>
+          <span
+            className="ml-2 cursor-pointer hover:bg-tripDuoGreen transition-all duration-300 px-2 rounded"
+            onClick={() => navigate("/posts/trip_log/new?status=PRIVATE&di=Domestic")}>
+            국내
+          </span>
+          <span className="mx-2">/</span>
+          <span
+            className="cursor-pointer hover:bg-tripDuoGreen transition-all duration-300 px-2 rounded"
+            onClick={() => navigate("/posts/trip_log/new?status=PRIVATE&di=International")}>
+            해외
+          </span>
+        </div>
       </div>
       <div className="container mx-auto p-4 max-w-[1024px]">
         {postList ? (
           <>
             <div className="py-5">
-              <p className="font-bold text-xl text-center">내 여행 계획</p>
+              <p className="font-bold text-xl text-center">내 여행 기록</p>
             </div>
             <ul className="space-y-4">
               {postList.map((post) => {
@@ -120,7 +136,7 @@ function MyRecord(props) {
                       // /* 혼합 모드 설정 */
                       mixBlendMode: "multiply",
                     }}>
-                    <a href={`/posts/course/${post.id}/detail`} className="block">
+                    <a href={`/posts/trip_log/${post.id}/detail?di=${post.country === "대한민국" ? "Domestic" : "International"}`} className="block">
                       <div className="md:flex justify-between">
                         <div>
                           <h4 className="text-xl font-semibold">{post.title}</h4>
@@ -148,7 +164,7 @@ function MyRecord(props) {
           </>
         ) : (
           <div className="text-center">
-            <h3 className="text-xl font-semibold">계획중인 여행이 없습니다</h3>
+            <h3 className="text-xl font-semibold">작성한 여행기록이 없습니다</h3>
           </div>
         )}
       </div>

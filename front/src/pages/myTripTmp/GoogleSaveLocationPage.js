@@ -1,45 +1,45 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Loader } from "@googlemaps/js-api-loader";
+import React, { useEffect, useState, useRef } from "react"
+import { Loader } from "@googlemaps/js-api-loader"
 
 const GoogleSaveLocationPage = ({ onSave }) => {
-  const mapRef = useRef(null);
-  const [map, setMap] = useState(null);
-  const [selectedPlace, setSelectedPlace] = useState(null);
-  const [keyword, setKeyword] = useState("");
-  const [places, setPlaces] = useState([]);
-  const [markers, setMarkers] = useState([]);
-  const [infoWindows, setInfoWindows] = useState([]);
-  const [placeMemo, setPlaceMemo] = useState(""); // 장소 메모 상태 추가
+  const mapRef = useRef(null)
+  const [map, setMap] = useState(null)
+  const [selectedPlace, setSelectedPlace] = useState(null)
+  const [keyword, setKeyword] = useState("")
+  const [places, setPlaces] = useState([])
+  const [markers, setMarkers] = useState([])
+  const [infoWindows, setInfoWindows] = useState([])
+  const [placeMemo, setPlaceMemo] = useState("") // 장소 메모 상태 추가
 
   useEffect(() => {
     const loader = new Loader({
       apiKey: process.env.REACT_APP_GOOGLE_MAP_API_KEY,
       version: "weekly",
       libraries: ["places"],
-    });
+    })
 
     loader.load().then(() => {
       const map = new window.google.maps.Map(mapRef.current, {
-        center: { lat: 37.5665, lng: 126.978 },
+        center: { lat: 41.4038996, lng: 2.1748516 },
         zoom: 14,
-      });
-      setMap(map);
+      })
+      setMap(map)
 
       map.addListener("click", () => {
-        closeInfoWindows();
-        setSelectedPlace(null);
-      });
-    });
-  }, []);
+        closeInfoWindows()
+        setSelectedPlace(null)
+      })
+    })
+  }, [])
 
   const clearMarkers = () => {
-    markers.forEach((marker) => marker.setMap(null));
-    setMarkers([]);
-  };
+    markers.forEach((marker) => marker.setMap(null))
+    setMarkers([])
+  }
 
   const closeInfoWindows = () => {
-    infoWindows.forEach((infoWindow) => infoWindow.close());
-  };
+    infoWindows.forEach((infoWindow) => infoWindow.close())
+  }
 
   const createInfoWindowContent = (place) => {
     return `
@@ -48,53 +48,52 @@ const GoogleSaveLocationPage = ({ onSave }) => {
           <strong>${place.name}</strong>
         </div>
         <div style="margin-bottom: 8px;">${place.formatted_address}</div>
-        <textarea placeholder="장소 메모..." style="width: 100%; margin-bottom: 8px;" oninput="updatePlaceMemo('${place.place_id}', this.value)">${placeMemo || ''}</textarea>
+        <textarea placeholder="장소 메모..." maxLength={100} style="width: 100%; margin-bottom: 8px;" oninput="updatePlaceMemo('${place.place_id}', this.value)">${placeMemo || ''}</textarea>
         <button
           onclick="savePlace('${place.place_id}')"
-          style="width:100%;background-color:green;color:white;padding:5px;border:none;border-radius:5px;">
+          style="width:100%;background-color:white;color:green;padding:5px;border:1px solid green;border-radius:5px;font-weight:bold;">
           저장
         </button>
       </div>
-    `;
-  };
+    `
+  }
   
 
   window.updatePlaceMemo = (placeId, memo) => {
-    setPlaceMemo(memo); // 메모 상태 업데이트
-  };
+    setPlaceMemo(memo) // 메모 상태 업데이트
+  }
 
   window.savePlace = (placeId) => {
-    const placeToSave = places.find((place) => place.place_id === placeId);
+    const placeToSave = places.find((place) => place.place_id === placeId)
     if (placeToSave) {
-      // console.log(placeToSave)
-      handleSave(placeToSave);
+      handleSave(placeToSave)
     }
-  };
+  }
 
   const handleSearch = () => {
     if (map && keyword) {
-      const service = new window.google.maps.places.PlacesService(map);
+      const service = new window.google.maps.places.PlacesService(map)
       service.textSearch({ query: keyword }, (results, status) => {
         if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-          setPlaces(results);
-          map.setCenter(results[0].geometry.location);
-          map.setZoom(14);
+          setPlaces(results)
+          map.setCenter(results[0].geometry.location)
+          map.setZoom(14)
 
-          clearMarkers();
-          closeInfoWindows();
+          clearMarkers()
+          closeInfoWindows()
 
-          const newMarkers = [];
-          const newInfoWindows = [];
+          const newMarkers = []
+          const newInfoWindows = []
 
           results.forEach((place) => {
             const marker = new window.google.maps.Marker({
               position: place.geometry.location,
               map: map,
-            });
+            })
 
             const infoWindow = new window.google.maps.InfoWindow({
               content: createInfoWindowContent(place),
-            });
+            })
             marker.addListener("click", () => {
               closeInfoWindows()
 
@@ -102,20 +101,20 @@ const GoogleSaveLocationPage = ({ onSave }) => {
                 ...place,
                 position: place.geometry.location,
                 place_url: `https://www.google.com/maps/place/?q=place_id:${place.place_id}`,
-              });
-              infoWindow.open(map, marker);
-            });
+              })
+              infoWindow.open(map, marker)
+            })
 
-            newMarkers.push(marker);
-            newInfoWindows.push(infoWindow);
-          });
+            newMarkers.push(marker)
+            newInfoWindows.push(infoWindow)
+          })
 
-          setMarkers(newMarkers);
-          setInfoWindows(newInfoWindows);
+          setMarkers(newMarkers)
+          setInfoWindows(newInfoWindows)
         }
-      });
+      })
     }
-  };
+  }
 
   const handleSave = (place) => {
 
@@ -125,42 +124,42 @@ const GoogleSaveLocationPage = ({ onSave }) => {
       const placeToSave = {
         ...selectedPlace,
         placeMemo, // 메모 추가
-      };
-      onSave(placeToSave); // 선택된 장소와 메모를 외부 컴포넌트로 전달
-      setSelectedPlace(null);
-      setPlaceMemo(""); // 저장 후 메모 초기화
+      }
+      onSave(placeToSave) // 선택된 장소와 메모를 외부 컴포넌트로 전달
+      setSelectedPlace(null)
+      setPlaceMemo("") // 저장 후 메모 초기화
     }
-  };
+  }
 
   const handlePlaceClick = (place) => {
-    map.setCenter(place.position);
-    map.setZoom(15);
+    map.setCenter(place.position)
+    map.setZoom(15)
     const marker = markers.find(
       (marker) =>
         marker.getPosition().lat().toFixed(10) === place.geometry.location.lat().toFixed(10) &&
         marker.getPosition().lng().toFixed(10) === place.geometry.location.lng().toFixed(10)
-    );
+    )
 
-    const infoWindow = infoWindows[markers.indexOf(marker)];
+    const infoWindow = infoWindows[markers.indexOf(marker)]
 
     if (infoWindow) {
-      closeInfoWindows();
-      infoWindow.open(map, marker);
+      closeInfoWindows()
+      infoWindow.open(map, marker)
     }
-  };
+  }
 
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
-      handleSearch();
+      handleSearch()
     }
-  };
+  }
 
   return (
     <div className="flex flex-col w-full h-full overflow-hidden">
       <div
         ref={mapRef}
         className="flex-grow mb-4"
-        style={{ width: "100%", minHeight: "60vh", maxHeight: "80vh" }}
+        style={{ width: "100%", height: "50vh" }}
       ></div>
 
       <div className="flex flex-col space-y-2 p-2 bg-white border-t border-gray-200">
@@ -175,7 +174,7 @@ const GoogleSaveLocationPage = ({ onSave }) => {
           />
           <button
             onClick={handleSearch}
-            className="text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-r-lg text-sm px-4 py-2"
+            className="text-blue-900 text-sm font-bold border border-blue-900 hover:bg-blue-100 focus:outline-none focus:ring-4 focus:ring-blue-300 rounded-r-lg px-4 py-2"
           >
             검색
           </button>
@@ -189,16 +188,16 @@ const GoogleSaveLocationPage = ({ onSave }) => {
               }`}
               key={index}
               onClick={() => {
-                const selectedPosition = place.geometry.location;
+                const selectedPosition = place.geometry.location
 
                 const placeData = {
                   ...place,
                   position: selectedPosition,
                   place_url: `https://www.google.com/maps/place/?q=place_id:${place.place_id}`,
-                };
+                }
 
-                setSelectedPlace(placeData);
-                handlePlaceClick(placeData);
+                setSelectedPlace(placeData)
+                handlePlaceClick(placeData)
               }}
             >
               {place.name}
@@ -207,7 +206,7 @@ const GoogleSaveLocationPage = ({ onSave }) => {
         </ul>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default GoogleSaveLocationPage;
+export default GoogleSaveLocationPage

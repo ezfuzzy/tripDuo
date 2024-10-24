@@ -9,28 +9,32 @@ const Sidebar = () => {
           <NavLink
             to="/admin-dashboard"
             className={({ isActive }) => `block p-2 rounded ${isActive ? "bg-tripDuoGreen" : "hover:bg-tripDuoGreen"}`}
-            end>
+            end
+          >
             대시보드
           </NavLink>
         </li>
         <li>
           <NavLink
             to="/admin-dashboard/users"
-            className={({ isActive }) => `block p-2 rounded ${isActive ? "bg-tripDuoGreen" : "hover:bg-tripDuoGreen"}`}>
+            className={({ isActive }) => `block p-2 rounded ${isActive ? "bg-tripDuoGreen" : "hover:bg-tripDuoGreen"}`}
+          >
             유저 목록
           </NavLink>
         </li>
         <li>
           <NavLink
             to="/admin-dashboard/reports"
-            className={({ isActive }) => `block p-2 rounded ${isActive ? "bg-tripDuoGreen" : "hover:bg-tripDuoGreen"}`}>
+            className={({ isActive }) => `block p-2 rounded ${isActive ? "bg-tripDuoGreen" : "hover:bg-tripDuoGreen"}`}
+          >
             신고 처리
           </NavLink>
         </li>
         <li>
           <NavLink
             to="/admin-dashboard/api-docs"
-            className={({ isActive }) => `block p-2 rounded ${isActive ? "bg-tripDuoMint" : "hover:bg-tripDuoMint"}`}>
+            className={({ isActive }) => `block p-2 rounded ${isActive ? "bg-tripDuoGreen" : "hover:bg-tripDuoGreen"}`}
+          >
             Api Documentation
           </NavLink>
         </li>

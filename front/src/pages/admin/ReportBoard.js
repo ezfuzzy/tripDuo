@@ -55,7 +55,7 @@ const ReportBoard = () => {
     getReports() // 신고 목록 가져오기
   }
 
-  const getReports = async () => {
+  const getReports = () => {
     const params = {
       reportedUserId: searchCriteria.reportedUserId || null,
       reportStatus: searchCriteria.reportStatus || null,
@@ -65,38 +65,42 @@ const ReportBoard = () => {
       pageSize: pageSize,
     }
 
-    try {
-      const response = await axios.get("/api/v1/reports", { params })
-      console.log(response.data)
-      setReports(response.data.list) // 신고 정보 업데이트
-      setTargetTypes(response.data.targetTypeList) // 대상 정보 업데이트
-      setTargetAccountStatus(response.data.targetAccountStatusList) // 소유자 계정 상태 정보 업데이트
-      setTotalReportPages(response.data.totalReportPages) // 총 페이지 수 업데이트
-    } catch (error) {
-      console.error("신고 목록을 가져오는 데 실패했습니다:", error)
-    }
+    axios
+      .get("/api/v1/reports", { params })
+      .then((response) => {
+        //console.log(response.data)
+        setReports(response.data.list) // 신고 정보 업데이트
+        setTargetTypes(response.data.targetTypeList) // 대상 정보 업데이트
+        setTargetAccountStatus(response.data.targetAccountStatusList) // 소유자 계정 상태 정보 업데이트
+        setTotalReportPages(response.data.totalReportPages) // 총 페이지 수 업데이트
+      })
+      .catch((error) => {
+        console.error("신고 목록을 가져오는 데 실패했습니다:", error)
+      })
   }
 
   useEffect(() => {
     handleSearch()
-  }, [pageSize, searchCriteria.reportStatus, searchCriteria.targetType])
+  }, [pageSize, searchCriteria.reportStatus, searchCriteria.targetType, searchCriteria.createdAtMonth])
 
   useEffect(() => {
     getReports()
   }, [currentPage])
 
   // 신고 처리 API 요청
-  const handleProcessReport = async () => {
-    try {
-      await axios.put(`/api/v1/reports/${selectedReport.infos.id}`, {
+  const handleProcessReport = () => {
+    axios
+      .put(`/api/v1/reports/${selectedReport.infos.id}`, {
         reportStatus: reportStatus,
         accountStatus: accountStatus,
       })
-      setModalOpen(false) // 모달 닫기
-      getReports() // 신고 목록 새로 고침
-    } catch (error) {
-      console.error("신고 정보를 업데이트하는 데 실패했습니다:", error)
-    }
+      .then(() => {
+        setModalOpen(false) // 모달 닫기
+        getReports() // 신고 목록 새로 고침
+      })
+      .catch((error) => {
+        console.error("신고 정보를 업데이트하는 데 실패했습니다:", error)
+      })
   }
 
   const handleChangePage = (newPage) => {
@@ -360,7 +364,7 @@ const ReportModal = ({ isOpen, onClose, onConfirm, report, setReportStatus, setA
   if (!isOpen) return null
 
   const handleModalOutClick = (e) => {
-    // 모달 바깥을 클릭했을 때만 닫기
+    // 모달 바깥을 클릭했을 때 닫기
     if (e.target === e.currentTarget) {
       onClose()
     }

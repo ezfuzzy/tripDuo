@@ -6,18 +6,7 @@ import java.time.LocalDateTime;
 import com.example.tripDuo.dto.PostCommentDto;
 import com.example.tripDuo.enums.CommentStatus;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -43,12 +32,16 @@ public class PostComment {
     @JoinColumn(name = "user_id", nullable = false)
     private UserProfileInfo userProfileInfo;
 
+    @Column(nullable = false, length = 100)
     private String content;
-    
+
     private long parentCommentId;
+
+    @Column(length = 20)
     private String toUsername;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 10)
     private CommentStatus status;
 
     private LocalDateTime createdAt;

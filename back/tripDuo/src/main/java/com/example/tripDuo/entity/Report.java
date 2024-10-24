@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.example.tripDuo.enums.ReportStatus;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -40,10 +41,12 @@ public abstract class Report {
 	
 	private long reporterId; // 신고한 유저 id
 	private long reportedContentOwnerId;
-    
+
+    @Column(length = 100)
 	private String content;
 	
 	@Enumerated(EnumType.STRING)
+    @Column(length = 15)
     private ReportStatus status;
 	
 	private LocalDateTime createdAt;

@@ -4,7 +4,7 @@ import { shallowEqual, useSelector } from "react-redux"
 import { useNavigate } from "react-router"
 import { cityMapping, countryMapping } from "../../constants/mapping"
 
-function MyPlan(props) {
+function MyPlan() {
   //course 변수 사용하기 위해 임시로 useState() 사용
   const loggedInUserId = useSelector((state) => state.userData.id, shallowEqual) // 로그인된 user의 id
   const [postList, setPostList] = useState([])
@@ -87,13 +87,23 @@ function MyPlan(props) {
   return (
     <div className="container mx-auto p-4 max-w-[1024px]">
       {/* 게시글 작성 버튼 */}
-      <div className="flex justify-end mb-6">
-        <button
-          onClick={() => navigate("/posts/course/new?status=PRIVATE")}
-          className="bg-tripDuoMint text-white font-bold px-4 py-2 rounded-md shadow-md hover:bg-tripDuoGreen transition-all duration-300">
-          새 여행 계획하기
-        </button>
+      <div className="flex justify-end">
+        <div className="bg-tripDuoMint text-white font-bold px-4 py-2 rounded-md shadow-md">
+          <span>새 여행 계획하기:</span>
+          <span
+            className="ml-2 cursor-pointer hover:bg-tripDuoGreen transition-all duration-300 px-2 rounded"
+            onClick={() => navigate("/posts/course/new?status=PRIVATE&di=Domestic")}>
+            국내
+          </span>
+          <span className="mx-2">/</span>
+          <span
+            className="cursor-pointer hover:bg-tripDuoGreen transition-all duration-300 px-2 rounded"
+            onClick={() => navigate("/posts/course/new?status=PRIVATE&di=International")}>
+            해외
+          </span>
+        </div>
       </div>
+
       <div className="container mx-auto p-4 max-w-[1024px]">
         {postList ? (
           <>
@@ -121,7 +131,7 @@ function MyPlan(props) {
                       // /* 혼합 모드 설정 */
                       mixBlendMode: "multiply",
                     }}>
-                    <a href={`/posts/course/${post.id}/detail`} className="block">
+                    <a href={`/posts/course/${post.id}/detail?di=${post.country === "대한민국" ? "Domestic" : "International"}`} className="block">
                       <div className="md:flex justify-between">
                         <div>
                           <h4 className="text-xl font-semibold">{post.title}</h4>

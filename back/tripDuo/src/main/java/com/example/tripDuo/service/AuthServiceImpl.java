@@ -31,6 +31,7 @@ import com.example.tripDuo.entity.UserProfileInfo;
 import com.example.tripDuo.entity.UserTripInfo;
 import com.example.tripDuo.enums.AccountStatus;
 import com.example.tripDuo.enums.UserRole;
+import com.example.tripDuo.enums.VerificationStatus;
 import com.example.tripDuo.repository.OauthRepository;
 import com.example.tripDuo.repository.UserProfileInfoRepository;
 import com.example.tripDuo.repository.UserRepository;
@@ -59,6 +60,7 @@ public class AuthServiceImpl implements AuthService {
 	private final UserProfileInfoRepository userProfileInfoRepo;
 	private final UserTripInfoRepository userTripInfoRepo;
 	private final OauthRepository oauthRepo;
+	private final S3Service s3Service;
 	
 	private final PhoneNumberVerificationService phoneNumberVerificationService;
 	private final EncryptionUtil encryptionUtil;
@@ -101,6 +103,7 @@ public class AuthServiceImpl implements AuthService {
 			UserProfileInfoRepository userProfileInfoRepo,
 			UserTripInfoRepository userTripInfoRepo,
 			OauthRepository oauthRepo,
+			S3Service s3Service,
 			PhoneNumberVerificationService phoneNumberVerificationService,
 			EncryptionUtil encryptionUtil) {
 		this.jwtUtil = jwtUtil;
@@ -110,6 +113,7 @@ public class AuthServiceImpl implements AuthService {
 		this.userProfileInfoRepo = userProfileInfoRepo;
 		this.userTripInfoRepo = userTripInfoRepo;
 		this.oauthRepo = oauthRepo;
+		this.s3Service = s3Service;
 		this.phoneNumberVerificationService = phoneNumberVerificationService;
 		this.encryptionUtil = encryptionUtil;
 	}
@@ -159,21 +163,22 @@ public class AuthServiceImpl implements AuthService {
 	public String signup(UserDto userDto) throws Exception {
 
 		// ### username, nickname, password 유효성 체크 ###
-		
 		String usernamePattern = "^[a-z0-9]{6,16}$";
-        String nicknamePattern = "^(?=.*[가-힣])(?!.*[^a-zA-Z가-힣0-9])[a-zA-Z가-힣0-9]{2,8}$|^(?!.*[가-힣])(?!.*[^a-zA-Z0-9])[a-zA-Z0-9]{4,16}$\r\n";
+        String nicknamePattern = "^(?=.*[가-힣])(?!.*[^a-zA-Z가-힣0-9])[a-zA-Z가-힣0-9]{2,8}$|^(?!.*[가-힣])(?!.*[^a-zA-Z0-9])[a-zA-Z0-9]{4,16}$";
         String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,22}$";
 
-		if(!Pattern.matches(usernamePattern, userDto.getUsername()) || 
+        if(!Pattern.matches(usernamePattern, userDto.getUsername()) || 
 				!Pattern.matches(nicknamePattern, userDto.getNickname()) ||
 				!Pattern.matches(passwordPattern, userDto.getPassword())) {
 			return "유효성 검사 탈락";
 		}
-		
+
 		userDto.setRole(UserRole.USER);
+		userDto.setAccountStatus(AccountStatus.ACTIVE);
+		userDto.setVerificationStatus(VerificationStatus.VERIFIED);
 		String encodedPwd = encoder.encode(userDto.getPassword());
 		userDto.setPassword(encodedPwd);
-		
+
 		// 비밀번호 암호화
         String encryptedPhoneNumber = encryptionUtil.encrypt(userDto.getEncryptedPhoneNumber());
 		userDto.setEncryptedPhoneNumber(encryptedPhoneNumber);
@@ -189,7 +194,7 @@ public class AuthServiceImpl implements AuthService {
 		userProfileInfoRepo.save(UserProfileInfo.toEntity(upiDto, savedUser));
 		
 		userTripInfoRepo.save(UserTripInfo.builder().userId(savedUser.getId()).build());
-		
+
 		String token = jwtUtil.generateToken(userDto.getUsername());
 
 		return "Bearer+" + token;
@@ -198,7 +203,7 @@ public class AuthServiceImpl implements AuthService {
 	// ### 휴대폰 인증 ###
 
 	@Override
-	public boolean sendVerificationCode(String phoneNumber) {
+	public String sendVerificationCode(String phoneNumber) {
 		// 1. 인증번호 생성
 		String verificationCode = phoneNumberVerificationService.generateVerificationCode();
 
@@ -226,7 +231,7 @@ public class AuthServiceImpl implements AuthService {
 //		  System.out.println(exception.getMessage());
 //		}
 
-		return true;
+		return verificationCode;
 //		try {
 //			sendVerificationCodeToEmail(verificationCode);
 //		} catch (UnirestException e) {
@@ -392,7 +397,7 @@ public class AuthServiceImpl implements AuthService {
 	 * @return TODO
 	 */
 	@Override
-	public Map<String, Object> KakaoSignUp(OAuthToken kakaoToken) {
+	public Map<String, Object> KakaoSignUp(OAuthToken kakaoToken) throws Exception {
 		RestTemplate rt2 = new RestTemplate();
 		HttpHeaders headers2 = new HttpHeaders();
 		headers2.add("Authorization", "Bearer " + kakaoToken.getAccess_token());
@@ -424,6 +429,8 @@ public class AuthServiceImpl implements AuthService {
 						.encryptedPhoneNumber(kakaoProfile.getKakao_account().getEmail())
 						.email(kakaoProfile.getKakao_account().getEmail())
 						.role(UserRole.USER)
+						.accountStatus(AccountStatus.ACTIVE)
+						.verificationStatus(VerificationStatus.VERIFIED)
 						.build();
 
 		boolean isLoginChecked = false;
@@ -443,10 +450,12 @@ public class AuthServiceImpl implements AuthService {
 									.oauth_provider("KAKAO")
 									.oauth_id(oauthIdTypeChange)
 									.build();
-			Oauth OauthUser=oauthRepo.save(kakaoUser);
+			oauthRepo.save(kakaoUser);
 
+			String userProfilePicture = s3Service.uploadOAuthProfileImage(kakaoProfile.properties.profile_image);
+			
 			userProfileInfoRepo.save(UserProfileInfo.toEntity(
-					UserProfileInfoDto.builder().nickname(kakaoProfile.getProperties().getNickname()).build(), user));
+					UserProfileInfoDto.builder().nickname(kakaoProfile.getProperties().getNickname()).profilePicture(userProfilePicture).build(), user));
 
 			userTripInfoRepo.save(UserTripInfo.builder().userId(user.getId()).build());
 
@@ -564,7 +573,7 @@ public class AuthServiceImpl implements AuthService {
 	 * @return TODO
 	 */
 	@Override
-	public Map<String, Object> GoogleSignUp(OAuthToken googleToken) {
+	public Map<String, Object> GoogleSignUp(OAuthToken googleToken) throws Exception{
 		RestTemplate rt2 = new RestTemplate();
 		HttpHeaders headers2 = new HttpHeaders();
 		headers2.add("Authorization", "Bearer " + googleToken.getAccess_token());
@@ -599,6 +608,8 @@ public class AuthServiceImpl implements AuthService {
 						.encryptedPhoneNumber(googleProfile.getEmail())
 						.email(googleProfile.getEmail())
 						.role(UserRole.USER)
+						.accountStatus(AccountStatus.ACTIVE)
+						.verificationStatus(VerificationStatus.VERIFIED)
 						.build();
 		
 		boolean isLoginChecked = false;
@@ -610,13 +621,13 @@ public class AuthServiceImpl implements AuthService {
 		} else {
 			user = userRepo.save(user);
 			System.out.println("새로운 유저가 저장되었습니다.");
-
+			String userProfilePicture = s3Service.uploadOAuthProfileImage(googleProfile.getPicture());
 			Oauth googleUser = Oauth.builder().user(user).oauth_provider("GOOGLE").oauth_id(googleProfile.getId())
 					.build();
 			oauthRepo.save(googleUser);
 
 			userProfileInfoRepo.save(UserProfileInfo
-					.toEntity(UserProfileInfoDto.builder().nickname(googleProfile.getName()).build(), user));
+					.toEntity(UserProfileInfoDto.builder().nickname(googleProfile.getName()).profilePicture(userProfilePicture).build(), user));
 
 			userTripInfoRepo.save(UserTripInfo.builder().userId(user.getId()).build());
 		
