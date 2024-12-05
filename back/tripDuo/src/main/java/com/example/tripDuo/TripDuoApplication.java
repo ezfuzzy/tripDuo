@@ -369,6 +369,90 @@ public class TripDuoApplication {
 		Post p49 = Post.builder().userProfileInfo(upi5).type(PostType.COURSE).title("바람의 도시 시카고에서의 4일 간의 건축과 예술 여행").content("시카고는 현대 건축의 메카이자 예술의 중심지입니다. 첫날은 시카고 리버 크루즈를 통해 시카고의 고층 건물을 감상하고, 윌리스 타워에서 도시의 전경을 한눈에 봅니다. 둘째 날은 아트 인스티튜트 시카고를 방문하여 세계적인 예술 작품을 감상하고, 밀레니엄 파크에서 여유를 즐깁니다. 마지막 날은 네이비 피어에서의 산책과 맛있는 음식으로 마무리합니다.").country("미국").city("시카고").viewCount(490L).likeCount(70L).status(PostStatus.OPEN).build();
 		Post p50 = Post.builder().userProfileInfo(upi6).type(PostType.COURSE).title("햇살과 바다의 도시 마이애미에서의 4일간의 열대 휴양").content("마이애미는 아름다운 해변과 독특한 문화적 분위기가 매력적인 도시입니다. 첫날은 사우스 비치에서 시작해 여유로운 바다 시간을 보내고, 저녁에는 아르 데코 디스트릭트를 탐험하며 예술적인 건축을 감상합니다. 둘째 날은 리틀 하바나에서 쿠바 문화를 경험하고, 비스케인 국립공원에서 스노클링과 보트 투어로 자연을 만끽합니다. 마지막 날은 윈우드 월즈의 거리 예술을 감상하며 마이애미의 현대적인 면모를 발견합니다.").country("미국").city("마이애미").viewCount(470L).likeCount(65L).status(PostStatus.OPEN).build();
 		
+		Post p51 = Post.builder().userProfileInfo(upi6).type(PostType.COURSE).title("도쿄에서 힐링여행").content("도쿄 힐링여행 코스입니당.").country("일본").city("도쿄").viewCount(450L).likeCount(55L).status(PostStatus.OPEN).build();
+		Post p52 = Post.builder().userProfileInfo(upi2).type(PostType.COURSE).title("오사카에서 랜드마크 여행").content("오사카 랜드마크 여행 코스입니다.").country("일본").city("오사카").viewCount(320L).likeCount(40L).status(PostStatus.OPEN).build();
+		Post p53 = Post.builder().userProfileInfo(upi3).type(PostType.COURSE).title("교토도 요즘 좋아요").content("교토여행 코스 작성해봤어요 ~").country("일본").city("교토").viewCount(570L).likeCount(65L).status(PostStatus.OPEN).build();
+		Post p54 = Post.builder().userProfileInfo(upi4).type(PostType.COURSE).title("삿포로 겨울 여행").content("겨울에 아름다운 삿포로").country("일본").city("삿포로").viewCount(420L).likeCount(50L).status(PostStatus.OPEN).build();
+
+		Post p55 = Post.builder().userProfileInfo(upi5).type(PostType.MATE).title("천년의 역사를 걷다: 베이징 4일 여행").content("첫날은 자금성과 천안문 광장을 방문하여 중국의 역사와 문화를 체험합니다. 둘째 날은 만리장성에서 자연과 웅장한 역사를 동시에 느끼며, 셋째 날은 이화원을 방문하여 황실의 아름다움을 감상합니다. 마지막 날은 후퉁과 같은 전통 골목길을 탐방하며 현지 문화를 체험합니다.").country("중국").city("베이징").viewCount(300L).likeCount(35L).status(PostStatus.OPEN).build();
+		Post p56 = Post.builder().userProfileInfo(upi6).type(PostType.MATE).title("현대와 전통이 만나는 곳: 상하이 3일 여행").content("첫날은 와이탄에서 상하이의 현대적인 스카이라인을 감상하고, 난징동루에서 쇼핑을 즐깁니다. 둘째 날은 상하이 박물관과 예원에서 중국의 전통을 탐방하며, 마지막 날은 디즈니랜드에서 가족과 함께 즐거운 시간을 보냅니다.").country("중국").city("상하이").viewCount(510L).likeCount(75L).status(PostStatus.OPEN).build();
+		Post p57 = Post.builder().userProfileInfo(upi7).type(PostType.MATE).title("음식과 전통의 도시: 광저우 미식 여행").content("광저우는 미식가들의 천국입니다. 첫날은 진한 전통 딤섬을 맛보며 여행을 시작하고, 광저우 타워를 방문하여 도시 전경을 감상합니다. 둘째 날은 화청골과 안탑을 탐방하며 도시의 역사를 느끼고, 마지막 날은 샤먼대교를 따라 아름다운 자연을 즐깁니다.").country("중국").city("광저우").viewCount(280L).likeCount(45L).status(PostStatus.OPEN).build();
+		Post p58 = Post.builder().userProfileInfo(upi8).type(PostType.MATE).title("중국 고대 문명의 중심지: 시안 문화 여행").content("시안은 중국의 고대 역사와 문명이 살아 숨 쉬는 도시입니다. 첫날은 병마용 유적을 방문하여 진시황제의 역사를 배우고, 둘째 날은 화산을 등반하며 아름다운 자연 경관을 즐깁니다. 마지막 날은 시안 성벽을 자전거로 돌며 도시의 전경을 감상합니다.").country("중국").city("시안").viewCount(410L).likeCount(60L).status(PostStatus.OPEN).build();
+
+		Post p59 = Post.builder().userProfileInfo(upi9).type(PostType.MATE).title("인도 전통과 현대가 만나는 델리 탐방").content("첫날은 인도의 정치와 역사를 대표하는 인디아 게이트와 레드 포트를 방문합니다. 둘째 날은 국립 박물관에서 인도의 고대 유물을 감상하고, 셋째 날은 후마윤의 묘와 꾸뜹 미나르를 탐방하여 델리의 역사와 문화를 체험합니다.").country("인도").city("델리").viewCount(530L).likeCount(80L).status(PostStatus.OPEN).build();
+		Post p60 = Post.builder().userProfileInfo(upi10).type(PostType.MATE).title("볼리우드와 해안 도시의 매력: 뭄바이 3일 여행").content("첫날은 게이트웨이 오브 인디아와 차트라파티 시바지 터미널을 방문합니다. 둘째 날은 마린 드라이브에서 해안의 멋진 전경을 즐기며, 볼리우드 영화 스튜디오를 탐방합니다. 마지막 날은 엘리펀타 섬에서 고대 동굴 사원을 탐험하며 여행을 마무리합니다.").country("인도").city("뭄바이").viewCount(460L).likeCount(70L).status(PostStatus.OPEN).build();
+		Post p61 = Post.builder().userProfileInfo(upi6).type(PostType.MATE).title("문학과 예술의 중심지: 콜카타 문화 탐방").content("첫날은 빅토리아 기념관과 하우라 다리를 방문하여 도시의 상징을 감상하고, 둘째 날은 콜카타의 전통 요리와 예술 시장을 체험합니다. 마지막 날은 칼리 사원과 타고르의 생가를 탐방하며 인도의 문학적 유산을 배웁니다.").country("인도").city("콜카타").viewCount(400L).likeCount(65L).status(PostStatus.OPEN).build();
+		Post p62 = Post.builder().userProfileInfo(upi7).type(PostType.MATE).title("IT 도시에서 자연과 함께: 벵갈루루 3일 여행").content("첫날은 벵갈루루의 현대적 IT 허브를 탐방하며 도시의 혁신적인 발전을 체험합니다. 둘째 날은 큐 뱅크 식물원과 나나디 언덕에서 자연을 만끽하고, 마지막 날은 벵갈루루 궁전과 비다나 사우다를 방문하여 도시의 문화와 건축을 감상합니다.").country("인도").city("벵갈루루").viewCount(320L).likeCount(40L).status(PostStatus.OPEN).build();
+		
+		Post p63 = Post.builder().userProfileInfo(upi8).type(PostType.MATE).title("가우디의 도시: 바르셀로나 건축 여행").content("첫날은 사그라다 파밀리아와 구엘 공원을 방문하여 가우디의 걸작을 감상합니다. 둘째 날은 고딕 지구를 탐방하며 역사적 건축물을 둘러보고, 셋째 날은 캄프 누에서 FC 바르셀로나의 축구 열기를 체험합니다.").country("스페인").city("바르셀로나").viewCount(510L).likeCount(90L).status(PostStatus.OPEN).build();
+		Post p64 = Post.builder().userProfileInfo(upi9).type(PostType.MATE).title("알함브라의 아름다움: 그라나다 2일 여행").content("첫날은 알함브라 궁전을 방문하여 이슬람 건축의 정수를 경험하고, 둘째 날은 알바이신 지구를 탐방하며 전통적인 안달루시아 문화를 느낍니다.").country("스페인").city("그라나다").viewCount(470L).likeCount(80L).status(PostStatus.OPEN).build();
+		Post p65 = Post.builder().userProfileInfo(upi6).type(PostType.MATE).title("스페인의 심장: 마드리드 3일 여행").content("첫날은 프라도 미술관에서 스페인의 예술 작품을 감상하고, 둘째 날은 마요르 광장과 푸에르타 델 솔을 둘러보며 현지 문화를 체험합니다. 마지막 날은 레티로 공원에서 여유로운 시간을 보내며 여행을 마무리합니다.").country("스페인").city("마드리드").viewCount(340L).likeCount(50L).status(PostStatus.OPEN).build();
+		Post p66 = Post.builder().userProfileInfo(upi7).type(PostType.MATE).title("플라멩코의 도시: 세비야 2일 여행").content("첫날은 세비야 대성당과 히랄다 탑을 방문하여 스페인의 역사적 건축을 감상하고, 둘째 날은 플라멩코 공연을 관람하며 전통 스페인 문화를 체험합니다.").country("스페인").city("세비야").viewCount(290L).likeCount(45L).status(PostStatus.OPEN).build();
+
+		Post p67 = Post.builder().userProfileInfo(upi8).type(PostType.MATE).title("역사와 현대가 공존하는 도시: 런던 4일 여행").content("첫날은 타워 브릿지와 런던 타워를 방문하여 영국의 역사적 명소를 탐방하고, 둘째 날은 버킹엄 궁전과 웨스트민스터 사원을 둘러봅니다. 셋째 날은 브리티시 뮤지엄에서 다양한 문화를 접하고, 마지막 날은 런던아이에서 도시 전경을 감상합니다.").country("영국").city("런던").viewCount(580L).likeCount(85L).status(PostStatus.OPEN).build();
+		Post p68 = Post.builder().userProfileInfo(upi9).type(PostType.MATE).title("음악과 스포츠의 도시: 맨체스터 탐방").content("맨체스터는 세계적인 음악과 축구의 중심지입니다. 첫날은 유명한 맨체스터 유나이티드 스타디움을 방문하고, 둘째 날은 역사적인 맨체스터 음악 씬을 탐방하며 다양한 공연을 즐깁니다. 마지막 날에는 맨체스터의 미술관과 박물관에서 도시의 문화를 경험합니다.").country("영국").city("맨체스터").viewCount(350L).likeCount(55L).status(PostStatus.OPEN).build();
+		Post p69 = Post.builder().userProfileInfo(upi5).type(PostType.MATE).title("산업 혁명의 발상지: 버밍엄 여행").content("버밍엄은 산업 혁명의 중심지로, 첫날은 버밍엄의 역사적인 산업 유적지를 탐방합니다. 둘째 날은 보행자 거리에서 쇼핑과 음식 문화를 체험하고, 마지막 날은 버밍엄 미술관에서 예술 작품을 감상합니다.").country("영국").city("버밍엄").viewCount(370L).likeCount(60L).status(PostStatus.OPEN).build();
+		Post p70 = Post.builder().userProfileInfo(upi2).type(PostType.MATE).title("비틀즈와 항구 도시: 리버풀 여행").content("리버풀은 비틀즈의 고향입니다. 첫날은 비틀즈 스토리 박물관을 방문하고, 둘째 날은 리버풀 항구를 따라 산책하며 도시의 아름다움을 느낍니다. 마지막 날은 리버풀의 음악 씬에서 다양한 라이브 공연을 즐깁니다.").country("영국").city("리버풀").viewCount(430L).likeCount(70L).status(PostStatus.OPEN).build();
+
+		Post p71 = Post.builder().userProfileInfo(upi1).type(PostType.MATE).title("역사와 현대의 조화: 베를린 탐방").content("베를린은 역사와 현대가 공존하는 도시입니다. 첫날은 브란덴부르크 문과 유대인 기념관을 방문하고, 둘째 날은 현대 미술관에서 전시를 관람합니다. 마지막 날은 베를린 장벽을 따라 역사적 유적지를 탐방합니다.").country("독일").city("베를린").viewCount(620L).likeCount(95L).status(PostStatus.OPEN).build();
+		Post p72 = Post.builder().userProfileInfo(upi2).type(PostType.MATE).title("맥주와 문화의 도시: 뮌헨 여행").content("뮌헨은 세계적인 맥주와 문화를 자랑합니다. 첫날은 유명한 마리엔플라츠를 방문하고, 둘째 날은 잉글리시 가든에서 휴식을 취한 후, 맥주 정원에서 현지 맥주를 즐깁니다. 마지막 날은 뮌헨의 역사적 건축물들을 탐방합니다.").country("독일").city("뮌헨").viewCount(520L).likeCount(85L).status(PostStatus.OPEN).build();
+		Post p73 = Post.builder().userProfileInfo(upi3).type(PostType.MATE).title("비즈니스 중심지: 프랑크푸르트 탐방").content("프랑크푸르트는 독일의 금융 중심지입니다. 첫날은 뢰머를 방문하고, 둘째 날은 주요 은행 건물과 상징적인 스카이라인을 감상합니다. 마지막 날은 프랑크푸르트의 다양한 박물관을 탐방합니다.").country("독일").city("프랑크푸르트").viewCount(490L).likeCount(80L).status(PostStatus.OPEN).build();
+		Post p74 = Post.builder().userProfileInfo(upi4).type(PostType.MATE).title("항구 도시의 매력: 함부르크 여행").content("함부르크는 매력적인 항구 도시입니다. 첫날은 함부르크 항구와 미하엘 성당을 방문하고, 둘째 날은 스피차 시를 따라 자전거 투어를 즐깁니다. 마지막 날에는 엘프필하모니에서 공연을 관람합니다.").country("독일").city("함부르크").viewCount(470L).likeCount(75L).status(PostStatus.OPEN).build();
+
+		Post p75 = Post.builder().userProfileInfo(upi5).type(PostType.MATE).title("사랑과 예술의 도시: 파리 여행").content("파리는 로맨틱한 분위기로 유명합니다. 첫날은 에펠탑과 루브르 박물관을 방문하고, 둘째 날은 세느강에서 유람선을 타며 도시를 감상합니다. 마지막 날은 몽마르트르 언덕에서 예술의 숨결을 느껴봅니다.").country("프랑스").city("파리").viewCount(640L).likeCount(100L).status(PostStatus.OPEN).build();
+		Post p76 = Post.builder().userProfileInfo(upi6).type(PostType.MATE).title("지중해의 보석: 마르세유 여행").content("마르세유는 지중해의 아름다움을 자랑합니다. 첫날은 구항구를 탐방하고, 둘째 날은 칼랑크 국립공원에서 하이킹을 즐깁니다. 마지막 날은 현지 해산물 요리를 맛보며 마르세유의 매력을 느껴봅니다.").country("프랑스").city("마르세유").viewCount(420L).likeCount(60L).status(PostStatus.OPEN).build();
+		Post p77 = Post.builder().userProfileInfo(upi7).type(PostType.MATE).title("프랑스의 미식과 문화: 리옹 탐방").content("리옹은 미식의 도시로 유명합니다. 첫날은 올드 리옹을 탐방하고, 둘째 날은 유명한 식당에서 미식을 경험합니다. 마지막 날은 리옹의 박물관과 미술관을 방문합니다.").country("프랑스").city("리옹").viewCount(460L).likeCount(70L).status(PostStatus.OPEN).build();
+		Post p78 = Post.builder().userProfileInfo(upi8).type(PostType.MATE).title("해변과 도시의 조화: 니스 여행").content("니스는 해변과 도시의 조화가 매력적입니다. 첫날은 프로방스의 아름다운 해변에서 휴식을 취하고, 둘째 날은 니스의 구시가지 탐방합니다. 마지막 날에는 주변의 몬테카를로를 방문합니다.").country("프랑스").city("니스").viewCount(430L).likeCount(65L).status(PostStatus.OPEN).build();
+
+		Post p79 = Post.builder().userProfileInfo(upi9).type(PostType.MATE).title("고대 로마의 매력: 로마 탐방").content("로마는 고대 문명의 중심지입니다. 첫날은 콜로세움을 방문하고, 둘째 날은 바티칸 시국의 성 베드로 대성당을 탐방합니다. 마지막 날은 로마의 다양한 역사적 유적지를 경험합니다.").country("이탈리아").city("로마").viewCount(540L).likeCount(85L).status(PostStatus.OPEN).build();
+		Post p80 = Post.builder().userProfileInfo(upi3).type(PostType.MATE).title("패션과 예술의 도시: 밀라노 여행").content("밀라노는 패션과 예술의 중심지입니다. 첫날은 두오모 성당을 방문하고, 둘째 날은 스칼라 극장에서 공연을 관람합니다. 마지막 날은 밀라노의 패션 거리에서 쇼핑을 즐깁니다.").country("이탈리아").city("밀라노").viewCount(370L).likeCount(55L).status(PostStatus.OPEN).build();
+		Post p81 = Post.builder().userProfileInfo(upi1).type(PostType.MATE).title("수운의 도시: 베네치아 탐방").content("베네치아는 수운의 도시로, 첫날은 곤돌라를 타고 운하를 탐방합니다. 둘째 날은 산 마르코 광장과 대성당을 방문하고, 마지막 날은 베네치아의 예술과 문화를 느낄 수 있는 미술관을 관람합니다.").country("이탈리아").city("베네치아").viewCount(500L).likeCount(80L).status(PostStatus.OPEN).build();
+		Post p82 = Post.builder().userProfileInfo(upi2).type(PostType.MATE).title("르네상스의 도시: 피렌체 탐방").content("피렌체는 르네상스의 발상지입니다. 첫날은 우피치 미술관을 방문하고, 둘째 날은 두오모 성당과 피렌체 대성당을 탐방합니다. 마지막 날은 피렌체의 매력적인 거리에서 미식을 즐깁니다.").country("이탈리아").city("피렌체").viewCount(460L).likeCount(70L).status(PostStatus.OPEN).build();
+
+		Post p83 = Post.builder().userProfileInfo(upi3).type(PostType.MATE).title("끝없는 매력의 대도시, 뉴욕 5일 여행 계획").content("뉴욕은 상징적인 랜드마크와 다채로운 문화로 가득 찬 도시입니다. 이 여행 계획에서는 자유의 여신상, 센트럴 파크, 타임스퀘어, 브루클린 브릿지 등 필수적인 명소들을 방문합니다. 또한 브로드웨이 뮤지컬 관람과 현대 미술관(MoMA) 방문으로 뉴욕의 예술과 문화를 체험하며, 소호와 첼시 시장에서 맛있는 음식과 쇼핑을 즐깁니다.").country("미국").city("뉴욕").viewCount(620L).likeCount(90L).status(PostStatus.OPEN).build();
+		Post p84 = Post.builder().userProfileInfo(upi4).type(PostType.MATE).title("할리우드의 꿈과 비치 라이프를 만끽하는 LA 여행 4일 코스").content("로스앤젤레스는 엔터테인먼트와 해변을 함께 즐길 수 있는 도시입니다. 이 여행에서는 할리우드 명예의 거리와 그리피스 천문대를 방문하여 LA의 아이코닉한 풍경을 감상하고, 산타모니카 해변과 베니스 비치에서 여유로운 시간을 보냅니다. 게티 센터에서 문화와 예술을 경험하고, 말리부 해안 드라이브를 통해 캘리포니아의 아름다움을 만끽합니다.").country("미국").city("로스앤젤레스").viewCount(560L).likeCount(85L).status(PostStatus.OPEN).build();
+		Post p85 = Post.builder().userProfileInfo(upi5).type(PostType.MATE).title("바람의 도시 시카고에서의 4일 간의 건축과 예술 여행").content("시카고는 현대 건축의 메카이자 예술의 중심지입니다. 첫날은 시카고 리버 크루즈를 통해 시카고의 고층 건물을 감상하고, 윌리스 타워에서 도시의 전경을 한눈에 봅니다. 둘째 날은 아트 인스티튜트 시카고를 방문하여 세계적인 예술 작품을 감상하고, 밀레니엄 파크에서 여유를 즐깁니다. 마지막 날은 네이비 피어에서의 산책과 맛있는 음식으로 마무리합니다.").country("미국").city("시카고").viewCount(490L).likeCount(70L).status(PostStatus.OPEN).build();
+		Post p86 = Post.builder().userProfileInfo(upi6).type(PostType.MATE).title("햇살과 바다의 도시 마이애미에서의 4일간의 열대 휴양").content("마이애미는 아름다운 해변과 독특한 문화적 분위기가 매력적인 도시입니다. 첫날은 사우스 비치에서 시작해 여유로운 바다 시간을 보내고, 저녁에는 아르 데코 디스트릭트를 탐험하며 예술적인 건축을 감상합니다. 둘째 날은 리틀 하바나에서 쿠바 문화를 경험하고, 비스케인 국립공원에서 스노클링과 보트 투어로 자연을 만끽합니다. 마지막 날은 윈우드 월즈의 거리 예술을 감상하며 마이애미의 현대적인 면모를 발견합니다.").country("미국").city("마이애미").viewCount(470L).likeCount(65L).status(PostStatus.OPEN).build();
+		
+		postRepo.save(p51);
+		postRepo.save(p52);
+		postRepo.save(p53);
+		postRepo.save(p54);
+		postRepo.save(p55);
+		postRepo.save(p56);
+		postRepo.save(p57);
+		postRepo.save(p58);
+		postRepo.save(p59);
+		postRepo.save(p60);
+		postRepo.save(p61);
+		postRepo.save(p62);
+		postRepo.save(p63);
+		postRepo.save(p64);
+		postRepo.save(p65);
+		postRepo.save(p66);
+		postRepo.save(p67);
+		postRepo.save(p68);
+		postRepo.save(p69);
+		postRepo.save(p70);
+		postRepo.save(p71);
+		postRepo.save(p72);
+		postRepo.save(p73);
+		postRepo.save(p74);
+		postRepo.save(p75);
+		postRepo.save(p76);
+		postRepo.save(p77);
+		postRepo.save(p78);
+		postRepo.save(p79);
+		postRepo.save(p80);
+		postRepo.save(p81);
+		postRepo.save(p82);
+		postRepo.save(p83);
+		postRepo.save(p84);
+		postRepo.save(p85);
+		postRepo.save(p86);
+
+		
+		
 		postRepo.save(p15);
 		postRepo.save(p16);
 		postRepo.save(p17);
@@ -406,8 +490,6 @@ public class TripDuoApplication {
 		postRepo.save(p49);
 		postRepo.save(p50);
 
-		
-		
 		postRepo.save(p1);
 		postRepo.save(p2);
 		postRepo.save(p3);
