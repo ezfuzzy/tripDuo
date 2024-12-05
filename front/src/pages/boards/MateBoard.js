@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faEye, faHeart, faMessage } from "@fortawesome/free-solid-svg-icons"
 import LoadingAnimation from "../../components/LoadingAnimation"
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa" // Font Awesome 또는 원하는 아이콘 라이브러리 사용
-import { citiesByCountry, cityMapping, countries, countryMapping } from "../../constants/mapping"
+import { citiesByCountry, cityMapping, countries, countryMapping, koreanCities, koreancities } from "../../constants/mapping"
 import Select from "react-select"
 import classNames from "classnames"
 
@@ -20,6 +20,12 @@ const groupedCitiesOptions = Object.keys(citiesByCountry).map(country => ({
     label: city
   }))
 }));
+
+const KoreanCitiesOptions = koreanCities.map(city => ({
+  label : city,
+  name : "city",
+  value : city
+}))
 
 function MateBoard() {
   const navigate = useNavigate()
@@ -400,13 +406,18 @@ function MateBoard() {
                 />
               </>
             )}
-
+            
             <Select
               name="city"
               onInputChange={() => setMenuIsOpen(true)}
               onChange={handleSearchChange}
               onKeyDown={handleKeyDown}
-              options={groupedCitiesOptions}
+              options={ domesticInternational === "International" ? groupedCitiesOptions : KoreanCitiesOptions}
+              value={
+                searchCriteria.city
+                  ? { label: searchCriteria.city, value: searchCriteria.city }
+                  : null
+              }
               placeholder="도시"
               // isClearable={false} // 사용자가 선택한 값을 지울 수 없음
               unstyled

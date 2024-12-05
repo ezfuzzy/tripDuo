@@ -157,7 +157,6 @@ export const countries = [
 
 //테스트 데이터
 export const citiesByCountry = {
-  대한민국: ["서울", "부산", "제주", "인천"],
   일본: ["도쿄", "오사카", "교토", "삿포로"],
   중국: ["베이징", "상하이", "광저우", "시안"],
   인도: ["델리", "뭄바이", "콜카타", "벵갈루루"],
@@ -173,6 +172,8 @@ export const citiesByCountry = {
   "남아프리카 공화국": ["케이프타운", "요하네스버그", "더반", "프리토리아"],
   // Add more countries and cities as needed
 }
+
+export const koreanCities = ["서울", "부산", "제주", "인천"]
 
 export const ratingConfig = [
   { min: 0, max: 1499, imageSrc: "economy-01.svg" }, // 이코노미
