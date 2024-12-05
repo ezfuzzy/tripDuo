@@ -8,31 +8,43 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faEye, faHeart, faMessage } from "@fortawesome/free-solid-svg-icons"
 import LoadingAnimation from "../../components/LoadingAnimation"
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa" // Font Awesome 또는 원하는 아이콘 라이브러리 사용
-import { citiesByCountry, cityMapping, countries, countryMapping, koreanCities, koreancities } from "../../constants/mapping"
+import {
+  citiesByCountry,
+  cityMapping,
+  countries,
+  countryMapping,
+  koreanCities,
+  koreancities,
+} from "../../constants/mapping"
 import Select from "react-select"
 import classNames from "classnames"
 
-const groupedCitiesOptions = Object.keys(citiesByCountry).map(country => ({
+// react-select 설정
+const groupedCitiesOptions = Object.keys(citiesByCountry).map((country) => ({
   label: country,
-  options: citiesByCountry[country].map(city => ({
+  options: citiesByCountry[country].map((city) => ({
     name: "city",
     value: city,
-    label: city
-  }))
-}));
-
-const KoreanCitiesOptions = koreanCities.map(city => ({
-  label : city,
-  name : "city",
-  value : city
+    label: city,
+  })),
+}))
+// react-select 국내 설정
+const KoreanCitiesOptions = koreanCities.map((city) => ({
+  label: city,
+  name: "city",
+  value: city,
 }))
 
 function MateBoard() {
   const navigate = useNavigate()
   const calendarRef = useRef(null)
+  //무한 스크롤 트리거
+  const observerRef = useRef(null)
 
   //로딩 상태 추가
   const [loading, setLoading] = useState(false)
+
+  const [firstLoading, setFirstLoading] = useState(true)
 
   //글 정보 목록
   const [pageData, setPageData] = useState([])
@@ -64,6 +76,250 @@ function MateBoard() {
   // 달력에서 선택된 날짜 범위 저장
   const [selectedDateRange, setSelectedDateRange] = useState([null, null])
   const [isCalendarOpen, setIsCalendarOpen] = useState(false) // 캘린더 표시 여부 상태
+
+  // 캘린더 외부 클릭시 캘린더 모달 닫기
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+        setIsCalendarOpen(false) // 달력 닫기
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
+
+  // searchParams 가 바뀔때마다 실행된다.
+  // searchParams 가 없다면 초기값 "Domestic" 있다면 di 란 key 값의 데이터를 domesticInternational에 전달한다
+  useEffect(() => {
+    // 로딩 애니메이션을 0.7초 동안만 표시
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false)
+    }, 700)
+
+    let pageNum = searchParams.get("pageNum") || 1
+    const diValue = searchParams.get("di") || "Domestic" // 국내/국제 값 가져오기
+
+    setCurrentPage(Number(pageNum))
+    setDomesticInternational(diValue)
+
+    // searchParams 데이터를 가져와 검색조건(searchCriteria) 설정
+    setSearchCriteria({
+      city: searchParams.get("city") || "",
+      startDate: searchParams.get("startDate") || "",
+      endDate: searchParams.get("endDate") || "",
+      country: searchParams.get("country") || "",
+      keyword: searchParams.get("keyword") || "",
+      condition: searchCriteria.condition,
+    })
+
+    // 국내/국제 값 업데이트
+  }, [searchParams])
+
+  const fetchFilteredPosts = (pageNum = 1) => {
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false)
+    }, 700)
+
+    //필터링할 검색조건을 params에 담는다
+    const params = {
+      di: domesticInternational || null,
+      country: searchCriteria.country || null,
+      city: searchCriteria.city || null,
+      startDate: searchCriteria.startDate || null,
+      endDate: searchCriteria.endDate || null,
+      keyword: searchCriteria.keyword || null,
+      condition: searchCriteria.condition || null,
+      sortBy,
+      pageNum,
+    }
+
+    console.log(searchCriteria.country)
+    console.log(searchCriteria.keyword)
+
+    // API 호출
+    axios
+      .get("/api/v1/posts/mate", { params })
+      .then((res) => {
+        console.log(res.data)
+
+        setPageData((prevInfo) => {
+          const combinedPosts = [...prevInfo, ...res.data.list]
+
+          // 중복 제거 (id를 기준으로) 및 domesticInternational 값에 맞지 않는 데이터 필터링
+          const uniquePosts = combinedPosts.reduce((acc, currentPost) => {
+            const isDomestic = domesticInternational === "Domestic" && currentPost.country === "대한민국"
+            const isInternational = domesticInternational === "International" && currentPost.country !== "대한민국"
+            if (!acc.some((post) => post.id === currentPost.id) && (isDomestic || isInternational)) {
+              acc.push(currentPost)
+            }
+            return acc
+          }, [])
+
+          return uniquePosts
+        })
+
+        //페이지 제목을 변경한다
+        let tempStr = ""
+        if (domesticInternational === "Domestic") {
+          tempStr = "국내 여행 메이트"
+        } else if (domesticInternational === "International") {
+          tempStr = "해외 여행 메이트"
+        }
+        setDesiredCountry(`${tempStr}`)
+        setTotalPages(res.data.totalPostPages)
+
+        //페이지 전환버튼을 변경한다
+        setPageTurn(domesticInternational === "International" ? "국내로" : "해외로")
+      })
+      .catch((error) => {
+        console.log("Error:", error)
+      })
+  }
+
+  // 해외 / 국내 전환시 호출
+  useEffect(() => {
+    setSearchCriteria({
+      country: "",
+      city: "",
+      startDate: "",
+      endDate: "",
+      keyword: "",
+      condition: "title", // 기본 조건 설정
+    })
+    setCurrentPage(1)
+    fetchFilteredPosts(1)
+  }, [domesticInternational])
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      const target = entries[0]
+      if (target.isIntersecting && currentPage < totalPages) {
+        setCurrentPage((prevPage) => prevPage + 1)
+      }
+    })
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current)
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observer.unobserve(observerRef.current)
+      }
+    }
+  }, [currentPage, totalPages])
+
+  useEffect(() => {
+    if (firstLoading) {
+      setTimeout(() => {
+        setCurrentPage((prev) => prev - 1)
+        setFirstLoading(false)
+      }, 100)
+      return
+    }
+    if (currentPage > 1) {
+      fetchFilteredPosts(currentPage)
+    }
+  }, [currentPage])
+
+  // -------------이벤트 관리부
+
+  const search = () => {
+    fetchFilteredPosts() // 비동기 처리를 기다리지 않음
+  }
+
+  //국내, 해외 선택 이벤트
+  const handleDesiredCountry = () => {
+    const newDomesticInternational = domesticInternational === "International" ? "Domestic" : "International"
+    setDomesticInternational(newDomesticInternational)
+    setSearchCriteria({
+      country: "",
+      city: "",
+      startDate: "", // startDate 초기화
+      endDate: "", // endDate 초기화
+      keyword: "", // keyword 초기화
+      condition: "title",
+    })
+    setSearchParams({
+      ...searchCriteria,
+      di: newDomesticInternational,
+    })
+    // window.location.reload()
+  }
+
+  // 새로운 검색을 시작하는 함수
+  const handleSearch = () => {
+    console.log(searchCriteria)
+    setSearchParams({
+      country: searchCriteria.country,
+      city: searchCriteria.city,
+      startDate: searchCriteria.startDate,
+      endDate: searchCriteria.endDate,
+      condition: searchCriteria.condition,
+      keyword: searchCriteria.keyword,
+      di: domesticInternational,
+    })
+    search()
+  }
+  const handleSortChange = (e) => {
+    setSortBy(e.target.value) // 정렬 기준 변경
+    // 정렬 기준에 따라 pageData를 정렬
+    const sortedData = [...pageData].sort((a, b) => {
+      if (e.target.value === "latest") {
+        return new Date(b.createdAt) - new Date(a.createdAt)
+      } else if (e.target.value === "viewCount") {
+        return b.viewCount - a.viewCount
+      } else if (e.target.value === "likeCount") {
+        return b.likeCount - a.likeCount
+      }
+      return 0 // 기본값
+    })
+    setPageData(sortedData) // 정렬된 데이터를 상태에 저장
+  }
+
+  // 현재 시간과 작성일을 비교해 '몇 시간 전' 또는 '몇 일 전'을 계산하는 함수
+  const getTimeDifference = (createdAt, updatedAt) => {
+    const postDate = new Date(updatedAt ? updatedAt : createdAt)
+    const now = new Date()
+    const timeDiff = now - postDate // 시간 차이를 밀리초 단위로 계산
+
+    const diffInMinutes = Math.floor(timeDiff / (1000 * 60)) // 밀리초 -> 분
+    const diffInHours = Math.floor(timeDiff / (1000 * 60 * 60)) // 밀리초 -> 시간
+    const diffInDays = Math.floor(timeDiff / (1000 * 60 * 60 * 24)) // 밀리초 -> 일
+
+    if (diffInMinutes < 60) {
+      // 1시간 이내일 경우 '몇 분 전'
+      return `${diffInMinutes}분 전`
+    } else if (diffInHours < 24) {
+      // 24시간 이내일 경우 '몇 시간 전'
+      return `${diffInHours}시간 전`
+    } else {
+      // 24시간 이상일 경우 '몇 일 전'
+      return `${diffInDays}일 전`
+    }
+  }
+
+  // 게시물 클릭 시 해당 게시물 상세 페이지로 이동
+  const handlePostClick = (id) => {
+    navigate(`/posts/mate/${id}/detail`)
+  }
+
+  // city 또는 country 값에 따른 이미지 파일명 변환 함수
+  const getImageFileName = (city, country) => {
+    // city 값이 있으면 city에 맞는 이미지, 없으면 country에 맞는 이미지 반환
+    if (city && cityMapping[city]) {
+      return cityMapping[city]
+    } else if (country && countryMapping[country]) {
+      return countryMapping[country]
+    } else {
+      return "defaultImage" // 매핑되지 않은 경우 기본값 처리
+    }
+  }
 
   // 검색 기준 변경 핸들러
   const handleConditionChange = (e) => {
@@ -131,203 +387,6 @@ function MateBoard() {
       startDate: "", // 시작 날짜 초기화
       endDate: "", // 종료 날짜 초기화
     })
-  }
-
-  // 캘린더 외부 클릭시 캘린더 모달 닫기
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
-        setIsCalendarOpen(false) // 달력 닫기
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
-
-  // searchParams 가 바뀔때마다 실행된다.
-  // searchParams 가 없다면 초기값 "Domestic" 있다면 di 란 key 값의 데이터를 domesticInternational에 전달한다
-  useEffect(() => {
-    // 로딩 애니메이션을 0.5초 동안만 표시
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-    }, 700)
-
-    let pageNum = searchParams.get("pageNum") || 1
-    const diValue = searchParams.get("di") || "Domestic" // 국내/국제 값 가져오기
-
-    setCurrentPage(Number(pageNum))
-    setDomesticInternational(diValue)
-
-    // searchParams 데이터를 가져와 검색조건(searchCriteria) 설정
-    setSearchCriteria({
-      city: searchParams.get("city") || "",
-      startDate: searchParams.get("startDate") || "",
-      endDate: searchParams.get("endDate") || "",
-      country: searchParams.get("country") || "",
-      keyword: searchParams.get("keyword") || "",
-      condition: searchCriteria.condition,
-    })
-
-    // 국내/국제 값 업데이트
-  }, [searchParams])
-
-  const fetchFilteredPosts = () => {
-    //필터링할 검색조건을 params에 담는다
-    const params = {
-      di: domesticInternational || null,
-      country: searchCriteria.country || null,
-      city: searchCriteria.city || null,
-      startDate: searchCriteria.startDate || null,
-      endDate: searchCriteria.endDate || null,
-      keyword: searchCriteria.keyword || null,
-      condition: searchCriteria.condition || null,
-      sortBy,
-    }
-
-    console.log(searchCriteria.country)
-    console.log(searchCriteria.keyword)
-
-    // API 호출
-    axios
-      .get("/api/v1/posts/mate", { params })
-      .then((res) => {
-        console.log(res.data)
-
-        setPageData(res.data.list)
-
-        //페이지 제목을 변경한다
-        let tempStr = ""
-        if (domesticInternational === "Domestic") {
-          tempStr = "국내 여행 메이트"
-        } else if (domesticInternational === "International") {
-          tempStr = "해외 여행 메이트"
-        }
-        setDesiredCountry(`${tempStr}`)
-
-        //페이지 전환버튼을 변경한다
-        setPageTurn(domesticInternational === "International" ? "국내로" : "해외로")
-      })
-      .catch((error) => {
-        console.log("Error:", error)
-      })
-  }
-
-  // 해외 / 국내 전환시 호출
-  useEffect(() => {
-    setSearchCriteria({
-      country: "",
-      city: "",
-      startDate: "",
-      endDate: "",
-      keyword: "",
-      condition: "title", // 기본 조건 설정
-    })
-
-    fetchFilteredPosts()
-  }, [domesticInternational])
-
-  // -------------이벤트 관리부
-
-  const search = () => {
-    fetchFilteredPosts() // 비동기 처리를 기다리지 않음
-  }
-
-  //국내, 해외 선택 이벤트
-  const handleDesiredCountry = () => {
-    const newDomesticInternational = domesticInternational === "International" ? "Domestic" : "International"
-    setDomesticInternational(newDomesticInternational)
-    setSearchCriteria({
-      country: "",
-      city: "",
-      startDate: "", // startDate 초기화
-      endDate: "", // endDate 초기화
-      keyword: "", // keyword 초기화
-      condition: "title",
-    })
-    setSearchParams({
-      ...searchCriteria,
-      di: newDomesticInternational,
-    })
-    // window.location.reload()
-  }
-
-  // 새로운 검색을 시작하는 함수
-  const handleSearch = () => {
-    console.log(searchCriteria)
-    setSearchParams({
-      country: searchCriteria.country,
-      city: searchCriteria.city,
-      startDate: searchCriteria.startDate,
-      endDate: searchCriteria.endDate,
-      condition: searchCriteria.condition,
-      keyword: searchCriteria.keyword,
-      di: domesticInternational,
-    })
-    search()
-  }
-  const handleSortChange = (e) => {
-    setSortBy(e.target.value) // 정렬 기준 변경
-    // 정렬 기준에 따라 pageData를 정렬
-    const sortedData = [...pageData].sort((a, b) => {
-      if (e.target.value === "latest") {
-        return new Date(b.createdAt) - new Date(a.createdAt)
-      } else if (e.target.value === "viewCount") {
-        return b.viewCount - a.viewCount
-      } else if (e.target.value === "likeCount") {
-        return b.likeCount - a.likeCount
-      }
-      return 0 // 기본값
-    })
-    setPageData(sortedData) // 정렬된 데이터를 상태에 저장
-  }
-
-  // 페이지 이동 핸들러
-  const paginate = (pageNum) => {
-    setCurrentPage(pageNum)
-    setSearchParams({ ...searchParams, pageNum })
-  }
-
-  // 현재 시간과 작성일을 비교해 '몇 시간 전' 또는 '몇 일 전'을 계산하는 함수
-  const getTimeDifference = (createdAt, updatedAt) => {
-    const postDate = new Date(updatedAt ? updatedAt : createdAt)
-    const now = new Date()
-    const timeDiff = now - postDate // 시간 차이를 밀리초 단위로 계산
-
-    const diffInMinutes = Math.floor(timeDiff / (1000 * 60)) // 밀리초 -> 분
-    const diffInHours = Math.floor(timeDiff / (1000 * 60 * 60)) // 밀리초 -> 시간
-    const diffInDays = Math.floor(timeDiff / (1000 * 60 * 60 * 24)) // 밀리초 -> 일
-
-    if (diffInMinutes < 60) {
-      // 1시간 이내일 경우 '몇 분 전'
-      return `${diffInMinutes}분 전`
-    } else if (diffInHours < 24) {
-      // 24시간 이내일 경우 '몇 시간 전'
-      return `${diffInHours}시간 전`
-    } else {
-      // 24시간 이상일 경우 '몇 일 전'
-      return `${diffInDays}일 전`
-    }
-  }
-
-  // 게시물 클릭 시 해당 게시물 상세 페이지로 이동
-  const handlePostClick = (id) => {
-    navigate(`/posts/mate/${id}/detail`)
-  }
-
-  // city 또는 country 값에 따른 이미지 파일명 변환 함수
-  const getImageFileName = (city, country) => {
-    // city 값이 있으면 city에 맞는 이미지, 없으면 country에 맞는 이미지 반환
-    if (city && cityMapping[city]) {
-      return cityMapping[city]
-    } else if (country && countryMapping[country]) {
-      return countryMapping[country]
-    } else {
-      return "defaultImage" // 매핑되지 않은 경우 기본값 처리
-    }
   }
 
   return (
@@ -406,18 +465,14 @@ function MateBoard() {
                 />
               </>
             )}
-            
+
             <Select
               name="city"
               onInputChange={() => setMenuIsOpen(true)}
               onChange={handleSearchChange}
               onKeyDown={handleKeyDown}
-              options={ domesticInternational === "International" ? groupedCitiesOptions : KoreanCitiesOptions}
-              value={
-                searchCriteria.city
-                  ? { label: searchCriteria.city, value: searchCriteria.city }
-                  : null
-              }
+              options={domesticInternational === "International" ? groupedCitiesOptions : KoreanCitiesOptions}
+              value={searchCriteria.city ? { label: searchCriteria.city, value: searchCriteria.city } : null}
               placeholder="도시"
               // isClearable={false} // 사용자가 선택한 값을 지울 수 없음
               unstyled
@@ -595,40 +650,8 @@ function MateBoard() {
           })}
         </div>
 
-        {/* 페이징 버튼 */}
-        <div className="flex justify-center space-x-2">
-          <button
-            onClick={() => paginate(currentPage - 1)}
-            disabled={currentPage === 1}
-            className={`px-4 py-2 rounded ${
-              currentPage === 1 ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-gray-300 text-gray-700"
-            }`}>
-            &lt;
-          </button>
-          {/* totalPages만큼 배열 생성 */}
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
-            <button
-              key={number}
-              onClick={() => paginate(number)}
-              className={`px-4 py-2 rounded ${
-                currentPage === number ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-700"
-              }`}>
-              {number}
-            </button>
-          ))}
-          <button
-            onClick={() => paginate(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className={`px-4 py-2 rounded ${
-              currentPage === totalPages ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-gray-300 text-gray-700"
-            }`}>
-            &gt;
-          </button>
-        </div>
-
-        <p className="mt-4 text-center">
-          <strong>{pageData.length}</strong>개의 글이 있습니다.
-        </p>
+        {/* 무한 스크롤 트리거 */}
+        <div ref={observerRef}></div>
       </div>
     </div>
   )
