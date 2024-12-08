@@ -106,8 +106,6 @@ function CourseBoard() {
       .get("/api/v1/posts/course", { params })
       .then((res) => {
         //페이지 정보 상태 값 관리
-        console.log(res.data.list)
-
         setPageInfo((prevInfo) => {
           const combinedPosts = [...prevInfo, ...res.data.list]
 

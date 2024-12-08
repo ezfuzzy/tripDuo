@@ -4,17 +4,7 @@ import { shallowEqual, useSelector } from "react-redux"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 import ConfirmModal from "../../components/ConfirmModal"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import {
-  faCrown,
-  faDove,
-  faEye,
-  faFeather,
-  faHeart,
-  faMessage,
-  faPlane,
-  faStar,
-  faUser,
-} from "@fortawesome/free-solid-svg-icons"
+import { faEye, faHeart, faMessage, faStar } from "@fortawesome/free-solid-svg-icons"
 import SavedPlacesKakaoMapComponent from "../../components/SavedPlacesKakaoMapComponent"
 import SavedPlacesGoogleMapComponent from "../../components/SavedPlacesGoogleMapComponent"
 import LoadingAnimation from "../../components/LoadingAnimation"
@@ -81,10 +71,11 @@ const CourseBoardDetail = () => {
   // map 객체를 저장할 상태값
   const [kakaoMap, setKakaoMap] = useState(null)
   // SavedPlacesGoogleMapComponent를 참조할 ref 생성
-  const savedPlacesGoogleMapComponentRef = useRef(null);
-
+  const savedPlacesGoogleMapComponentRef = useRef(null)
   //infowWindow 상태값 관리
   const [currentInfoWindow, setCurrentInfoWindow] = useState(null)
+  // 스크롤을 이동할 위치의 요소에 대한 참조 생성
+  const scrollToRef = useRef(null)
 
   //댓글 목록을 상태값으로 관리
   const [commentList, setCommentList] = useState([])
@@ -113,14 +104,13 @@ const CourseBoardDetail = () => {
   //action 발행하기 위해
   const navigate = useNavigate()
 
-  //--------------------------------------------------------------------------------------------------------------rating 관리 부
   // rating 값에 따른 아이콘과 색상 계산 //
   const getRatingDetails = (ratings) => {
     return ratingConfig.find((config) => ratings >= config.min && ratings <= config.max) || { imageSrc: "default.svg" } // 기본값
   }
 
   const imageSrc = getRatingDetails(writerProfile.ratings || 0)
-  //--------------------------------------------------------------------------------------------------------------
+  
   useEffect(() => {
     // 로딩 애니메이션을 0.5초 동안만 표시
     setLoading(true)
@@ -173,6 +163,7 @@ const CourseBoardDetail = () => {
             setGoogleMapCenterLocation({ Ma: places[0].Ma, La: places[0].La })
           }
         }
+
         //댓글 목록이 존재하는지 확인 후, 배열에 ref라는 방 추가
         const list = Array.isArray(res.data.commentList)
           ? res.data.commentList.map((item) => {
@@ -186,7 +177,6 @@ const CourseBoardDetail = () => {
         setTotalPageCount(res.data.totalCommentPages)
       })
       .catch((error) => {
-        console.log("데이터를 가져오지 못했습니다.", error)
         alert("게시물을 불러오는 중 문제가 발생했습니다.")
       })
   }, [id, searchParams, isRated, myRating])
@@ -200,6 +190,17 @@ const CourseBoardDetail = () => {
       document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [dropdownIndex])
+
+  // 날짜 계산 함수
+  const calculateDate = (startDate, dayIndex) => {
+    const date = new Date(startDate)
+    date.setDate(date.getDate() + dayIndex) // 시작 날짜에 dayIndex 만큼 더함
+    return date.toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+  }
 
   //글 삭제를 눌렀을 때 호출되는 함수
   const deleteHandleYes = () => {
@@ -234,7 +235,6 @@ const CourseBoardDetail = () => {
             }))
           })
           .catch((error) => {
-            console.log(error)
             alert(error.response.data)
           })
       } else if (isLiked) {
@@ -250,7 +250,6 @@ const CourseBoardDetail = () => {
             })
           })
           .catch((error) => {
-            console.log(error)
             alert(error.response.data)
           })
       }
@@ -261,13 +260,12 @@ const CourseBoardDetail = () => {
 
   //장소명 눌렀을 때 실행되는 함수
   const handlePlaceClick = (place) => {
-    console.log(place)
     if (place.position && place.position.Ma !== undefined && place.position.La !== undefined) {
       setKakaoMapCenterLocation({ Ma: place.position.Ma, La: place.position.La })
 
       // 기존의 열린 infoWindow가 있다면 닫기
       if (currentInfoWindow) {
-        currentInfoWindow.close();
+        currentInfoWindow.close()
       }
 
       // 새로운 infoWindow 생성
@@ -282,20 +280,27 @@ const CourseBoardDetail = () => {
               <div style="margin-bottom: 16px;"><a href="${place.place_url}" target="_blank">장소 링크</a></div>
           </div>
       `,
-      });
+      })
 
       // 새로운 infoWindow 열기
-      const markerPosition = new window.kakao.maps.LatLng(place.position.Ma, place.position.La);
-      infoWindow.open(kakaoMap, new window.kakao.maps.Marker({ position: markerPosition, map: kakaoMap }));
+      const markerPosition = new window.kakao.maps.LatLng(place.position.Ma, place.position.La)
+      infoWindow.open(kakaoMap, new window.kakao.maps.Marker({ position: markerPosition, map: kakaoMap }))
 
       // 새로운 infoWindow를 상태로 저장
-      setCurrentInfoWindow(infoWindow);
-
+      setCurrentInfoWindow(infoWindow)
+      // scrollIntoView 메서드를 사용하여 특정 요소로 스크롤 이동
+      if (scrollToRef.current) {
+        scrollToRef.current.scrollIntoView({ behavior: "smooth" })
+      }
     } else {
       // setGoogleMapCenterLocation({ Ma: place.Ma, La: place.La })
       // Google Map의 infoWindow 열기
       if (savedPlacesGoogleMapComponentRef.current) {
-        savedPlacesGoogleMapComponentRef.current.openInfoWindowAtPlace(place); // SavedPlacesGoogleMapComponent에서 제공하는 함수 호출
+        savedPlacesGoogleMapComponentRef.current.openInfoWindowAtPlace(place) // SavedPlacesGoogleMapComponent에서 제공하는 함수 호출
+      }
+      // scrollIntoView 메서드를 사용하여 특정 요소로 스크롤 이동
+      if (scrollToRef.current) {
+        scrollToRef.current.scrollIntoView({ behavior: "smooth" })
       }
     }
   }
@@ -732,14 +737,6 @@ const CourseBoardDetail = () => {
             {dropdownIndex === "titleDropdown" && (
               <div className="absolute right-0 w-40 mt-2 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg">
                 <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                  {/* <button
-                    className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
-                    onClick={() => {
-                      setDropdownIndex(null)
-                      alert("Option 1 selected")
-                    }}>
-                    차단
-                  </button> */}
                   <button
                     className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
                     onClick={() => {
@@ -822,32 +819,34 @@ const CourseBoardDetail = () => {
                   {isLiked ? "unLike" : "Like"}
                 </button>
               )}
-              <span className="text-sm text-gray-500">
-                <span className="mx-3">
-                  <FontAwesomeIcon icon={faEye} className="h-5 w-5 mr-2" />
-                  {post.viewCount}
-                </span>
-                <span className="mr-3">
-                  <FontAwesomeIcon icon={faHeart} className="h-4 w-4 mr-2" />
-                  {post.likeCount}
-                </span>
-                <span className="mr-3">
-                  <FontAwesomeIcon icon={faMessage} className="h-4 w-4 mr-2" />
-                  {post.commentCount}
-                </span>
-              </span>
             </div>
+          </div>
+          <div className="ml-20">
+            <span className="text-sm text-gray-500">
+              <span className="mx-3">
+                <FontAwesomeIcon icon={faEye} className="h-4 w-4 mr-2" />
+                {post.viewCount}
+              </span>
+              <span className="mr-3">
+                <FontAwesomeIcon icon={faHeart} className="h-3 w-3 mr-2" />
+                {post.likeCount}
+              </span>
+              <span className="mr-3">
+                <FontAwesomeIcon icon={faMessage} className="h-3 w-3 mr-2" />
+                {post.commentCount}
+              </span>
+            </span>
           </div>
         </div>
 
         {/* Day 목록 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 mb-6">
           {(post.postData || [{ dayMemo: "", places: [] }]).map((day, dayIndex) => (
             <div key={dayIndex} className="bg-white rounded-lg shadow-md p-4">
-              <h2 className="text-xl font-semibold mb-4">Day {dayIndex + 1}</h2>
+              <h2 className="text-xl font-semibold mb-4">Day {dayIndex + 1} - {post.startDate && calculateDate(post.startDate, dayIndex)}</h2>
               <div className="mb-4">
                 <label className="block font-semibold mb-2">Day Memo</label>
-                <p className="border p-2 w-full bg-gray-100">{day.dayMemo || "메모가 없습니다"}</p>
+                <p className="text-sm border p-2 w-full bg-gray-100">{day.dayMemo || "메모가 없습니다"}</p>
               </div>
               {day.places && day.places.length > 0 ? (
                 day.places.map((place, placeIndex) => (
@@ -861,7 +860,7 @@ const CourseBoardDetail = () => {
                       {place.place_name || "장소명이 없습니다"}
                     </button>
                     <label className="block font-semibold">장소 메모</label>
-                    <p className="border p-2 w-full bg-white">{place.placeMemo || "메모가 없습니다"}</p>
+                    <p className="text-sm border p-2 w-full bg-white">{place.placeMemo || "메모가 없습니다"}</p>
                   </div>
                 ))
               ) : (
@@ -870,7 +869,7 @@ const CourseBoardDetail = () => {
             </div>
           ))}
         </div>
-        <div>
+        <div ref={scrollToRef}>
           {domesticInternational === "Domestic" ? (
             <SavedPlacesKakaoMapComponent savedPlaces={allPlaces} centerLocation={kakaoMapCenterLocation} onMapReady={setKakaoMap} />
           ) : (
@@ -1129,9 +1128,9 @@ const CourseBoardDetail = () => {
         </div>
 
         {/* 댓글 더보기 버튼 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 mx-auto mb-5">
+        <div className="mx-auto mb-5">
           <button
-            className={`bg-green-500 text-white py-2 px-4 rounded ${isCommentListLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
+            className={`bg-tripDuoMint text-white py-2 px-4 rounded ${isCommentListLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
               }`}
             disabled={isCommentListLoading}
             onClick={handleMoreComment}>
@@ -1149,7 +1148,7 @@ const CourseBoardDetail = () => {
         style={customStyles}
         contentLabel="채팅방 생성"
         ariaHideApp={false}>
-        <div className="flex items-center  mb-5">
+        <div className="flex items-center mb-5">
           {[1, 2, 3, 4, 5].map((star, index) => (
             <div key={index} onClick={() => handleRating(star)}>
               <FontAwesomeIcon

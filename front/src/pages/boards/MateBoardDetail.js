@@ -432,7 +432,7 @@ function MateBoardDetail(props) {
     } else {
       console.log("웹 소켓 비정상")
     }
-    // console.log("2번" + writerProfile.id)
+    console.log("2번" + writerProfile.id)
     axios
       .post("/api/chat/rooms", {
         ownerId: userId, // 방 생성자를 명시
@@ -504,19 +504,19 @@ function MateBoardDetail(props) {
   }
 
   return (
-    <div className="container mx-auto p-4 max-w-[900px]">
+    <div className="container mx-auto p-4 max-w-[1024px]">
       {/* 로딩 애니메이션 */}
       {loading && <LoadingAnimation />}
       <div className="flex flex-col h-full bg-gray-100 p-6">
         <div className="container mb-10">
           <div className="flex">
             <NavLink
-              className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
+              className="text-white bg-tripDuoMint hover:bg-tripDuoGreen focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 mr-4 text-center"
               to={{
                 pathname: "/posts/mate",
                 search: post.country === "대한민국" ? "?di=Domestic" : "?di=International",
               }}>
-              Mate
+              목록으로
             </NavLink>
             <div className="ml-auto text-sm text-gray-600">
               <span className="cursor-pointer" onClick={handleCopy}>

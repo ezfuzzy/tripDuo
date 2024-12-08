@@ -1,7 +1,7 @@
-import React, { memo } from "react";
+import React, { memo } from "react"
 
 const TermServiceModal = memo(({ isOpen, onClose }) => {
-    if (!isOpen) return null;
+    if (!isOpen) return null
 
     return (
         <div 
@@ -51,7 +51,7 @@ const TermServiceModal = memo(({ isOpen, onClose }) => {
                 </div>
                 <div className="bg-gray-50 px-6 py-4">
                     <button
-                        className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition-colors"
+                        className="w-full bg-tripDuoMint text-white py-2 rounded-lg hover:bg-tripDuoGreen transition-colors"
                         onClick={onClose}
                     >
                         확인
@@ -59,7 +59,7 @@ const TermServiceModal = memo(({ isOpen, onClose }) => {
                 </div>
             </div>
         </div>
-    );
-});
+    )
+})
 
-export default TermServiceModal;
+export default TermServiceModal
