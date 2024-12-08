@@ -432,7 +432,7 @@ function MateBoardDetail(props) {
     } else {
       console.log("웹 소켓 비정상")
     }
-    console.log("2번" + writerProfile.id)
+    // console.log("2번" + writerProfile.id)
     axios
       .post("/api/chat/rooms", {
         ownerId: userId, // 방 생성자를 명시
