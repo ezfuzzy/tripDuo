@@ -4,7 +4,7 @@ import { shallowEqual, useSelector } from "react-redux"
 import { useNavigate } from "react-router"
 import { cityMapping, countryMapping } from "../../constants/mapping"
 
-function MyPlan(props) {
+function MyPlan() {
   //course 변수 사용하기 위해 임시로 useState() 사용
   const loggedInUserId = useSelector((state) => state.userData.id, shallowEqual) // 로그인된 user의 id
   const [postList, setPostList] = useState([])
@@ -131,7 +131,7 @@ function MyPlan(props) {
                       // /* 혼합 모드 설정 */
                       mixBlendMode: "multiply",
                     }}>
-                    <a href={`/posts/course/${post.id}/detail`} className="block">
+                    <a href={`/posts/course/${post.id}/detail?di=${post.country === "대한민국" ? "Domestic" : "International"}`} className="block">
                       <div className="md:flex justify-between">
                         <div>
                           <h4 className="text-xl font-semibold">{post.title}</h4>

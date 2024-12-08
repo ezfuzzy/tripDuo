@@ -38,11 +38,6 @@ function MateBoardForm(props) {
   // 선택한 나라에 맞는 도시 목록을 얻음
   const cities = citiesByCountry[post.country] || [] //citiesByCountry[country]가 undefined 또는 null일 경우 빈 배열 반환
 
-  //username 으로 로그인 여부 확인하여 로그인 하지 않으면 로그인 페이지로 넘기기
-  useEffect(() => {
-    username ?? navigate("/login")
-  }, [username, navigate])
-
   useEffect(
     (post) => {
       setDomesticInternational(SearchParams.get("di"))

@@ -1,44 +1,44 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Loader } from "@googlemaps/js-api-loader";
+import React, { useEffect, useState, useRef } from "react"
+import { Loader } from "@googlemaps/js-api-loader"
 
 const CourseGoogleMapComponent = ({ onSave, selectedDayIndex, selectedPlaceIndex, isSelectPlace }) => {
-    const mapRef = useRef(null);
-    const [map, setMap] = useState(null);
-    const [selectedPlace, setSelectedPlace] = useState(null);
-    const [keyword, setKeyword] = useState("");
-    const [places, setPlaces] = useState([]);
-    const [markers, setMarkers] = useState([]);
-    const [infoWindows, setInfoWindows] = useState([]);
+    const mapRef = useRef(null)
+    const [map, setMap] = useState(null)
+    const [selectedPlace, setSelectedPlace] = useState(null)
+    const [keyword, setKeyword] = useState("")
+    const [places, setPlaces] = useState([])
+    const [markers, setMarkers] = useState([])
+    const [infoWindows, setInfoWindows] = useState([])
 
     useEffect(() => {
         const loader = new Loader({
             apiKey: process.env.REACT_APP_GOOGLE_MAP_API_KEY,
             version: "weekly",
             libraries: ["places"]
-        });
+        })
 
         loader.load().then(() => {
             const map = new window.google.maps.Map(mapRef.current, {
-                center: { lat: 37.5665, lng: 126.978 },
+                center: { lat: 41.4038996, lng: 2.1748516 },
                 zoom: 14,
-            });
-            setMap(map);
+            })
+            setMap(map)
 
             map.addListener("click", () => {
-                window.closeInfoWindows();
-                setSelectedPlace(null);
-            });
-        });
-    }, []);
+                window.closeInfoWindows()
+                setSelectedPlace(null)
+            })
+        })
+    }, [])
 
     const clearMarkers = () => {
-        markers.forEach((marker) => marker.setMap(null));
-        setMarkers([]);
-    };
+        markers.forEach((marker) => marker.setMap(null))
+        setMarkers([])
+    }
 
     window.closeInfoWindows = () => {
-        infoWindows.forEach((infoWindow) => infoWindow.close());
-    };
+        infoWindows.forEach((infoWindow) => infoWindow.close())
+    }
 
     const createInfoWindowContent = (place) => {
         return `
@@ -47,44 +47,46 @@ const CourseGoogleMapComponent = ({ onSave, selectedDayIndex, selectedPlaceIndex
           <strong>${place.name}</strong>
         </div>
         <div style="margin-bottom: 8px;">${place.formatted_address}</div>
-        <button onclick="window.savePlace('${place}')" style="width:100%;background-color:green;color:white;padding:5px;border:none;border-radius:5px;">
+        <button
+        onclick="window.savePlace('${place}')"
+        style="width:100%;background-color:white;color:green;padding:5px;border:1px solid green;border-radius:5px;font-weight:bold;">
           저장
         </button>
       </div>
-    `;
-    };
+    `
+    }
 
     window.savePlace = (eplace) => {
-        handleSave(eplace);
-    };
+        handleSave(eplace)
+    }
 
     const handleSearch = () => {
         if (map && keyword) {
-            const service = new window.google.maps.places.PlacesService(map);
+            const service = new window.google.maps.places.PlacesService(map)
             service.textSearch({ query: keyword }, (results, status) => {
                 if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-                    setPlaces(results);
-                    map.setCenter(results[0].geometry.location);
-                    map.setZoom(14);
+                    setPlaces(results)
+                    map.setCenter(results[0].geometry.location)
+                    map.setZoom(14)
 
-                    clearMarkers();
-                    window.closeInfoWindows();
+                    clearMarkers()
+                    window.closeInfoWindows()
 
-                    const newMarkers = [];
-                    const newInfoWindows = [];
+                    const newMarkers = []
+                    const newInfoWindows = []
 
                     results.forEach((place) => {
                         const marker = new window.google.maps.Marker({
                             position: place.geometry.location,
                             map: map,
-                        });
+                        })
 
                         const infoWindow = new window.google.maps.InfoWindow({
                             content: createInfoWindowContent(place),
-                        });
+                        })
 
                         marker.addListener("click", () => {
-                            window.closeInfoWindows();
+                            window.closeInfoWindows()
                             setSelectedPlace({
                                 address_name: "",
                                 category_group_code: "",
@@ -102,61 +104,61 @@ const CourseGoogleMapComponent = ({ onSave, selectedDayIndex, selectedPlaceIndex
                                 open_now: place?.opening_hours?.open_now ?? "",
                                 rating: place.rating,
                                 user_ratings_total: place.user_ratings_total,
-                            });
-                            infoWindow.open(map, marker);
-                        });
+                            })
+                            infoWindow.open(map, marker)
+                        })
 
-                        newMarkers.push(marker);
-                        newInfoWindows.push(infoWindow);
-                    });
+                        newMarkers.push(marker)
+                        newInfoWindows.push(infoWindow)
+                    })
 
-                    setMarkers(newMarkers);
-                    setInfoWindows(newInfoWindows);
+                    setMarkers(newMarkers)
+                    setInfoWindows(newInfoWindows)
                 }
-            });
+            })
         }
-    };
+    }
 
     const handleSave = (ePlace) => {
         if (!isSelectPlace) {
-            alert("일정에서 장소 선택 버튼을 눌러주세요!");
+            alert("일정에서 장소 선택 버튼을 눌러주세요!")
         } else {
             if (ePlace) {
-                setSelectedPlace(ePlace);
+                setSelectedPlace(ePlace)
             }
 
             const newPlace = {
                 ...selectedPlace,
                 dayIndex: selectedDayIndex,
                 placeIndex: selectedPlaceIndex,
-            };
-            onSave(newPlace);
-            setSelectedPlace(null);
+            }
+            onSave(newPlace)
+            setSelectedPlace(null)
         }
-    };
+    }
 
     const handlePlaceClick = (place) => {
-        map.setCenter(place.position);
-        map.setZoom(15);
+        map.setCenter(place.position)
+        map.setZoom(15)
         const marker = markers.find(
             (marker) =>
                 marker.getPosition().lat().toFixed(10) === place.Ma.toFixed(10) &&
                 marker.getPosition().lng().toFixed(10) === place.La.toFixed(10)
-        );
+        )
 
-        const infoWindow = infoWindows[markers.indexOf(marker)];
+        const infoWindow = infoWindows[markers.indexOf(marker)]
 
         if (infoWindow) {
-            window.closeInfoWindows();
-            infoWindow.open(map, marker);
+            window.closeInfoWindows()
+            infoWindow.open(map, marker)
         }
-    };
+    }
 
     const handleKeyPress = (event) => {
         if (event.key === "Enter") {
-            handleSearch();
+            handleSearch()
         }
-    };
+    }
 
     return (
         <div className="flex flex-col w-full h-full overflow-hidden">
@@ -178,7 +180,7 @@ const CourseGoogleMapComponent = ({ onSave, selectedDayIndex, selectedPlaceIndex
                     />
                     <button
                         onClick={handleSearch}
-                        className="text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-3 py-1.5 text-center w-1/5">
+                        className="text-blue-900 text-sm font-bold border border-blue-900 hover:bg-blue-100 focus:outline-none focus:ring-4 focus:ring-blue-300 rounded-r-lg px-4 py-2">
                         검색
                     </button>
                 </div>
@@ -205,13 +207,13 @@ const CourseGoogleMapComponent = ({ onSave, selectedDayIndex, selectedPlaceIndex
                                     open_now: place?.opening_hours?.open_now ?? "",
                                     rating: place.rating,
                                     user_ratings_total: place.user_ratings_total,
-                                };
+                                }
 
-                                map.setCenter(place.geometry.location);
-                                map.setZoom(15);
+                                map.setCenter(place.geometry.location)
+                                map.setZoom(15)
 
-                                setSelectedPlace(placeData);
-                                handlePlaceClick(placeData);
+                                setSelectedPlace(placeData)
+                                handlePlaceClick(placeData)
                             }}>
                             {place.name}
                         </li>
@@ -219,7 +221,7 @@ const CourseGoogleMapComponent = ({ onSave, selectedDayIndex, selectedPlaceIndex
                 </ul>
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default CourseGoogleMapComponent;
+export default CourseGoogleMapComponent

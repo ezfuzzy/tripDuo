@@ -1,25 +1,25 @@
-import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
-import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-import { Link } from "react-router-dom";
-import LoadingAnimation from "../../components/LoadingAnimation";
+import axios from "axios"
+import React, { useEffect, useRef, useState } from "react"
+import { shallowEqual, useDispatch, useSelector } from "react-redux"
+import { useNavigate, useParams } from "react-router"
+import { Link } from "react-router-dom"
+import LoadingAnimation from "../../components/LoadingAnimation"
 
 function MyProfileForm(props) {
   //로딩 상태 추가
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
 
-  const userId = useSelector((state) => state.userData.id, shallowEqual); // 접속된 사용자의 id
-  const username = useSelector((state) => state.userData.username, shallowEqual); // 접속된 사용자의 username
+  const userId = useSelector((state) => state.userData.id, shallowEqual) // 접속된 사용자의 id
+  const username = useSelector((state) => state.userData.username, shallowEqual) // 접속된 사용자의 username
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
-  const profileImage = useRef();
-  const inputImage = useRef();
-  const inputNickname = useRef();
+  const profileImage = useRef()
+  const inputImage = useRef()
+  const inputNickname = useRef()
 
-  const navigate = useNavigate();
-  const [imageData, setImageData] = useState(null);
+  const navigate = useNavigate()
+  const [imageData, setImageData] = useState(null)
 
   const [profile, setProfile] = useState({
     id: "",
@@ -31,79 +31,79 @@ function MyProfileForm(props) {
     profileMessage: "",
     ratings: 1300,
     socialLinks: [],
-  });
+  })
 
-  const tictokRef = useRef();
-  const instagramRef = useRef();
+  const tictokRef = useRef()
+  const instagramRef = useRef()
 
-  const { id } = useParams();
+  const { id } = useParams()
 
   // 닉네임 중복검사 관련
-  const [isDuplicate, setIsDuplicate] = useState(null);
-  const [isNicknameChanged, setIsNicknameChanged] = useState(false);
-  const [initialNickname, setInitialNickname] = useState();
+  const [isDuplicate, setIsDuplicate] = useState(null)
+  const [isNicknameChanged, setIsNicknameChanged] = useState(false)
+  const [initialNickname, setInitialNickname] = useState()
 
   // useEffect
   useEffect(() => {
     // 로딩 애니메이션을 0.5초 동안만 표시
-    setLoading(true);
+    setLoading(true)
     setTimeout(() => {
-      setLoading(false);
-    }, 700);
+      setLoading(false)
+    }, 700)
 
     axios
       .get(`/api/v1/users/${id}`)
       .then((res) => {
         if (!userId || userId !== res.data.userProfileInfo.userId) {
-          alert("잘못된 접근입니다.");
-          navigate(`/`);
+          alert("잘못된 접근입니다.")
+          navigate(`/`)
         }
-        console.log(res.data);
-        console.log(res.data.userProfileInfo);
-        setProfile(res.data.userProfileInfo);
+        console.log(res.data)
+        console.log(res.data.userProfileInfo)
+        setProfile(res.data.userProfileInfo)
 
-        const socialLinks = res.data.userProfileInfo.socialLinks || [];
+        const socialLinks = res.data.userProfileInfo.socialLinks || []
         socialLinks.forEach((link) => {
-          const [platform, value] = link.split("+");
+          const [platform, value] = link.split("+")
           if (platform === "tictok") {
-            tictokRef.current.value = value.replace("tictok+", "");
+            tictokRef.current.value = value.replace("tictok+", "")
           } else if (platform === "instagram") {
-            instagramRef.current.value = value.replace("instagram+", "");
+            instagramRef.current.value = value.replace("instagram+", "")
           }
-        });
+        })
 
-        setInitialNickname(res.data.userProfileInfo.nickname); // 로딩된 닉네임 초기값 저장
+        setInitialNickname(res.data.userProfileInfo.nickname) // 로딩된 닉네임 초기값 저장
         if (res.data.userProfileInfo.profilePicture) {
-          setImageData(res.data.userProfileInfo.profilePicture);
+          setImageData(res.data.userProfileInfo.profilePicture)
         }
       })
-      .catch((error) => console.log(error));
-  }, [id]);
+      .catch((error) => console.log(error))
+  }, [id])
 
   //비밀번호 변경 페이지로 이동
   const toChangePassword = () => {
-    navigate(`/auth/${id}/changePassword`);
-  };
+    navigate(`/auth/${id}/changePassword`)
+  }
 
   // 이벤트 관리부
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
 
     setProfile({
       ...profile,
       [name]: value,
-    });
+    })
 
     if (e.target.name === "nickname") {
       if (e.target.value === initialNickname) {
         //처음 닉네임과 같은걸 입력했다면
-        setIsDuplicate(null); // 검사 결과 리셋
-        setIsNicknameChanged(false);
+        setIsDuplicate(null) // 검사 결과 리셋
+        setIsNicknameChanged(false)
       } else {
-        setIsNicknameChanged(true);
+        setIsNicknameChanged(true)
       }
     }
-  };
+  }
 
   // *** 중복 검사 핸들러
   const handleCheckDuplicate = () => {
@@ -114,76 +114,76 @@ function MyProfileForm(props) {
         },
       })
       .then((res) => {
-        console.log(res.data);
-        setIsDuplicate(res.data);
+        console.log(res.data)
+        setIsDuplicate(res.data)
       })
-      .catch((error) => console.log(error));
-  };
+      .catch((error) => console.log(error))
+  }
 
   // *** 이미지 input ***
   const handleInputImage = () => {
-    const files = inputImage.current.files;
+    const files = inputImage.current.files
     if (files.length > 0) {
-      const file = files[0];
-      const reg = /image/;
+      const file = files[0]
+      const reg = /image/
 
       if (!reg.test(file.type)) {
-        alert("이미지 파일이 아닙니다");
-        return;
+        alert("이미지 파일이 아닙니다")
+        return
       }
 
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
       reader.onload = (e) => {
-        const data = e.target.result;
+        const data = e.target.result
         // file.dataUrl = data
 
-        setImageData(data);
-      };
+        setImageData(data)
+      }
     }
-  };
+  }
 
   // *** SUBMIT 이벤트 ***
   const handleSave = () => {
     // 닉네임이 수정되고 && 중복체크가 성공하지 않았다면
-    console.log(isNicknameChanged);
-    console.log(isDuplicate);
+    console.log(isNicknameChanged)
+    console.log(isDuplicate)
 
     if (isNicknameChanged && (isDuplicate === true || isDuplicate === null)) {
-      alert("사용 가능한 닉네임인지 확인해주세요");
+      alert("사용 가능한 닉네임인지 확인해주세요")
       //포커스 이동 !! 좀 더 위로 올라가게 수정하기
-      inputNickname.current.scrollIntoView({ behavior: "smooth" });
-      return;
+      inputNickname.current.scrollIntoView({ behavior: "smooth" })
+      return
     }
 
-    console.log(tictokRef.current.value);
-    console.log(instagramRef);
-    const socialLinks = [`tictok+${tictokRef.current.value}`, `instagram+${instagramRef.current.value}`];
+    console.log(tictokRef.current.value)
+    console.log(instagramRef)
+    const socialLinks = [`tictok+${tictokRef.current.value}`, `instagram+${instagramRef.current.value}`]
 
-    const formData = new FormData();
-    formData.append("id", profile.id);
-    formData.append("userId", profile.userId);
-    formData.append("age", profile.age || "");
-    formData.append("gender", profile.gender || "");
-    formData.append("nickname", profile.nickname);
-    formData.append("socialLinks", socialLinks || []);
-    formData.append("profileMessage", profile.profileMessage || "");
-    formData.append("profilePicture", profile.profilePicture || "");
+    const formData = new FormData()
+    formData.append("id", profile.id)
+    formData.append("userId", profile.userId)
+    formData.append("age", profile.age || "")
+    formData.append("gender", profile.gender || "")
+    formData.append("nickname", profile.nickname)
+    formData.append("socialLinks", socialLinks || [])
+    formData.append("profileMessage", profile.profileMessage || "")
+    formData.append("profilePicture", profile.profilePicture || "")
 
-    formData.append("curLocation", profile.curLocation || "");
-    formData.append("ratings", profile.ratings);
-    formData.append("lastLogin", profile.lastLogin || "");
+    formData.append("curLocation", profile.curLocation || "")
+    formData.append("ratings", profile.ratings)
+    formData.append("lastLogin", profile.lastLogin || "")
 
-    console.log(formData);
+    console.log(formData)
 
     //current.files[0] 의 값이 null 로 전달되어 에러가 발생
     //input type="file" 에 파일이 존재하면 multipart type의 데이터 append
     if (inputImage.current.files && inputImage.current.files.length > 0) {
-      formData.append("profileImgForUpload", inputImage.current.files[0]);
+      formData.append("profileImgForUpload", inputImage.current.files[0])
     }
 
     for (const [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
+      console.log(`${key}: ${value}`)
     }
 
     axios
@@ -198,17 +198,17 @@ function MyProfileForm(props) {
           username,
           nickname: res.data.nickname,
           profilePicture: res.data.profilePicture,
-        };
+        }
 
         // jwt token 갱신
-        localStorage.setItem("token", res.data.token);
-        dispatch({ type: "UPDATE_USER", payload: { userData } });
+        localStorage.setItem("token", res.data.token)
+        dispatch({ type: "UPDATE_USER", payload: { userData } })
 
-        alert("저장되었습니다.");
-        navigate(`/users/${id}/profile`);
+        alert("저장되었습니다.")
+        navigate(`/users/${id}/profile`)
       })
-      .catch((error) => console.log(error));
-  };
+      .catch((error) => console.log(error))
+  }
 
   // form 에서 전송되는 데이터 : profilePicture, profileMessage ,(email),(phoneNumber)
   return (
@@ -367,9 +367,12 @@ function MyProfileForm(props) {
 
           {/* 프로필 메세지 */}
           <div className="mb-3">
-            <label htmlFor="profileMessage" className="block text-sm font-medium mb-1 overflow-y-auto">
-              Profile Message
-            </label>
+            <div className="flex justify-between">
+              <label htmlFor="profileMessage" className="block text-sm font-medium mb-1 overflow-y-auto">
+                Profile Message
+              </label>
+              <p className="text-gray-500">{profile.profileMessage.length}/100</p>
+            </div>
             <textarea
               onChange={handleChange}
               name="profileMessage"
@@ -391,7 +394,7 @@ function MyProfileForm(props) {
         </form>
       </div>
     </div>
-  );
+  )
 }
 
-export default MyProfileForm;
+export default MyProfileForm

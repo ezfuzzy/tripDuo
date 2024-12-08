@@ -130,7 +130,7 @@ function MateBoardEditForm(props) {
       {loading && <LoadingAnimation />}
       <div className=" h-full bg-gray-100 p-6">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-3xl font-semibold text-gray-800">여행 코스 수정</h1>
+          <h1 className="text-3xl font-semibold text-gray-800">여행 메이트 수정</h1>
           <div className="flex space-x-2">
             <button
               onClick={() => navigate(`/posts/mate/${id}/detail`)}

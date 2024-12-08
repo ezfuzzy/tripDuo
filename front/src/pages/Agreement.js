@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
-import TermServiceModal from '../components/TermServiceModal';
-import TermPrivacyModal from '../components/TermPrivacyModal';
+import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router'
+import TermServiceModal from '../components/TermServiceModal'
+import TermPrivacyModal from '../components/TermPrivacyModal'
 
 function Agreement() {
     useEffect(()=>{
         // 스크롤을 화면 위로
-        window.scrollTo(0, 0);
+        window.scrollTo(0, 0)
     }, [])
     // 약관 전체 동의 상태를 관리하는 상태 변수
-    const [allAgreed, setAllAgreed] = useState(false);
+    const [allAgreed, setAllAgreed] = useState(false)
 
     // 개별 약관 동의 상태를 관리하는 상태 변수
     const [agreements, setAgreements] = useState({
@@ -17,57 +17,57 @@ function Agreement() {
         termsPrivacy: false,
         essential: false,
         selective: false,
-    });
+    })
 
     // 버튼 비활성화를 위한 상태 변수
-    const [isDisabled, setIsDisabled] = useState(true); 
+    const [isDisabled, setIsDisabled] = useState(true) 
 
     // 각 모달(이용약관, 개인정보 수집)을 관리하는 상태 변수
     const [modals, setModals] = useState({
         termsService: false,
         termsPrivacy: false,
-    });
+    })
 
-    const navigate = useNavigate();
+    const navigate = useNavigate()
 
     // 모달 토글 함수
     const toggleModal = (name) => {
         //모달이 열려 있는지 또는 닫혀 있는지에 따라 그 상태를 반대로 바꿔준다
-        setModals((prev) => ({ ...prev, [name]: !prev[name] }));
-    };
+        setModals((prev) => ({ ...prev, [name]: !prev[name] }))
+    }
 
     // 제출 버튼 활성화 상태를 업데이트하는 함수
     const updateSubmitButtonState = (updatedAgreements) => {
-        const essentialChecked = Object.values(updatedAgreements).slice(0, 3).every((value) => value === true);
+        const essentialChecked = Object.values(updatedAgreements).slice(0, 3).every((value) => value === true)
         // 필수 항목이 모두 체크된 경우 버튼 활성화
-        setIsDisabled(!essentialChecked); 
-    };
+        setIsDisabled(!essentialChecked) 
+    }
 
     // 개별 약관 동의 상태를 업데이트하고, 제출 버튼 상태도 동시에 업데이트
     const handleAgreementChange = (e) => {
-        const { name, checked } = e.target;
+        const { name, checked } = e.target
         setAgreements((prev) => {
-            const updatedAgreements = { ...prev, [name]: checked };
-            setAllAgreed(Object.values(updatedAgreements).every((value) => value === true));
-            updateSubmitButtonState(updatedAgreements); 
-            return updatedAgreements;
-        });
-    };
+            const updatedAgreements = { ...prev, [name]: checked }
+            setAllAgreed(Object.values(updatedAgreements).every((value) => value === true))
+            updateSubmitButtonState(updatedAgreements) 
+            return updatedAgreements
+        })
+    }
 
     // 전체 동의 체크박스를 클릭할 때 모든 약관의 동의 상태를 업데이트하고, 제출 버튼 상태도 업데이트
     const handleAllAgreementsChange = () => {
-        const allChecked = !allAgreed;
+        const allChecked = !allAgreed
         setAgreements((prev) => {
             const updated = Object.keys(prev).reduce((acc, key) => {
                 //모든 약관의 동의 상태를 전체 동의 상태에 맞춰 설정
-                acc[key] = allChecked;
-                return acc;
-            }, {});
-            setAllAgreed(allChecked);
-            updateSubmitButtonState(updated); // 제출 버튼 상태 업데이트
-            return updated;
-        });
-    };
+                acc[key] = allChecked
+                return acc
+            }, {})
+            setAllAgreed(allChecked)
+            updateSubmitButtonState(updated) // 제출 버튼 상태 업데이트
+            return updated
+        })
+    }
 
     // 약관 항목을 렌더링하는 컴포넌트
     const AgreementItem = ({ name, label, isRequired, modalType }) => (
@@ -98,7 +98,7 @@ function Agreement() {
                 />
             </div>
         </li>
-    );
+    )
 
     return (
         <div className="container mx-auto p-4 max-w-lg">
@@ -135,7 +135,7 @@ function Agreement() {
                                     termsPrivacy: agreements.termsPrivacy,
                                     essential: agreements.essential,
                                 },
-                            });
+                            })
                         }}
                         disabled={isDisabled} // 필수 약관이 모두 체크되지 않으면 버튼 비활성화
                         className={`block w-full rounded-md ${
@@ -152,7 +152,7 @@ function Agreement() {
             <TermServiceModal isOpen={modals.termsService} onClose={() => toggleModal('termsService')} />
             <TermPrivacyModal isOpen={modals.termsPrivacy} onClose={() => toggleModal('termsPrivacy')} />
         </div>
-    );
+    )
 }
 
-export default Agreement;
+export default Agreement

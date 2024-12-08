@@ -543,19 +543,19 @@ function CommunityBoardDetail(props) {
 
   return (
     <>
-      <div className="container mx-auto p-4 max-w-[900px]">
+      <div className="container mx-auto p-4 max-w-[1024px]">
         {/* 로딩 애니메이션 */}
         {loading && <LoadingAnimation />}
         <div className="flex flex-col h-full bg-gray-100 p-6">
           <div className="container mb-10">
             <div className="flex justify-between">
               <NavLink
-                className="px-4 py-2 text-sm font-medium rounded-md bg-gray-600 text-gray-100"
+                className="text-white bg-tripDuoMint hover:bg-tripDuoGreen focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-4 py-2.5 mr-4 text-center"
                 to={{
                   pathname: "/posts/community",
                   search: post.country === "대한민국" ? "?di=Domestic" : "?di=International",
                 }}>
-                Community
+                목록으로
               </NavLink>
               <div className="flex items-center">
                 <p className="mr-3 font-bold">
@@ -677,7 +677,9 @@ function CommunityBoardDetail(props) {
             </div>
 
             {/* Froala Editor 내용 */}
-            <div dangerouslySetInnerHTML={{ __html: cleanHTML }} className=" py-10 px-4 border-y border-slate-200"></div>
+            <div
+              dangerouslySetInnerHTML={{ __html: cleanHTML }}
+              className=" py-10 px-4 border-y border-slate-200"></div>
             {
               // 로그인된 username 과 post의 userId 로 불러온 작성자 아이디가 동일하면 랜더링
               userId === post.userId && (

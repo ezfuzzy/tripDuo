@@ -2,7 +2,7 @@ import axios from "axios"
 import moment from "moment/moment"
 import { useEffect, useRef, useState } from "react"
 import Calendar from "react-calendar"
-import { Link, useNavigate, useSearchParams } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import LoadingAnimation from "../../components/LoadingAnimation"
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa"
 import { cityMapping, countryMapping } from "../../constants/mapping"
@@ -182,7 +182,7 @@ function TripLogBoard() {
       endDate: "",
       keyword: "",
       condition: "title", // 기본 조건 설정
-    });
+    })
     setSearchParams({
       ...searchCriteria,
       di: newDomesticInternational,

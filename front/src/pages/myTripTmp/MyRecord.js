@@ -4,7 +4,7 @@ import { shallowEqual, useSelector } from "react-redux"
 import { useNavigate } from "react-router"
 import { cityMapping, countryMapping } from "../../constants/mapping"
 
-function MyRecord(props) {
+function MyRecord() {
   const loggedInUserId = useSelector((state) => state.userData.id, shallowEqual) // 로그인된 user의 id
   const [postList, setPostList] = useState([])
 
@@ -136,7 +136,7 @@ function MyRecord(props) {
                       // /* 혼합 모드 설정 */
                       mixBlendMode: "multiply",
                     }}>
-                    <a href={`/posts/trip_log/${post.id}/detail`} className="block">
+                    <a href={`/posts/trip_log/${post.id}/detail?di=${post.country === "대한민국" ? "Domestic" : "International"}`} className="block">
                       <div className="md:flex justify-between">
                         <div>
                           <h4 className="text-xl font-semibold">{post.title}</h4>
