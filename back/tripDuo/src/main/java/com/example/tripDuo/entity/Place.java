@@ -45,7 +45,7 @@ public class Place {
     @Column(length = 50)
     private String placeName;
 
-    @Column(length = 50)
+    @Column(length = 80)
     private String placeUrl;
 
     @Column(length = 50)
